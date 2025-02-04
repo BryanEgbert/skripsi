@@ -14,14 +14,14 @@ type User struct {
 	RoleID         uint          `gorm:"not null"`
 	Role           Role          `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	VetSpecialtyID *uint         `gorm:"default:null"`
-	VetSpecialty   *VetSpecialty `gorm:"foreignKey:VetSpecialtyID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	VetSpecialty   *VetSpecialty `gorm:"default:null;foreignKey:VetSpecialtyID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	PetDaycare     *PetDaycare   `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-One relationship
 	Pets           []Pet         `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-Many relationship
 	Reviews        []Reviews     `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type UserDTO struct {
-	ID             int64
+	ID             uint
 	Name           string
 	Email          string
 	RoleID         uint

@@ -7,7 +7,7 @@ type Pet struct {
 	Name         string `gorm:"not null"`
 	ImageUrl     string
 	Status       string       `gorm:"not null"`
-	OwnerID      int64        `gorm:"not null"`
+	OwnerID      uint         `gorm:"not null"`
 	Owner        User         `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	SpeciesID    uint         `gorm:"not null"`
 	Species      Species      `gorm:"foreignKey:SpeciesID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

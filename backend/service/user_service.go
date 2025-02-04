@@ -50,11 +50,34 @@ func (s *UserServiceImpl) CreateUser(user model.User) (*model.UserDTO, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	user.Password = hashedPassword
+
+	var exists bool
+	if err := s.db.Model(&model.Role{}).
+		Select("count(*) > 0").
+		Where("id = ?", user.RoleID).
+		Find(&exists).Error; err != nil {
+		return nil, err
+	}
+
+	if !exists {
+		return nil, errors.New("Invalid role ID")
+	}
 
 	if user.RoleID == 2 {
 		if user.VetSpecialtyID == nil {
 			return nil, errors.New("VetSpecialtyID is required for vet role")
+		}
+
+		if err := s.db.Model(&model.VetSpecialty{}).
+			Select("count(*) > 0").
+			Where("id = ?", user.VetSpecialtyID).
+			Find(&exists).Error; err != nil {
+			return nil, err
+		}
+		if !exists {
+			return nil, errors.New("Invalid vet specialty ID")
 		}
 	} else {
 		user.VetSpecialtyID = nil
