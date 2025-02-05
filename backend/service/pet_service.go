@@ -149,7 +149,7 @@ func (s *PetServiceImpl) DeletePet(id uint) error {
 		return err
 	}
 
-	if err := s.db.Delete(&model.Pet{}, id).Error; err != nil {
+	if err := s.db.Unscoped().Delete(&model.Pet{}, id).Error; err != nil {
 		return err
 	}
 	return nil

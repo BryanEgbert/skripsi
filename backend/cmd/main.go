@@ -64,9 +64,13 @@ func main() {
 	petService := service.NewPetService(db)
 	petController := controller.NewPetController(petService)
 
+	petDaycareService := service.NewPetDaycareService(db)
+	petDaycareController := controller.NewPetDaycareController(petDaycareService)
+
 	r = routes.RegisterUserRoute(r, userController)
 	r = routes.RegisterAuthRoute(r, authController)
 	r = routes.RegisterPetRoutes(r, petController)
+	r = routes.RegisterPetDaycareRoutes(r, petDaycareController)
 
 	r.Run()
 }
