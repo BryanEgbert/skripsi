@@ -1,10 +1,8 @@
 package model
 
-import "gorm.io/gorm"
-
 type Species struct {
-	gorm.Model
-	Name string `gorm:"unique;not null"`
+	ID   uint   `gorm:"primarykey" json:"id"`
+	Name string `gorm:"unique;not null" json:"name"`
 	// Pets  []Pet   `gorm:"references:SpeciesID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	// Slots []Slots `gorm:"references:SpeciesID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }

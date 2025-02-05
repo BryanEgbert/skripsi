@@ -21,6 +21,12 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
+	if _, err := os.Stat("./image"); os.IsNotExist(err) {
+		if err := os.Mkdir("./image", os.ModePerm); err != nil {
+			log.Fatal("Mkdir err: %s", err.Error())
+		}
+	}
+
 	r := gin.Default()
 	dbURL := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s",
 		os.Getenv("DB_USER"),
@@ -46,11 +52,21 @@ func main() {
 		&model.Species{},
 		&model.Role{},
 		&model.Reviews{},
+		&model.RefreshToken{},
 	)
 
 	userService := service.NewUserService(db)
 	userController := controller.NewUserController(userService)
 
+	authService := service.NewAuthService(db)
+	authController := controller.NewAuthController(authService)
+
+	petService := service.NewPetService(db)
+	petController := controller.NewPetController(petService)
+
 	r = routes.RegisterUserRoute(r, userController)
+	r = routes.RegisterAuthRoute(r, authController)
+	r = routes.RegisterPetRoutes(r, petController)
+
 	r.Run()
 }

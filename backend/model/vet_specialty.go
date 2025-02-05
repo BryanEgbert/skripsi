@@ -1,9 +1,7 @@
 package model
 
-import "gorm.io/gorm"
-
 type VetSpecialty struct {
-	gorm.Model
-	Name string `gorm:"unique;not null"`
+	ID   uint   `gorm:"primarykey" json:"id"`
+	Name string `gorm:"unique;not null" json:"name"`
 	// Users []User `gorm:"references:VetSpecialtyID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

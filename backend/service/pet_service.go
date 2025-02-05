@@ -1,15 +1,19 @@
 package service
 
 import (
+	"os"
+
+	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"gorm.io/gorm"
 )
 
 type PetService interface {
-	GetPet(id int64) (*model.PetDTO, error)
-	GetPets(startID int64, pageSize int) (*[]model.PetDTO, error)
-	UpdatePet(id int64, pet model.PetDTO) (*model.PetDTO, error)
-	DeletePet(id int64) error
+	GetPet(id uint) (*model.PetDTO, error)
+	GetPets(ownerID uint, startID int64, pageSize int) (*[]model.PetDTO, error)
+	CreatePet(ownerID uint, req model.PetRequest) (*model.PetDTO, error)
+	UpdatePet(id uint, pet model.PetDTO) (*model.PetDTO, error)
+	DeletePet(id uint) error
 }
 
 type PetServiceImpl struct {
@@ -21,7 +25,7 @@ func NewPetService(db *gorm.DB) PetService {
 }
 
 // GetPet fetches a single pet by ID, joining with Species and SizeCategory
-func (s *PetServiceImpl) GetPet(id int64) (*model.PetDTO, error) {
+func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 	var pet model.Pet
 	err := s.db.Preload("Species").Preload("SizeCategory").First(&pet, id).Error
 	if err != nil {
@@ -41,9 +45,10 @@ func (s *PetServiceImpl) GetPet(id int64) (*model.PetDTO, error) {
 }
 
 // GetPets implements cursor-based pagination
-func (s *PetServiceImpl) GetPets(startID int64, pageSize int) (*[]model.PetDTO, error) {
+// GetPets fetches pets owned by a specific user using cursor-based pagination
+func (s *PetServiceImpl) GetPets(ownerID uint, startID int64, pageSize int) (*[]model.PetDTO, error) {
 	var pets []model.Pet
-	query := s.db.Preload("Species").Preload("SizeCategory").Order("id ASC").Limit(pageSize)
+	query := s.db.Preload("Species").Preload("SizeCategory").Where("owner_id = ?", ownerID).Order("id ASC").Limit(pageSize)
 
 	if startID > 0 {
 		query = query.Where("id > ?", startID)
@@ -70,10 +75,14 @@ func (s *PetServiceImpl) GetPets(startID int64, pageSize int) (*[]model.PetDTO, 
 }
 
 // UpdatePet updates a pet's details
-func (s *PetServiceImpl) UpdatePet(id int64, petDTO model.PetDTO) (*model.PetDTO, error) {
+func (s *PetServiceImpl) UpdatePet(id uint, petDTO model.PetDTO) (*model.PetDTO, error) {
 	var pet model.Pet
 	err := s.db.First(&pet, id).Error
 	if err != nil {
+		return nil, err
+	}
+
+	if err := os.Remove(helper.GetFilePath(pet.ImageUrl)); err != nil {
 		return nil, err
 	}
 
@@ -88,7 +97,6 @@ func (s *PetServiceImpl) UpdatePet(id int64, petDTO model.PetDTO) (*model.PetDTO
 		return nil, err
 	}
 
-	// Reload pet with joined tables
 	s.db.Preload("Species").Preload("SizeCategory").First(&pet, id)
 
 	petDTOUpdated := model.PetDTO{
@@ -103,10 +111,36 @@ func (s *PetServiceImpl) UpdatePet(id int64, petDTO model.PetDTO) (*model.PetDTO
 	return &petDTOUpdated, nil
 }
 
+func (s *PetServiceImpl) CreatePet(ownerID uint, req model.PetRequest) (*model.PetDTO, error) {
+	pet := model.Pet{
+		Name:      req.Name,
+		ImageUrl:  req.ImageUrl,
+		OwnerID:   ownerID,
+		SpeciesID: req.SpeciesID,
+		SizeID:    req.SizeCategoryID,
+	}
+
+	if err := s.db.Create(&pet).Error; err != nil {
+		return nil, err
+	}
+
+	s.db.Preload("Species").Preload("SizeCategory").First(&pet, pet.ID)
+
+	petDTO := model.PetDTO{
+		ID:           pet.ID,
+		Name:         pet.Name,
+		ImageUrl:     pet.ImageUrl,
+		Status:       pet.Status,
+		Species:      pet.Species,
+		SizeCategory: pet.SizeCategory,
+	}
+
+	return &petDTO, nil
+}
+
 // DeletePet deletes a pet by ID
-func (s *PetServiceImpl) DeletePet(id int64) error {
-	err := s.db.Delete(&model.Pet{}, id).Error
-	if err != nil {
+func (s *PetServiceImpl) DeletePet(id uint) error {
+	if err := s.db.Delete(&model.Pet{}, id).Error; err != nil {
 		return err
 	}
 	return nil

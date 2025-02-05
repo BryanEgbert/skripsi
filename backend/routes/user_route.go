@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/BryanEgbert/skripsi/controller"
+	"github.com/BryanEgbert/skripsi/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -9,9 +10,10 @@ func RegisterUserRoute(r *gin.Engine, userController *controller.UserController)
 	r.POST("/users", userController.CreateUser)
 
 	userRoutes := r.Group("/users")
-	userRoutes.GET("/:id", userController.GetUser)
-	userRoutes.DELETE("", userController.DeleteUser)
-	userRoutes.PUT("", userController.UpdateUserProfile)
-	userRoutes.PATCH("/password", userController.UpdateUserPassword)
+	userRoutes.GET("/:id", middleware.JWTAuth(), userController.GetUser)
+	userRoutes.DELETE("", middleware.JWTAuth(), userController.DeleteUser)
+	userRoutes.PUT("", middleware.JWTAuth(), userController.UpdateUserProfile)
+	userRoutes.PATCH("/password", middleware.JWTAuth(), userController.UpdateUserPassword)
+
 	return r
 }

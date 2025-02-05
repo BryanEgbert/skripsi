@@ -38,15 +38,16 @@ func (uc *UserController) GetUser(c *gin.Context) {
 
 // CreateUser creates a user using ID from JWT
 func (uc *UserController) CreateUser(c *gin.Context) {
-	var user model.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	// var user model.User
+	var req model.CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
-	createdUser, err := uc.UserService.CreateUser(user)
+	createdUser, err := uc.UserService.CreateUser(req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -80,16 +81,19 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 		return
 	}
 
-	var userDTO model.UserDTO
-	if err := c.ShouldBindJSON(&userDTO); err != nil {
+	var req model.UpdateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
-	// Ensure ID consistency from JWT
-	userDTO.ID = userID.(uint)
-
-	updatedUser, err := uc.UserService.UpdateUserProfile(&userDTO)
+	updatedUser, err := uc.UserService.UpdateUserProfile(&model.UpdateUserDTO{
+		ID:             uint(userID.(int64)),
+		Name:           req.Name,
+		Email:          req.Email,
+		RoleID:         req.RoleID,
+		VetSpecialtyID: req.VetSpecialtyID,
+	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user profile"})
 		return
@@ -116,7 +120,7 @@ func (uc *UserController) UpdateUserPassword(c *gin.Context) {
 		return
 	}
 
-	err := uc.UserService.UpdateUserPassword(userID.(int64), req.NewPassword)
+	err := uc.UserService.UpdateUserPassword(userID.(uint), req.NewPassword)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
 		return
