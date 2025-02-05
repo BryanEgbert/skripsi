@@ -140,6 +140,15 @@ func (s *PetServiceImpl) CreatePet(ownerID uint, req model.PetRequest) (*model.P
 
 // DeletePet deletes a pet by ID
 func (s *PetServiceImpl) DeletePet(id uint) error {
+	var pet model.Pet
+	if err := s.db.First(&pet, id).Error; err != nil {
+		return err
+	}
+
+	if err := os.Remove(helper.GetFilePath(pet.ImageUrl)); err != nil {
+		return err
+	}
+
 	if err := s.db.Delete(&model.Pet{}, id).Error; err != nil {
 		return err
 	}
