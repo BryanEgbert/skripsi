@@ -18,6 +18,7 @@
   - [x] Delete pet
   - [ ] View pets that is booked in a pet daycare for the provider to see
 - Pet Daycare
+  - [ ] Send real-time chat updates to booked pets, pet owner can see the updates by clicking on the pet
   - [ ] Get pet daycare details
   - [ ] Get pet daycares
     - [x] Price range
@@ -36,6 +37,7 @@
   - [ ] Book slots
   - [ ] Edit available slot in a day for pet daycare provider
 - Vet
-  - [ ] view vets (filter based on specialty)
-  - [ ] view vet details
-  - [x] edit vet specialty (along with user profile)
+  - [ ] Chat to vet
+  - [ ] View vets (filter based on specialty)
+  - [x] View vet details
+  - [x] Edit vet specialty (along with user profile)
