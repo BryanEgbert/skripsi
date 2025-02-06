@@ -36,6 +36,6 @@
   - [ ] Book slots
   - [ ] Edit available slot in a day for pet daycare provider
 - Vet
-  - [] view vets (filter based on specialty)
-  - [] view vet details
+  - [ ] view vets (filter based on specialty)
+  - [ ] view vet details
   - [x] edit vet specialty (along with user profile)
