@@ -1,6 +1,7 @@
 package model
 
 import (
+	"mime/multipart"
 	"time"
 
 	"gorm.io/gorm"
@@ -12,20 +13,22 @@ type PetDaycare struct {
 	Address           string  `gorm:"not null"`
 	Latitude          float64 `gorm:"not null"`
 	Longitude         float64 `gorm:"not null"`
+	Price             float64 `gorm:"default:0"`
+	PricingType       string  `gorm:"default:'day'"`
 	Description       string
 	BookedNum         int64 `gorm:"default:0"`
 	OwnerID           uint  `gorm:"unique;not null"` // One-to-One with User
-	Owner             User  `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	DailyWalksID      *uint
+	DailyPlaytimeID   *uint
 	HasPickupService  bool
 	MustBeVaccinated  bool
 	GroomingAvailable bool
 	FoodProvided      bool
-	FoodBrand         *string
+	FoodBrand         string
 	CreatedAt         time.Time
 	UpdatedAt         *time.Time
-	DailyWalksID      uint
-	DailyPlaytimeID   uint
 
+	Owner         User          `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	DailyWalks    DailyWalks    `gorm:"foreignKey:DailyWalksID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"daily_walks"`
 	DailyPlaytime DailyPlaytime `gorm:"foreignKey:DailyPlaytimeID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"daily_playtime"`
 	Reviews       []Reviews     `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-Many
@@ -39,13 +42,15 @@ type PetDaycareDTO struct {
 	Name              string        `json:"name"`
 	Address           string        `json:"address"`
 	Description       string        `json:"description"`
+	Price             float64       `json:"price"`
+	PricingType       string        `json:"pricingType"`
 	BookedNum         int64         `json:"bookedNum"`
 	OwnerID           uint          `json:"ownerId"`
 	HasPickupService  bool          `json:"hasPickupService"`
 	MustBeVaccinated  bool          `json:"mustBeVaccinated"`
 	GroomingAvailable bool          `json:"groomingAvailable"`
 	FoodProvided      bool          `json:"foodProvided"`
-	FoodBrand         *string       `json:"foodBrand"`
+	FoodBrand         string        `json:"foodBrand"`
 	CreatedAt         time.Time     `json:"createdAt"`
 	UpdatedAt         *time.Time    `json:"updatedAt"`
 	DailyWalks        DailyWalks    `json:"dailyWalks"`
@@ -55,22 +60,51 @@ type PetDaycareDTO struct {
 
 // CreatePetDaycareRequest represents the request payload
 type CreatePetDaycareRequest struct {
-	Name              string      `json:"name" binding:"required"`
-	Address           string      `json:"address" binding:"required"`
-	Description       string      `json:"description"`
-	HasPickupService  bool        `json:"hasPickupService"`
-	MustBeVaccinated  bool        `json:"mustBeVaccinated"`
-	GroomingAvailable bool        `json:"groomingAvailable"`
-	FoodProvided      bool        `json:"foodProvided"`
-	FoodBrand         *string     `json:"foodBrand,omitempty"`
-	DailyWalksID      uint        `json:"dailyWalksId"`
-	DailyPlaytimeID   uint        `json:"dailyPlaytimeId"`
-	Slots             []SlotInput `json:"slots" binding:"required"`
+	Name              string                  `form:"name" binding:"required"`
+	Address           string                  `form:"address" binding:"required"`
+	Description       string                  `form:"description"`
+	Price             float64                 `form:"price"`
+	PricingType       string                  `form:"pricingType"`
+	HasPickupService  bool                    `form:"hasPickupService"`
+	MustBeVaccinated  bool                    `form:"mustBeVaccinated"`
+	GroomingAvailable bool                    `form:"groomingAvailable"`
+	FoodProvided      bool                    `form:"foodProvided"`
+	FoodBrand         string                  `form:"foodBrand"`
+	DailyWalksID      *uint                   `form:"dailyWalksId"`
+	DailyPlaytimeID   *uint                   `form:"dailyPlaytimeId"`
+	Thumbnails        []*multipart.FileHeader `form:"thumbnails[]" binding:"required"`
+	SpeciesID         []uint                  `form:"speciesId[]" binding:"required"`
+	SizeCategoryID    []uint                  `form:"sizeCategoryId[]" binding:"required"`
+	MaxNumber         []int                   `form:"maxNumber[]" binding:"required"`
+	ThumbnailURLs     []string
 }
 
-// SlotInput represents each slot entry in the request
-type SlotInput struct {
-	SpeciesID      uint `json:"speciesId" binding:"required"`
-	SizeCategoryID uint `json:"sizeCategoryId" binding:"required"`
-	MaxNumber      int  `json:"maxNumber" binding:"required"`
+type GetPetDaycaresRequest struct {
+	Latitude    float64
+	Longitude   float64
+	MinDistance *float64
+	MaxDistance *float64
+	Facilities  []string
+	MinPrice    *float64
+	MaxPrice    *float64
+	PricingType *string
+}
+
+type GetPetDaycaresResponse struct {
+	ID            uint    `json:"id"`
+	Name          string  `json:"name"`
+	Distance      float64 `json:"distance"`
+	ProfileImage  string  `json:"profileImage"`
+	AverageRating float64 `json:"averageRating"`
+	RatingCount   int     `json:"ratingCount"`
+	BookedNum     int64   `json:"bookedNum"`
+	Price         float64 `json:"price"`
+	Thumbnail     string  `json:"thumbnail"`
+}
+
+type BookSlotsRequest struct {
+	StartDate time.Time `json:"startDate"`
+	EndDate   time.Time `json:"endDate"`
+	PetID     uint      `json:"petId"`
+	DaycareID uint      `json:"daycareID"`
 }

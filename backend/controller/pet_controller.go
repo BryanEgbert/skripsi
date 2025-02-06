@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -92,13 +91,11 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 		return
 	}
 
-	log.Print(req.Image.Filename)
-
 	filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.Image.Filename)))
 	req.ImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, filename)
 
 	if err := c.SaveUploadedFile(req.Image, filename); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Upload file error", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image", "details": err.Error()})
 		return
 	}
 

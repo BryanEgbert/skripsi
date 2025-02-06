@@ -1,9 +1,14 @@
 package controller
 
 import (
+	"fmt"
+	"math/rand"
 	"net/http"
+	"path/filepath"
 	"strconv"
+	"time"
 
+	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"github.com/BryanEgbert/skripsi/service"
 	"github.com/gin-gonic/gin"
@@ -38,11 +43,26 @@ func (uc *UserController) GetUser(c *gin.Context) {
 
 // CreateUser creates a user using ID from JWT
 func (uc *UserController) CreateUser(c *gin.Context) {
-	// var user model.User
 	var req model.CreateUserRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+
+	// Bind form-data
+	if err := c.ShouldBind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid form-data"})
 		return
+	}
+
+	// Handle image upload
+	if req.Image != nil {
+		rand.New(rand.NewSource(time.Now().UnixNano())) // Seed to get different results each run
+		randomNum := rand.Uint64()
+		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(req.Image.Filename)))
+
+		if err := c.SaveUploadedFile(req.Image, imagePath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image", "details": err.Error()})
+			return
+		}
+
+		req.ImageUrl = imagePath
 	}
 
 	createdUser, err := uc.UserService.CreateUser(req)
@@ -74,26 +94,38 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 
 // UpdateUserProfile updates the logged-in user's profile
 func (uc *UserController) UpdateUserProfile(c *gin.Context) {
-	// Get user ID from JWT middleware
-	userID, exists := c.Get("userID")
+	// Get user ID from JWT
+	userIDRaw, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in token"})
 		return
 	}
 
-	var req model.UpdateUserRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID"})
 		return
 	}
 
-	updatedUser, err := uc.UserService.UpdateUserProfile(&model.UpdateUserDTO{
-		ID:             uint(userID.(int64)),
-		Name:           req.Name,
-		Email:          req.Email,
-		RoleID:         req.RoleID,
-		VetSpecialtyID: req.VetSpecialtyID,
-	})
+	var req model.UpdateUserRequest
+	if err := c.ShouldBind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid form-data"})
+		return
+	}
+
+	// Handle image upload
+	if req.Image != nil {
+		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.Image.Filename)))
+
+		if err := c.SaveUploadedFile(req.Image, imagePath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image", "details": err.Error()})
+			return
+		}
+
+		req.ImageUrl = imagePath
+	}
+
+	updatedUser, err := uc.UserService.UpdateUserProfile(&req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user profile"})
 		return

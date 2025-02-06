@@ -11,6 +11,7 @@ import (
 type PetService interface {
 	GetPet(id uint) (*model.PetDTO, error)
 	GetPets(ownerID uint, startID int64, pageSize int) (*[]model.PetDTO, error)
+	// GetBookedPets(daycareId uint, startID int64, pageSize int) (*[]model.PetDTO, error)
 	CreatePet(ownerID uint, req model.PetRequest) (*model.PetDTO, error)
 	UpdatePet(id uint, pet model.PetDTO) (*model.PetDTO, error)
 	DeletePet(id uint) error
@@ -20,7 +21,7 @@ type PetServiceImpl struct {
 	db *gorm.DB
 }
 
-func NewPetService(db *gorm.DB) PetService {
+func NewPetService(db *gorm.DB) *PetServiceImpl {
 	return &PetServiceImpl{db: db}
 }
 
@@ -140,13 +141,15 @@ func (s *PetServiceImpl) CreatePet(ownerID uint, req model.PetRequest) (*model.P
 
 // DeletePet deletes a pet by ID
 func (s *PetServiceImpl) DeletePet(id uint) error {
-	var pet model.Pet
-	if err := s.db.First(&pet, id).Error; err != nil {
+	var petDaycare model.PetDaycare
+	if err := s.db.Preload("Thumbnails").First(&petDaycare, id).Error; err != nil {
 		return err
 	}
 
-	if err := os.Remove(helper.GetFilePath(pet.ImageUrl)); err != nil {
-		return err
+	for _, thumbnail := range petDaycare.Thumbnails {
+		if err := os.Remove(helper.GetFilePath(thumbnail.ImageUrl)); err != nil {
+			return err
+		}
 	}
 
 	if err := s.db.Unscoped().Delete(&model.Pet{}, id).Error; err != nil {

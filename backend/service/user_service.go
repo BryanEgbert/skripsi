@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"os"
 	"time"
 
 	"github.com/BryanEgbert/skripsi/helper"
@@ -15,7 +16,7 @@ type UserService interface {
 	GetUser(id int64) (*model.UserDTO, error)
 	CreateUser(user model.CreateUserRequest) (*model.TokenResponse, error)
 	DeleteUser(id int64) error
-	UpdateUserProfile(user *model.UpdateUserDTO) (*model.UserDTO, error)
+	UpdateUserProfile(user *model.UpdateUserRequest) (*model.UserDTO, error)
 	UpdateUserPassword(id uint, newPassword string) error
 }
 
@@ -60,6 +61,7 @@ func (s *UserServiceImpl) CreateUser(request model.CreateUserRequest) (*model.To
 		Email:    request.Email,
 		Password: hashedPassword,
 		RoleID:   request.RoleID,
+		ImageUrl: request.ImageUrl,
 	}
 
 	// Validate Role exists
@@ -121,16 +123,26 @@ func (s *UserServiceImpl) CreateUser(request model.CreateUserRequest) (*model.To
 
 // DeleteUser removes a user from the database
 func (s *UserServiceImpl) DeleteUser(id int64) error {
-	if err := s.db.Delete(&model.User{}, id).Error; err != nil {
+	var user model.User
+	if err := s.db.First(&user, id).Error; err != nil {
 		return err
 	}
+
+	if err := os.Remove(helper.GetFilePath(user.ImageUrl)); err != nil {
+		return err
+	}
+
+	if err := s.db.Unscoped().Delete(&model.User{}, id).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // UpdateUserProfile updates user details, including VetSpecialty assignments
-func (s *UserServiceImpl) UpdateUserProfile(user *model.UpdateUserDTO) (*model.UserDTO, error) {
+func (s *UserServiceImpl) UpdateUserProfile(user *model.UpdateUserRequest) (*model.UserDTO, error) {
 	var existingUser model.User
-	if err := s.db.Preload("VetSpecialty").First(&existingUser, user.ID).Error; err != nil {
+	if err := s.db.Joins("VetSpecialty").First(&existingUser, user.ID).Error; err != nil {
 		return nil, err
 	}
 
@@ -138,6 +150,7 @@ func (s *UserServiceImpl) UpdateUserProfile(user *model.UpdateUserDTO) (*model.U
 	existingUser.Name = user.Name
 	existingUser.Email = user.Email
 	existingUser.RoleID = user.RoleID
+	existingUser.ImageUrl = user.ImageUrl
 
 	// Update VetSpecialty association if needed
 	if user.RoleID == 3 && user.VetSpecialtyID != nil {

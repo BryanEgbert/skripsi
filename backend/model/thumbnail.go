@@ -4,5 +4,4 @@ type Thumbnail struct {
 	ID        uint   `gorm:"primarykey" json:"id"`
 	DaycareID uint   `gorm:"not null" json:"daycareId"`
 	ImageUrl  string `gorm:"not null" json:"imageUrl"`
-	// Daycare   PetDaycare `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
