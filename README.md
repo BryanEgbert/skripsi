@@ -20,23 +20,23 @@
 - Pet Daycare
   [] Get pet daycare details
   [] Get pet daycares
-  [] Create pet daycares
-  [] Delete pet daycare
   Filters:
-    [] Price range
-    [] pricing type (day/night)
+    [x] Price range
+    [x] pricing type (day/night)
     [] distance between user and pet daycare location
-    [] facilities
+    [x] facilities
       [x] pickup
       [x] grooming
       [x] food provided
-      [] pet required to be vaccinated
-      [] daily walks
-      [] daily playtime
+      [x] pet required to be vaccinated
+      [x] daily walks
+      [x] daily playtime
+  [x] Create pet daycares
+  [x] Delete pet daycare
   [] View previously booked pet daycares
   [] Book slots
   [] Edit available slot in a day for pet daycare provider
 - Vet
   [] view vets (filter based on specialty)
   [] view vet details
-  [] edit vet specialty (along with user profile)
+  [x] edit vet specialty (along with user profile)

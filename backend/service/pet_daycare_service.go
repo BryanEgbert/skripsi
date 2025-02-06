@@ -11,7 +11,7 @@ import (
 )
 
 type PetDaycareService interface {
-	CreatePetDaycare(userId uint, request model.CreatePetDaycareRequest) (*model.PetDaycare, error)
+	CreatePetDaycare(userId uint, request model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
 	GetPetDaycares(req model.GetPetDaycaresRequest) ([]model.GetPetDaycaresResponse, error)
 	DeletePetDaycare(id uint, ownerId uint) error
 
@@ -64,9 +64,16 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest) 
 	if req.PricingType != nil {
 		query = query.Where("pricing_type = ?", *req.PricingType)
 	}
+	if req.MustBeVaccinated {
+		query = query.Where("must_be_vaccinated = ?", req.MustBeVaccinated)
+	}
 
 	// Fetch daycare data
-	if err := query.Joins("Owner").Joins("Reviews").Joins("Thumbnails").Find(&daycares).Error; err != nil {
+	if err := query.
+		Preload("Owner").
+		Preload("Reviews").
+		Preload("Thumbnails").
+		Find(&daycares).Error; err != nil {
 		return nil, err
 	}
 
@@ -97,10 +104,10 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest) 
 	return results, nil
 }
 
-func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.CreatePetDaycareRequest) (*model.PetDaycare, error) {
+func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error) {
 	var user model.User
 
-	s.db.Preload("Owner").First(&user, userId)
+	s.db.First(&user, userId)
 
 	if user.RoleID != 2 {
 		return nil, errors.New("User cannot create pet daycare")
@@ -155,8 +162,6 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 		return nil, err
 	}
 
-	daycare.Thumbnails = thumbnails
-
 	var slots []model.Slots
 	for i, species := range request.SpeciesID {
 		// Validate SpeciesID
@@ -192,10 +197,12 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 
 	tx.Commit()
 
+	daycare.Thumbnails = thumbnails
 	daycare.Slots = slots
 	daycare.Owner = user
 
-	return &daycare, nil
+	output := model.ConvertPetDaycareToDTO(daycare)
+	return &output, nil
 }
 
 func (s *PetDaycareServiceImpl) DeletePetDaycare(id uint, ownerId uint) error {
@@ -214,7 +221,7 @@ func (s *PetDaycareServiceImpl) DeletePetDaycare(id uint, ownerId uint) error {
 		return errors.New("There are pets booked in your pet daycare")
 	}
 
-	if err := s.db.Unscoped().Delete(&daycare).Error; err != nil {
+	if err := s.db.Unscoped().Delete(&daycare, id).Error; err != nil {
 		return err
 	}
 

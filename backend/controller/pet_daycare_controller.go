@@ -41,11 +41,6 @@ func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 		return
 	}
 
-	if request.Name == "" || request.Address == "" || len(request.Thumbnails) <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "missing required fields"})
-		return
-	}
-
 	if len(request.SpeciesID) != len(request.SizeCategoryID) || len(request.SpeciesID) != len(request.MaxNumber) || len(request.SizeCategoryID) != len(request.MaxNumber) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "speciesId, sizeCategoryId, and maxNumber must be the same length"})
 		return
