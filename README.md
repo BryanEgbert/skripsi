@@ -2,6 +2,8 @@
 
 ## Back-End
 *TODO list*
+NOTE: Must re-test everything
+
 - Auth
   - [x] Login
   - [x] Register
@@ -19,7 +21,7 @@
   - [ ] View pets that is booked in a pet daycare for the provider to see
 - Pet Daycare
   - [ ] Send real-time chat updates to booked pets, pet owner can see the updates by clicking on the pet
-  - [ ] Get pet daycare details
+  - [x] Get pet daycare details
   - [ ] Get pet daycares
     - [x] Price range
     - [x] pricing type (day/night)

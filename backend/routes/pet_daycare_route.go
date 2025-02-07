@@ -9,7 +9,7 @@ import (
 func RegisterPetDaycareRoutes(r *gin.Engine, petDaycareController *controller.PetDaycareController) *gin.Engine {
 	pets := r.Group("/daycare")
 
-	// pets.GET("/:id", middleware.JWTAuth(), petController.GetPet)
+	pets.GET("/:id", middleware.JWTAuth(), petDaycareController.GetPetDaycare)
 	pets.GET("", middleware.JWTAuth(), petDaycareController.GetPetDaycares)
 	pets.POST("", middleware.JWTAuth(), petDaycareController.CreatePetDaycare)
 	pets.PUT("/:id", middleware.JWTAuth(), petDaycareController.UpdatePetDaycare)

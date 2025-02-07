@@ -23,7 +23,7 @@ func main() {
 
 	if _, err := os.Stat("./image"); os.IsNotExist(err) {
 		if err := os.Mkdir("./image", os.ModePerm); err != nil {
-			log.Fatal("Mkdir err: %s", err.Error())
+			log.Fatalf("Mkdir err: %s", err.Error())
 		}
 	}
 
@@ -67,6 +67,7 @@ func main() {
 	petDaycareService := service.NewPetDaycareService(db)
 	petDaycareController := controller.NewPetDaycareController(petDaycareService)
 
+	r.Static("/assets", "./image")
 	r = routes.RegisterUserRoute(r, userController)
 	r = routes.RegisterAuthRoute(r, authController)
 	r = routes.RegisterPetRoutes(r, petController)

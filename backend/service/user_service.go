@@ -37,16 +37,9 @@ func (s *UserServiceImpl) GetUser(id int64) (*model.UserDTO, error) {
 		return nil, err
 	}
 
-	userDTO := &model.UserDTO{
-		ID:           user.ID,
-		Name:         user.Name,
-		Email:        user.Email,
-		RoleID:       user.RoleID,
-		CreatedAt:    user.CreatedAt,
-		VetSpecialty: user.VetSpecialty,
-	}
+	userDTO := helper.ConvertUserToDTO(user)
 
-	return userDTO, nil
+	return &userDTO, nil
 }
 
 // CreateUser creates a new user with proper VetSpecialty assignments
@@ -180,14 +173,9 @@ func (s *UserServiceImpl) UpdateUserProfile(user *model.UpdateUserRequest) (*mod
 		return nil, err
 	}
 
-	return &model.UserDTO{
-		ID:           existingUser.ID,
-		Name:         existingUser.Name,
-		Email:        existingUser.Email,
-		RoleID:       existingUser.RoleID,
-		CreatedAt:    existingUser.CreatedAt,
-		VetSpecialty: existingUser.VetSpecialty,
-	}, nil
+	userDTO := helper.ConvertUserToDTO(existingUser)
+
+	return &userDTO, nil
 }
 
 // UpdateUserPassword changes the user's password

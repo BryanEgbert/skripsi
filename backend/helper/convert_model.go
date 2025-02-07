@@ -10,6 +10,17 @@ func calculateDistance(srcLat, srcLong, dstLat, dstLong float64) float64 {
 	return 0.0
 }
 
+func ConvertUserToDTO(user model.User) model.UserDTO {
+	return model.UserDTO{
+		ID:           user.ID,
+		Name:         user.Name,
+		Email:        user.Email,
+		RoleID:       user.RoleID,
+		CreatedAt:    user.CreatedAt,
+		VetSpecialty: user.VetSpecialty,
+	}
+}
+
 func ConvertPetDaycareToDTO(daycare model.PetDaycare) model.PetDaycareDTO {
 	// Extract thumbnail URLs
 	var thumbnailURLs []string

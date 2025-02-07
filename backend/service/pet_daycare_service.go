@@ -29,25 +29,46 @@ func NewPetDaycareService(db *gorm.DB) *PetDaycareServiceImpl {
 	return &PetDaycareServiceImpl{db: db}
 }
 
-func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat float64, long float64)) (*model.GetPetDaycareDetailResponse, error) {
+func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat float64, long float64) (*model.GetPetDaycareDetailResponse, error) {
 	var daycare model.PetDaycare
 
-	if err := s.db.
-		Preload("Owner").
-		Preload("DailyWalks").
-		Preload("DailyPlaytime").
-		Preload("Thumbnails").
-		Preload("Reviews").
-		First(&daycare, id).Error; err != nil {
-		return nil, err
+	// Use ST_DistanceSphere to calculate the distance if coordinates are provided
+	if lat != 0.0 && long != 0.0 {
+		if err := s.db.Raw(`
+			SELECT
+				pd.*,
+				ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(pd.longitude, pd.latitude)) AS distance,
+				dw.id AS daily_walks_id, dw.name AS daily_walks_name,
+				dp.id AS daily_playtime_id, dp.name AS daily_playtime_name,
+				u.id AS owner_id, u.name AS owner_name, u.email AS owner_email, u.image_url AS owner_image_url
+			FROM pet_daycares pd
+			LEFT JOIN daily_walks dw ON pd.daily_walks_id = dw.id
+			LEFT JOIN daily_playtimes dp ON pd.daily_playtime_id = dp.id
+			LEFT JOIN users u ON pd.owner_id = u.id
+			WHERE pd.id = ?`, long, lat, id).
+			Scan(&daycare).Error; err != nil {
+			return nil, err
+		}
+
+		var thumbnails []model.Thumbnail
+		if err := s.db.Where("daycare_id = ?", id).Find(&thumbnails).Error; err != nil {
+			return nil, err
+		}
+		daycare.Thumbnails = thumbnails
+	} else {
+		if err := s.db.
+			Preload("Owner").
+			Preload("DailyWalks").
+			Preload("DailyPlaytime").
+			Preload("Thumbnails").
+			Find(&daycare, id).Error; err != nil {
+			return nil, err
+		}
 	}
 
-	distance := 0.0
-	if lat != 0.0 && long != 0.0{
-		distance = helper.CalculateDistance(lat, long, daycare.Latitude, daydaycare.Longitude)
-	}
+	output := helper.ConvertPetDaycareToDetailResponse(daycare, daycare.Distance)
 
-	helper.ConvertPetDaycareToDetailResponse(daycare, distance)
+	return &output, nil
 }
 
 func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error) {
@@ -265,6 +286,7 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 	daycare := model.PetDaycare{
 		Name:              request.Name,
 		Address:           request.Address,
+		Price:             request.Price,
 		Latitude:          latitude,
 		Longitude:         longitude,
 		Description:       request.Description,

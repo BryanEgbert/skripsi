@@ -4,22 +4,21 @@ import (
 	"mime/multipart"
 	"time"
 
-	gormGIS "github.com/nferruzzi/gormgis"
 	"gorm.io/gorm"
 )
 
 type PetDaycare struct {
 	gorm.Model
-	Name              string           `gorm:"not null"`
-	Address           string           `gorm:"not null"`
-	Coordinate        gormGIS.GeoPoint `gorm:"not null"`
-	Latitude          float64          `gorm:"not null"`
-	Longitude         float64          `gorm:"not null"`
-	Price             float64          `gorm:"default:0"`
-	PricingType       string           `gorm:"default:'day'"`
+	Name              string  `gorm:"not null"`
+	Address           string  `gorm:"not null"`
+	Latitude          float64 `gorm:"not null"`
+	Longitude         float64 `gorm:"not null"`
+	Price             float64 `gorm:"not null"`
+	PricingType       string  `gorm:"default:'day'"`
 	Description       string
-	BookedNum         int64 `gorm:"default:0"`
-	OwnerID           uint  `gorm:"unique;not null"` // One-to-One with User
+	BookedNum         int64   `gorm:"default:0"`
+	OwnerID           uint    `gorm:"unique;not null"` // One-to-One with User
+	Distance          float64 `gorm:"-"`
 	DailyWalksID      uint
 	DailyPlaytimeID   uint
 	HasPickupService  bool
@@ -96,6 +95,7 @@ type GetPetDaycaresRequest struct {
 }
 
 type GetPetDaycareDetailResponse struct {
+	ID                string        `json:"id"`
 	Name              string        `json:"name"`
 	Address           string        `json:"address"`
 	Distance          float64       `json:"distance"`
