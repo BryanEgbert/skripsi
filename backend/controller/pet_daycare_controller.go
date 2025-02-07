@@ -21,6 +21,86 @@ func NewPetDaycareController(petDaycareService service.PetDaycareService) *PetDa
 	return &PetDaycareController{petDaycareService}
 }
 
+func (pdc *PetDaycareController) GetPetDaycare(c *gin.Context) {
+	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		return
+	}
+
+	latitude, err := strconv.ParseFloat(c.Query("lat"), 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid latitude"})
+		return
+	}
+
+	longitude, err := strconv.ParseFloat(c.Query("long"), 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid longitude"})
+		return
+	}
+
+	output, err := pdc.petDaycareService.GetPetDaycare(uint(petDaycareID), latitude, longitude)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, output)
+}
+
+func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	petDaycareIDParam := c.Param("id")
+	petDaycareID, err := strconv.ParseUint(petDaycareIDParam, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		return
+	}
+
+	var request model.CreatePetDaycareRequest
+	if err := c.ShouldBind(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data", "details": err.Error()})
+		return
+	}
+
+	if len(request.SpeciesID) != len(request.SizeCategoryID) || len(request.SpeciesID) != len(request.MaxNumber) || len(request.SizeCategoryID) != len(request.MaxNumber) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "speciesId, sizeCategoryId, and maxNumber must be the same length"})
+		return
+	}
+
+	var thumbnailURLs []string
+	for _, thumbnail := range request.Thumbnails {
+		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(thumbnail.Filename)))
+		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("%s/%s", c.Request.Host, filename))
+
+		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image", "details": err.Error()})
+			return
+		}
+	}
+	request.ThumbnailURLs = thumbnailURLs
+
+	daycare, err := pdc.petDaycareService.UpdatePetDaycare(uint(petDaycareID), userID, request)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, daycare)
+}
+
 // CreatePetDaycare handles the creation of a new pet daycare
 func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")

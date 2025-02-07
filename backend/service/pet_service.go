@@ -28,8 +28,11 @@ func NewPetService(db *gorm.DB) *PetServiceImpl {
 // GetPet fetches a single pet by ID, joining with Species and SizeCategory
 func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 	var pet model.Pet
-	err := s.db.Preload("Species").Preload("SizeCategory").First(&pet, id).Error
-	if err != nil {
+	if err := s.db.
+		Preload("Species").
+		Preload("SizeCategory").
+		Preload("BookedSlots").
+		First(&pet, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -83,10 +86,6 @@ func (s *PetServiceImpl) UpdatePet(id uint, petDTO model.PetDTO) (*model.PetDTO,
 		return nil, err
 	}
 
-	if err := os.Remove(helper.GetFilePath(pet.ImageUrl)); err != nil {
-		return nil, err
-	}
-
 	pet.Name = petDTO.Name
 	pet.ImageUrl = petDTO.ImageUrl
 	pet.Status = petDTO.Status
@@ -95,6 +94,10 @@ func (s *PetServiceImpl) UpdatePet(id uint, petDTO model.PetDTO) (*model.PetDTO,
 
 	err = s.db.Save(&pet).Error
 	if err != nil {
+		return nil, err
+	}
+
+	if err := os.Remove(helper.GetFilePath(pet.ImageUrl)); err != nil {
 		return nil, err
 	}
 

@@ -57,6 +57,8 @@ github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd h1:TRLaZ9cD/w
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/reflect2 v1.0.2 h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9Gz0M=
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
+github.com/nferruzzi/gormgis v0.0.0-20160728080732-03632ffdc35f h1:Dqtgy8r4pjAnQfJizH6mumZOnqBjSBajM+KkM7IAq4o=
+github.com/nferruzzi/gormgis v0.0.0-20160728080732-03632ffdc35f/go.mod h1:nPLF2x69eTJdUelqaSQbrpFCqATgxigYBCKF5gI0cXs=
 github.com/nullism/bqb v1.7.2 h1:hsMZHqLDHXO64slhemqNWBa9Zy/fLiVNvi1orruZm/I=
 github.com/nullism/bqb v1.7.2/go.mod h1:4Z4vvPss9ms9dtLHpI4tUPtysmCAZfbm44lbsP3VDBY=
 github.com/pelletier/go-toml/v2 v2.2.3 h1:YmeHyLY8mFWbdkNWwpr+qIL2bEqT0o95WSdkNHvL12M=

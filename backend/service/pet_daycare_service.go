@@ -13,7 +13,9 @@ import (
 type PetDaycareService interface {
 	CreatePetDaycare(userId uint, request model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
 	GetPetDaycares(req model.GetPetDaycaresRequest) ([]model.GetPetDaycaresResponse, error)
+	GetPetDaycare(id uint, lat float64, long float64) (*model.GetPetDaycareDetailResponse, error)
 	DeletePetDaycare(id uint, ownerId uint) error
+	UpdatePetDaycare(id uint, userId uint, newData model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
 
 	// TODO
 	// BookSlots() error
@@ -25,6 +27,138 @@ type PetDaycareServiceImpl struct {
 
 func NewPetDaycareService(db *gorm.DB) *PetDaycareServiceImpl {
 	return &PetDaycareServiceImpl{db: db}
+}
+
+func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat float64, long float64)) (*model.GetPetDaycareDetailResponse, error) {
+	var daycare model.PetDaycare
+
+	if err := s.db.
+		Preload("Owner").
+		Preload("DailyWalks").
+		Preload("DailyPlaytime").
+		Preload("Thumbnails").
+		Preload("Reviews").
+		First(&daycare, id).Error; err != nil {
+		return nil, err
+	}
+
+	distance := 0.0
+	if lat != 0.0 && long != 0.0{
+		distance = helper.CalculateDistance(lat, long, daycare.Latitude, daydaycare.Longitude)
+	}
+
+	helper.ConvertPetDaycareToDetailResponse(daycare, distance)
+}
+
+func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error) {
+	tx := s.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	var daycare model.PetDaycare
+	if err := tx.
+		Preload("Thumbnails").
+		Preload("Slots").
+		Where("id = ? AND owner_id = ?", id, userId).
+		First(&daycare).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	// Update basic fields
+	daycare.Name = newData.Name
+	daycare.Address = newData.Address
+	daycare.Description = newData.Description
+	daycare.Price = newData.Price
+	daycare.PricingType = newData.PricingType
+	daycare.HasPickupService = newData.HasPickupService
+	daycare.MustBeVaccinated = newData.MustBeVaccinated
+	daycare.GroomingAvailable = newData.GroomingAvailable
+	daycare.FoodProvided = newData.FoodProvided
+	daycare.FoodBrand = newData.FoodBrand
+	daycare.DailyWalksID = newData.DailyWalksID
+	daycare.DailyPlaytimeID = newData.DailyPlaytimeID
+
+	// Handle new thumbnails if provided
+	if len(newData.Thumbnails) > 0 {
+		// Delete old thumbnails
+		if err := tx.Where("daycare_id = ?", daycare.ID).Delete(&model.Thumbnail{}).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		// Save new thumbnails
+		var thumbnails []model.Thumbnail
+		for _, thumbnailURL := range newData.ThumbnailURLs {
+			// filePath, err := helper.UploadImage(file) // Implement this function to handle file uploads
+			// if err != nil {
+			tx.Rollback()
+			// 	return nil, err
+			// }
+			thumbnails = append(thumbnails, model.Thumbnail{DaycareID: daycare.ID, ImageUrl: thumbnailURL})
+		}
+		if err := tx.Create(&thumbnails).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		daycare.Thumbnails = thumbnails
+	}
+
+	// Handle Slots update (SpeciesID + SizeCategoryID + MaxNumber)
+	if len(newData.SpeciesID) > 0 && len(newData.SizeCategoryID) > 0 && len(newData.MaxNumber) > 0 {
+		// Delete old slots
+		if err := tx.Where("daycare_id = ?", daycare.ID).Delete(&model.Slots{}).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		// Insert new slots
+		var slots []model.Slots
+		for i := range newData.SpeciesID {
+			slots = append(slots, model.Slots{
+				DaycareID:      daycare.ID,
+				SpeciesID:      newData.SpeciesID[i],
+				SizeCategoryID: newData.SizeCategoryID[i],
+				MaxNumber:      newData.MaxNumber[i],
+			})
+		}
+
+		if err := tx.Create(&slots).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		daycare.Slots = slots
+	}
+
+	// Save updates
+	if err := tx.Save(&daycare).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+
+	// Convert to DTO and return response
+	return &model.PetDaycareDTO{
+		ID:                daycare.ID,
+		Name:              daycare.Name,
+		Address:           daycare.Address,
+		Description:       daycare.Description,
+		Price:             daycare.Price,
+		PricingType:       daycare.PricingType,
+		HasPickupService:  daycare.HasPickupService,
+		MustBeVaccinated:  daycare.MustBeVaccinated,
+		GroomingAvailable: daycare.GroomingAvailable,
+		FoodProvided:      daycare.FoodProvided,
+		FoodBrand:         daycare.FoodBrand,
+		ThumbnailURLs:     newData.ThumbnailURLs,
+		UpdatedAt:         daycare.UpdatedAt,
+	}, nil
 }
 
 func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest) ([]model.GetPetDaycaresResponse, error) {
@@ -201,7 +335,7 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 	daycare.Slots = slots
 	daycare.Owner = user
 
-	output := model.ConvertPetDaycareToDTO(daycare)
+	output := helper.ConvertPetDaycareToDTO(daycare)
 	return &output, nil
 }
 

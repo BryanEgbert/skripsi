@@ -4,6 +4,8 @@ go 1.23.5
 
 require github.com/golang-jwt/jwt/v5 v5.2.1
 
+require github.com/nferruzzi/gormgis v0.0.0-20160728080732-03632ffdc35f // indirect
+
 require (
 	github.com/bytedance/sonic v1.12.8 // indirect
 	github.com/bytedance/sonic/loader v0.2.3 // indirect

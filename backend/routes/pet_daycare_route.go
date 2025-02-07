@@ -12,7 +12,7 @@ func RegisterPetDaycareRoutes(r *gin.Engine, petDaycareController *controller.Pe
 	// pets.GET("/:id", middleware.JWTAuth(), petController.GetPet)
 	pets.GET("", middleware.JWTAuth(), petDaycareController.GetPetDaycares)
 	pets.POST("", middleware.JWTAuth(), petDaycareController.CreatePetDaycare)
-	// pets.PUT("/:id", middleware.JWTAuth(), petController.UpdatePet)
+	pets.PUT("/:id", middleware.JWTAuth(), petDaycareController.UpdatePetDaycare)
 	pets.DELETE("/:id", middleware.JWTAuth(), petDaycareController.DeletePetDaycare)
 
 	return r

@@ -4,17 +4,19 @@ import (
 	"mime/multipart"
 	"time"
 
+	gormGIS "github.com/nferruzzi/gormgis"
 	"gorm.io/gorm"
 )
 
 type PetDaycare struct {
 	gorm.Model
-	Name              string  `gorm:"not null"`
-	Address           string  `gorm:"not null"`
-	Latitude          float64 `gorm:"not null"`
-	Longitude         float64 `gorm:"not null"`
-	Price             float64 `gorm:"default:0"`
-	PricingType       string  `gorm:"default:'day'"`
+	Name              string           `gorm:"not null"`
+	Address           string           `gorm:"not null"`
+	Coordinate        gormGIS.GeoPoint `gorm:"not null"`
+	Latitude          float64          `gorm:"not null"`
+	Longitude         float64          `gorm:"not null"`
+	Price             float64          `gorm:"default:0"`
+	PricingType       string           `gorm:"default:'day'"`
 	Description       string
 	BookedNum         int64 `gorm:"default:0"`
 	OwnerID           uint  `gorm:"unique;not null"` // One-to-One with User
@@ -58,35 +60,6 @@ type PetDaycareDTO struct {
 	ThumbnailURLs     []string   `json:"thumbnailUrls"`
 }
 
-func ConvertPetDaycareToDTO(daycare PetDaycare) PetDaycareDTO {
-	// Extract thumbnail URLs
-	var thumbnailURLs []string
-	for _, thumbnail := range daycare.Thumbnails {
-		thumbnailURLs = append(thumbnailURLs, thumbnail.ImageUrl) // Assuming Thumbnail struct has a URL field
-	}
-
-	return PetDaycareDTO{
-		ID:                daycare.ID,
-		Name:              daycare.Name,
-		Address:           daycare.Address,
-		Description:       daycare.Description,
-		Price:             daycare.Price,
-		PricingType:       daycare.PricingType,
-		BookedNum:         daycare.BookedNum,
-		OwnerID:           daycare.OwnerID,
-		HasPickupService:  daycare.HasPickupService,
-		MustBeVaccinated:  daycare.MustBeVaccinated,
-		GroomingAvailable: daycare.GroomingAvailable,
-		FoodProvided:      daycare.FoodProvided,
-		FoodBrand:         daycare.FoodBrand,
-		CreatedAt:         daycare.CreatedAt,
-		UpdatedAt:         daycare.UpdatedAt,
-		DailyWalksID:      daycare.DailyWalksID,
-		DailyPlaytimeID:   daycare.DailyPlaytimeID,
-		ThumbnailURLs:     thumbnailURLs,
-	}
-}
-
 // CreatePetDaycareRequest represents the request payload
 type CreatePetDaycareRequest struct {
 	Name              string                  `form:"name" binding:"required"`
@@ -120,6 +93,30 @@ type GetPetDaycaresRequest struct {
 	MinPrice         *float64
 	MaxPrice         *float64
 	PricingType      *string
+}
+
+type GetPetDaycareDetailResponse struct {
+	Name              string        `json:"name"`
+	Address           string        `json:"address"`
+	Distance          float64       `json:"distance"`
+	Price             float64       `json:"price"`
+	PricingType       string        `json:"pricingType"`
+	Description       string        `json:"description"`
+	BookedNum         int64         `json:"bookedNum"`
+	AverageRating     float64       `json:"averageRating"`
+	RatingCount       int           `json:"ratingCount"`
+	DailyWalksID      uint          `json:"dailyWalksId"`
+	DailyPlaytimeID   uint          `json:"dailyPlaytimeId"`
+	HasPickupService  bool          `json:"hasPickupService"`
+	MustBeVaccinated  bool          `json:"mustBeVaccinated"`
+	GroomingAvailable bool          `json:"groomingAvailable"`
+	FoodProvided      bool          `json:"foodProvided"`
+	FoodBrand         string        `json:"foodBrand"`
+	CreatedAt         string        `json:"createdAt"`
+	Owner             UserDTO       `json:"owner"`
+	DailyWalks        DailyWalks    `json:"dailyWalks"`
+	DailyPlaytime     DailyPlaytime `json:"dailyPlaytime"`
+	ThumbnailURLs     []string      `json:"thumbnailUrls"`
 }
 
 type GetPetDaycaresResponse struct {
