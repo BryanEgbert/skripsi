@@ -7,13 +7,15 @@ import (
 )
 
 func RegisterPetDaycareRoutes(r *gin.Engine, petDaycareController *controller.PetDaycareController) *gin.Engine {
-	pets := r.Group("/daycare")
+	daycare := r.Group("/daycare")
 
-	pets.GET("/:id", middleware.JWTAuth(), petDaycareController.GetPetDaycare)
-	pets.GET("", middleware.JWTAuth(), petDaycareController.GetPetDaycares)
-	pets.POST("", middleware.JWTAuth(), petDaycareController.CreatePetDaycare)
-	pets.PUT("/:id", middleware.JWTAuth(), petDaycareController.UpdatePetDaycare)
-	pets.DELETE("/:id", middleware.JWTAuth(), petDaycareController.DeletePetDaycare)
+	daycare.GET("/:id", middleware.JWTAuth(), petDaycareController.GetPetDaycare)
+	daycare.GET("", middleware.JWTAuth(), petDaycareController.GetPetDaycares)
+	daycare.POST("/:id/slot", middleware.JWTAuth(), petDaycareController.CreateSlot)
+	daycare.POST("", middleware.JWTAuth(), petDaycareController.CreatePetDaycare)
+	daycare.PUT("/:id", middleware.JWTAuth(), petDaycareController.UpdatePetDaycare)
+	daycare.PATCH("", middleware.JWTAuth(), petDaycareController.EditSlotCount)
+	daycare.DELETE("/:id", middleware.JWTAuth(), petDaycareController.DeletePetDaycare)
 
 	return r
 }

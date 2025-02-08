@@ -16,9 +16,6 @@ type PetDaycareService interface {
 	GetPetDaycare(id uint, lat float64, long float64) (*model.GetPetDaycareDetailResponse, error)
 	DeletePetDaycare(id uint, ownerId uint) error
 	UpdatePetDaycare(id uint, userId uint, newData model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
-
-	// TODO
-	// BookSlots() error
 }
 
 type PetDaycareServiceImpl struct {

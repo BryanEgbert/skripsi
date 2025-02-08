@@ -15,10 +15,38 @@ import (
 
 type PetDaycareController struct {
 	petDaycareService service.PetDaycareService
+	slotService       service.SlotService
 }
 
-func NewPetDaycareController(petDaycareService service.PetDaycareService) *PetDaycareController {
-	return &PetDaycareController{petDaycareService}
+func NewPetDaycareController(petDaycareService service.PetDaycareService, slotService service.SlotService) *PetDaycareController {
+	return &PetDaycareController{petDaycareService, slotService}
+}
+
+func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	var req model.ReduceSlotsRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data", "details": err.Error()})
+		return
+	}
+
+	if err := pdc.slotService.EditSlotCount(uint(userID), req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }
 
 func (pdc *PetDaycareController) GetPetDaycare(c *gin.Context) {
@@ -224,5 +252,40 @@ func (pdc *PetDaycareController) DeletePetDaycare(c *gin.Context) {
 		return
 	}
 
-	c.Writer.WriteHeader(http.StatusNoContent)
+	c.JSON(http.StatusNoContent, nil)
+}
+
+func (pdc *PetDaycareController) CreateSlot(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	var req model.BookSlotRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data", "details": err.Error()})
+		return
+	}
+
+	daycareId, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data", "details": err.Error()})
+		return
+	}
+
+	req.DaycareID = uint(daycareId)
+
+	if err := pdc.slotService.BookSlots(userID, req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }

@@ -6,9 +6,9 @@ import (
 	"github.com/BryanEgbert/skripsi/model"
 )
 
-func calculateDistance(srcLat, srcLong, dstLat, dstLong float64) float64 {
-	return 0.0
-}
+// func calculateDistance(srcLat, srcLong, dstLat, dstLong float64) float64 {
+// 	return 0.0
+// }
 
 func ConvertUserToDTO(user model.User) model.UserDTO {
 	return model.UserDTO{

@@ -22,10 +22,10 @@ NOTE: Must re-test everything
 - Pet Daycare
   - [ ] Send real-time chat updates to booked pets, pet owner can see the updates by clicking on the pet
   - [x] Get pet daycare details
-  - [ ] Get pet daycares
+  - [x] Get pet daycares
     - [x] Price range
     - [x] pricing type (day/night)
-    - [ ] distance between user and pet daycare location
+    - [x] distance between user and pet daycare location
     - [x] facilities
     - [x] pickup
     - [x] grooming
@@ -36,8 +36,8 @@ NOTE: Must re-test everything
   - [x] Create pet daycares
   - [x] Delete pet daycare
   - [ ] View previously booked pet daycares
-  - [ ] Book slots
-  - [ ] Edit available slot in a day for pet daycare provider
+  - [x] Book slots
+  - [x] Edit available slot in a day for pet daycare provider
   - [x] Edit pet daycare information
 - Pet daycare review
   - [ ] Get reviews
