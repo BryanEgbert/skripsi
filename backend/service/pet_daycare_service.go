@@ -244,7 +244,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest) 
 			ID:            daycare.ID,
 			Name:          daycare.Name,
 			Distance:      distance,
-			ProfileImage:  daycare.Owner.ImageUrl,
+			ProfileImage:  *daycare.Owner.ImageUrl,
 			AverageRating: avgRating,
 			RatingCount:   ratingCount,
 			BookedNum:     daycare.BookedNum,

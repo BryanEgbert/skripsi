@@ -27,21 +27,21 @@ func TestLogin(t *testing.T) {
 		{
 			Name: "On login, should return tokens when user credential is correct",
 			In: model.LoginRequest{
-				Email:    "test@mail.com",
+				Email:    "john@example.com",
 				Password: "test",
 			},
 			ExpectedStatus: 200,
 		},
 		{
-			Name: "On login, should return error when user credential is correct",
+			Name: "On login, should return error when user password is not correct",
 			In: model.LoginRequest{
-				Email:    "test@mail.com",
+				Email:    "john@example.com",
 				Password: "wrong_password",
 			},
 			ExpectedStatus: 401,
 		},
 		{
-			Name: "On login, should return error when user credential is correct",
+			Name: "On login, should return error when user email is correct",
 			In: model.LoginRequest{
 				Email:    "wrong@mail.com",
 				Password: "test",
@@ -101,7 +101,7 @@ func TestRegister(t *testing.T) {
 		{
 			Name: "On register, should return error when email is the same",
 			In: model.CreateUserRequest{
-				Email:    "test@mail.com",
+				Email:    "john@example.com",
 				Password: "test",
 				Name:     "new_user2",
 				RoleID:   1,
@@ -113,7 +113,7 @@ func TestRegister(t *testing.T) {
 			In: model.CreateUserRequest{
 				Email:    "newtest2@mail.com",
 				Password: "test",
-				Name:     "test",
+				Name:     "John Doe",
 				RoleID:   1,
 			},
 			ExpectedStatus: 409,
@@ -135,14 +135,10 @@ func TestRegister(t *testing.T) {
 			r := setup.Setup(db)
 
 			w := httptest.NewRecorder()
-			// reqJson, err := json.Marshal(test.In)
-			// if err != nil {
-			// 	t.Errorf("json Marshal err: %v", err)
-			// }
+
 			body := &bytes.Buffer{}
 			writer := multipart.NewWriter(body)
 
-			// Add normal form fields
 			_ = writer.WriteField("name", test.In.Name)
 			_ = writer.WriteField("email", test.In.Email)
 			_ = writer.WriteField("password", test.In.Password)
@@ -160,7 +156,7 @@ func TestRegister(t *testing.T) {
 
 			assert.Equal(t, test.ExpectedStatus, w.Code)
 
-			if w.Code == 201 {
+			if w.Code == 200 {
 				var res model.TokenResponse
 				resBody, _ := io.ReadAll(w.Body)
 
@@ -173,7 +169,6 @@ func TestRegister(t *testing.T) {
 
 				t.Logf("\naccessToken: %s\nrefreshToken: %s\nexp: %d", res.AccessToken, res.RefreshToken, res.ExpiryDate)
 			}
-
 		})
 	}
 }

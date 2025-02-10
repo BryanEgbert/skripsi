@@ -1,6 +1,8 @@
 package seeder
 
 import (
+	"time"
+
 	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"gorm.io/gorm"
@@ -104,24 +106,90 @@ func SeedTable(db *gorm.DB) error {
 
 	password1, _ := helper.HashPassword("test")
 
-	user1Vet := []model.VetSpecialty{
+	vetSpecialty := []model.VetSpecialty{
 		vetSpecialties[0],
 		vetSpecialties[1],
 		vetSpecialties[2],
 	}
 
-	user := []model.User{
-		{
-			Name:         "test",
-			Email:        "test@mail.com",
-			Password:     password1,
-			ImageUrl:     "testimage",
-			RoleID:       1,
-			VetSpecialty: &user1Vet,
-		},
+	dummyImgUrl := "image/test.jpg"
+
+	users := []model.User{
+		{Name: "John Doe", Email: "john@example.com", Password: password1, RoleID: 1, ImageUrl: &dummyImgUrl},
+		{Name: "Jane Smith", Email: "jane@example.com", Password: password1, RoleID: 2, ImageUrl: &dummyImgUrl},
+		{Name: "Dr. Vet", Email: "vet@example.com", Password: password1, RoleID: 3, VetSpecialty: &vetSpecialty, ImageUrl: &dummyImgUrl},
+		{Name: "Delete user", Email: "delete@example.com", Password: password1, RoleID: 1},
 	}
 
-	if err := db.Create(&user).Error; err != nil {
+	if err := db.Create(&users).Error; err != nil {
+		return err
+	}
+
+	daycare := model.PetDaycare{
+		Name: "Happy Paws", Address: "123 Bark St", Latitude: 40.7128, Longitude: -74.0060, Price: 30.0, OwnerID: users[1].ID,
+		DailyWalks:    dailyWalks[1],
+		DailyPlaytime: dailyPlaytimes[1],
+	}
+
+	if err := db.Create(&daycare).Error; err != nil {
+		return err
+	}
+
+	slots := []model.Slots{
+		{DaycareID: daycare.ID, SpeciesID: 1, SizeCategoryID: 1, MaxNumber: 5},
+		{DaycareID: daycare.ID, SpeciesID: 2, SizeCategoryID: 2, MaxNumber: 8},
+	}
+
+	if err := db.Create(&slots).Error; err != nil {
+		return err
+	}
+
+	pet := model.Pet{
+		Name: "Buddy", ImageUrl: "dog.jpg", Status: "idle", OwnerID: users[0].ID, SpeciesID: 1, SizeID: 1,
+	}
+
+	if err := db.Create(&pet).Error; err != nil {
+		return err
+	}
+
+	bookedSlot := model.BookedSlot{
+		UserID: users[0].ID, DaycareID: daycare.ID, PetID: pet.ID, StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 1),
+	}
+
+	if err := db.Create(&bookedSlot).Error; err != nil {
+		return err
+	}
+
+	review := model.Reviews{
+		DaycareID: daycare.ID, UserID: users[0].ID, Name: "John Doe", Rate: 5, Description: "Great daycare!",
+	}
+
+	if err := db.Create(&review).Error; err != nil {
+		return err
+	}
+
+	reduceSlots := model.ReduceSlots{
+		SlotID: slots[0].ID, ReducedCount: 2, TargetDate: time.Now(),
+	}
+
+	if err := db.Create(&reduceSlots).Error; err != nil {
+		return err
+	}
+
+	thumbnails := []model.Thumbnail{
+		{DaycareID: daycare.ID, ImageUrl: "thumbnail1.jpg"},
+		{DaycareID: daycare.ID, ImageUrl: "thumbnail2.jpg"},
+	}
+
+	if err := db.Create(&thumbnails).Error; err != nil {
+		return err
+	}
+
+	transaction := model.Transaction{
+		PetDaycareID: daycare.ID, BookedSlotID: bookedSlot.ID, Status: "completed",
+	}
+
+	if err := db.Create(&transaction).Error; err != nil {
 		return err
 	}
 

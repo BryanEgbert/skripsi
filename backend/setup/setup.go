@@ -40,7 +40,7 @@ func SetupTest(t *testing.T) *gorm.DB {
 		t.Fatal(err)
 	}
 
-	if err := db.Exec("TRUNCATE TABLE users, vet_specialties, user_vet_specialties, pet_daycares, pets, size_categories, roles, slots, booked_slots, thumbnails, species, reviews, refresh_tokens, transactions, daily_walks, daily_playtimes, reduce_slots CASCADE;").Error; err != nil {
+	if err := db.Exec("TRUNCATE TABLE users, vet_specialties, user_vet_specialties, pet_daycares, pets, size_categories, roles, slots, booked_slots, thumbnails, species, reviews, refresh_tokens, transactions, daily_walks, daily_playtimes, reduce_slots RESTART IDENTITY CASCADE;").Error; err != nil {
 		t.Fatalf("Truncate err: %v", err)
 	}
 

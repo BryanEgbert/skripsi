@@ -21,6 +21,26 @@ func ConvertUserToDTO(user model.User) model.UserDTO {
 	}
 }
 
+func ConvertUserToUpdateDTO(user model.User) model.UpdateUserDTO {
+	vetSpecialtyIds := []uint{}
+	updateUserDTO := model.UpdateUserDTO{
+		ID:     user.ID,
+		Name:   user.Name,
+		Email:  user.Email,
+		RoleID: user.RoleID,
+	}
+
+	if user.VetSpecialty != nil {
+		for _, specialty := range *user.VetSpecialty {
+			vetSpecialtyIds = append(vetSpecialtyIds, specialty.ID)
+		}
+	}
+
+	updateUserDTO.VetSpecialtyID = &vetSpecialtyIds
+
+	return updateUserDTO
+}
+
 func ConvertPetDaycareToDTO(daycare model.PetDaycare) model.PetDaycareDTO {
 	// Extract thumbnail URLs
 	var thumbnailURLs []string

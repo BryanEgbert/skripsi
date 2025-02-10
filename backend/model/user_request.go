@@ -17,7 +17,11 @@ type UpdateUserRequest struct {
 	Name           string                `form:"name"`
 	Email          string                `form:"email" binding:"email"`
 	RoleID         uint                  `form:"roleId"`
-	VetSpecialtyID *[]uint               `form:"vetSpecialtyId"`
+	VetSpecialtyID *[]uint               `form:"vetSpecialtyId[]"`
 	Image          *multipart.FileHeader `form:"image"`
 	ImageUrl       string
+}
+
+type UpdatePasswordRequest struct {
+	NewPassword string `json:"new_password" binding:"required"`
 }

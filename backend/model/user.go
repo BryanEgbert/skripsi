@@ -11,7 +11,7 @@ type User struct {
 	Name         string          `gorm:"unique;not null"`
 	Email        string          `gorm:"unique;not null"`
 	Password     string          `gorm:"not null"`
-	ImageUrl     string          `gorm:"default:null"`
+	ImageUrl     *string         `gorm:"default:null"`
 	RoleID       uint            `gorm:"not null"`
 	Role         Role            `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	VetSpecialty *[]VetSpecialty `gorm:"default:null;many2many:user_vet_specialties;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

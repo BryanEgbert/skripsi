@@ -90,13 +90,13 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	err := uc.UserService.DeleteUser(userID.(int64))
+	err := uc.UserService.DeleteUser(userID.(uint))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Failed to delete user"})
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	c.JSON(http.StatusNoContent, nil)
 }
 
 // UpdateUserProfile updates the logged-in user's profile
@@ -120,6 +120,8 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 		return
 	}
 
+	req.ID = userID
+
 	// Handle image upload
 	if req.Image != nil {
 		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.Image.Filename)))
@@ -134,7 +136,7 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 
 	updatedUser, err := uc.UserService.UpdateUserProfile(&req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user profile"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Failed to update user profile", "details": err.Error()})
 		return
 	}
 
@@ -150,9 +152,7 @@ func (uc *UserController) UpdateUserPassword(c *gin.Context) {
 		return
 	}
 
-	var req struct {
-		NewPassword string `json:"new_password" binding:"required"`
-	}
+	var req model.UpdatePasswordRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil || req.NewPassword == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
@@ -161,7 +161,7 @@ func (uc *UserController) UpdateUserPassword(c *gin.Context) {
 
 	err := uc.UserService.UpdateUserPassword(userID.(uint), req.NewPassword)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Failed to update password", "details": err.Error()})
 		return
 	}
 
