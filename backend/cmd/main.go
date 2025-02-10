@@ -5,11 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/BryanEgbert/skripsi/controller"
-	"github.com/BryanEgbert/skripsi/model"
-	"github.com/BryanEgbert/skripsi/routes"
-	"github.com/BryanEgbert/skripsi/service"
-	"github.com/gin-gonic/gin"
+	"github.com/BryanEgbert/skripsi/setup"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -27,7 +23,6 @@ func main() {
 		}
 	}
 
-	r := gin.Default()
 	dbURL := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASS"),
@@ -40,38 +35,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db.AutoMigrate(
-		&model.User{},
-		&model.VetSpecialty{},
-		&model.PetDaycare{},
-		&model.Pet{},
-		&model.Slots{},
-		&model.BookedSlot{},
-		&model.SizeCategory{},
-		&model.Thumbnail{},
-		&model.Species{},
-		&model.Role{},
-		&model.Reviews{},
-		&model.RefreshToken{},
-	)
-
-	userService := service.NewUserService(db)
-	userController := controller.NewUserController(userService)
-
-	authService := service.NewAuthService(db)
-	authController := controller.NewAuthController(authService)
-
-	petService := service.NewPetService(db)
-	petController := controller.NewPetController(petService)
-
-	petDaycareService := service.NewPetDaycareService(db)
-	petDaycareController := controller.NewPetDaycareController(petDaycareService)
-
-	r.Static("/assets", "./image")
-	r = routes.RegisterUserRoute(r, userController)
-	r = routes.RegisterAuthRoute(r, authController)
-	r = routes.RegisterPetRoutes(r, petController)
-	r = routes.RegisterPetDaycareRoutes(r, petDaycareController)
-
+	r := setup.Setup(db)
 	r.Run()
 }

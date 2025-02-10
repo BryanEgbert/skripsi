@@ -51,6 +51,13 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 		return
 	}
 
+	if req.RoleID == 3 {
+		if req.VetSpecialtyID == nil || len(*req.VetSpecialtyID) == 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "vet specialty is required for vet role"})
+			return
+		}
+	}
+
 	// Handle image upload
 	if req.Image != nil {
 		rand.New(rand.NewSource(time.Now().UnixNano())) // Seed to get different results each run
@@ -67,7 +74,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 
 	createdUser, err := uc.UserService.CreateUser(req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
 	}
 

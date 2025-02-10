@@ -9,13 +9,14 @@ import (
 
 type SlotService interface {
 	BookSlots(userId uint, req model.BookSlotRequest) error
+	EditSlotCount(userId uint, req model.ReduceSlotsRequest) error
 }
 
 type SlotServiceImpl struct {
 	db *gorm.DB
 }
 
-func NewSlotServiceImpl(db *gorm.DB) *SlotServiceImpl {
+func NewSlotService(db *gorm.DB) *SlotServiceImpl {
 	return &SlotServiceImpl{db: db}
 }
 
