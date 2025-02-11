@@ -52,15 +52,27 @@ func (pc *PetController) GetPets(c *gin.Context) {
 		return
 	}
 
-	lastID, err := strconv.ParseInt(c.Query("last-id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
-		return
+	lastIDQuery := c.Query("last-id")
+	var lastID int64 = 0
+	var err error
+
+	if lastIDQuery != "" {
+		lastID, err = strconv.ParseInt(lastIDQuery, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+			return
+		}
 	}
 
-	pageSize, err := strconv.Atoi(c.Query("size"))
-	if err != nil || pageSize <= 0 {
-		pageSize = 10 // Default page size
+	sizeQuery := c.Query("size")
+	var pageSize int = 10
+
+	if sizeQuery != "" {
+		pageSize, err = strconv.Atoi(sizeQuery)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+			return
+		}
 	}
 
 	pets, err := pc.petService.GetPets(userID, lastID, pageSize)
@@ -99,13 +111,12 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 		return
 	}
 
-	pet, err := pc.petService.CreatePet(userID, req)
-	if err != nil {
+	if err := pc.petService.CreatePet(userID, req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create pet", "details": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, pet)
+	c.JSON(http.StatusCreated, nil)
 }
 
 // UpdatePet updates a pet's information
@@ -134,27 +145,26 @@ func (pc *PetController) UpdatePet(c *gin.Context) {
 		return
 	}
 
-	filename := helper.GenerateFileName(userID, filepath.Ext(req.Image.Filename))
-	req.ImageUrl = fmt.Sprintf("%s/image/%s", c.Request.Host, filename)
+	filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.Image.Filename)))
+	req.ImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, filename)
 
 	if err := c.SaveUploadedFile(req.Image, filename); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Upload file error", "details": err.Error()})
 		return
 	}
 
-	updatedPet, err := pc.petService.UpdatePet(uint(petID), model.PetDTO{
+	if err := pc.petService.UpdatePet(uint(petID), model.PetDTO{
 		Name:         req.Name,
 		ImageUrl:     req.ImageUrl,
 		Status:       req.Status,
 		Species:      model.Species{ID: req.SpeciesID},
 		SizeCategory: model.SizeCategory{ID: req.SizeCategoryID},
-	})
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update pet"})
+	}); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Failed to update pet", "details": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedPet)
+	c.JSON(http.StatusNoContent, nil)
 }
 
 // DeletePet deletes a pet
@@ -179,9 +189,9 @@ func (pc *PetController) DeletePet(c *gin.Context) {
 
 	// Delete pet only if it belongs to the authenticated user
 	if err := pc.petService.DeletePet(uint(petID)); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Pet deleted successfully"})
+	c.JSON(http.StatusNoContent, nil)
 }

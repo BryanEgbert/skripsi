@@ -16,14 +16,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type TableTest[T any, O any] struct {
+type AuthTableTest[T any, O any] struct {
 	Name           string
 	In             T
 	ExpectedStatus int
 }
 
 func TestLogin(t *testing.T) {
-	tests := []TableTest[model.LoginRequest, model.TokenResponse]{
+	tests := []AuthTableTest[model.LoginRequest, model.TokenResponse]{
 		{
 			Name: "On login, should return tokens when user credential is correct",
 			In: model.LoginRequest{
@@ -87,7 +87,7 @@ func TestLogin(t *testing.T) {
 }
 
 func TestRegister(t *testing.T) {
-	tests := []TableTest[model.CreateUserRequest, model.TokenResponse]{
+	tests := []AuthTableTest[model.CreateUserRequest, model.TokenResponse]{
 		{
 			Name: "On register, should return tokens when user credential is correct",
 			In: model.CreateUserRequest{

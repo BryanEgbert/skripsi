@@ -12,8 +12,8 @@ type PetService interface {
 	GetPet(id uint) (*model.PetDTO, error)
 	GetPets(ownerID uint, startID int64, pageSize int) (*[]model.PetDTO, error)
 	// GetBookedPets(daycareId uint, startID int64, pageSize int) (*[]model.PetDTO, error)
-	CreatePet(ownerID uint, req model.PetRequest) (*model.PetDTO, error)
-	UpdatePet(id uint, pet model.PetDTO) (*model.PetDTO, error)
+	CreatePet(ownerID uint, req model.PetRequest) error
+	UpdatePet(id uint, pet model.PetDTO) error
 	DeletePet(id uint) error
 }
 
@@ -39,7 +39,7 @@ func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 	petDTO := model.PetDTO{
 		ID:           pet.ID,
 		Name:         pet.Name,
-		ImageUrl:     pet.ImageUrl,
+		ImageUrl:     *pet.ImageUrl,
 		Status:       pet.Status,
 		Species:      pet.Species,
 		SizeCategory: pet.SizeCategory,
@@ -68,7 +68,7 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID int64, pageSize int) (*[]
 		petDTOs = append(petDTOs, model.PetDTO{
 			ID:           pet.ID,
 			Name:         pet.Name,
-			ImageUrl:     pet.ImageUrl,
+			ImageUrl:     *pet.ImageUrl,
 			Status:       pet.Status,
 			Species:      pet.Species,
 			SizeCategory: pet.SizeCategory,
@@ -79,80 +79,56 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID int64, pageSize int) (*[]
 }
 
 // UpdatePet updates a pet's details
-func (s *PetServiceImpl) UpdatePet(id uint, petDTO model.PetDTO) (*model.PetDTO, error) {
+func (s *PetServiceImpl) UpdatePet(id uint, petDTO model.PetDTO) error {
 	var pet model.Pet
 	err := s.db.First(&pet, id).Error
 	if err != nil {
-		return nil, err
+		return err
+	}
+
+	if err := os.Remove(helper.GetFilePath(*pet.ImageUrl)); err != nil {
+		return err
 	}
 
 	pet.Name = petDTO.Name
-	pet.ImageUrl = petDTO.ImageUrl
+	pet.ImageUrl = &petDTO.ImageUrl
 	pet.Status = petDTO.Status
 	pet.SpeciesID = petDTO.Species.ID
 	pet.SizeID = petDTO.SizeCategory.ID
 
 	err = s.db.Save(&pet).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if err := os.Remove(helper.GetFilePath(pet.ImageUrl)); err != nil {
-		return nil, err
-	}
-
-	s.db.Preload("Species").Preload("SizeCategory").First(&pet, id)
-
-	petDTOUpdated := model.PetDTO{
-		ID:           pet.ID,
-		Name:         pet.Name,
-		ImageUrl:     pet.ImageUrl,
-		Status:       pet.Status,
-		Species:      pet.Species,
-		SizeCategory: pet.SizeCategory,
-	}
-
-	return &petDTOUpdated, nil
+	return nil
 }
 
-func (s *PetServiceImpl) CreatePet(ownerID uint, req model.PetRequest) (*model.PetDTO, error) {
+func (s *PetServiceImpl) CreatePet(ownerID uint, req model.PetRequest) error {
 	pet := model.Pet{
 		Name:      req.Name,
-		ImageUrl:  req.ImageUrl,
+		ImageUrl:  &req.ImageUrl,
 		OwnerID:   ownerID,
 		SpeciesID: req.SpeciesID,
 		SizeID:    req.SizeCategoryID,
 	}
 
 	if err := s.db.Create(&pet).Error; err != nil {
-		return nil, err
+		return err
 	}
 
-	s.db.Preload("Species").Preload("SizeCategory").First(&pet, pet.ID)
-
-	petDTO := model.PetDTO{
-		ID:           pet.ID,
-		Name:         pet.Name,
-		ImageUrl:     pet.ImageUrl,
-		Status:       pet.Status,
-		Species:      pet.Species,
-		SizeCategory: pet.SizeCategory,
-	}
-
-	return &petDTO, nil
+	return nil
 }
 
 // DeletePet deletes a pet by ID
 func (s *PetServiceImpl) DeletePet(id uint) error {
-	var petDaycare model.PetDaycare
-	if err := s.db.Preload("Thumbnails").First(&petDaycare, id).Error; err != nil {
+	var pet model.Pet
+	if err := s.db.First(&pet, id).Error; err != nil {
 		return err
 	}
 
-	for _, thumbnail := range petDaycare.Thumbnails {
-		if err := os.Remove(helper.GetFilePath(thumbnail.ImageUrl)); err != nil {
-			return err
-		}
+	if err := os.Remove(helper.GetFilePath(*pet.ImageUrl)); err != nil {
+		return err
 	}
 
 	if err := s.db.Unscoped().Delete(&model.Pet{}, id).Error; err != nil {

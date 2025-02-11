@@ -69,7 +69,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 			return
 		}
 
-		req.ImageUrl = imagePath
+		req.ImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, imagePath)
 	}
 
 	createdUser, err := uc.UserService.CreateUser(req)

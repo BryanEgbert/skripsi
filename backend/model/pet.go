@@ -9,7 +9,7 @@ import (
 type Pet struct {
 	gorm.Model
 	Name         string `gorm:"not null"`
-	ImageUrl     string
+	ImageUrl     *string
 	Status       string       `gorm:"default:'idle'"`
 	OwnerID      uint         `gorm:"not null"`
 	Owner        User         `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

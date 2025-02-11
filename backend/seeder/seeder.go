@@ -10,18 +10,9 @@ import (
 
 func SeedTable(db *gorm.DB) error {
 	roles := []model.Role{
-		{
-			ID:   1,
-			Name: "pet owner",
-		},
-		{
-			ID:   2,
-			Name: "pet daycare provider",
-		},
-		{
-			ID:   3,
-			Name: "vet",
-		},
+		{ID: 1, Name: "pet owner"},
+		{ID: 2, Name: "pet daycare provider"},
+		{ID: 3, Name: "vet"},
 	}
 
 	if err := db.Create(&roles).Error; err != nil {
@@ -29,22 +20,10 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	dailyWalks := []model.DailyWalks{
-		{
-			ID:   1,
-			Name: "No walks provided",
-		},
-		{
-			ID:   2,
-			Name: "one walk a day",
-		},
-		{
-			ID:   3,
-			Name: "two walks a day",
-		},
-		{
-			ID:   4,
-			Name: "more than two walks a day",
-		},
+		{ID: 1, Name: "No walks provided"},
+		{ID: 2, Name: "one walk a day"},
+		{ID: 3, Name: "two walks a day"},
+		{ID: 4, Name: "more than two walks a day"},
 	}
 
 	if err := db.Create(&dailyWalks).Error; err != nil {
@@ -112,7 +91,7 @@ func SeedTable(db *gorm.DB) error {
 		vetSpecialties[2],
 	}
 
-	dummyImgUrl := "image/test.jpg"
+	dummyImgUrl := "test.com/image/test.jpeg"
 
 	users := []model.User{
 		{Name: "John Doe", Email: "john@example.com", Password: password1, RoleID: 1, ImageUrl: &dummyImgUrl},
@@ -144,8 +123,9 @@ func SeedTable(db *gorm.DB) error {
 		return err
 	}
 
+	petImg := "test.com/image/dog.jpeg"
 	pet := model.Pet{
-		Name: "Buddy", ImageUrl: "dog.jpg", Status: "idle", OwnerID: users[0].ID, SpeciesID: 1, SizeID: 1,
+		Name: "Buddy", ImageUrl: &petImg, Status: "idle", OwnerID: users[0].ID, SpeciesID: 1, SizeID: 1,
 	}
 
 	if err := db.Create(&pet).Error; err != nil {

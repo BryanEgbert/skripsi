@@ -2,10 +2,12 @@ package setup
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"testing"
 
 	"github.com/BryanEgbert/skripsi/controller"
+	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"github.com/BryanEgbert/skripsi/routes"
 	"github.com/BryanEgbert/skripsi/seeder"
@@ -22,10 +24,8 @@ func SetupTest(t *testing.T) *gorm.DB {
 		t.Fatal("Error loading .env file")
 	}
 
-	if _, err := os.Stat("./image"); os.IsNotExist(err) {
-		if err := os.Mkdir("./image", os.ModePerm); err != nil {
-			t.Fatalf("Mkdir err: %s", err.Error())
-		}
+	if err := helper.CopyFileIfNotExists("test_image/dog.jpeg", "image/dog.jpeg"); err != nil {
+		t.Fatalf("copy err: %v", err)
 	}
 
 	dbURL := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s",
@@ -52,6 +52,12 @@ func SetupTest(t *testing.T) *gorm.DB {
 }
 
 func Setup(db *gorm.DB) *gin.Engine {
+	if _, err := os.Stat("./image"); os.IsNotExist(err) {
+		if err := os.Mkdir("./image", os.ModePerm); err != nil {
+			log.Fatalf("Mkdir err: %s", err.Error())
+		}
+	}
+
 	db.AutoMigrate(
 		&model.User{},
 		&model.VetSpecialty{},
