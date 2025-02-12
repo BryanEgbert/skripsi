@@ -49,6 +49,52 @@ func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
+func (pdc *PetDaycareController) GetPetDaycareSlots(c *gin.Context) {
+	speciesId, err := strconv.ParseInt(c.Query("species"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid species"})
+		return
+	}
+
+	sizeCategoryId, err := strconv.ParseInt(c.Query("size"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid size category"})
+		return
+	}
+
+	year, err := strconv.ParseInt(c.Query("year"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid year"})
+		return
+	}
+
+	month, err := strconv.ParseInt(c.Query("month"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid month"})
+		return
+	}
+
+	petDaycareIDParam := c.Param("id")
+	petDaycareID, err := strconv.ParseUint(petDaycareIDParam, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		return
+	}
+
+	output, err := pdc.slotService.GetSlots(uint(petDaycareID), model.GetSlotRequest{
+		SpeciesID:      uint(speciesId),
+		SizeCategoryID: uint(sizeCategoryId),
+		Year:           int(year),
+		Month:          int(month),
+	})
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, output)
+}
+
 func (pdc *PetDaycareController) GetPetDaycare(c *gin.Context) {
 	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -70,7 +116,7 @@ func (pdc *PetDaycareController) GetPetDaycare(c *gin.Context) {
 
 	output, err := pdc.petDaycareService.GetPetDaycare(uint(petDaycareID), latitude, longitude)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -183,7 +229,7 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 		return
 	}
 
-	userLng, err := strconv.ParseFloat(c.Query("lng"), 64)
+	userLng, err := strconv.ParseFloat(c.Query("long"), 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid longitude"})
 		return

@@ -64,9 +64,9 @@ func SeedTable(db *gorm.DB) error {
 
 	// Insert Species records
 	species := []model.Species{
-		{Name: "small sized dog, cats, parrots"},
-		{Name: "medium sized dog"},
-		{Name: "large sized dog"},
+		{Name: "dogs"},
+		{Name: "cats"},
+		{Name: "rabbits"},
 	}
 	if err := db.Create(&species).Error; err != nil {
 		return err
@@ -78,6 +78,7 @@ func SeedTable(db *gorm.DB) error {
 		{Name: "medium", MinWeight: 11, MaxWeight: 26},
 		{Name: "large", MinWeight: 27, MaxWeight: 45},
 		{Name: "giant", MinWeight: 45, MaxWeight: 100},
+		{Name: "all size", MinWeight: 0, MaxWeight: 100},
 	}
 	if err := db.Create(&sizeCategories).Error; err != nil {
 		return err
@@ -96,18 +97,52 @@ func SeedTable(db *gorm.DB) error {
 	users := []model.User{
 		{Name: "John Doe", Email: "john@example.com", Password: password1, RoleID: 1, ImageUrl: &dummyImgUrl},
 		{Name: "Jane Smith", Email: "jane@example.com", Password: password1, RoleID: 2, ImageUrl: &dummyImgUrl},
+		{Name: "Jane Smith Daycare2", Email: "daycare@example.com", Password: password1, RoleID: 2, ImageUrl: &dummyImgUrl},
 		{Name: "Dr. Vet", Email: "vet@example.com", Password: password1, RoleID: 3, VetSpecialty: &vetSpecialty, ImageUrl: &dummyImgUrl},
 		{Name: "Delete user", Email: "delete@example.com", Password: password1, RoleID: 1},
+		{Name: "Jane Smith Daycare3", Email: "daycare3@example.com", Password: password1, RoleID: 2, ImageUrl: &dummyImgUrl},
 	}
 
 	if err := db.Create(&users).Error; err != nil {
 		return err
 	}
 
-	daycare := model.PetDaycare{
-		Name: "Happy Paws", Address: "123 Bark St", Latitude: 40.7128, Longitude: -74.0060, Price: 30.0, OwnerID: users[1].ID,
-		DailyWalks:    dailyWalks[1],
-		DailyPlaytime: dailyPlaytimes[1],
+	daycare := []model.PetDaycare{
+		{
+			Name:          "Happy Paws",
+			Address:       "123 Bark St",
+			Latitude:      40.7128,
+			Longitude:     -74.0060,
+			Price:         100000.0,
+			OwnerID:       users[1].ID,
+			DailyWalks:    dailyWalks[1],
+			DailyPlaytime: dailyPlaytimes[1],
+		},
+		{
+			Name:              "DOG Daycare Jakarta",
+			Address:           "Jl. Abdul Majid Raya No.31, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410",
+			Description:       "DOG daycare jakarta desc",
+			Latitude:          -6.266167,
+			Longitude:         106.808214,
+			Price:             150000.0,
+			OwnerID:           users[2].ID,
+			DailyWalks:        dailyWalks[1],
+			BookedNum:         1,
+			DailyPlaytime:     dailyPlaytimes[3],
+			GroomingAvailable: true,
+			FoodProvided:      true,
+			FoodBrand:         "Pedigree",
+		},
+		{
+			Name:          "Happy Paws 2",
+			Address:       "123 Bark St",
+			Latitude:      40.7128,
+			Longitude:     -74.0060,
+			Price:         100000.0,
+			OwnerID:       users[5].ID,
+			DailyWalks:    dailyWalks[1],
+			DailyPlaytime: dailyPlaytimes[1],
+		},
 	}
 
 	if err := db.Create(&daycare).Error; err != nil {
@@ -115,8 +150,9 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	slots := []model.Slots{
-		{DaycareID: daycare.ID, SpeciesID: 1, SizeCategoryID: 1, MaxNumber: 5},
-		{DaycareID: daycare.ID, SpeciesID: 2, SizeCategoryID: 2, MaxNumber: 8},
+		{DaycareID: daycare[0].ID, SpeciesID: 1, SizeCategoryID: 1, MaxNumber: 5},
+		{DaycareID: daycare[0].ID, SpeciesID: 2, SizeCategoryID: 2, MaxNumber: 8},
+		{DaycareID: daycare[1].ID, SpeciesID: 1, SizeCategoryID: 5, MaxNumber: 20},
 	}
 
 	if err := db.Create(&slots).Error; err != nil {
@@ -124,24 +160,46 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	petImg := "test.com/image/dog.jpeg"
-	pet := model.Pet{
-		Name: "Buddy", ImageUrl: &petImg, Status: "idle", OwnerID: users[0].ID, SpeciesID: 1, SizeID: 1,
+	pet := []model.Pet{
+		{
+			Name: "Buddy", ImageUrl: &petImg, Status: "idle", OwnerID: users[0].ID, SpeciesID: 1, SizeID: 1,
+		},
+		{
+			Name: "Buddy2", ImageUrl: &petImg, Status: "idle", OwnerID: users[0].ID, SpeciesID: 1, SizeID: 2,
+		},
 	}
 
 	if err := db.Create(&pet).Error; err != nil {
 		return err
 	}
 
-	bookedSlot := model.BookedSlot{
-		UserID: users[0].ID, DaycareID: daycare.ID, PetID: pet.ID, StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 1),
+	bookedSlot := []model.BookedSlot{
+		{
+			UserID:    users[0].ID,
+			DaycareID: daycare[0].ID,
+			PetID:     pet[0].ID, StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 1),
+		},
+		{
+			UserID:    users[0].ID,
+			DaycareID: daycare[1].ID,
+			PetID:     pet[1].ID, StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 3),
+		},
 	}
 
 	if err := db.Create(&bookedSlot).Error; err != nil {
 		return err
 	}
 
-	review := model.Reviews{
-		DaycareID: daycare.ID, UserID: users[0].ID, Name: "John Doe", Rate: 5, Description: "Great daycare!",
+	review := []model.Reviews{
+		{
+			DaycareID: daycare[0].ID, UserID: users[0].ID, Name: "John Doe", Rate: 5, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[0].ID, Name: "Nice", Rate: 5, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Name: "Nice", Rate: 4, Description: "Great daycare!",
+		},
 	}
 
 	if err := db.Create(&review).Error; err != nil {
@@ -157,8 +215,8 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	thumbnails := []model.Thumbnail{
-		{DaycareID: daycare.ID, ImageUrl: "thumbnail1.jpg"},
-		{DaycareID: daycare.ID, ImageUrl: "thumbnail2.jpg"},
+		{DaycareID: daycare[0].ID, ImageUrl: "test.com/image/thumbnail1.jpg"},
+		{DaycareID: daycare[1].ID, ImageUrl: "test.com/image/thumbnail2.jpg"},
 	}
 
 	if err := db.Create(&thumbnails).Error; err != nil {
@@ -166,7 +224,7 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	transaction := model.Transaction{
-		PetDaycareID: daycare.ID, BookedSlotID: bookedSlot.ID, Status: "completed",
+		PetDaycareID: daycare[0].ID, BookedSlotID: bookedSlot[0].ID, Status: "completed",
 	}
 
 	if err := db.Create(&transaction).Error; err != nil {

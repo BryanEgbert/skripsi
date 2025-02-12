@@ -16,8 +16,9 @@ func ConvertUserToDTO(user model.User) model.UserDTO {
 		Name:         user.Name,
 		Email:        user.Email,
 		RoleID:       user.RoleID,
-		CreatedAt:    user.CreatedAt,
+		CreatedAt:    user.CreatedAt.String(),
 		VetSpecialty: user.VetSpecialty,
+		ImageUrl:     *user.ImageUrl,
 	}
 }
 
@@ -91,6 +92,7 @@ func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float6
 	}
 
 	return model.GetPetDaycareDetailResponse{
+		ID:                daycare.ID,
 		Name:              daycare.Name,
 		Address:           daycare.Address,
 		Distance:          distance, // This should be calculated separately and passed as an argument
@@ -100,8 +102,6 @@ func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float6
 		BookedNum:         daycare.BookedNum,
 		AverageRating:     averageRating,
 		RatingCount:       ratingCount,
-		DailyWalksID:      daycare.DailyWalksID,
-		DailyPlaytimeID:   daycare.DailyPlaytimeID,
 		HasPickupService:  daycare.HasPickupService,
 		MustBeVaccinated:  daycare.MustBeVaccinated,
 		GroomingAvailable: daycare.GroomingAvailable,

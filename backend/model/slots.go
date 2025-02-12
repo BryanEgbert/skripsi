@@ -1,6 +1,10 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Slots struct {
 	gorm.Model
@@ -8,4 +12,16 @@ type Slots struct {
 	SpeciesID      uint `gorm:"not null"`
 	SizeCategoryID uint `gorm:"not null"`
 	MaxNumber      int
+}
+
+type GetSlotRequest struct {
+	SpeciesID      uint
+	SizeCategoryID uint
+	Month          int
+	Year           int
+}
+
+type SlotsResponse struct {
+	Date       time.Time `json:"date"`
+	SlotAmount int       `json:"slotAmount"`
 }

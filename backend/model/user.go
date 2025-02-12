@@ -1,8 +1,6 @@
 package model
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
@@ -27,7 +25,7 @@ type UserDTO struct {
 	ImageUrl     string
 	RoleID       uint
 	VetSpecialty *[]VetSpecialty
-	CreatedAt    time.Time
+	CreatedAt    string
 }
 
 type UpdateUserDTO struct {

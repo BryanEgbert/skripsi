@@ -14,7 +14,7 @@ NOTE: Must re-test everything
 
 - Pet
   - [x] Get pets (filter by owner ID)
-  - [x] Get pet details by ID
+  - [x] Get pet details by ID (exclude slots and reviews)
   - [x] Create new pet
   - [x] Update pet information
   - [x] Delete pet
@@ -22,6 +22,7 @@ NOTE: Must re-test everything
 - Pet Daycare
   - [ ] Send real-time chat updates to booked pets, pet owner can see the updates by clicking on the pet
   - [x] Get pet daycare details
+  - [x] Get pet daycare slots per month (reduced by ReduceSlot)
   - [x] Get pet daycares
     - [x] Price range
     - [x] pricing type (day/night)

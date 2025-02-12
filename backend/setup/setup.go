@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/BryanEgbert/skripsi/controller"
 	"github.com/BryanEgbert/skripsi/helper"
@@ -16,6 +17,7 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func SetupTest(t *testing.T) *gorm.DB {
@@ -28,6 +30,10 @@ func SetupTest(t *testing.T) *gorm.DB {
 		t.Fatalf("copy err: %v", err)
 	}
 
+	if err := helper.CopyFileIfNotExists("test_image/test.jpeg", "image/test.jpeg"); err != nil {
+		t.Fatalf("copy err: %v", err)
+	}
+
 	dbURL := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASS"),
@@ -35,7 +41,18 @@ func SetupTest(t *testing.T) *gorm.DB {
 		os.Getenv("DB_NAME"),
 	)
 
-	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold:             time.Second, // Slow SQL threshold
+			LogLevel:                  logger.Info, // Log level
+			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
+			ParameterizedQueries:      true,        // Don't include params in the SQL log
+			Colorful:                  false,       // Disable color
+		},
+	)
+
+	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{Logger: newLogger})
 	if err != nil {
 		t.Fatal(err)
 	}

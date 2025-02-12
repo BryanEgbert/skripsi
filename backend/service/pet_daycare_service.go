@@ -31,19 +31,14 @@ func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat float64, long float64
 
 	// Use ST_DistanceSphere to calculate the distance if coordinates are provided
 	if lat != 0.0 && long != 0.0 {
-		if err := s.db.Raw(`
-			SELECT
-				pd.*,
-				ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(pd.longitude, pd.latitude)) AS distance,
-				dw.id AS daily_walks_id, dw.name AS daily_walks_name,
-				dp.id AS daily_playtime_id, dp.name AS daily_playtime_name,
-				u.id AS owner_id, u.name AS owner_name, u.email AS owner_email, u.image_url AS owner_image_url
-			FROM pet_daycares pd
-			LEFT JOIN daily_walks dw ON pd.daily_walks_id = dw.id
-			LEFT JOIN daily_playtimes dp ON pd.daily_playtime_id = dp.id
-			LEFT JOIN users u ON pd.owner_id = u.id
-			WHERE pd.id = ?`, long, lat, id).
-			Scan(&daycare).Error; err != nil {
+		if err := s.db.
+			Preload("Owner").
+			Preload("DailyWalks").
+			Preload("DailyPlaytime").
+			Preload("Thumbnails").
+			Preload("Reviews").
+			Select("*, ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(longitude, latitude)) AS Distance", long, lat).
+			First(&daycare, id).Error; err != nil {
 			return nil, err
 		}
 
@@ -58,6 +53,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat float64, long float64
 			Preload("DailyWalks").
 			Preload("DailyPlaytime").
 			Preload("Thumbnails").
+			Preload("Reviews").
 			Find(&daycare, id).Error; err != nil {
 			return nil, err
 		}
@@ -359,12 +355,14 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 }
 
 func (s *PetDaycareServiceImpl) DeletePetDaycare(id uint, ownerId uint) error {
-	var daycare model.PetDaycare
+	daycare := model.PetDaycare{
+		Model:   gorm.Model{ID: id},
+		OwnerID: ownerId,
+	}
 	if err := s.db.
 		Preload("Owner").
-		Preload("BookedSlots").
+		Preload("BookedSlots", "end_date > CURRENT_TIMESTAMP").
 		Preload("Thumbnails").
-		Where("pet_daycares.id = ? AND owner_id = ?", id, ownerId).
 		Find(&daycare).
 		Error; err != nil {
 		return err
@@ -374,7 +372,9 @@ func (s *PetDaycareServiceImpl) DeletePetDaycare(id uint, ownerId uint) error {
 		return errors.New("There are pets booked in your pet daycare")
 	}
 
-	if err := s.db.Unscoped().Delete(&daycare, id).Error; err != nil {
+	if err := s.db.
+		Unscoped().
+		Delete(&model.PetDaycare{Model: gorm.Model{ID: id}, OwnerID: ownerId}).Error; err != nil {
 		return err
 	}
 

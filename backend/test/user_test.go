@@ -97,7 +97,7 @@ func TestGetUser(t *testing.T) {
 					t.Errorf("json Unmarshal err: %v", err)
 				}
 
-				assert.ObjectsAreEqualValues(test.ExpectedOutput, res)
+				assert.Equal(t, test.ExpectedOutput, res)
 			}
 
 		})
@@ -140,48 +140,49 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
-	token3, _, _ := helper.CreateJWT(3)
+	token1, _, _ := helper.CreateJWT(1)
 	token4, _, _ := helper.CreateJWT(4)
 	token10000, _, _ := helper.CreateJWT(10000)
 
 	updateVetSpecialties := []uint{2, 4, 5}
+	emptyVetSpecialties := []uint{}
 
 	tests := []UserTestTable[model.UpdateUserRequest]{
 		{
 			Name: "On update user, should return 200 and updated user",
 			In: model.UpdateUserRequest{
-				ID:     4,
+				ID:     1,
 				Name:   "update name",
 				Email:  "update@example.com",
 				RoleID: 1,
 			},
-			Token:          token4,
+			Token:          token1,
 			ExpectedStatus: 200,
 			ExpectedOutput: model.UpdateUserDTO{
-				ID:     4,
-				Name:   "update name",
-				Email:  "update@example.com",
-				RoleID: 1,
+				ID:             1,
+				Name:           "update name",
+				Email:          "update@example.com",
+				VetSpecialtyID: &emptyVetSpecialties,
+				RoleID:         1,
 			},
 		},
 		{
 			Name: "On update user, should return 200 and updated user and vet specialties",
 			In: model.UpdateUserRequest{
-				ID:             3,
+				ID:             4,
 				Name:           "update vet name",
 				Email:          "vetupdate@example.com",
 				RoleID:         3,
 				VetSpecialtyID: &updateVetSpecialties,
 			},
-			Token:          token3,
+			Token:          token4,
 			ExpectedStatus: 200,
 			ExpectedOutput: model.UpdateUserDTO{
-				ID:             3,
+				ID:             4,
 				Name:           "update vet name",
 				Email:          "vetupdate@example.com",
 				RoleID:         3,
 				VetSpecialtyID: &updateVetSpecialties,
-				ImageUrl:       "image/test.jpg",
 			},
 		},
 		{
@@ -236,7 +237,7 @@ func TestUpdateUser(t *testing.T) {
 					t.Errorf("json Unmarshal err: %v", err)
 				}
 
-				assert.ObjectsAreEqual(test.ExpectedOutput, res)
+				assert.Equal(t, test.ExpectedOutput, res)
 			}
 		})
 	}

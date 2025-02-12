@@ -16,15 +16,15 @@ type PetDaycare struct {
 	Price             float64 `gorm:"not null"`
 	PricingType       string  `gorm:"default:'day'"`
 	Description       string
+	HasPickupService  bool    `gorm:"default:0"`
+	MustBeVaccinated  bool    `gorm:"default:0"`
+	FoodProvided      bool    `gorm:"default:0"`
+	GroomingAvailable bool    `gorm:"default:0"`
 	BookedNum         int64   `gorm:"default:0"`
+	DailyWalksID      uint    `gorm:"not null"`
+	DailyPlaytimeID   uint    `gorm:"not null"`
 	OwnerID           uint    `gorm:"unique;not null"` // One-to-One with User
-	Distance          float64 `gorm:"-"`
-	DailyWalksID      uint
-	DailyPlaytimeID   uint
-	HasPickupService  bool
-	MustBeVaccinated  bool
-	GroomingAvailable bool
-	FoodProvided      bool
+	Distance          float64 `gorm:"->;-:migration"`
 	FoodBrand         string
 	CreatedAt         time.Time
 	UpdatedAt         *time.Time
@@ -95,7 +95,7 @@ type GetPetDaycaresRequest struct {
 }
 
 type GetPetDaycareDetailResponse struct {
-	ID                string        `json:"id"`
+	ID                uint          `json:"id"`
 	Name              string        `json:"name"`
 	Address           string        `json:"address"`
 	Distance          float64       `json:"distance"`
@@ -105,8 +105,6 @@ type GetPetDaycareDetailResponse struct {
 	BookedNum         int64         `json:"bookedNum"`
 	AverageRating     float64       `json:"averageRating"`
 	RatingCount       int           `json:"ratingCount"`
-	DailyWalksID      uint          `json:"dailyWalksId"`
-	DailyPlaytimeID   uint          `json:"dailyPlaytimeId"`
 	HasPickupService  bool          `json:"hasPickupService"`
 	MustBeVaccinated  bool          `json:"mustBeVaccinated"`
 	GroomingAvailable bool          `json:"groomingAvailable"`
