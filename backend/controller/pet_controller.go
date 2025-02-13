@@ -52,27 +52,16 @@ func (pc *PetController) GetPets(c *gin.Context) {
 		return
 	}
 
-	lastIDQuery := c.Query("last-id")
-	var lastID uint64 = 0
-	var err error
-
-	if lastIDQuery != "" {
-		lastID, err = strconv.ParseUint(lastIDQuery, 10, 64)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
-			return
-		}
+	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		return
 	}
 
-	sizeQuery := c.Query("size")
-	var pageSize int = 10
-
-	if sizeQuery != "" {
-		pageSize, err = strconv.Atoi(sizeQuery)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
-			return
-		}
+	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		return
 	}
 
 	pets, err := pc.petService.GetPets(userID, uint(lastID), pageSize)

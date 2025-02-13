@@ -37,26 +37,16 @@ func (uc *UserController) GetVets(c *gin.Context) {
 		}
 	}
 
-	lastIDQuery := c.Query("last-id")
-	var lastID uint64 = 0
-
-	if lastIDQuery != "" {
-		lastID, err = strconv.ParseUint(lastIDQuery, 10, 64)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
-			return
-		}
+	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		return
 	}
 
-	sizeQuery := c.Query("size")
-	var pageSize int = 10
-
-	if sizeQuery != "" {
-		pageSize, err = strconv.Atoi(sizeQuery)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
-			return
-		}
+	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		return
 	}
 
 	vets, err := uc.UserService.GetVets(uint(specialtyId), uint(lastID), pageSize)

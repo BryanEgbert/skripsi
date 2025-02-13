@@ -331,26 +331,16 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 		return
 	}
 
-	lastIDQuery := c.Query("last-id")
-	var lastID uint64 = 0
-
-	if lastIDQuery != "" {
-		lastID, err = strconv.ParseUint(lastIDQuery, 10, 64)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
-			return
-		}
+	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		return
 	}
 
-	sizeQuery := c.Query("size")
-	var pageSize int = 10
-
-	if sizeQuery != "" {
-		pageSize, err = strconv.Atoi(sizeQuery)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
-			return
-		}
+	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		return
 	}
 
 	// Parse filters
@@ -359,27 +349,37 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 	filters.Latitude = userLat
 	filters.Longitude = userLng
 
-	if minDist := c.Query("minDistance"); minDist != "" {
+	if minDist := c.DefaultQuery("min-distance", "0"); minDist != "" {
 		value, _ := strconv.ParseFloat(minDist, 64)
 		filters.MinDistance = &value
 	}
-	if maxDist := c.Query("maxDistance"); maxDist != "" {
+	if maxDist := c.Query("max-distance"); maxDist != "" {
 		value, _ := strconv.ParseFloat(maxDist, 64)
 		filters.MaxDistance = &value
 	}
 	if facilities := c.Query("facilities"); facilities != "" {
 		filters.Facilities = strings.Split(facilities, ",")
 	}
-	if minPrice := c.Query("minPrice"); minPrice != "" {
+	if minPrice := c.DefaultQuery("min-price", "0"); minPrice != "" {
 		value, _ := strconv.ParseFloat(minPrice, 64)
 		filters.MinPrice = &value
 	}
-	if maxPrice := c.Query("maxPrice"); maxPrice != "" {
+	if maxPrice := c.Query("max-price"); maxPrice != "" {
 		value, _ := strconv.ParseFloat(maxPrice, 64)
 		filters.MaxPrice = &value
 	}
-	if pricingType := c.Query("pricingType"); pricingType != "" {
+	if pricingType := c.DefaultQuery("pricing-type", "day"); pricingType != "" {
 		filters.PricingType = &pricingType
+	}
+
+	if dailyWalksId := c.DefaultQuery("daily-walks", "1"); dailyWalksId != "" {
+		value, _ := strconv.ParseUint(dailyWalksId, 10, 64)
+		filters.DailyWalks = uint(value)
+	}
+
+	if dailyPlaytimeId := c.DefaultQuery("daily-playtime", "1"); dailyPlaytimeId != "" {
+		value, _ := strconv.ParseUint(dailyPlaytimeId, 10, 64)
+		filters.DailyPlaytime = uint(value)
 	}
 
 	// Call service

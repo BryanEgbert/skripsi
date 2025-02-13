@@ -46,6 +46,6 @@ NOTE: Must re-test everything
   - [x] Create review
 - Vet
   - [ ] Chat to vet
-  - [ ] View vets (filter based on specialty)
+  - [x] View vets (filter based on specialty)
   - [x] View vet details
   - [x] Edit vet specialty (along with user profile)
