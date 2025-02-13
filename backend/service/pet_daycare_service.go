@@ -12,7 +12,7 @@ import (
 
 type PetDaycareService interface {
 	CreatePetDaycare(userId uint, request model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
-	GetPetDaycares(req model.GetPetDaycaresRequest) ([]model.GetPetDaycaresResponse, error)
+	GetPetDaycares(req model.GetPetDaycaresRequest, startID uint, pageSize int) ([]model.GetPetDaycaresResponse, error)
 	GetPetDaycare(id uint, lat float64, long float64) (*model.GetPetDaycareDetailResponse, error)
 	DeletePetDaycare(id uint, ownerId uint) error
 	UpdatePetDaycare(id uint, userId uint, newData model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
@@ -175,7 +175,7 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 	}, nil
 }
 
-func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest) ([]model.GetPetDaycaresResponse, error) {
+func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, startID uint, pageSize int) ([]model.GetPetDaycaresResponse, error) {
 	var daycares []model.PetDaycare
 	query := s.db
 
@@ -218,9 +218,11 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest) 
 
 	// Fetch daycare data
 	if err := query.
+		Where("id > ?", startID).
 		Preload("Owner").
 		Preload("Reviews").
 		Preload("Thumbnails").
+		Limit(pageSize).
 		Find(&daycares).Error; err != nil {
 		return nil, err
 	}

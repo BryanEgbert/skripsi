@@ -10,6 +10,7 @@ func RegisterUserRoute(r *gin.Engine, userController *controller.UserController)
 	r.POST("/users", userController.CreateUser)
 
 	userRoutes := r.Group("/users")
+	userRoutes.GET("/vets", middleware.JWTAuth(), userController.GetVets)
 	userRoutes.GET("/:id", middleware.JWTAuth(), userController.GetUser)
 	userRoutes.DELETE("", middleware.JWTAuth(), userController.DeleteUser)
 	userRoutes.PUT("", middleware.JWTAuth(), userController.UpdateUserProfile)

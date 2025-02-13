@@ -1,8 +1,6 @@
 package model
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
@@ -22,6 +20,6 @@ type GetSlotRequest struct {
 }
 
 type SlotsResponse struct {
-	Date       time.Time `json:"date"`
-	SlotAmount int       `json:"slotAmount"`
+	Date       string `json:"date"`
+	SlotAmount int    `json:"slotAmount"`
 }

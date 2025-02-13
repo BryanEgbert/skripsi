@@ -53,11 +53,11 @@ func (pc *PetController) GetPets(c *gin.Context) {
 	}
 
 	lastIDQuery := c.Query("last-id")
-	var lastID int64 = 0
+	var lastID uint64 = 0
 	var err error
 
 	if lastIDQuery != "" {
-		lastID, err = strconv.ParseInt(lastIDQuery, 10, 64)
+		lastID, err = strconv.ParseUint(lastIDQuery, 10, 64)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
 			return
@@ -75,7 +75,7 @@ func (pc *PetController) GetPets(c *gin.Context) {
 		}
 	}
 
-	pets, err := pc.petService.GetPets(userID, lastID, pageSize)
+	pets, err := pc.petService.GetPets(userID, uint(lastID), pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve pets", "details": err.Error()})
 		return

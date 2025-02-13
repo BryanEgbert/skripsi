@@ -10,7 +10,6 @@ type ReduceSlots struct {
 }
 
 type ReduceSlotsRequest struct {
-	SlotID       uint      `json:"slotId"`
 	ReducedCount uint      `json:"reducedCount"`
 	TargetDate   time.Time `json:"targetDate"`
 }

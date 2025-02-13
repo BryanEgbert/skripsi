@@ -11,7 +11,7 @@ import (
 type SlotService interface {
 	GetSlots(petDaycareId uint, req model.GetSlotRequest) (*[]model.SlotsResponse, error)
 	BookSlots(userId uint, req model.BookSlotRequest) error
-	EditSlotCount(userId uint, req model.ReduceSlotsRequest) error
+	EditSlotCount(slotId uint, req model.ReduceSlotsRequest) error
 }
 
 type SlotServiceImpl struct {
@@ -43,9 +43,10 @@ func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) 
 
 	var bookedSlots []model.BookedSlotsDailyDTO
 	if err := s.db.
+		Model(&model.BookedSlotsDaily{}).
 		Select("date, SUM(slot_count) AS slot_count").
 		Group("date").
-		Where("daycare_id = ? AND date BETWEEN ? AND ?", petDaycareId).
+		Where("daycare_id = ? AND date BETWEEN ? AND ?", petDaycareId, firstDay, lastDay).
 		Find(&bookedSlots).Error; err != nil {
 		return nil, err
 	}
@@ -70,7 +71,7 @@ func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) 
 		remaining := maxSlots - reduced - booked // Remaining slots
 
 		out = append(out, model.SlotsResponse{
-			Date:       day,
+			Date:       day.Format(time.RFC3339),
 			SlotAmount: remaining,
 		})
 	}
@@ -78,9 +79,9 @@ func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) 
 	return &out, nil
 }
 
-func (s *SlotServiceImpl) EditSlotCount(userId uint, req model.ReduceSlotsRequest) error {
+func (s *SlotServiceImpl) EditSlotCount(slotId uint, req model.ReduceSlotsRequest) error {
 	slot := model.ReduceSlots{
-		SlotID:     req.SlotID,
+		SlotID:     slotId,
 		TargetDate: req.TargetDate,
 	}
 

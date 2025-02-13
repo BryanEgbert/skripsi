@@ -24,6 +24,50 @@ func NewUserController(userService service.UserService) *UserController {
 	return &UserController{UserService: userService}
 }
 
+func (uc *UserController) GetVets(c *gin.Context) {
+	specialtyIdQuery := c.Query("specialty-id")
+	var specialtyId uint64 = 0
+	var err error
+
+	if specialtyIdQuery != "" {
+		specialtyId, err = strconv.ParseUint(specialtyIdQuery, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+			return
+		}
+	}
+
+	lastIDQuery := c.Query("last-id")
+	var lastID uint64 = 0
+
+	if lastIDQuery != "" {
+		lastID, err = strconv.ParseUint(lastIDQuery, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+			return
+		}
+	}
+
+	sizeQuery := c.Query("size")
+	var pageSize int = 10
+
+	if sizeQuery != "" {
+		pageSize, err = strconv.Atoi(sizeQuery)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+			return
+		}
+	}
+
+	vets, err := uc.UserService.GetVets(uint(specialtyId), uint(lastID), pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot get vets", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, vets)
+}
+
 // GetUser fetches a user by ID (keeps ID in URL param for admin access)
 func (uc *UserController) GetUser(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)

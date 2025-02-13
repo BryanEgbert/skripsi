@@ -92,6 +92,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		&model.DailyWalks{},
 		&model.DailyPlaytime{},
 		&model.ReduceSlots{},
+		&model.BookedSlotsDaily{},
 	)
 
 	r := gin.Default()
@@ -107,7 +108,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	petDaycareService := service.NewPetDaycareService(db)
 	slotService := service.NewSlotService(db)
-	petDaycareController := controller.NewPetDaycareController(petDaycareService, slotService)
+	reviewService := service.NewReviewService(db)
+	petDaycareController := controller.NewPetDaycareController(petDaycareService, slotService, reviewService)
 
 	r.Static("/assets", "./image")
 	r = routes.RegisterUserRoute(r, userController)

@@ -28,10 +28,12 @@ type UserTestTable[T any] struct {
 
 func TestGetUser(t *testing.T) {
 	vetSpecialty := []model.VetSpecialty{
-		{Name: "General Practice"},
-		{Name: "Preventive Medicine"},
-		{Name: "Emergency & Critical Care"},
+		{ID: 1, Name: "General Practice"},
+		{ID: 2, Name: "Preventive Medicine"},
+		{ID: 3, Name: "Emergency & Critical Care"},
 	}
+
+	emptyVetSpecialty := []model.VetSpecialty{}
 
 	token1, _, _ := helper.CreateJWT(1)
 	token3, _, _ := helper.CreateJWT(3)
@@ -39,34 +41,35 @@ func TestGetUser(t *testing.T) {
 
 	tests := []UserTestTable[int]{
 		{
-			Name:           "On login, should return tokens when user credential is correct",
+			Name:           "On get user, should return user info when user ID exists in DB",
 			In:             1,
 			Token:          token1,
 			ExpectedStatus: 200,
 			ExpectedOutput: model.UserDTO{
-				ID:       1,
-				Name:     "John Doe",
-				Email:    "john@example.com",
-				RoleID:   1,
-				ImageUrl: "test.jpg",
+				ID:           1,
+				Name:         "John Doe",
+				Email:        "john@example.com",
+				RoleID:       1,
+				ImageUrl:     "test.com/image/test.jpeg",
+				VetSpecialty: &emptyVetSpecialty,
 			},
 		},
 		{
 			Name:           "On login, should return error when user credential is correct",
-			In:             3,
+			In:             4,
 			Token:          token3,
 			ExpectedStatus: 200,
 			ExpectedOutput: model.UserDTO{
-				ID:           3,
+				ID:           4,
 				Name:         "Dr. Vet",
 				Email:        "vet@example.com",
 				RoleID:       3,
-				ImageUrl:     "test.jpg",
+				ImageUrl:     "test.com/image/test.jpeg",
 				VetSpecialty: &vetSpecialty,
 			},
 		},
 		{
-			Name:           "On login, should return error when user credential is correct",
+			Name:           "On login, should return error when user ID does not exists in DB",
 			In:             10000,
 			Token:          token10000,
 			ExpectedStatus: 404,
@@ -97,7 +100,11 @@ func TestGetUser(t *testing.T) {
 					t.Errorf("json Unmarshal err: %v", err)
 				}
 
-				assert.Equal(t, test.ExpectedOutput, res)
+				if assert.NotEmpty(t, res.CreatedAt) {
+					res.CreatedAt = ""
+					assert.Equal(t, test.ExpectedOutput, res)
+				}
+
 			}
 
 		})

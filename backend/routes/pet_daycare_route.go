@@ -9,13 +9,18 @@ import (
 func RegisterPetDaycareRoutes(r *gin.Engine, petDaycareController *controller.PetDaycareController) *gin.Engine {
 	daycare := r.Group("/daycare")
 
-	daycare.GET("/:id", middleware.JWTAuth(), petDaycareController.GetPetDaycare)
-	daycare.GET("", middleware.JWTAuth(), petDaycareController.GetPetDaycares)
+	daycare.PATCH("/slot/:slotId", middleware.JWTAuth(), petDaycareController.EditSlotCount)
 	daycare.GET("/:id/slot", middleware.JWTAuth(), petDaycareController.GetPetDaycareSlots)
 	daycare.POST("/:id/slot", middleware.JWTAuth(), petDaycareController.CreateSlot)
+
+	daycare.GET("/:id/review", middleware.JWTAuth(), petDaycareController.GetReviews)
+	daycare.POST("/:id/review", middleware.JWTAuth(), petDaycareController.CreateReview)
+	daycare.DELETE("/:id/review", middleware.JWTAuth(), petDaycareController.DeleteReview)
+
+	daycare.GET("/:id", middleware.JWTAuth(), petDaycareController.GetPetDaycare)
+	daycare.GET("", middleware.JWTAuth(), petDaycareController.GetPetDaycares)
 	daycare.POST("", middleware.JWTAuth(), petDaycareController.CreatePetDaycare)
 	daycare.PUT("/:id", middleware.JWTAuth(), petDaycareController.UpdatePetDaycare)
-	daycare.PATCH("", middleware.JWTAuth(), petDaycareController.EditSlotCount)
 	daycare.DELETE("/:id", middleware.JWTAuth(), petDaycareController.DeletePetDaycare)
 
 	return r

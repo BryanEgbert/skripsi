@@ -12,3 +12,17 @@ type Reviews struct {
 	Rate        int
 	Description string
 }
+
+type CreateReviewRequest struct {
+	Rating      int    `json:"rating"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
+type ReviewsDTO struct {
+	ID          uint   `json:"id"`
+	Rating      int    `json:"rating"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	User        User   `json:"user"`
+}

@@ -14,6 +14,7 @@ import (
 // UserService interface defining the required methods
 type UserService interface {
 	GetUser(id int64) (*model.UserDTO, error)
+	GetVets(vetSpecialtyId uint, startId uint, pageSize int) (*[]model.UserDTO, error)
 	CreateUser(user model.CreateUserRequest) (*model.TokenResponse, error)
 	DeleteUser(id uint) error
 	UpdateUserProfile(user *model.UpdateUserRequest) (*model.UpdateUserDTO, error)
@@ -28,6 +29,15 @@ type UserServiceImpl struct {
 // NewUserService initializes UserServiceImpl with a GORM database connection
 func NewUserService(db *gorm.DB) *UserServiceImpl {
 	return &UserServiceImpl{db: db}
+}
+
+func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize int) (*[]model.UserDTO, error) {
+	var user []model.UserDTO
+	if err := s.db.Preload("VetSpecialty", "id = ?", vetSpecialtyId).Find(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 // GetUser retrieves a user by ID and returns a UserDTO

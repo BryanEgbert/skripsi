@@ -16,13 +16,53 @@ import (
 type PetDaycareController struct {
 	petDaycareService service.PetDaycareService
 	slotService       service.SlotService
+	reviewService     service.ReviewService
 }
 
-func NewPetDaycareController(petDaycareService service.PetDaycareService, slotService service.SlotService) *PetDaycareController {
-	return &PetDaycareController{petDaycareService, slotService}
+func NewPetDaycareController(petDaycareService service.PetDaycareService, slotService service.SlotService, reviewService service.ReviewService) *PetDaycareController {
+	return &PetDaycareController{petDaycareService, slotService, reviewService}
 }
 
-func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
+func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
+	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		return
+	}
+
+	// Get optional pagination parameters
+	lastIDQuery := c.Query("last-id")
+	var lastID uint64 = 0
+	if lastIDQuery != "" {
+		lastID, err = strconv.ParseUint(lastIDQuery, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+			return
+		}
+	}
+
+	sizeQuery := c.Query("size")
+	var pageSize int = 10
+
+	if sizeQuery != "" {
+		pageSize, err = strconv.Atoi(sizeQuery)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+			return
+		}
+	}
+
+	// Fetch reviews using the service
+	reviews, err := pdc.reviewService.GetReviews(uint(petDaycareID), uint(lastID), pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve reviews", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, reviews)
+}
+
+func (pdc *PetDaycareController) CreateReview(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -31,7 +71,63 @@ func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
 
 	userID, ok := userIDRaw.(uint)
 	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		return
+	}
+
+	var req model.CreateReviewRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	err = pdc.reviewService.CreateReview(uint(petDaycareID), uint(userID), req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create review"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, nil)
+}
+
+func (pdc *PetDaycareController) DeleteReview(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		return
+	}
+
+	err = pdc.reviewService.DeleteReview(uint(petDaycareID), uint(userID))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Review not found"})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
+func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
+	slotID, err := strconv.ParseUint(c.Param("slotId"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid slot ID"})
 		return
 	}
 
@@ -41,8 +137,8 @@ func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
 		return
 	}
 
-	if err := pdc.slotService.EditSlotCount(uint(userID), req); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := pdc.slotService.EditSlotCount(uint(slotID), req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot edit slot count", "details": err.Error()})
 		return
 	}
 
@@ -235,6 +331,28 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 		return
 	}
 
+	lastIDQuery := c.Query("last-id")
+	var lastID uint64 = 0
+
+	if lastIDQuery != "" {
+		lastID, err = strconv.ParseUint(lastIDQuery, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+			return
+		}
+	}
+
+	sizeQuery := c.Query("size")
+	var pageSize int = 10
+
+	if sizeQuery != "" {
+		pageSize, err = strconv.Atoi(sizeQuery)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+			return
+		}
+	}
+
 	// Parse filters
 	var filters model.GetPetDaycaresRequest
 
@@ -265,7 +383,7 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 	}
 
 	// Call service
-	daycares, err := pdc.petDaycareService.GetPetDaycares(filters)
+	daycares, err := pdc.petDaycareService.GetPetDaycares(filters, uint(lastID), pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -41,9 +41,9 @@ NOTE: Must re-test everything
   - [x] Edit available slot in a day for pet daycare provider
   - [x] Edit pet daycare information
 - Pet daycare review
-  - [ ] Get reviews
-  - [ ] Delete review
-  - [ ] Create review
+  - [x] Get reviews
+  - [x] Delete review
+  - [x] Create review
 - Vet
   - [ ] Chat to vet
   - [ ] View vets (filter based on specialty)

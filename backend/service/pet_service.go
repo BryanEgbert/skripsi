@@ -10,7 +10,7 @@ import (
 
 type PetService interface {
 	GetPet(id uint) (*model.PetDTO, error)
-	GetPets(ownerID uint, startID int64, pageSize int) (*[]model.PetDTO, error)
+	GetPets(ownerID uint, startID uint, pageSize int) (*[]model.PetDTO, error)
 	// GetBookedPets(daycareId uint, startID int64, pageSize int) (*[]model.PetDTO, error)
 	CreatePet(ownerID uint, req model.PetRequest) error
 	UpdatePet(id uint, pet model.PetDTO) error
@@ -50,7 +50,7 @@ func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 
 // GetPets implements cursor-based pagination
 // GetPets fetches pets owned by a specific user using cursor-based pagination
-func (s *PetServiceImpl) GetPets(ownerID uint, startID int64, pageSize int) (*[]model.PetDTO, error) {
+func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]model.PetDTO, error) {
 	var pets []model.Pet
 	query := s.db.Preload("Species").Preload("SizeCategory").Where("owner_id = ?", ownerID).Order("id ASC").Limit(pageSize)
 
