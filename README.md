@@ -18,7 +18,7 @@ NOTE: Must re-test everything
   - [x] Create new pet
   - [x] Update pet information
   - [x] Delete pet
-  - [ ] View pets that is booked in a pet daycare for the provider to see
+  - [x] View pets that is booked in a pet daycare for the provider to see
 - Pet Daycare
   - [ ] Send real-time chat updates to booked pets, pet owner can see the updates by clicking on the pet
   - [x] Get pet daycare details

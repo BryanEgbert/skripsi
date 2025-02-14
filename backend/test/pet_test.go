@@ -39,17 +39,24 @@ func TestGetPet(t *testing.T) {
 			ExpectedOutput: model.PetDTO{
 				ID:       1,
 				Name:     "Buddy",
-				ImageUrl: "dog.jpg",
+				ImageUrl: "test.com/image/dog.jpeg",
 				Status:   "idle",
 				Species: model.Species{
 					ID:   1,
-					Name: "small sized dog, cats, parrots",
+					Name: "dogs",
 				},
 				SizeCategory: model.SizeCategory{
 					ID:        1,
 					Name:      "small",
 					MinWeight: 0,
 					MaxWeight: 10,
+				},
+				Owner: model.UserDTO{
+					ID:       1,
+					Name:     "John Doe",
+					Email:    "john@example.com",
+					ImageUrl: "test.com/image/test.jpeg",
+					RoleID:   1,
 				},
 			},
 		},
@@ -84,7 +91,11 @@ func TestGetPet(t *testing.T) {
 					t.Errorf("json Unmarshal err: %v", err)
 				}
 
-				assert.ObjectsAreEqualValues(test.ExpectedOutput, res)
+				if assert.NotEmpty(t, res.Owner.CreatedAt) {
+					res.Owner.CreatedAt = ""
+					assert.Equal(t, test.ExpectedOutput, res)
+				}
+
 			}
 
 		})
@@ -94,7 +105,7 @@ func TestGetPet(t *testing.T) {
 func TestGetPets(t *testing.T) {
 	token1, _, _ := helper.CreateJWT(1)
 
-	tests := []UserTestTable[int]{
+	tests := []PetTestTable[int]{
 		{
 			Name:           "On get pet, should return petDTO when pet ID exists in DB",
 			In:             1,
@@ -104,17 +115,47 @@ func TestGetPets(t *testing.T) {
 				{
 					ID:       1,
 					Name:     "Buddy",
-					ImageUrl: "dog.jpg",
+					ImageUrl: "test.com/image/dog.jpeg",
 					Status:   "idle",
 					Species: model.Species{
 						ID:   1,
-						Name: "small sized dog, cats, parrots",
+						Name: "dogs",
 					},
 					SizeCategory: model.SizeCategory{
 						ID:        1,
 						Name:      "small",
 						MinWeight: 0,
 						MaxWeight: 10,
+					},
+					Owner: model.UserDTO{
+						ID:       1,
+						Name:     "John Doe",
+						Email:    "john@example.com",
+						ImageUrl: "test.com/image/test.jpeg",
+						RoleID:   1,
+					},
+				},
+				{
+					ID:       2,
+					Name:     "Buddy2",
+					ImageUrl: "test.com/image/dog.jpeg",
+					Status:   "idle",
+					Species: model.Species{
+						ID:   1,
+						Name: "dogs",
+					},
+					SizeCategory: model.SizeCategory{
+						ID:        2,
+						Name:      "medium",
+						MinWeight: 11,
+						MaxWeight: 26,
+					},
+					Owner: model.UserDTO{
+						ID:       1,
+						Name:     "John Doe",
+						Email:    "john@example.com",
+						ImageUrl: "test.com/image/test.jpeg",
+						RoleID:   1,
 					},
 				},
 			},
@@ -144,7 +185,12 @@ func TestGetPets(t *testing.T) {
 					t.Errorf("json Unmarshal err: %v", err)
 				}
 
-				assert.ObjectsAreEqualValues(test.ExpectedOutput, res)
+				for i, _ := range res {
+					if assert.NotEmpty(t, res[i].Owner.CreatedAt) {
+						res[i].Owner.CreatedAt = ""
+					}
+				}
+				assert.Equal(t, test.ExpectedOutput, res)
 			}
 
 		})

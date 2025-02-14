@@ -16,11 +16,12 @@ import (
 type PetDaycareController struct {
 	petDaycareService service.PetDaycareService
 	slotService       service.SlotService
+	petService        service.PetService
 	reviewService     service.ReviewService
 }
 
-func NewPetDaycareController(petDaycareService service.PetDaycareService, slotService service.SlotService, reviewService service.ReviewService) *PetDaycareController {
-	return &PetDaycareController{petDaycareService, slotService, reviewService}
+func NewPetDaycareController(petDaycareService service.PetDaycareService, petService service.PetService, slotService service.SlotService, reviewService service.ReviewService) *PetDaycareController {
+	return &PetDaycareController{petDaycareService, slotService, petService, reviewService}
 }
 
 func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
@@ -419,7 +420,47 @@ func (pdc *PetDaycareController) DeletePetDaycare(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
-func (pdc *PetDaycareController) CreateSlot(c *gin.Context) {
+func (pdc *PetDaycareController) GetBookedPets(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		return
+	}
+
+	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		return
+	}
+
+	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		return
+	}
+
+	out, err := pdc.petService.GetBookedPets(userID, uint(petDaycareID), uint(lastID), pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot get pets", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, out)
+}
+
+func (pdc *PetDaycareController) BookSlot(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})

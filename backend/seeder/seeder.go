@@ -177,7 +177,9 @@ func SeedTable(db *gorm.DB) error {
 		{
 			UserID:    users[0].ID,
 			DaycareID: daycare[0].ID,
-			PetID:     pet[0].ID, StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 1),
+			PetID:     pet[0].ID,
+			StartDate: time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
+			EndDate:   time.Date(2025, time.February, 15, 0, 0, 0, 0, time.Local),
 		},
 		{
 			UserID:    users[0].ID,
@@ -187,6 +189,28 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	if err := db.Create(&bookedSlot).Error; err != nil {
+		return err
+	}
+
+	bookedSlotDaily := []model.BookedSlotsDaily{
+		{
+			DaycareID: daycare[0].ID,
+			SlotCount: 1,
+			Date:      time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
+		},
+		{
+			DaycareID: daycare[0].ID,
+			SlotCount: 1,
+			Date:      time.Date(2025, time.February, 14, 0, 0, 0, 0, time.Local),
+		},
+		{
+			DaycareID: daycare[0].ID,
+			SlotCount: 1,
+			Date:      time.Date(2025, time.February, 15, 0, 0, 0, 0, time.Local),
+		},
+	}
+
+	if err := db.Create(&bookedSlotDaily).Error; err != nil {
 		return err
 	}
 
@@ -207,7 +231,7 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	reduceSlots := model.ReduceSlots{
-		SlotID: slots[0].ID, ReducedCount: 2, TargetDate: time.Now(),
+		SlotID: slots[0].ID, ReducedCount: 2, TargetDate: time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
 	}
 
 	if err := db.Create(&reduceSlots).Error; err != nil {

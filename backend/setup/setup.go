@@ -34,6 +34,10 @@ func SetupTest(t *testing.T) *gorm.DB {
 		t.Fatalf("copy err: %v", err)
 	}
 
+	if err := helper.CopyFileIfNotExists("test_image/user_test.png", "image/user_test.png"); err != nil {
+		t.Fatalf("copy err: %v", err)
+	}
+
 	dbURL := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASS"),
@@ -47,7 +51,7 @@ func SetupTest(t *testing.T) *gorm.DB {
 			SlowThreshold:             time.Second, // Slow SQL threshold
 			LogLevel:                  logger.Info, // Log level
 			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
-			ParameterizedQueries:      true,        // Don't include params in the SQL log
+			ParameterizedQueries:      false,       // Don't include params in the SQL log
 			Colorful:                  false,       // Disable color
 		},
 	)
@@ -57,7 +61,7 @@ func SetupTest(t *testing.T) *gorm.DB {
 		t.Fatal(err)
 	}
 
-	if err := db.Exec("TRUNCATE TABLE users, vet_specialties, user_vet_specialties, pet_daycares, pets, size_categories, roles, slots, booked_slots, thumbnails, species, reviews, refresh_tokens, transactions, daily_walks, daily_playtimes, reduce_slots RESTART IDENTITY CASCADE;").Error; err != nil {
+	if err := db.Exec("TRUNCATE TABLE users, vet_specialties, user_vet_specialties, pet_daycares, pets, size_categories, roles, slots, booked_slots, thumbnails, species, reviews, refresh_tokens, transactions, daily_walks, daily_playtimes, reduce_slots, booked_slots_dailies RESTART IDENTITY CASCADE;").Error; err != nil {
 		t.Fatalf("Truncate err: %v", err)
 	}
 
@@ -109,7 +113,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	petDaycareService := service.NewPetDaycareService(db)
 	slotService := service.NewSlotService(db)
 	reviewService := service.NewReviewService(db)
-	petDaycareController := controller.NewPetDaycareController(petDaycareService, slotService, reviewService)
+	petDaycareController := controller.NewPetDaycareController(petDaycareService, petService, slotService, reviewService)
 
 	r.Static("/assets", "./image")
 	r = routes.RegisterUserRoute(r, userController)

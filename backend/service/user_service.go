@@ -155,7 +155,9 @@ func (s *UserServiceImpl) UpdateUserProfile(user *model.UpdateUserRequest) (*mod
 	existingUser.Name = user.Name
 	existingUser.Email = user.Email
 	existingUser.RoleID = user.RoleID
-	existingUser.ImageUrl = &user.ImageUrl
+	if user.ImageUrl != "" {
+		existingUser.ImageUrl = &user.ImageUrl
+	}
 
 	// Update VetSpecialty association if needed
 	if user.RoleID == 3 && user.VetSpecialtyID != nil {

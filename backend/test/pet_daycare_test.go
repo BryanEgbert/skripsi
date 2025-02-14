@@ -28,6 +28,96 @@ type UserCoordinate struct {
 	Long float64
 }
 
+func TestGetBookedPet(t *testing.T) {
+	token1, _, _ := helper.CreateJWT(1)
+	token2, _, _ := helper.CreateJWT(2)
+	testPetDto := []model.PetDTO{
+		{
+			ID:       1,
+			Name:     "Buddy",
+			ImageUrl: "test.com/image/dog.jpeg",
+			Status:   "idle",
+			Species: model.Species{
+				ID:   1,
+				Name: "dogs",
+			},
+			SizeCategory: model.SizeCategory{
+				ID:        1,
+				Name:      "small",
+				MinWeight: 0,
+				MaxWeight: 10,
+			},
+			Owner: model.UserDTO{
+				ID:       1,
+				Name:     "John Doe",
+				Email:    "john@example.com",
+				ImageUrl: "test.com/image/test.jpeg",
+				RoleID:   1,
+			},
+		},
+	}
+
+	tests := []PetDaycareTestTable[any]{
+		{
+			Name:           "On get booked pets, should return pets if daycare ID exists in DB",
+			ID:             1,
+			Token:          token2,
+			ExpectedStatus: 200,
+			ExpectedOutput: model.GetBookedPetsResponse{
+				Data: testPetDto,
+			},
+		},
+		{
+			Name:           "On get booked pets, should return empty array if no pet is booked on pet daycare",
+			ID:             2,
+			Token:          token2,
+			ExpectedStatus: 200,
+			ExpectedOutput: model.GetBookedPetsResponse{Data: []model.PetDTO{}},
+		},
+		{
+			Name:           "On get booked pets, should return 200 if user is not the owner of pet daycare",
+			ID:             1,
+			Token:          token1,
+			ExpectedStatus: 200,
+			ExpectedOutput: model.GetBookedPetsResponse{Data: []model.PetDTO{}},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			db := setup.SetupTest(t)
+			r := setup.Setup(db)
+
+			w := httptest.NewRecorder()
+
+			req, err := http.NewRequest("GET", fmt.Sprintf("/daycare/%d/pets", test.ID), nil)
+			if err != nil {
+				t.Errorf("http NewRequest err: %v", err)
+			}
+			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", test.Token))
+			r.ServeHTTP(w, req)
+
+			assert.Equal(t, test.ExpectedStatus, w.Code, w.Body.String())
+
+			if w.Code == 200 {
+				var res model.GetBookedPetsResponse
+				resBody, _ := io.ReadAll(w.Body)
+
+				if err := json.Unmarshal(resBody, &res); err != nil {
+					t.Errorf("json Unmarshal err: %v", err)
+				}
+
+				for i, _ := range res.Data {
+					res.Data[i].Owner.CreatedAt = ""
+				}
+
+				assert.Equal(t, test.ExpectedOutput, res)
+				t.Logf("get booked pets:\n%+v", res)
+			}
+
+		})
+	}
+}
+
 func TestGetPetDaycare(t *testing.T) {
 	token1, _, _ := helper.CreateJWT(1)
 
@@ -175,7 +265,7 @@ func TestGetPetDaycareSlot(t *testing.T) {
 	tests := []PetDaycareTestTable[model.GetSlotRequest]{
 		{
 			Name: "On get pet daycare slot, should return slot of the month",
-			ID:   2,
+			ID:   1,
 			In: model.GetSlotRequest{
 				SpeciesID:      1,
 				SizeCategoryID: 1,

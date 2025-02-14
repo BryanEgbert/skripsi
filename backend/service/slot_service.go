@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/BryanEgbert/skripsi/model"
@@ -42,14 +43,32 @@ func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) 
 	}
 
 	var bookedSlots []model.BookedSlotsDailyDTO
-	if err := s.db.
+	// if err := s.db.
+	// 	Model(&model.BookedSlotsDaily{}).
+	// 	Select("date, SUM(slot_count) AS slot_count").
+	// 	Where("daycare_id = ? AND date BETWEEN ? AND ?", petDaycareId, firstDay, lastDay).
+	// 	Group("date").
+	// 	Find(&bookedSlots).Error; err != nil {
+	// 	return nil, err
+	// }
+	rows, err := s.db.
 		Model(&model.BookedSlotsDaily{}).
 		Select("date, SUM(slot_count) AS slot_count").
-		Group("date").
 		Where("daycare_id = ? AND date BETWEEN ? AND ?", petDaycareId, firstDay, lastDay).
-		Find(&bookedSlots).Error; err != nil {
+		Group("date").Rows()
+	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+
+	for rows.Next() {
+
+		bookedSlot := model.BookedSlotsDailyDTO{}
+		s.db.ScanRows(rows, &bookedSlot)
+		bookedSlots = append(bookedSlots, bookedSlot)
+	}
+
+	fmt.Printf("Booked slots: %+v", bookedSlots)
 
 	reduceSlotsMap := make(map[string]int)
 	for _, r := range reduceSlots {
@@ -158,12 +177,6 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 		StartDate: req.StartDate,
 		EndDate:   req.EndDate,
 	}
-
-	// if err := s.db.
-	// 	Clauses(clause.Returning{}).
-	// 	Create(&newBookSlot).Error; err != nil {
-	// 	return err
-	// }
 
 	newTransaction := model.Transaction{
 		PetDaycareID: req.DaycareID,

@@ -21,12 +21,17 @@ type Pet struct {
 }
 
 type PetDTO struct {
-	ID           uint
-	Name         string
-	ImageUrl     string
-	Status       string
-	Species      Species
-	SizeCategory SizeCategory
+	ID           uint         `json:"id"`
+	Name         string       `json:"name"`
+	ImageUrl     string       `json:"imageUrl"`
+	Status       string       `json:"status"`
+	Owner        UserDTO      `json:"owner"`
+	Species      Species      `json:"species"`
+	SizeCategory SizeCategory `json:"sizeCategory"`
+}
+
+type GetBookedPetsResponse struct {
+	Data []PetDTO `json:"data"`
 }
 
 type PetRequest struct {

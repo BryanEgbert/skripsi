@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strconv"
 	"strings"
 	"testing"
@@ -223,6 +224,22 @@ func TestUpdateUser(t *testing.T) {
 				}
 			}
 
+			formFile, err := writer.CreateFormFile("image", "image/user_test.png")
+			if err != nil {
+				t.Fatalf("error creating form file: %v", err)
+			}
+
+			buf, err := os.Open("image/user_test.png")
+			if err != nil {
+				t.Fatalf("error opening file: %v", err)
+			}
+			defer buf.Close()
+
+			_, err = io.Copy(formFile, buf)
+			if err != nil {
+				t.Fatalf("error sending image: %v", err)
+			}
+
 			writer.Close()
 
 			req, err := http.NewRequest("PUT", "/users", body)
@@ -245,6 +262,10 @@ func TestUpdateUser(t *testing.T) {
 				}
 
 				assert.Equal(t, test.ExpectedOutput, res)
+
+				var user model.User
+				db.First(&user, test.In.ID)
+				assert.NotEqual(t, user.ImageUrl, "test.com/image/test.jpeg")
 			}
 		})
 	}
