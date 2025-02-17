@@ -103,9 +103,9 @@ func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]model.PetDTO, error) {
 	var pets []model.Pet
 	query := s.db.
-		Preload("Species").
-		Preload("SizeCategory").
-		Preload("Owner").
+		Joins("Species").
+		Joins("SizeCategory").
+		Joins("Owner").
 		Where("owner_id = ?", ownerID).
 		Order("id ASC").
 		Limit(pageSize)

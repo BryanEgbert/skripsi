@@ -36,7 +36,7 @@ NOTE: Must re-test everything
     - [x] daily playtime
   - [x] Create pet daycares
   - [x] Delete pet daycare
-  - [ ] View previously booked pet daycares
+  - [x] View previously booked pet daycares
   - [x] Book slots
   - [x] Edit available slot in a day for pet daycare provider
   - [x] Edit pet daycare information

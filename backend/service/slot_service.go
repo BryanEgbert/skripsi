@@ -125,6 +125,15 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 		return err
 	}
 
+	var pricingType string
+	if err := s.db.
+		Model(&model.PetDaycare{}).
+		Select("pricing_type").
+		Where("id = ?", req.DaycareID).
+		Scan(&pricingType).Error; err != nil {
+		return err
+	}
+
 	slot := model.Slots{
 		SpeciesID: speciesId,
 		DaycareID: req.DaycareID,
@@ -163,12 +172,9 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 		return errors.New("Slots are full in between the chosen date")
 	}
 
-	tx := s.db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
+	if pricingType == "night" && int(req.EndDate.Sub(req.StartDate)/(24*time.Hour)) < 2 {
+		return errors.New("Invalid booking: This pet daycare charges per night. A minimum of one night stay is required. Please adjust your booking dates.")
+	}
 
 	newBookSlot := model.BookedSlot{
 		UserID:    userId,
@@ -181,7 +187,15 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 	newTransaction := model.Transaction{
 		PetDaycareID: req.DaycareID,
 		BookedSlot:   newBookSlot,
+		UserID:       userId,
 	}
+
+	tx := s.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
 	if err := tx.Create(&newTransaction).Error; err != nil {
 		return err
