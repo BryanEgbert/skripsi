@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -11,6 +12,7 @@ import (
 	"github.com/BryanEgbert/skripsi/model"
 	"github.com/BryanEgbert/skripsi/service"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type PetDaycareController struct {
@@ -27,7 +29,10 @@ func NewPetDaycareController(petDaycareService service.PetDaycareService, petSer
 func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
 	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid pet daycare ID",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -37,7 +42,10 @@ func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
 	if lastIDQuery != "" {
 		lastID, err = strconv.ParseUint(lastIDQuery, 10, 64)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "Invalid last ID",
+				Error:   err.Error(),
+			})
 			return
 		}
 	}
@@ -48,7 +56,10 @@ func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
 	if sizeQuery != "" {
 		pageSize, err = strconv.Atoi(sizeQuery)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "Invalid page size",
+				Error:   err.Error(),
+			})
 			return
 		}
 	}
@@ -56,7 +67,10 @@ func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
 	// Fetch reviews using the service
 	reviews, err := pdc.reviewService.GetReviews(uint(petDaycareID), uint(lastID), pageSize)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve reviews", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to retrieve reviews",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -66,31 +80,44 @@ func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
 func (pdc *PetDaycareController) CreateReview(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
 		return
 	}
 
 	userID, ok := userIDRaw.(uint)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
 		return
 	}
 
 	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid pet daycare ID",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	var req model.CreateReviewRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request body",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	err = pdc.reviewService.CreateReview(uint(petDaycareID), uint(userID), req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create review"})
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to create review",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -100,25 +127,35 @@ func (pdc *PetDaycareController) CreateReview(c *gin.Context) {
 func (pdc *PetDaycareController) DeleteReview(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
 		return
 	}
 
 	userID, ok := userIDRaw.(uint)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
 		return
 	}
 
 	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid pet daycare ID",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	err = pdc.reviewService.DeleteReview(uint(petDaycareID), uint(userID))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Review not found"})
+		c.JSON(http.StatusNotFound, model.ErrorResponse{
+			Message: "Review not found",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -128,18 +165,26 @@ func (pdc *PetDaycareController) DeleteReview(c *gin.Context) {
 func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
 	slotID, err := strconv.ParseUint(c.Param("slotId"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid slot ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid slot ID",
+		})
 		return
 	}
 
 	var req model.ReduceSlotsRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data", "details": err.Error()})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request data",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	if err := pdc.slotService.EditSlotCount(uint(slotID), req); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot edit slot count", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Cannot edit slot count",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -149,32 +194,47 @@ func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
 func (pdc *PetDaycareController) GetPetDaycareSlots(c *gin.Context) {
 	speciesId, err := strconv.ParseInt(c.Query("species"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid species"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid species",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	sizeCategoryId, err := strconv.ParseInt(c.Query("size"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid size category"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid size category",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	year, err := strconv.ParseInt(c.Query("year"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid year"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid year",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	month, err := strconv.ParseInt(c.Query("month"), 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid month"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid month",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	petDaycareIDParam := c.Param("id")
 	petDaycareID, err := strconv.ParseUint(petDaycareIDParam, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid pet daycare ID",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -185,7 +245,10 @@ func (pdc *PetDaycareController) GetPetDaycareSlots(c *gin.Context) {
 		Month:          int(month),
 	})
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNotFound, model.ErrorResponse{
+			Message: "Failed to get slots",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -195,25 +258,45 @@ func (pdc *PetDaycareController) GetPetDaycareSlots(c *gin.Context) {
 func (pdc *PetDaycareController) GetPetDaycare(c *gin.Context) {
 	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid pet daycare ID",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	latitude, err := strconv.ParseFloat(c.Query("lat"), 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid latitude"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid latitude",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	longitude, err := strconv.ParseFloat(c.Query("long"), 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid longitude"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid longitude",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	output, err := pdc.petDaycareService.GetPetDaycare(uint(petDaycareID), latitude, longitude)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, model.ErrorResponse{
+				Message: "Pet daycare does not exists",
+				Error:   err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to fetch pet daycare",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -223,31 +306,44 @@ func (pdc *PetDaycareController) GetPetDaycare(c *gin.Context) {
 func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+
 		return
 	}
 
 	userID, ok := userIDRaw.(uint)
 	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
 		return
 	}
 
 	petDaycareIDParam := c.Param("id")
 	petDaycareID, err := strconv.ParseUint(petDaycareIDParam, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid pet daycare ID",
+		})
 		return
 	}
 
 	var request model.CreatePetDaycareRequest
 	if err := c.ShouldBind(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data", "details": err.Error()})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request data",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	if len(request.SpeciesID) != len(request.SizeCategoryID) || len(request.SpeciesID) != len(request.MaxNumber) || len(request.SizeCategoryID) != len(request.MaxNumber) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "speciesId, sizeCategoryId, and maxNumber must be the same length"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "speciesId, sizeCategoryId, and maxNumber must be the same length",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -257,7 +353,10 @@ func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("%s/%s", c.Request.Host, filename))
 
 		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image", "details": err.Error()})
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "Failed to save image",
+				Error:   err.Error(),
+			})
 			return
 		}
 	}
@@ -265,7 +364,10 @@ func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 
 	daycare, err := pdc.petDaycareService.UpdatePetDaycare(uint(petDaycareID), userID, request)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to update pet daycare",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -276,24 +378,33 @@ func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
 		return
 	}
 
 	userID, ok := userIDRaw.(uint)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
 		return
 	}
 
 	var request model.CreatePetDaycareRequest
 	if err := c.ShouldBind(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data", "details": err.Error()})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request data",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	if len(request.SpeciesID) != len(request.SizeCategoryID) || len(request.SpeciesID) != len(request.MaxNumber) || len(request.SizeCategoryID) != len(request.MaxNumber) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "speciesId, sizeCategoryId, and maxNumber must be the same length"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "speciesId, sizeCategoryId, and maxNumber must be the same length",
+		})
 		return
 	}
 
@@ -303,7 +414,10 @@ func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("%s/%s", c.Request.Host, filename))
 
 		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image", "details": err.Error()})
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "Failed to save image",
+				Error:   err.Error(),
+			})
 			return
 		}
 	}
@@ -311,7 +425,10 @@ func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 
 	daycare, err := pdc.petDaycareService.CreatePetDaycare(userID, request)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to create pet daycare",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -322,25 +439,37 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 	// Parse user GPS location
 	userLat, err := strconv.ParseFloat(c.Query("lat"), 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid latitude"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid latitude",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	userLng, err := strconv.ParseFloat(c.Query("long"), 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid longitude"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid longitude",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid last ID",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid page size",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -355,7 +484,11 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 		filters.MinDistance = &value
 	}
 	if maxDist := c.Query("max-distance"); maxDist != "" {
-		value, _ := strconv.ParseFloat(maxDist, 64)
+		value, err := strconv.ParseFloat(maxDist, 64)
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "max distance is required",
+			Error:   err.Error(),
+		})
 		filters.MaxDistance = &value
 	}
 	if facilities := c.Query("facilities"); facilities != "" {
@@ -386,7 +519,10 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 	// Call service
 	daycares, err := pdc.petDaycareService.GetPetDaycares(filters, uint(lastID), pageSize)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to fetch pet daycares",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -396,24 +532,34 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 func (pdc *PetDaycareController) DeletePetDaycare(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
 		return
 	}
 
 	userID, ok := userIDRaw.(uint)
 	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
 		return
 	}
 
 	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid pet daycare ID",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	if err := pdc.petDaycareService.DeletePetDaycare(uint(petDaycareID), uint(userID)); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to delete pet daycare",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -423,37 +569,52 @@ func (pdc *PetDaycareController) DeletePetDaycare(c *gin.Context) {
 func (pdc *PetDaycareController) GetBookedPets(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
 		return
 	}
 
 	userID, ok := userIDRaw.(uint)
 	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
 		return
 	}
 
 	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pet daycare ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid pet daycare ID",
+		})
 		return
 	}
 
 	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid last ID",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid page size",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	out, err := pdc.petService.GetBookedPets(userID, uint(petDaycareID), uint(lastID), pageSize)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot get pets", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to fetch pets",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -463,32 +624,45 @@ func (pdc *PetDaycareController) GetBookedPets(c *gin.Context) {
 func (pdc *PetDaycareController) BookSlot(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
 		return
 	}
 
 	userID, ok := userIDRaw.(uint)
 	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
 		return
 	}
 
 	var req model.BookSlotRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data", "details": err.Error()})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request data",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	daycareId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data", "details": err.Error()})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request data",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	req.DaycareID = uint(daycareId)
 
 	if err := pdc.slotService.BookSlots(userID, req); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to book slots",
+			Error:   err.Error(),
+		})
 		return
 	}
 

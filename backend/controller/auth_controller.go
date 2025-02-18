@@ -22,13 +22,18 @@ func NewAuthController(authService service.AuthService) *AuthController {
 func (c *AuthController) Login(ctx *gin.Context) {
 	var req model.LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request body",
+		})
 		return
 	}
 
 	tokenResponse, err := c.authService.Login(req.Email, req.Password)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Invalid email or password",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -39,13 +44,19 @@ func (c *AuthController) Login(ctx *gin.Context) {
 func (c *AuthController) RefreshToken(ctx *gin.Context) {
 	var req model.RefreshTokenRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request body",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	tokenResponse, err := c.authService.RefreshToken(req.RefreshToken)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Failed to refresh token",
+			Error:   err.Error(),
+		})
 		return
 	}
 

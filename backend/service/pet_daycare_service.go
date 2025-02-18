@@ -108,7 +108,7 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 		for _, thumbnailURL := range newData.ThumbnailURLs {
 			// filePath, err := helper.UploadImage(file) // Implement this function to handle file uploads
 			// if err != nil {
-			tx.Rollback()
+			// tx.Rollback()
 			// 	return nil, err
 			// }
 			thumbnails = append(thumbnails, model.Thumbnail{DaycareID: daycare.ID, ImageUrl: thumbnailURL})

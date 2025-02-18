@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"github.com/BryanEgbert/skripsi/model"
 	"github.com/BryanEgbert/skripsi/service"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // UserController struct
@@ -32,26 +34,38 @@ func (uc *UserController) GetVets(c *gin.Context) {
 	if specialtyIdQuery != "" {
 		specialtyId, err = strconv.ParseUint(specialtyIdQuery, 10, 64)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "Invalid specialty ID",
+				Error:   err.Error(),
+			})
 			return
 		}
 	}
 
 	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid last ID",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "details": err.Error()})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid page size",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	vets, err := uc.UserService.GetVets(uint(specialtyId), uint(lastID), pageSize)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot get vets", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to get vets",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -62,13 +76,27 @@ func (uc *UserController) GetVets(c *gin.Context) {
 func (uc *UserController) GetUser(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	user, err := uc.UserService.GetUser(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, model.ErrorResponse{
+				Message: "User not found",
+				Error:   err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to fetch user",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -81,13 +109,18 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 
 	// Bind form-data
 	if err := c.ShouldBind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid form-data"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request body",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	if req.RoleID == 3 {
 		if req.VetSpecialtyID == nil || len(*req.VetSpecialtyID) == 0 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "vet specialty is required for vet role"})
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "Vet specialty is required for vet role",
+			})
 			return
 		}
 	}
@@ -99,7 +132,10 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(req.Image.Filename)))
 
 		if err := c.SaveUploadedFile(req.Image, imagePath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image", "details": err.Error()})
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "Failed to save image",
+				Error:   err.Error(),
+			})
 			return
 		}
 
@@ -108,7 +144,10 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 
 	createdUser, err := uc.UserService.CreateUser(req)
 	if err != nil {
-		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		c.JSON(http.StatusConflict, model.ErrorResponse{
+			Message: "Failed to create new user",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -120,13 +159,18 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 	// Get user ID from JWT middleware
 	userID, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in token"})
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "User ID not found in token",
+		})
 		return
 	}
 
 	err := uc.UserService.DeleteUser(userID.(uint))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Failed to delete user"})
+		c.JSON(http.StatusNotFound, model.ErrorResponse{
+			Message: "Failed to delete user",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -138,19 +182,26 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 	// Get user ID from JWT
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in token"})
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "User ID not found in token",
+		})
 		return
 	}
 
 	userID, ok := userIDRaw.(uint)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
 		return
 	}
 
 	var req model.UpdateUserRequest
 	if err := c.ShouldBind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid form-data"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request body",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -161,7 +212,10 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.Image.Filename)))
 
 		if err := c.SaveUploadedFile(req.Image, imagePath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image", "details": err.Error()})
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "Failed to save image",
+				Error:   err.Error(),
+			})
 			return
 		}
 
@@ -170,7 +224,10 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 
 	updatedUser, err := uc.UserService.UpdateUserProfile(&req)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Failed to update user profile", "details": err.Error()})
+		c.JSON(http.StatusNotFound, model.ErrorResponse{
+			Message: "Failed to update user profile",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -182,20 +239,28 @@ func (uc *UserController) UpdateUserPassword(c *gin.Context) {
 	// Get user ID from JWT middleware
 	userID, exists := c.Get("userID")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in token"})
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "User ID not found in token",
+		})
 		return
 	}
 
 	var req model.UpdatePasswordRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil || req.NewPassword == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request body",
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	err := uc.UserService.UpdateUserPassword(userID.(uint), req.NewPassword)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Failed to update password", "details": err.Error()})
+		c.JSON(http.StatusNotFound, model.ErrorResponse{
+			Message: "Failed to update password",
+			Error:   err.Error(),
+		})
 		return
 	}
 
