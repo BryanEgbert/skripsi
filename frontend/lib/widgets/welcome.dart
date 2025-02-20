@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/validator.dart';
 
 class WelcomeWidget extends StatefulWidget {
   const WelcomeWidget({super.key});
@@ -8,63 +9,125 @@ class WelcomeWidget extends StatefulWidget {
 }
 
 class _WelcomeWidgetState extends State<WelcomeWidget> {
+  final _formGlobalKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
-          margin: EdgeInsets.symmetric(horizontal: 26),
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      body: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 26),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: -25,
-                children: [
-                  RichText(
-                    textAlign: TextAlign.start,
-                    text: TextSpan(
-                      text: "Welcome to\n",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "AppName\n",
-                          style: TextStyle(
-                            color: Colors.orangeAccent,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 40,
-                          ),
+              Container(
+                margin: EdgeInsets.only(top: 200),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      textAlign: TextAlign.start,
+                      text: const TextSpan(
+                        text: "Welcome to\n",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
                         ),
+                        children: [
+                          TextSpan(
+                            text: "AppName\n",
+                            style: TextStyle(
+                              color: Colors.orangeAccent,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
+                            ),
+                          ),
+                          TextSpan(
+                            text:
+                                "The smarter way to find pet daycares & connect with vets!",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // const Text(
+                    //   "The smarter way to find pet daycares & connect with vets!",
+                    //   style: TextStyle(fontSize: 20),
+                    // ),
+                  ],
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 100),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Form(
+                      key: _formGlobalKey,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextFormField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              labelText: "Email",
+                            ),
+                            // validator: (value) {
+                            //   return validateEmail(value);
+                            // },
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ), // Add spacing between fields
+                          TextFormField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              labelText: "Password",
+                            ),
+                            obscureText: true,
+                            enableSuggestions: false,
+                            autocorrect: false,
+                          ),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          FilledButton(
+                            onPressed: () {
+                              if (_formGlobalKey.currentState!.validate()) {
+                                print("Login");
+                              }
+                            },
+                            child: const Text("Login"),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Expanded(child: Divider()),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text("or"),
+                        ),
+                        Expanded(child: Divider()),
                       ],
                     ),
-                  ),
-                  Text(
-                    "The smarter way to find pet daycares & connect with vets!",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: 8,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Text("Register as pet owner"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Text("Register as pet daycare provider"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Text("Register as veterinarian"),
-                  ),
-                ],
+                    FilledButton(
+                      onPressed: () {},
+                      child: const Text("Create An Account"),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

@@ -10,7 +10,7 @@ type BookedSlot struct {
 	gorm.Model
 	UserID    uint      `gorm:"not null"`
 	DaycareID uint      `gorm:"not null"`
-	PetID     uint      `gorm:"not null"`
+	PetID     uint      `gorm:"not null,unique"`
 	StartDate time.Time `gorm:"not null"`
 	EndDate   time.Time `gorm:"not null"`
 
