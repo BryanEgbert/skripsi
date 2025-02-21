@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/BryanEgbert/skripsi/helper"
@@ -33,7 +34,7 @@ func NewUserService(db *gorm.DB) *UserServiceImpl {
 
 func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize int) (*[]model.UserDTO, error) {
 	var user []model.UserDTO
-	if err := s.db.Preload("VetSpecialty", "id = ?", vetSpecialtyId).Find(&user).Error; err != nil {
+	if err := s.db.Preload("VetSpecialty", "id = ?", vetSpecialtyId).Joins("Role").Find(&user).Error; err != nil {
 		return nil, err
 	}
 
@@ -43,7 +44,7 @@ func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize in
 // GetUser retrieves a user by ID and returns a UserDTO
 func (s *UserServiceImpl) GetUser(id int64) (*model.UserDTO, error) {
 	var user model.User
-	if err := s.db.Preload("VetSpecialty").First(&user, id).Error; err != nil {
+	if err := s.db.Preload("VetSpecialty").Joins("Role").First(&user, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -80,17 +81,22 @@ func (s *UserServiceImpl) CreateUser(request model.CreateUserRequest) (*model.To
 
 	// Vet role validation (VetSpecialty required)
 	if request.RoleID == 3 {
-		if request.VetSpecialtyID == nil || len(*request.VetSpecialtyID) == 0 {
+		if request.VetSpecialtyID == nil {
+			return nil, errors.New("VetSpecialty is required for vet role")
+		}
+
+		vetSpecialtyIds := strings.Split(*request.VetSpecialtyID, ",")
+		if len(vetSpecialtyIds) <= 0 {
 			return nil, errors.New("VetSpecialty is required for vet role")
 		}
 
 		// Validate all VetSpecialty IDs exist
 		var validSpecialties []model.VetSpecialty
-		if err := s.db.Where("id IN ?", *request.VetSpecialtyID).Find(&validSpecialties).Error; err != nil {
+		if err := s.db.Where("id IN ?", vetSpecialtyIds).Find(&validSpecialties).Error; err != nil {
 			return nil, err
 		}
 
-		if len(validSpecialties) != len(*request.VetSpecialtyID) {
+		if len(validSpecialties) != len(vetSpecialtyIds) {
 			return nil, errors.New("One or more VetSpecialty IDs are invalid")
 		}
 

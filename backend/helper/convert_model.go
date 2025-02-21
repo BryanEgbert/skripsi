@@ -15,7 +15,7 @@ func ConvertUserToDTO(user model.User) model.UserDTO {
 		ID:           user.ID,
 		Name:         user.Name,
 		Email:        user.Email,
-		RoleID:       user.RoleID,
+		Role:         user.Role.Name,
 		CreatedAt:    user.CreatedAt.String(),
 		VetSpecialty: user.VetSpecialty,
 		ImageUrl:     *user.ImageUrl,

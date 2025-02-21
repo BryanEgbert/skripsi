@@ -30,12 +30,13 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, daycareId uint, startID uint
 
 	rows, err := s.db.
 		Model(&model.Pet{}).
-		Select("pets.id,pets.name,pets.image_url,pets.status,species.*, size_categories.*, users.id, users.name, users.email, users.image_url, users.role_id, users.created_at").
+		Select("pets.id,pets.name,pets.image_url,pets.status,species.*, size_categories.*, users.id, users.name, users.email, users.image_url, roles.name, users.created_at").
 		Joins("JOIN booked_slots on booked_slots.pet_id = pets.id").
 		Joins("JOIN species ON species.id = pets.species_id").
 		Joins("JOIN size_categories ON size_categories.id = pets.size_id").
 		Joins("JOIN pet_daycares ON pet_daycares.id = booked_slots.daycare_id").
 		Joins("JOIN users ON users.id = pets.owner_id").
+		Joins("JOIN roles ON roles.id = users.role_id").
 		Where("booked_slots.daycare_id = ? AND pets.id > ? AND pet_daycares.owner_id = ?", daycareId, startID, userId).
 		Limit(pageSize).Rows()
 	if err != nil {
@@ -60,7 +61,7 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, daycareId uint, startID uint
 			&petDto.Owner.Name,
 			&petDto.Owner.Email,
 			&petDto.Owner.ImageUrl,
-			&petDto.Owner.RoleID,
+			&petDto.Owner.Role,
 			&petDto.Owner.CreatedAt,
 		)
 		petDtos = append(petDtos, petDto)

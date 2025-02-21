@@ -31,7 +31,7 @@ func (c *AuthController) Login(ctx *gin.Context) {
 	tokenResponse, err := c.authService.Login(req.Email, req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, model.ErrorResponse{
-			Message: "Invalid email or password",
+			Message: "Incorrect email or password",
 			Error:   err.Error(),
 		})
 		return

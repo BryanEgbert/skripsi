@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/components/login_form.dart';
+import 'package:frontend/model/token_response.dart';
+import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/utils/validator.dart';
 
-class WelcomeWidget extends StatefulWidget {
+class WelcomeWidget extends StatelessWidget {
   const WelcomeWidget({super.key});
-
-  @override
-  State<WelcomeWidget> createState() => _WelcomeWidgetState();
-}
-
-class _WelcomeWidgetState extends State<WelcomeWidget> {
-  final _formGlobalKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +52,6 @@ class _WelcomeWidgetState extends State<WelcomeWidget> {
                         ],
                       ),
                     ),
-                    // const Text(
-                    //   "The smarter way to find pet daycares & connect with vets!",
-                    //   style: TextStyle(fontSize: 20),
-                    // ),
                   ],
                 ),
               ),
@@ -67,51 +60,7 @@ class _WelcomeWidgetState extends State<WelcomeWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Form(
-                      key: _formGlobalKey,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          TextFormField(
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              labelText: "Email",
-                            ),
-                            // validator: (value) {
-                            //   return validateEmail(value);
-                            // },
-                          ),
-                          const SizedBox(
-                            height: 8,
-                          ), // Add spacing between fields
-                          TextFormField(
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              labelText: "Password",
-                            ),
-                            obscureText: true,
-                            enableSuggestions: false,
-                            autocorrect: false,
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          FilledButton(
-                            onPressed: () {
-                              if (_formGlobalKey.currentState!.validate()) {
-                                print("Login");
-                              }
-                            },
-                            child: const Text("Login"),
-                          ),
-                        ],
-                      ),
-                    ),
+                    LoginForm(),
                     Row(
                       children: <Widget>[
                         Expanded(child: Divider()),
