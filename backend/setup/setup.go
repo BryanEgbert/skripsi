@@ -115,11 +115,16 @@ func Setup(db *gorm.DB) *gin.Engine {
 	reviewService := service.NewReviewService(db)
 	petDaycareController := controller.NewPetDaycareController(petDaycareService, petService, slotService, reviewService)
 
+	categoryService := service.NewCategoryService(db)
+	categoryController := controller.NewCategoryController(categoryService)
+
+
 	r.Static("/assets", "./image")
 	r = routes.RegisterUserRoute(r, userController)
 	r = routes.RegisterAuthRoute(r, authController)
 	r = routes.RegisterPetRoutes(r, petController)
 	r = routes.RegisterPetDaycareRoutes(r, petDaycareController)
+	r = routes.RegisterCategoryRoutes(r, categoryController)
 
 	return r
 }

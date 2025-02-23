@@ -1,0 +1,14 @@
+package routes
+
+import (
+	"github.com/BryanEgbert/skripsi/controller"
+	"github.com/gin-gonic/gin"
+)
+
+func RegisterCategoryRoutes(r *gin.Engine, categoryController *controller.CategoryController) *gin.Engine {
+	r.GET("/vet-specialties", categoryController.GetVetSpecialties)
+	r.GET("/species", categoryController.GetSpecies)
+	r.GET("size-categories", categoryController.GetSizeCategories)
+
+	return r
+}

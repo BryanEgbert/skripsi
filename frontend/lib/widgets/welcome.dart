@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/login_form.dart';
-import 'package:frontend/model/token_response.dart';
-import 'package:frontend/provider/auth_provider.dart';
-import 'package:frontend/utils/validator.dart';
+import 'package:frontend/widgets/pick_role_page.dart';
 
 class WelcomeWidget extends StatelessWidget {
   const WelcomeWidget({super.key});
@@ -72,7 +69,12 @@ class WelcomeWidget extends StatelessWidget {
                       ],
                     ),
                     FilledButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => const PickRolePage()),
+                        );
+                      },
                       child: const Text("Create An Account"),
                     ),
                   ],

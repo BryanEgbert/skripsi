@@ -342,7 +342,6 @@ func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 	if len(request.SpeciesID) != len(request.SizeCategoryID) || len(request.SpeciesID) != len(request.MaxNumber) || len(request.SizeCategoryID) != len(request.MaxNumber) {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "speciesId, sizeCategoryId, and maxNumber must be the same length",
-			Error:   err.Error(),
 		})
 		return
 	}

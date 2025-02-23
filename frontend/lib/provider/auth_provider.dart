@@ -1,4 +1,5 @@
-import 'package:frontend/model/token_response.dart';
+import 'package:frontend/model/create_user_request.dart';
+import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/repository/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -15,6 +16,28 @@ class Auth extends _$Auth {
     var repo = AuthRepository();
     try {
       var tokenRes = await repo.login(email, password);
+
+      state = AsyncData(tokenRes);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> register(CreateUserRequest user) async {
+    var repo = AuthRepository();
+    try {
+      var tokenRes = await repo.register(user);
+
+      state = AsyncData(tokenRes);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> refreshToken(String token) async {
+    var repo = AuthRepository();
+    try {
+      var tokenRes = await repo.refreshToken(token);
 
       state = AsyncData(tokenRes);
     } catch (e) {
