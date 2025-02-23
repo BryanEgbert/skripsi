@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/model/create_user_request.dart';
+import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/response/error_response.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:http/http.dart' as http;

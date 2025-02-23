@@ -69,7 +69,7 @@ func (uc *UserController) GetVets(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, vets)
+	c.JSON(http.StatusOK, gin.H{"data": vets})
 }
 
 // GetUser fetches a user by ID (keeps ID in URL param for admin access)
