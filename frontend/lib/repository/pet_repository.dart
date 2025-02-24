@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/request/pet_request.dart';
+import 'package:http/http.dart' as http;
 
 abstract interface class IPetRepository {
   Future<Pet> getById(String token, String id);
@@ -12,14 +17,47 @@ abstract interface class IPetRepository {
 class PetRepository implements IPetRepository {
   @override
   Future<void> createPet(String token, PetRequest reqBody) {
-    // TODO: implement createPet
-    throw UnimplementedError();
+    return makeRequest(201, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      Map<String, String> headers = {
+        HttpHeaders.contentTypeHeader: "multipart/form-data",
+        HttpHeaders.authorizationHeader: "Bearer $token",
+      };
+
+      var req = http.MultipartRequest("POST", Uri.parse("$host/pets"))
+        ..headers.addAll(headers)
+        ..fields.addAll(reqBody.toMap());
+
+      req.files.add(
+        http.MultipartFile(
+          "image",
+          reqBody.image.readAsBytes().asStream(),
+          reqBody.image.lengthSync(),
+          filename: reqBody.image.path,
+        ),
+      );
+
+      final res = await req.send();
+      var response = await http.Response.fromStream(res);
+
+      return response;
+    });
   }
 
   @override
   Future<void> deletePet(String token, int id) {
-    // TODO: implement deletePet
-    throw UnimplementedError();
+    return makeRequest(204, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      final res = await http.delete(Uri.parse("$host/pets/$id"), headers: {
+        HttpHeaders.authorizationHeader: "Bearer $token",
+      });
+
+      return res;
+    });
   }
 
   @override

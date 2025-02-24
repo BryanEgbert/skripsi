@@ -74,7 +74,7 @@ func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, reviews)
+	c.JSON(http.StatusOK, gin.H{"data": reviews})
 }
 
 func (pdc *PetDaycareController) CreateReview(c *gin.Context) {

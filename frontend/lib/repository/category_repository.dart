@@ -1,81 +1,50 @@
-import 'dart:convert';
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/model/response/error_response.dart';
-import 'package:frontend/model/response/lookup_data.dart';
-import 'package:frontend/model/response/size_category_data.dart';
+import 'package:frontend/model/error_handler/error_handler.dart';
+import 'package:frontend/model/lookup.dart';
+import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/size_category.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/model/lookup.dart';
 
 abstract interface class ICategoryRepository {
-  Future<List<Lookup>> getVetSpecialties();
-  Future<List<Lookup>> getSpecies();
-  Future<List<SizeCategory>> getSizeCategories();
+  Future<Result<ListData<Lookup>>> getVetSpecialties();
+  Future<Result<ListData<Lookup>>> getSpecies();
+  Future<Result<ListData<SizeCategory>>> getSizeCategories();
 }
 
 class CategoryRepository implements ICategoryRepository {
   @override
-  Future<List<Lookup>> getVetSpecialties() async {
-    try {
+  Future<Result<ListData<Lookup>>> getVetSpecialties() async {
+    return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       var res = await http.get(Uri.parse("$host/vet-specialties"));
 
-      if (res.statusCode == 200) {
-        return LookupData.fromJson(jsonDecode(res.body) as Map<String, dynamic>)
-            .data;
-      } else {
-        ErrorResponse errorRes = ErrorResponse.fromJson(
-            jsonDecode(res.body) as Map<String, dynamic>);
-        throw Exception(errorRes.message);
-      }
-    } catch (e) {
-      rethrow;
-    }
+      return res;
+    }, (res) => ListData.fromJson(res, Lookup.fromJson));
   }
 
   @override
-  Future<List<SizeCategory>> getSizeCategories() async {
-    try {
+  Future<Result<ListData<SizeCategory>>> getSizeCategories() async {
+    return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      var res = await http.get(Uri.parse("$host/size-categor"));
+      var res = await http.get(Uri.parse("$host/size-categoriess"));
 
-      if (res.statusCode == 200) {
-        return SizeCategoryData.fromJson(
-                jsonDecode(res.body) as Map<String, dynamic>)
-            .data;
-      } else {
-        ErrorResponse errorRes = ErrorResponse.fromJson(
-            jsonDecode(res.body) as Map<String, dynamic>);
-        throw Exception(errorRes.message);
-      }
-    } catch (e) {
-      rethrow;
-    }
+      return res;
+    }, (res) => ListData<SizeCategory>.fromJson(res, SizeCategory.fromJson));
   }
 
   @override
-  Future<List<Lookup>> getSpecies() async {
-    try {
+  Future<Result<ListData<Lookup>>> getSpecies() async {
+    return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       var res = await http.get(Uri.parse("$host/vet-specialties"));
 
-      if (res.statusCode == 200) {
-        return LookupData.fromJson(jsonDecode(res.body) as Map<String, dynamic>)
-            .data;
-      } else {
-        ErrorResponse errorRes = ErrorResponse.fromJson(
-            jsonDecode(res.body) as Map<String, dynamic>);
-        throw Exception(errorRes.message);
-      }
-    } catch (e) {
-      rethrow;
-    }
+      return res;
+    }, (res) => ListData.fromJson(res, Lookup.fromJson));
   }
 }

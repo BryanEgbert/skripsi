@@ -1,4 +1,5 @@
-import 'package:frontend/model/create_user_request.dart';
+import 'package:frontend/model/error_handler/error_handler.dart';
+import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/repository/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -14,34 +15,40 @@ class Auth extends _$Auth {
 
   Future<void> login(String email, String password) async {
     var repo = AuthRepository();
-    try {
-      var tokenRes = await repo.login(email, password);
+    var tokenRes = await repo.login(email, password);
 
-      state = AsyncData(tokenRes);
-    } catch (e) {
-      rethrow;
+    switch (tokenRes) {
+      case Ok():
+        state = AsyncData(tokenRes.value);
+        break;
+      case Error():
+        return Future.error(tokenRes.error);
     }
-  }
 
-  Future<void> register(CreateUserRequest user) async {
-    var repo = AuthRepository();
-    try {
+    Future<void> register(CreateUserRequest user) async {
+      var repo = AuthRepository();
       var tokenRes = await repo.register(user);
 
-      state = AsyncData(tokenRes);
-    } catch (e) {
-      rethrow;
+      switch (tokenRes) {
+        case Ok():
+          state = AsyncData(tokenRes.value);
+          break;
+        case Error():
+          return Future.error(tokenRes.error);
+      }
     }
-  }
 
-  Future<void> refreshToken(String token) async {
-    var repo = AuthRepository();
-    try {
+    Future<void> refreshToken(String token) async {
+      var repo = AuthRepository();
       var tokenRes = await repo.refreshToken(token);
 
-      state = AsyncData(tokenRes);
-    } catch (e) {
-      rethrow;
+      switch (tokenRes) {
+        case Ok():
+          state = AsyncData(tokenRes.value);
+          break;
+        case Error():
+          return Future.error(tokenRes.error);
+      }
     }
   }
 }

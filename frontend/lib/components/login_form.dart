@@ -79,7 +79,6 @@ class _LoginFormState extends ConsumerState<LoginForm> {
                     if (snapshot.connectionState != ConnectionState.waiting ||
                         snapshot.connectionState == ConnectionState.done) {
                       if (formGlobalKey.currentState!.validate()) {
-                        // TODO: login
                         final future = auth.login(_emailEditingController.text,
                             _passwordEditingController.text);
                         setState(() {
