@@ -33,12 +33,72 @@ func NewUserService(db *gorm.DB) *UserServiceImpl {
 }
 
 func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize int) (*[]model.UserDTO, error) {
-	var user []model.UserDTO
-	if err := s.db.Preload("VetSpecialty", "id = ?", vetSpecialtyId).Joins("Role").Find(&user).Error; err != nil {
-		return nil, err
+	// var users []model.User
+	var out []model.UserDTO
+
+	if vetSpecialtyId == 0 {
+		rows, err := s.db.
+			Table("users").
+			Select("users.id", "users.name", "email", "image_url", "roles.id", "roles.name", "users.created_at").
+			Preload("VetSpecialty").
+			Joins("JOIN roles ON roles.id = users.role_id").Where("roles.id = 3").Rows()
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
+	
+		for rows.Next() {
+			var user model.UserDTO
+			var vetSpecialties []model.VetSpecialty
+
+			rows.Scan(&user.ID, &user.Name, &user.Email, &user.ImageUrl, &user.Role.ID, &user.Role.Name,&user.CreatedAt)	
+
+			if err := s.db.
+				Table("vet_specialties").
+				Select("id", "name").
+				Joins("JOIN user_vet_specialties AS uvs ON vet_specialties.id = uvs.vet_specialty_id").
+				Where("user_id = ?", user.ID).
+				Find(&vetSpecialties).Error; err != nil {
+				return nil, err
+			}
+			
+			user.VetSpecialty = &vetSpecialties
+			out = append(out, user)			
+		}
+	} else {
+		rows, err := s.db.
+			Table("users").
+			Select("users.id", "users.name", "email", "image_url", "roles.id", "roles.name", "users.created_at").
+			Joins("JOIN roles ON roles.id = users.role_id").
+			Joins("JOIN	user_vet_specialties AS uvs ON uvs.user_id = users.id").
+			Preload("VetSpecialty").
+			Where("roles.id = 3 AND uvs.vet_specialty_id = ?", vetSpecialtyId).Rows()
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
+	
+		for rows.Next() {
+			var user model.UserDTO
+			var vetSpecialties []model.VetSpecialty
+
+			rows.Scan(&user.ID, &user.Name, &user.Email, &user.ImageUrl, &user.Role.ID, &user.Role.Name,&user.CreatedAt)
+
+			if err := s.db.
+				Table("vet_specialties").
+				Select("id", "name").
+				Joins("JOIN user_vet_specialties AS uvs ON vet_specialties.id = uvs.vet_specialty_id").
+				Where("user_id = ?", user.ID).
+				Find(&vetSpecialties).Error; err != nil {
+				return nil, err
+			}
+			
+			user.VetSpecialty = &vetSpecialties
+			out = append(out, user)
+		}
 	}
 
-	return &user, nil
+	return &out, nil
 }
 
 // GetUser retrieves a user by ID and returns a UserDTO

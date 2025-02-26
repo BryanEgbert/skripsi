@@ -56,7 +56,10 @@ func TestGetPet(t *testing.T) {
 					Name:     "John Doe",
 					Email:    "john@example.com",
 					ImageUrl: "test.com/image/test.jpeg",
-					Role:   "pet owner",
+					Role: model.Role{
+						ID: 1,
+						Name: "pet owner",
+					},
 				},
 			},
 		},
@@ -132,7 +135,10 @@ func TestGetPets(t *testing.T) {
 						Name:     "John Doe",
 						Email:    "john@example.com",
 						ImageUrl: "test.com/image/test.jpeg",
-						Role:   "pet owner",
+						Role: model.Role{
+							ID: 1,
+							Name: "pet owner",
+						},
 					},
 				},
 				{
@@ -155,7 +161,10 @@ func TestGetPets(t *testing.T) {
 						Name:     "John Doe",
 						Email:    "john@example.com",
 						ImageUrl: "test.com/image/test.jpeg",
-						Role:   "pet owner",
+						Role: model.Role{
+							ID: 1,
+							Name: "pet owner",
+						},
 					},
 				},
 			},

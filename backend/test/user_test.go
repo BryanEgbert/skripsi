@@ -50,7 +50,10 @@ func TestGetUser(t *testing.T) {
 				ID:           1,
 				Name:         "John Doe",
 				Email:        "john@example.com",
-				Role:         "pet owner",
+				Role: model.Role{
+					ID: 1,
+					Name: "pet owner",
+				},
 				ImageUrl:     "test.com/image/test.jpeg",
 				VetSpecialty: &emptyVetSpecialty,
 			},
@@ -64,7 +67,10 @@ func TestGetUser(t *testing.T) {
 				ID:           4,
 				Name:         "Dr. Vet",
 				Email:        "vet@example.com",
-				Role:         "vet",
+				Role: model.Role{
+					ID: 3,
+					Name: "vet",
+				},
 				ImageUrl:     "test.com/image/test.jpeg",
 				VetSpecialty: &vetSpecialty,
 			},
@@ -105,6 +111,104 @@ func TestGetUser(t *testing.T) {
 					res.CreatedAt = ""
 					assert.Equal(t, test.ExpectedOutput, res)
 				}
+
+			}
+
+		})
+	}
+}
+
+func TestGetVets(t *testing.T) {
+	vetSpecialty := []model.VetSpecialty{
+		{ID: 1, Name: "General Practice"},
+		{ID: 2, Name: "Preventive Medicine"},
+		{ID: 3, Name: "Emergency & Critical Care"},
+	}
+
+	token1, _, _ := helper.CreateJWT(1)
+
+	tests := []UserTestTable[int]{
+		{
+			Name:           "On get vets, should return vets",
+			In:             0,
+			Token:          token1,
+			ExpectedStatus: 200,
+			ExpectedOutput: model.ListData[model.UserDTO]{
+				Data: []model.UserDTO{
+					{
+						ID:           4,
+						Name:         "Dr. Vet",
+						Email:        "vet@example.com",
+						Role: model.Role{
+							ID: 3,
+							Name: "vet",
+						},
+						ImageUrl:     "test.com/image/test.jpeg",
+						VetSpecialty: &vetSpecialty,
+					},
+				},
+			}, 	
+		},
+		{
+			Name:           "On login, should return vet with chosen specialty id",
+			In:             1,
+			Token:          token1,
+			ExpectedStatus: 200,
+			ExpectedOutput: model.ListData[model.UserDTO]{
+				Data: []model.UserDTO{
+					{
+						ID:           4,
+						Name:         "Dr. Vet",
+						Email:        "vet@example.com",
+						Role: model.Role{
+							ID: 3,
+							Name: "vet",
+						},
+						ImageUrl:     "test.com/image/test.jpeg",
+						VetSpecialty: &vetSpecialty,
+					},
+				},
+			}, 	
+		},
+		{
+			Name:           "On login, should return empty array if there is no doctor with chosen specialty id",
+			In:             6,
+			Token:          token1,
+			ExpectedStatus: 200,
+			ExpectedOutput: nil,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			db := setup.SetupTest(t)
+			r := setup.Setup(db)
+
+			w := httptest.NewRecorder()
+
+			req, err := http.NewRequest("GET", fmt.Sprintf("/users/vets?specialty-id=%d", test.In), nil)
+			if err != nil {
+				t.Errorf("http NewRequest err: %v", err)
+			}
+			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", test.Token))
+			r.ServeHTTP(w, req)
+
+			assert.Equal(t, test.ExpectedStatus, w.Code)
+
+			if w.Code == 200 {
+				var res model.ListData[model.UserDTO]
+				resBody, _ := io.ReadAll(w.Body)
+
+				if err := json.Unmarshal(resBody, &res); err != nil {
+					t.Errorf("json Unmarshal err: %v", err)
+				}
+
+				if len(res.Data) > 0 {
+					if assert.NotEmpty(t, res.Data[0].CreatedAt) {
+						res.Data[0].CreatedAt = ""
+						assert.Equal(t, test.ExpectedOutput, res)
+					}
+				}
+
 
 			}
 

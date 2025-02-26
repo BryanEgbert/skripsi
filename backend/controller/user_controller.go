@@ -27,19 +27,17 @@ func NewUserController(userService service.UserService) *UserController {
 }
 
 func (uc *UserController) GetVets(c *gin.Context) {
-	specialtyIdQuery := c.Query("specialty-id")
+	specialtyIdQuery := c.DefaultQuery("specialty-id", "0")
 	var specialtyId uint64 = 0
 	var err error
 
-	if specialtyIdQuery != "" {
-		specialtyId, err = strconv.ParseUint(specialtyIdQuery, 10, 64)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, model.ErrorResponse{
-				Message: "Invalid specialty ID",
-				Error:   err.Error(),
-			})
-			return
-		}
+	specialtyId, err = strconv.ParseUint(specialtyIdQuery, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid specialty ID",
+			Error:   err.Error(),
+		})
+		return
 	}
 
 	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)

@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/BryanEgbert/skripsi/controller"
 	"github.com/BryanEgbert/skripsi/helper"
@@ -17,7 +16,6 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 func SetupTest(t *testing.T) *gorm.DB {
@@ -45,38 +43,9 @@ func SetupTest(t *testing.T) *gorm.DB {
 		os.Getenv("DB_NAME"),
 	)
 
-	newLogger := logger.New(
-		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
-		logger.Config{
-			SlowThreshold:             time.Second, // Slow SQL threshold
-			LogLevel:                  logger.Info, // Log level
-			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
-			ParameterizedQueries:      false,       // Don't include params in the SQL log
-			Colorful:                  false,       // Disable color
-		},
-	)
-
-	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{Logger: newLogger})
+	db, err := gorm.Open(postgres.Open(dbURL))
 	if err != nil {
 		t.Fatal(err)
-	}
-
-	if err := db.Exec("TRUNCATE TABLE users, vet_specialties, user_vet_specialties, pet_daycares, pets, size_categories, roles, slots, booked_slots, thumbnails, species, reviews, refresh_tokens, transactions, daily_walks, daily_playtimes, reduce_slots, booked_slots_dailies RESTART IDENTITY CASCADE;").Error; err != nil {
-		t.Fatalf("Truncate err: %v", err)
-	}
-
-	if err := seeder.SeedTable(db); err != nil {
-		t.Fatalf("Seeder err: %v", err)
-	}
-
-	return db
-}
-
-func Setup(db *gorm.DB) *gin.Engine {
-	if _, err := os.Stat("./image"); os.IsNotExist(err) {
-		if err := os.Mkdir("./image", os.ModePerm); err != nil {
-			log.Fatalf("Mkdir err: %s", err.Error())
-		}
 	}
 
 	db.AutoMigrate(
@@ -98,6 +67,44 @@ func Setup(db *gorm.DB) *gin.Engine {
 		&model.ReduceSlots{},
 		&model.BookedSlotsDaily{},
 	)
+
+	if err := db.Exec("TRUNCATE TABLE users, vet_specialties, user_vet_specialties, pet_daycares, pets, size_categories, roles, slots, booked_slots, thumbnails, species, reviews, refresh_tokens, transactions, daily_walks, daily_playtimes, reduce_slots, booked_slots_dailies RESTART IDENTITY CASCADE;").Error; err != nil {
+		t.Fatalf("Truncate err: %v", err)
+	}
+
+	if err := seeder.SeedTable(db); err != nil {
+		t.Fatalf("Seeder err: %v", err)
+	}
+
+	return db
+}
+
+func Setup(db *gorm.DB) *gin.Engine {
+	if _, err := os.Stat("./image"); os.IsNotExist(err) {
+		if err := os.Mkdir("./image", os.ModePerm); err != nil {
+			log.Fatalf("Mkdir err: %s", err.Error())
+		}
+	}
+
+	// db.AutoMigrate(
+	// 	&model.User{},
+	// 	&model.VetSpecialty{},
+	// 	&model.PetDaycare{},
+	// 	&model.Pet{},
+	// 	&model.Slots{},
+	// 	&model.BookedSlot{},
+	// 	&model.SizeCategory{},
+	// 	&model.Thumbnail{},
+	// 	&model.Species{},
+	// 	&model.Role{},
+	// 	&model.Reviews{},
+	// 	&model.RefreshToken{},
+	// 	&model.Transaction{},
+	// 	&model.DailyWalks{},
+	// 	&model.DailyPlaytime{},
+	// 	&model.ReduceSlots{},
+	// 	&model.BookedSlotsDaily{},
+	// )
 
 	r := gin.Default()
 

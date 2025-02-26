@@ -25,7 +25,7 @@ type UserDTO struct {
 	Name         string          `json:"name"`
 	Email        string          `json:"email"`
 	ImageUrl     string          `json:"imageUrl"`
-	Role         string          `json:"role"`
+	Role         Role          `json:"role"`
 	VetSpecialty *[]VetSpecialty `json:"vetSpecialties"`
 	CreatedAt    string          `json:"createdAt"`
 }

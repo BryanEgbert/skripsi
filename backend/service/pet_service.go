@@ -30,7 +30,7 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, daycareId uint, startID uint
 
 	rows, err := s.db.
 		Model(&model.Pet{}).
-		Select("pets.id,pets.name,pets.image_url,pets.status,species.*, size_categories.*, users.id, users.name, users.email, users.image_url, roles.name, users.created_at").
+		Select("pets.id,pets.name,pets.image_url,pets.status,species.*, size_categories.*, users.id, users.name, users.email, users.image_url, roles.id, roles.name, users.created_at").
 		Joins("JOIN booked_slots on booked_slots.pet_id = pets.id").
 		Joins("JOIN species ON species.id = pets.species_id").
 		Joins("JOIN size_categories ON size_categories.id = pets.size_id").
@@ -61,7 +61,8 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, daycareId uint, startID uint
 			&petDto.Owner.Name,
 			&petDto.Owner.Email,
 			&petDto.Owner.ImageUrl,
-			&petDto.Owner.Role,
+			&petDto.Owner.Role.ID,
+			&petDto.Owner.Role.Name,
 			&petDto.Owner.CreatedAt,
 		)
 		petDtos = append(petDtos, petDto)
@@ -78,10 +79,11 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, daycareId uint, startID uint
 func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 	var pet model.Pet
 	if err := s.db.
-		Preload("Species").
-		Preload("SizeCategory").
 		Preload("BookedSlots").
-		Preload("Owner").
+		Joins("Species").
+		Joins("SizeCategory").
+		Joins("Owner").
+		Joins("Owner.Role").
 		First(&pet, id).Error; err != nil {
 		return nil, err
 	}
@@ -107,6 +109,7 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 		Joins("Species").
 		Joins("SizeCategory").
 		Joins("Owner").
+		Joins("Owner.Role").
 		Where("owner_id = ?", ownerID).
 		Order("id ASC").
 		Limit(pageSize)

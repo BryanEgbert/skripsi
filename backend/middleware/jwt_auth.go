@@ -27,7 +27,8 @@ func JWTAuth() gin.HandlerFunc {
 			jwt.WithAudience(os.Getenv("JWT_AUD")),
 			jwt.WithExpirationRequired(),
 			jwt.WithIssuer(os.Getenv("JWT_ISS")),
-			jwt.WithSubject(os.Getenv("JWT_SUB")))
+			jwt.WithSubject(os.Getenv("JWT_SUB")),
+		)
 
 		if err != nil {
 			log.Printf("err: %v", err)

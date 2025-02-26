@@ -33,6 +33,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat float64, long float64
 	if lat != 0.0 && long != 0.0 {
 		if err := s.db.
 			Preload("Owner").
+			Preload("Owner.Role").
 			Preload("DailyWalks").
 			Preload("DailyPlaytime").
 			Preload("Thumbnails").
@@ -50,6 +51,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat float64, long float64
 	} else {
 		if err := s.db.
 			Preload("Owner").
+			Preload("Owner.Role").
 			Preload("DailyWalks").
 			Preload("DailyPlaytime").
 			Preload("Thumbnails").
@@ -260,7 +262,7 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 	s.db.First(&user, userId)
 
 	if user.RoleID != 2 {
-		return nil, errors.New("User cannot create pet daycare")
+		return nil, errors.New("user cannot create pet daycare")
 	}
 
 	// TODO: get longitude and latitude

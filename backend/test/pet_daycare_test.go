@@ -52,7 +52,10 @@ func TestGetBookedPet(t *testing.T) {
 				Name:     "John Doe",
 				Email:    "john@example.com",
 				ImageUrl: "test.com/image/test.jpeg",
-				Role:   "pet owner",
+				Role: model.Role{
+					ID: 1,
+					Name: "pet owner",
+				},
 			},
 		},
 	}
@@ -163,7 +166,10 @@ func TestGetPetDaycare(t *testing.T) {
 					Name:     "Jane Smith Daycare2",
 					Email:    "daycare@example.com",
 					ImageUrl: "test.com/image/test.jpeg",
-					Role:   "pet daycare provider",
+					Role: model.Role{
+						ID: 2,
+						Name: "pet daycare provider",
+					},
 				},
 			},
 		},
@@ -208,7 +214,10 @@ func TestGetPetDaycare(t *testing.T) {
 					Name:     "Jane Smith Daycare2",
 					Email:    "daycare@example.com",
 					ImageUrl: "test.com/image/test.jpeg",
-					Role:   "pet daycare provider",
+					Role: model.Role{
+						ID: 2,
+						Name: "pet daycare provider",
+					},
 				},
 			},
 		},
