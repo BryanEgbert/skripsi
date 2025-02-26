@@ -220,8 +220,7 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 		req.ImageUrl = imagePath
 	}
 
-	updatedUser, err := uc.UserService.UpdateUserProfile(&req)
-	if err != nil {
+	if err := uc.UserService.UpdateUserProfile(&req); err != nil {
 		c.JSON(http.StatusNotFound, model.ErrorResponse{
 			Message: "Failed to update user profile",
 			Error:   err.Error(),
@@ -229,7 +228,7 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedUser)
+	c.JSON(http.StatusNoContent, nil)
 }
 
 // UpdateUserPassword updates the logged-in user's password

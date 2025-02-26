@@ -24,7 +24,7 @@ mixin _$User {
   String get name => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get imageUrl => throw _privateConstructorUsedError;
-  int get roleId => throw _privateConstructorUsedError;
+  Lookup get role => throw _privateConstructorUsedError;
   List<Lookup> get vetSpecialties => throw _privateConstructorUsedError;
   String get createdAt => throw _privateConstructorUsedError;
 
@@ -47,9 +47,11 @@ abstract class $UserCopyWith<$Res> {
       String name,
       String email,
       String imageUrl,
-      int roleId,
+      Lookup role,
       List<Lookup> vetSpecialties,
       String createdAt});
+
+  $LookupCopyWith<$Res> get role;
 }
 
 /// @nodoc
@@ -71,7 +73,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? name = null,
     Object? email = null,
     Object? imageUrl = null,
-    Object? roleId = null,
+    Object? role = null,
     Object? vetSpecialties = null,
     Object? createdAt = null,
   }) {
@@ -92,10 +94,10 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String,
-      roleId: null == roleId
-          ? _value.roleId
-          : roleId // ignore: cast_nullable_to_non_nullable
-              as int,
+      role: null == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as Lookup,
       vetSpecialties: null == vetSpecialties
           ? _value.vetSpecialties
           : vetSpecialties // ignore: cast_nullable_to_non_nullable
@@ -105,6 +107,16 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           : createdAt // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
+  }
+
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $LookupCopyWith<$Res> get role {
+    return $LookupCopyWith<$Res>(_value.role, (value) {
+      return _then(_value.copyWith(role: value) as $Val);
+    });
   }
 }
 
@@ -120,9 +132,12 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       String name,
       String email,
       String imageUrl,
-      int roleId,
+      Lookup role,
       List<Lookup> vetSpecialties,
       String createdAt});
+
+  @override
+  $LookupCopyWith<$Res> get role;
 }
 
 /// @nodoc
@@ -141,7 +156,7 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? name = null,
     Object? email = null,
     Object? imageUrl = null,
-    Object? roleId = null,
+    Object? role = null,
     Object? vetSpecialties = null,
     Object? createdAt = null,
   }) {
@@ -162,10 +177,10 @@ class __$$UserImplCopyWithImpl<$Res>
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String,
-      roleId: null == roleId
-          ? _value.roleId
-          : roleId // ignore: cast_nullable_to_non_nullable
-              as int,
+      role: null == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as Lookup,
       vetSpecialties: null == vetSpecialties
           ? _value._vetSpecialties
           : vetSpecialties // ignore: cast_nullable_to_non_nullable
@@ -186,7 +201,7 @@ class _$UserImpl implements _User {
       required this.name,
       required this.email,
       required this.imageUrl,
-      required this.roleId,
+      required this.role,
       required final List<Lookup> vetSpecialties,
       required this.createdAt})
       : _vetSpecialties = vetSpecialties;
@@ -203,7 +218,7 @@ class _$UserImpl implements _User {
   @override
   final String imageUrl;
   @override
-  final int roleId;
+  final Lookup role;
   final List<Lookup> _vetSpecialties;
   @override
   List<Lookup> get vetSpecialties {
@@ -217,7 +232,7 @@ class _$UserImpl implements _User {
 
   @override
   String toString() {
-    return 'User(id: $id, name: $name, email: $email, imageUrl: $imageUrl, roleId: $roleId, vetSpecialties: $vetSpecialties, createdAt: $createdAt)';
+    return 'User(id: $id, name: $name, email: $email, imageUrl: $imageUrl, role: $role, vetSpecialties: $vetSpecialties, createdAt: $createdAt)';
   }
 
   @override
@@ -230,7 +245,7 @@ class _$UserImpl implements _User {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
-            (identical(other.roleId, roleId) || other.roleId == roleId) &&
+            (identical(other.role, role) || other.role == role) &&
             const DeepCollectionEquality()
                 .equals(other._vetSpecialties, _vetSpecialties) &&
             (identical(other.createdAt, createdAt) ||
@@ -239,8 +254,8 @@ class _$UserImpl implements _User {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, email, imageUrl,
-      roleId, const DeepCollectionEquality().hash(_vetSpecialties), createdAt);
+  int get hashCode => Object.hash(runtimeType, id, name, email, imageUrl, role,
+      const DeepCollectionEquality().hash(_vetSpecialties), createdAt);
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
@@ -264,7 +279,7 @@ abstract class _User implements User {
       required final String name,
       required final String email,
       required final String imageUrl,
-      required final int roleId,
+      required final Lookup role,
       required final List<Lookup> vetSpecialties,
       required final String createdAt}) = _$UserImpl;
 
@@ -279,7 +294,7 @@ abstract class _User implements User {
   @override
   String get imageUrl;
   @override
-  int get roleId;
+  Lookup get role;
   @override
   List<Lookup> get vetSpecialties;
   @override

@@ -4,11 +4,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/request/pet_request.dart';
+import 'package:frontend/model/response/list_response.dart';
 import 'package:http/http.dart' as http;
 
 abstract interface class IPetRepository {
-  Future<Pet> getById(String token, String id);
-  Future<List<Pet>> getPets(String token, int lastId, int size);
+  Future<Result<Pet>> getById(String token, String id);
+  Future<Result<ListData<Pet>>> getPets(String token, int lastId, int size);
   Future<void> createPet(String token, PetRequest reqBody);
   Future<void> updatePet(String token, PetRequest reqBody);
   Future<void> deletePet(String token, int id);
@@ -61,13 +62,21 @@ class PetRepository implements IPetRepository {
   }
 
   @override
-  Future<Pet> getById(String token, String id) {
-    // TODO: implement getById
-    throw UnimplementedError();
+  Future<Result<Pet>> getById(String token, String id) {
+    return makeRequest(200, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      final res = await http.get(Uri.parse("$host/pets/$id"), headers: {
+        HttpHeaders.authorizationHeader: "Bearer $token",
+      });
+
+      return res;
+    }, (res) => Pet.fromJson(res));
   }
 
   @override
-  Future<List<Pet>> getPets(String token, int lastId, int size) {
+  Future<Result<ListData<Pet>>> getPets(String token, int lastId, int size) {
     // TODO: implement getPets
     throw UnimplementedError();
   }

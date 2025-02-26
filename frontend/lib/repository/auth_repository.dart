@@ -22,14 +22,12 @@ class AuthRepository implements IAuthRepository {
       var res = await http.post(
         Uri.parse("$host/login"),
         headers: <String, String>{
-          "Content-Type": "application/json; charset=UTF-8",
+          "Content-Type": "application/json",
         },
-        body: jsonEncode(
-          {
-            "email": email,
-            "password": password,
-          },
-        ),
+        body: json.encode({
+          "email": email,
+          "password": password,
+        }),
       );
 
       return res;

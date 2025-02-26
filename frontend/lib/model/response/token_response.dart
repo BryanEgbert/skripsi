@@ -5,6 +5,8 @@ part 'token_response.g.dart';
 @JsonSerializable()
 class TokenResponse {
   final String accessToken, refreshToken;
+
+  @JsonKey(name: "exp")
   final int expiryDate;
 
   TokenResponse({

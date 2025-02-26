@@ -257,7 +257,6 @@ func TestUpdateUser(t *testing.T) {
 	token10000, _, _ := helper.CreateJWT(10000)
 
 	updateVetSpecialties := []uint{2, 4, 5}
-	emptyVetSpecialties := []uint{}
 
 	tests := []UserTestTable[model.UpdateUserRequest]{
 		{
@@ -269,14 +268,7 @@ func TestUpdateUser(t *testing.T) {
 				RoleID: 1,
 			},
 			Token:          token1,
-			ExpectedStatus: 200,
-			ExpectedOutput: model.UpdateUserDTO{
-				ID:             1,
-				Name:           "update name",
-				Email:          "update@example.com",
-				VetSpecialtyID: &emptyVetSpecialties,
-				RoleID:         1,
-			},
+			ExpectedStatus: 204,
 		},
 		{
 			Name: "On update user, should return 200 and updated user and vet specialties",
@@ -288,14 +280,7 @@ func TestUpdateUser(t *testing.T) {
 				VetSpecialtyID: &updateVetSpecialties,
 			},
 			Token:          token4,
-			ExpectedStatus: 200,
-			ExpectedOutput: model.UpdateUserDTO{
-				ID:             4,
-				Name:           "update vet name",
-				Email:          "vetupdate@example.com",
-				RoleID:         3,
-				VetSpecialtyID: &updateVetSpecialties,
-			},
+			ExpectedStatus: 204,
 		},
 		{
 			Name:  "On update user, should return 404 when user ID doesn't exists in DB",
@@ -357,17 +342,9 @@ func TestUpdateUser(t *testing.T) {
 
 			assert.Equal(t, test.ExpectedStatus, w.Code, w.Body.String())
 
-			if w.Code == 200 {
-				var res model.UpdateUserDTO
-				resBody, _ := io.ReadAll(w.Body)
-
-				if err := json.Unmarshal(resBody, &res); err != nil {
-					t.Errorf("json Unmarshal err: %v", err)
-				}
-
-				assert.Equal(t, test.ExpectedOutput, res)
-
+			if w.Code == 204 {
 				var user model.User
+
 				db.First(&user, test.In.ID)
 				assert.NotEqual(t, user.ImageUrl, "test.com/image/test.jpeg")
 			}

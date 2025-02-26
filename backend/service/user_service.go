@@ -15,10 +15,10 @@ import (
 // UserService interface defining the required methods
 type UserService interface {
 	GetUser(id int64) (*model.UserDTO, error)
-	GetVets(vetSpecialtyId uint, startId uint, pageSize int) (*[]model.UserDTO, error)
+	GetVets(vetSpecialtyId uint, startId uint, pageSize int) ([]model.UserDTO, error)
 	CreateUser(user model.CreateUserRequest) (*model.TokenResponse, error)
 	DeleteUser(id uint) error
-	UpdateUserProfile(user *model.UpdateUserRequest) (*model.UpdateUserDTO, error)
+	UpdateUserProfile(user *model.UpdateUserRequest) error
 	UpdateUserPassword(id uint, newPassword string) error
 }
 
@@ -32,9 +32,9 @@ func NewUserService(db *gorm.DB) *UserServiceImpl {
 	return &UserServiceImpl{db: db}
 }
 
-func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize int) (*[]model.UserDTO, error) {
+func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize int) ([]model.UserDTO, error) {
 	// var users []model.User
-	var out []model.UserDTO
+	out := []model.UserDTO{}
 
 	if vetSpecialtyId == 0 {
 		rows, err := s.db.
@@ -98,7 +98,7 @@ func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize in
 		}
 	}
 
-	return &out, nil
+	return out, nil
 }
 
 // GetUser retrieves a user by ID and returns a UserDTO
@@ -211,10 +211,10 @@ func (s *UserServiceImpl) DeleteUser(id uint) error {
 }
 
 // UpdateUserProfile updates user details, including VetSpecialty assignments
-func (s *UserServiceImpl) UpdateUserProfile(user *model.UpdateUserRequest) (*model.UpdateUserDTO, error) {
+func (s *UserServiceImpl) UpdateUserProfile(user *model.UpdateUserRequest) error {
 	var existingUser model.User
 	if err := s.db.Preload("VetSpecialty").First(&existingUser, user.ID).Error; err != nil {
-		return nil, err
+		return err
 	}
 
 	// Update user fields
@@ -235,12 +235,12 @@ func (s *UserServiceImpl) UpdateUserProfile(user *model.UpdateUserRequest) (*mod
 		}
 
 		if err := s.db.Where("id IN ?", specialtyIDs).Find(&updatedSpecialties).Error; err != nil {
-			return nil, err
+			return err
 		}
 
 		// Ensure all requested VetSpecialties are valid
 		if len(updatedSpecialties) != len(specialtyIDs) {
-			return nil, errors.New("One or more VetSpecialty IDs are invalid")
+			return errors.New("One or more VetSpecialty IDs are invalid")
 		}
 
 		existingUser.VetSpecialty = &updatedSpecialties
@@ -250,12 +250,10 @@ func (s *UserServiceImpl) UpdateUserProfile(user *model.UpdateUserRequest) (*mod
 
 	// Save changes
 	if err := s.db.Save(&existingUser).Error; err != nil {
-		return nil, err
+		return err
 	}
 
-	userDTO := helper.ConvertUserToUpdateDTO(existingUser)
-
-	return &userDTO, nil
+	return nil
 }
 
 // UpdateUserPassword changes the user's password

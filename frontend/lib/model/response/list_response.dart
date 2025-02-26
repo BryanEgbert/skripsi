@@ -8,10 +8,13 @@ class ListData<T> {
   ListData({required this.data});
 
   factory ListData.fromJson(Map<String, dynamic> json, Function fromJson) {
-    final items = json["data"].cast<Map<String, dynamic>>();
+    final items = json["data"];
+    if (items!.isEmpty) {
+      return ListData(data: []);
+    }
     return ListData<T>(
       data: List<T>.from(
-        items.map(
+        items!.map(
           (item) => fromJson(item),
         ),
       ),

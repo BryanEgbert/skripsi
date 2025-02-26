@@ -1,7 +1,6 @@
 import 'dart:io';
 
 class UpdateUserRequest {
-  final int id;
   final String name;
   final String email;
   final int roleId;
@@ -10,7 +9,6 @@ class UpdateUserRequest {
 
   UpdateUserRequest(
     this.image, {
-    required this.id,
     required this.name,
     required this.email,
     required this.roleId,
