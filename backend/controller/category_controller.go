@@ -27,7 +27,7 @@ func (c *CategoryController) GetVetSpecialties(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": res})
+	ctx.JSON(http.StatusOK, model.ListData[model.VetSpecialty]{Data: *res})
 }
 
 func (c *CategoryController) GetSpecies(ctx *gin.Context) {
@@ -41,7 +41,7 @@ func (c *CategoryController) GetSpecies(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": res})
+	ctx.JSON(http.StatusOK, model.ListData[model.Species]{Data: *res})
 }
 
 func (c *CategoryController) GetSizeCategories(ctx *gin.Context) {
@@ -55,5 +55,5 @@ func (c *CategoryController) GetSizeCategories(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": res})
+	ctx.JSON(http.StatusOK, model.ListData[model.SizeCategory]{Data: *res})
 }
