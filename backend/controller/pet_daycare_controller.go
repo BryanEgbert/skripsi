@@ -252,7 +252,7 @@ func (pdc *PetDaycareController) GetPetDaycareSlots(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, output)
+	c.JSON(http.StatusOK, model.ListData[model.SlotsResponse]{Data: *output})
 }
 
 func (pdc *PetDaycareController) GetPetDaycare(c *gin.Context) {

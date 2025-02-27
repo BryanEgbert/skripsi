@@ -100,7 +100,7 @@ func (pc *PetController) GetPets(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, pets)
+	c.JSON(http.StatusOK, model.ListData[model.PetDTO]{Data: *pets})
 }
 
 func (pc *PetController) CreatePet(c *gin.Context) {

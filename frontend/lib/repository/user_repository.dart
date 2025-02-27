@@ -19,21 +19,15 @@ abstract interface class IUserRepository {
 
 class UserRepository implements IUserRepository {
   @override
-  Future<void> deleteUser(String token) async {
-    try {
+  Future<Result<void>> deleteUser(String token) async {
+    return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
       final res = await http.delete(Uri.parse("$host/users"),
           headers: {"Authorization": "Bearer $token"});
 
-      if (res.statusCode == 200) {
-        return;
-      } else {
-        throw Exception("Something's went wrong");
-      }
-    } catch (e) {
-      rethrow;
-    }
+      return res;
+    });
   }
 
   @override

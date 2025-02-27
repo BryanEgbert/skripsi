@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/size_category.dart';
 import 'package:frontend/provider/category_provider.dart';
 import 'package:frontend/repository/category_repository.dart';

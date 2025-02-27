@@ -17,8 +17,8 @@ class _SelectSpeciesPageState extends ConsumerState<SelectSpeciesModal> {
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<List<Lookup>> species =
-        ref.read(speciesProvider(CategoryRepository()));
+    final CategoryRepository repo = CategoryRepository();
+    final AsyncValue<List<Lookup>> species = ref.read(speciesProvider(repo));
 
     return switch (species) {
       AsyncData(:final value) =>

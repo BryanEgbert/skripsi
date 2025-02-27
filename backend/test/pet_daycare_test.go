@@ -304,14 +304,14 @@ func TestGetPetDaycareSlot(t *testing.T) {
 			assert.Equal(t, test.ExpectedStatus, w.Code, w.Body.String())
 
 			if w.Code == 200 {
-				var res []model.SlotsResponse
+				var res model.ListData[model.SlotsResponse]
 				resBody, _ := io.ReadAll(w.Body)
 
 				if err := json.Unmarshal(resBody, &res); err != nil {
 					t.Errorf("json Unmarshal err: %v", err)
 				}
 
-				t.Logf("pet daycare:\n%+v", res)
+				t.Logf("pet daycare:\n%+v", res.Data)
 			}
 
 		})
