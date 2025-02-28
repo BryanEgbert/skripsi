@@ -57,6 +57,7 @@ class PetRepository implements IPetRepository {
 
       final res = await http.delete(Uri.parse("$host/pets/$id"), headers: {
         HttpHeaders.authorizationHeader: "Bearer $token",
+        HttpHeaders.contentTypeHeader: "application/json",
       });
 
       return res;

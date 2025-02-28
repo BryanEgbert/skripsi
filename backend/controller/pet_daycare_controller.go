@@ -665,5 +665,5 @@ func (pdc *PetDaycareController) BookSlot(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusCreated, nil)
 }
