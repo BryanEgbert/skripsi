@@ -11,7 +11,7 @@ sealed class Result<T> {
   const Result();
 
   factory Result.ok(T? value) => Ok(value);
-  factory Result.unauthorized() => UnauthorizedError();
+  factory Result.unauthorized(String error) => UnauthorizedError(error);
   factory Result.parseErr() => ParseError();
   factory Result.badRequestErr(String error) => BadRequestError(error);
   factory Result.forbiddenErr(String error) => ForbiddenError(error);
@@ -58,7 +58,7 @@ final class BadRequestError<T> extends Error<T> {
 }
 
 final class UnauthorizedError<T> extends Error<T> {
-  UnauthorizedError() : super("Unauthorized");
+  UnauthorizedError(super.error);
 }
 
 final class InternalServerError<T> extends Error<T> {
@@ -89,7 +89,7 @@ Future<Result<T>> makeRequest<T>(
 
           return Result.badRequestErr(errorRes.message);
         case 401:
-          return Result.unauthorized();
+          return Result.unauthorized("Invalid email or password");
         case 403:
           return Result.forbiddenErr("Session expired");
         case 404:
@@ -108,26 +108,5 @@ Future<Result<T>> makeRequest<T>(
     return Result.timeoutErr();
   } on Exception catch (e) {
     return Result.err(e);
-  }
-}
-
-Result<T> handleHttpError<T>(int statusCode, Response res) {
-  switch (statusCode) {
-    case 400:
-      ErrorResponse errorRes =
-          ErrorResponse.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
-
-      return Result.badRequestErr(errorRes.message);
-    case 401:
-      return Result.unauthorized();
-    case 403:
-      return Result.forbiddenErr("Session expired");
-    case 500:
-      ErrorResponse errorRes =
-          ErrorResponse.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
-
-      return Result.internalServerErr(errorRes.message);
-    default:
-      return Result.err(unknownException);
   }
 }

@@ -12,6 +12,9 @@ abstract interface class IPetRepository {
   Future<Result<Pet>> getById(String token, String id);
   Future<Result<ListData<Pet>>> getPets(
       String token, PaginationQueryParams pagination);
+  Future<Result<ListData<Pet>>> getBookedPets(
+      String token, int petDaycareId, PaginationQueryParams pagination);
+
   Future<Result<void>> createPet(String token, PetRequest reqBody);
   Future<Result<void>> updatePet(String token, int id, PetRequest reqBody);
   Future<Result<void>> deletePet(String token, int id);
@@ -126,5 +129,24 @@ class PetRepository implements IPetRepository {
 
       return response;
     });
+  }
+
+  @override
+  Future<Result<ListData<Pet>>> getBookedPets(
+      String token, int petDaycareId, PaginationQueryParams pagination) {
+    return makeRequest(200, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      final res = await http.get(
+          Uri.parse("$host/daycare/$petDaycareId/pets").replace(
+            queryParameters: pagination.toMap(),
+          ),
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          });
+
+      return res;
+    }, (res) => ListData.fromJson(res, Pet.fromJson));
   }
 }

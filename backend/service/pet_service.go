@@ -11,7 +11,7 @@ import (
 type PetService interface {
 	GetPet(id uint) (*model.PetDTO, error)
 	GetPets(ownerID uint, startID uint, pageSize int) (*[]model.PetDTO, error)
-	GetBookedPets(userId uint, daycareId uint, startID uint, pageSize int) (*model.GetBookedPetsResponse, error)
+	GetBookedPets(userId uint, daycareId uint, startID uint, pageSize int) (*[]model.PetDTO, error)
 	CreatePet(ownerID uint, req model.PetRequest) error
 	UpdatePet(id uint, pet model.PetDTO) error
 	DeletePet(id uint) error
@@ -25,7 +25,7 @@ func NewPetService(db *gorm.DB) *PetServiceImpl {
 	return &PetServiceImpl{db: db}
 }
 
-func (s *PetServiceImpl) GetBookedPets(userId uint, daycareId uint, startID uint, pageSize int) (*model.GetBookedPetsResponse, error) {
+func (s *PetServiceImpl) GetBookedPets(userId uint, daycareId uint, startID uint, pageSize int) (*[]model.PetDTO, error) {
 	petDtos := []model.PetDTO{}
 
 	rows, err := s.db.
@@ -65,14 +65,11 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, daycareId uint, startID uint
 			&petDto.Owner.Role.Name,
 			&petDto.Owner.CreatedAt,
 		)
+		
 		petDtos = append(petDtos, petDto)
 	}
 
-	out := model.GetBookedPetsResponse{
-		Data: petDtos,
-	}
-
-	return &out, nil
+	return &petDtos, nil
 }
 
 // GetPet fetches a single pet by ID, joining with Species and SizeCategory

@@ -181,15 +181,13 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 	var daycares []model.PetDaycare
 	query := s.db
 
-	// Apply filters
-	// TODO: change this
-	if req.MinDistance != nil && req.MaxDistance != nil {
+	if req.MaxDistance != 0 && req.Latitude != 0 && req.Longitude != 0 {
 		query = query.Where(
 			"ST_Distance_Sphere(POINT(longitude, latitude), POINT(?, ?)) BETWEEN ? AND ?",
 			req.Longitude,
 			req.Latitude,
-			*req.MinDistance,
-			*req.MaxDistance)
+			req.MinDistance,
+			req.MaxDistance)
 	}
 
 	if len(req.Facilities) > 0 {
@@ -205,22 +203,13 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		}
 	}
 
-	if req.MinPrice != nil {
-		query = query.Where("price >= ?", *req.MinPrice)
-	}
-	if req.MaxPrice != nil {
-		query = query.Where("price <= ?", *req.MaxPrice)
-	}
-	if req.PricingType != nil {
-		query = query.Where("pricing_type = ?", *req.PricingType)
-	}
-	if req.MustBeVaccinated {
-		query = query.Where("must_be_vaccinated = ?", req.MustBeVaccinated)
+	if req.MaxPrice <= 0 {
+		query = query.Where("price BETWEEN ? AND ?", req.MinPrice, req.MaxPrice)
 	}
 
 	// Fetch daycare data
 	if err := query.
-		Where("id > ?", startID).
+		Where("id > ? AND pricing_type = ? AND must_be_vaccinated = ?", startID, req.PricingType, req.MustBeVaccinated).
 		Preload("Owner").
 		Preload("Reviews").
 		Preload("Thumbnails").

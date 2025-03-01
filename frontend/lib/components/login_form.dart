@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/utils/validator.dart';
+import 'package:frontend/widgets/home.dart';
 
 class LoginForm extends ConsumerStatefulWidget {
   const LoginForm({super.key});
@@ -17,84 +21,86 @@ class _LoginFormState extends ConsumerState<LoginForm> {
   final TextEditingController _passwordEditingController =
       TextEditingController();
 
-  Future<void>? _futureTokenResponse;
-
   @override
   Widget build(BuildContext context) {
-    var auth = ref.read(authProvider.notifier);
+    AsyncValue<TokenResponse?> auth = ref.watch(authProvider);
+    log("value: ${auth.toString()}");
 
-    return FutureBuilder(
-        future: _futureTokenResponse,
-        builder: (context, snapshot) {
-          if (snapshot.hasError &&
-              snapshot.connectionState != ConnectionState.waiting) {
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              var snackbar = SnackBar(
-                content: Text(snapshot.error.toString()),
-                backgroundColor: Colors.red,
-              );
+    if (auth.hasError && !auth.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        var snackbar = SnackBar(
+          key: Key("error-message"),
+          content: Text(auth.error.toString()),
+          backgroundColor: Colors.red,
+        );
 
-              ScaffoldMessenger.of(context).showSnackBar(snackbar);
-            });
-          }
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      });
+    }
 
-          return Form(
-            key: formGlobalKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextFormField(
-                  controller: _emailEditingController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    labelText: "Email",
-                  ),
-                  validator: (value) {
-                    return validateEmail(value);
-                  },
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                TextFormField(
-                  controller: _passwordEditingController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    labelText: "Password",
-                  ),
-                  obscureText: true,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                FilledButton(
-                  onPressed: () {
-                    if (snapshot.connectionState != ConnectionState.waiting ||
-                        snapshot.connectionState == ConnectionState.done) {
-                      if (formGlobalKey.currentState!.validate()) {
-                        final future = auth.login(_emailEditingController.text,
-                            _passwordEditingController.text);
-                        setState(() {
-                          _futureTokenResponse = future;
-                        });
-                      }
-                    }
-                  },
-                  child: Text(
-                      (snapshot.connectionState != ConnectionState.waiting)
-                          ? "Login"
-                          : "Logging In..."),
-                ),
-              ],
+    if (auth.hasValue && !auth.isLoading) {
+      if (auth.value != null) {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => HomeWidget(
+            key: Key("home"),
+          ),
+        ));
+      }
+    }
+
+    return Form(
+      key: formGlobalKey,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextFormField(
+            key: Key("email-input"),
+            controller: _emailEditingController,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              labelText: "Email",
             ),
-          );
-        });
+            validator: (value) {
+              return validateEmail(value);
+            },
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          TextFormField(
+            key: Key("password-input"),
+            controller: _passwordEditingController,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              labelText: "Password",
+            ),
+            obscureText: true,
+            enableSuggestions: false,
+            autocorrect: false,
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          FilledButton(
+            key: Key("submit-btn"),
+            onPressed: () async {
+              if (!auth.isLoading) {
+                if (formGlobalKey.currentState!.validate()) {
+                  await ref.read(authProvider.notifier).login(
+                      _emailEditingController.text,
+                      _passwordEditingController.text);
+                }
+              }
+            },
+            child: Text((auth.isLoading) ? "Logging In..." : "Login"),
+          ),
+        ],
+      ),
+    );
   }
 }

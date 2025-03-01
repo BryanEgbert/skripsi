@@ -83,15 +83,15 @@ type CreatePetDaycareRequest struct {
 type GetPetDaycaresRequest struct {
 	Latitude         float64
 	Longitude        float64
-	MinDistance      *float64
-	MaxDistance      *float64
+	MinDistance      float64
+	MaxDistance      float64
 	Facilities       []string
 	MustBeVaccinated bool
 	DailyWalks       uint
 	DailyPlaytime    uint
-	MinPrice         *float64
-	MaxPrice         *float64
-	PricingType      *string
+	MinPrice         float64
+	MaxPrice         float64
+	PricingType      string
 }
 
 type GetPetDaycareDetailResponse struct {

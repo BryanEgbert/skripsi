@@ -480,7 +480,7 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 
 	if minDist := c.DefaultQuery("min-distance", "0"); minDist != "" {
 		value, _ := strconv.ParseFloat(minDist, 64)
-		filters.MinDistance = &value
+		filters.MinDistance = value
 	}
 	if maxDist := c.Query("max-distance"); maxDist != "" {
 		value, err := strconv.ParseFloat(maxDist, 64)
@@ -488,21 +488,21 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 			Message: "max distance is required",
 			Error:   err.Error(),
 		})
-		filters.MaxDistance = &value
+		filters.MaxDistance = value
 	}
 	if facilities := c.Query("facilities"); facilities != "" {
 		filters.Facilities = strings.Split(facilities, ",")
 	}
 	if minPrice := c.DefaultQuery("min-price", "0"); minPrice != "" {
 		value, _ := strconv.ParseFloat(minPrice, 64)
-		filters.MinPrice = &value
+		filters.MinPrice = value
 	}
-	if maxPrice := c.Query("max-price"); maxPrice != "" {
+	if maxPrice := c.DefaultQuery("max-price", "0"); maxPrice != "" {
 		value, _ := strconv.ParseFloat(maxPrice, 64)
-		filters.MaxPrice = &value
+		filters.MaxPrice = value
 	}
 	if pricingType := c.DefaultQuery("pricing-type", "day"); pricingType != "" {
-		filters.PricingType = &pricingType
+		filters.PricingType = pricingType
 	}
 
 	if dailyWalksId := c.DefaultQuery("daily-walks", "1"); dailyWalksId != "" {
@@ -513,6 +513,19 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 	if dailyPlaytimeId := c.DefaultQuery("daily-playtime", "1"); dailyPlaytimeId != "" {
 		value, _ := strconv.ParseUint(dailyPlaytimeId, 10, 64)
 		filters.DailyPlaytime = uint(value)
+	}
+
+	if mustBeVaccinated := c.DefaultQuery("vaccination-required", "1"); mustBeVaccinated != "" {
+		value, err := strconv.ParseBool(mustBeVaccinated)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "Invalid value for vaccination-required",
+				Error:   err.Error(),
+			})
+			return
+		}
+
+		filters.MustBeVaccinated = value
 	}
 
 	// Call service
@@ -617,7 +630,7 @@ func (pdc *PetDaycareController) GetBookedPets(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, out)
+	c.JSON(http.StatusOK, model.ListData[model.PetDTO]{Data: *out})
 }
 
 func (pdc *PetDaycareController) BookSlot(c *gin.Context) {

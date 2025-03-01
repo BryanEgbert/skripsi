@@ -14,6 +14,8 @@ class Auth extends _$Auth {
   }
 
   Future<void> login(String email, String password) async {
+    state = AsyncLoading();
+
     var repo = AuthRepository();
     var tokenRes = await repo.login(email, password);
 
@@ -22,7 +24,7 @@ class Auth extends _$Auth {
         state = AsyncData(tokenRes.value);
         break;
       case Error():
-        return Future.error(tokenRes.error);
+        state = AsyncError(tokenRes.error, StackTrace.current);
     }
 
     Future<void> register(CreateUserRequest user) async {
