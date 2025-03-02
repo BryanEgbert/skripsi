@@ -6,7 +6,7 @@ part of 'category_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$vetSpecialtiesHash() => r'30fe0145ec4a7e45c1c2044ca39fa5d3c0482a67';
+String _$vetSpecialtiesHash() => r'c55040fd0105703d1ddf6d36b3762aed30becfe7';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -160,7 +160,7 @@ class _VetSpecialtiesProviderElement
       (origin as VetSpecialtiesProvider).categoryRepo;
 }
 
-String _$speciesHash() => r'b948b93f95d57fc04964eafa29eedf4e0a4a5510';
+String _$speciesHash() => r'3d00b0e43ca717cc785a0556d8131a1c5819c8b0';
 
 /// See also [species].
 @ProviderFor(species)
@@ -289,7 +289,7 @@ class _SpeciesProviderElement
   ICategoryService get categoryRepo => (origin as SpeciesProvider).categoryRepo;
 }
 
-String _$sizeCategoriesHash() => r'5c045baee48886efb397d1bad4e350210db7659f';
+String _$sizeCategoriesHash() => r'f0f7030bf1c5c386ab04cc187f09e4747bd81cb2';
 
 /// See also [sizeCategories].
 @ProviderFor(sizeCategories)

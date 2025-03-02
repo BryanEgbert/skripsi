@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/size_category.dart';
-import 'package:frontend/repository/category_service.dart';
+import 'package:frontend/services/category_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'category_provider.g.dart';

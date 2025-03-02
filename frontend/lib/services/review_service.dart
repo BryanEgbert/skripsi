@@ -6,7 +6,7 @@ import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/reviews.dart';
 import 'package:http/http.dart' as http;
 
-abstract interface class IReviewRepository {
+abstract interface class IReviewService {
   Future<Result<ListData<Reviews>>> getReviews(
       String token, int petDaycareId, PaginationQueryParams pagination);
   Future<void> createReview(
@@ -14,7 +14,7 @@ abstract interface class IReviewRepository {
   Future<void> deleteReview(String token, int petDaycareId);
 }
 
-class ReviewRepository implements IReviewRepository {
+class ReviewService implements IReviewService {
   @override
   Future<void> createReview(
       String token, int petDaycareId, CreateReviewRequest reqBody) {

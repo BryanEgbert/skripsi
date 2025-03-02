@@ -1,7 +1,8 @@
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/response/token_response.dart';
-import 'package:frontend/repository/auth_service.dart';
+import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/services/database_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_provider.g.dart';
@@ -16,11 +17,14 @@ class Auth extends _$Auth {
   Future<void> login(String email, String password) async {
     state = AsyncLoading();
 
-    var repo = AuthService();
-    var tokenRes = await repo.login(email, password);
+    final dbService = DatabaseService();
+    final authService = AuthService();
+
+    final tokenRes = await authService.login(email, password);
 
     switch (tokenRes) {
       case Ok():
+        dbService.insert(tokenRes.value!);
         state = AsyncData(tokenRes.value);
         break;
       case Error():
@@ -28,11 +32,16 @@ class Auth extends _$Auth {
     }
 
     Future<void> register(CreateUserRequest user) async {
-      var repo = AuthService();
-      var tokenRes = await repo.register(user);
+      state = AsyncLoading();
+
+      final dbService = DatabaseService();
+      final authService = AuthService();
+
+      final tokenRes = await authService.register(user);
 
       switch (tokenRes) {
         case Ok():
+          dbService.insert(tokenRes.value!);
           state = AsyncData(tokenRes.value);
           break;
         case Error():

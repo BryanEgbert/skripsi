@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/app_welcome_text.dart';
 import 'package:frontend/components/login_form.dart';
 import 'package:frontend/widgets/pick_role_page.dart';
 
@@ -15,43 +16,7 @@ class WelcomeWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                margin: EdgeInsets.only(top: 200),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RichText(
-                      textAlign: TextAlign.start,
-                      text: const TextSpan(
-                        text: "Welcome to\n",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: "AppName\n",
-                            style: TextStyle(
-                              color: Colors.orangeAccent,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 40,
-                            ),
-                          ),
-                          TextSpan(
-                            text:
-                                "The smarter way to find pet daycares & connect with vets!",
-                            style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              AppWelcomeText(),
               Container(
                 margin: EdgeInsets.only(top: 100),
                 child: Column(

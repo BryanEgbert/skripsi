@@ -8,7 +8,6 @@ class HomeWidget extends StatelessWidget {
     return Scaffold(
       key: const Key("home"),
       appBar: AppBar(),
-      // body: ,
     );
   }
 }

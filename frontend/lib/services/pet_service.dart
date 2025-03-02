@@ -8,7 +8,7 @@ import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/response/list_response.dart';
 import 'package:http/http.dart' as http;
 
-abstract interface class IPetRepository {
+abstract interface class IPetService {
   Future<Result<Pet>> getById(String token, String id);
   Future<Result<ListData<Pet>>> getPets(
       String token, PaginationQueryParams pagination);
@@ -20,7 +20,7 @@ abstract interface class IPetRepository {
   Future<Result<void>> deletePet(String token, int id);
 }
 
-class PetRepository implements IPetRepository {
+class PetService implements IPetService {
   @override
   Future<Result<void>> createPet(String token, PetRequest reqBody) {
     return makeRequest(201, () async {

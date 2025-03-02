@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/provider/category_provider.dart';
-import 'package:frontend/repository/category_service.dart';
+import 'package:frontend/services/category_service.dart';
 
 class SelectVetSpecialtiesPage extends ConsumerStatefulWidget {
   const SelectVetSpecialtiesPage({super.key});

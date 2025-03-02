@@ -1,25 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_provider.dart';
+part of 'database_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authHash() => r'5ffaa2eb95ee05737e734e205734ff0fb5181360';
+String _$getTokenHash() => r'ee2896733ed6caeaa8a4b14174565937f1b9e4e6';
 
-/// See also [Auth].
-@ProviderFor(Auth)
-final authProvider =
-    AutoDisposeAsyncNotifierProvider<Auth, TokenResponse?>.internal(
-  Auth.new,
-  name: r'authProvider',
+/// See also [getToken].
+@ProviderFor(getToken)
+final getTokenProvider = AutoDisposeFutureProvider<TokenResponse>.internal(
+  getToken,
+  name: r'getTokenProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$authHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$getTokenHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$Auth = AutoDisposeAsyncNotifier<TokenResponse?>;
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef GetTokenRef = AutoDisposeFutureProviderRef<TokenResponse>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -8,8 +8,8 @@ import 'package:frontend/model/request/update_user_request.dart';
 import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/model/user.dart';
-import 'package:frontend/repository/auth_service.dart';
-import 'package:frontend/repository/user_service.dart';
+import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/services/user_service.dart';
 
 void main() {
   group("User repository test", () {

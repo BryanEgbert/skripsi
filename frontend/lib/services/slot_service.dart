@@ -9,7 +9,7 @@ import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/slot.dart';
 import 'package:http/http.dart' as http;
 
-abstract interface class ISlotRepository {
+abstract interface class ISlotService {
   Future<Result<ListData<Slot>>> getSlots(String token, int speciesId,
       int petDaycareId, int year, int month, PaginationQueryParams pagination);
   Future<Result<void>> bookSlot(
@@ -18,7 +18,7 @@ abstract interface class ISlotRepository {
       String token, int slotId, ReduceSlotRequest reqBody);
 }
 
-class SlotRepository implements ISlotRepository {
+class SlotService implements ISlotService {
   @override
   Future<Result<void>> bookSlot(
       String token, int petDaycareId, BookSlotRequest reqBody) {

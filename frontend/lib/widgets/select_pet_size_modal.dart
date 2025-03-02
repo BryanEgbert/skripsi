@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/size_category.dart';
 import 'package:frontend/provider/category_provider.dart';
-import 'package:frontend/repository/category_service.dart';
+import 'package:frontend/services/category_service.dart';
 
 class SelectPetSizeModal extends ConsumerStatefulWidget {
   const SelectPetSizeModal({super.key});
