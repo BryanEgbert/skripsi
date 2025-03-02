@@ -40,7 +40,7 @@ class VetSpecialtiesFamily extends Family<AsyncValue<List<Lookup>>> {
 
   /// See also [vetSpecialties].
   VetSpecialtiesProvider call(
-    ICategoryRepository categoryRepo,
+    ICategoryService categoryRepo,
   ) {
     return VetSpecialtiesProvider(
       categoryRepo,
@@ -75,7 +75,7 @@ class VetSpecialtiesFamily extends Family<AsyncValue<List<Lookup>>> {
 class VetSpecialtiesProvider extends AutoDisposeFutureProvider<List<Lookup>> {
   /// See also [vetSpecialties].
   VetSpecialtiesProvider(
-    ICategoryRepository categoryRepo,
+    ICategoryService categoryRepo,
   ) : this._internal(
           (ref) => vetSpecialties(
             ref as VetSpecialtiesRef,
@@ -103,7 +103,7 @@ class VetSpecialtiesProvider extends AutoDisposeFutureProvider<List<Lookup>> {
     required this.categoryRepo,
   }) : super.internal();
 
-  final ICategoryRepository categoryRepo;
+  final ICategoryService categoryRepo;
 
   @override
   Override overrideWith(
@@ -147,7 +147,7 @@ class VetSpecialtiesProvider extends AutoDisposeFutureProvider<List<Lookup>> {
 // ignore: unused_element
 mixin VetSpecialtiesRef on AutoDisposeFutureProviderRef<List<Lookup>> {
   /// The parameter `categoryRepo` of this provider.
-  ICategoryRepository get categoryRepo;
+  ICategoryService get categoryRepo;
 }
 
 class _VetSpecialtiesProviderElement
@@ -156,7 +156,7 @@ class _VetSpecialtiesProviderElement
   _VetSpecialtiesProviderElement(super.provider);
 
   @override
-  ICategoryRepository get categoryRepo =>
+  ICategoryService get categoryRepo =>
       (origin as VetSpecialtiesProvider).categoryRepo;
 }
 
@@ -173,7 +173,7 @@ class SpeciesFamily extends Family<AsyncValue<List<Lookup>>> {
 
   /// See also [species].
   SpeciesProvider call(
-    ICategoryRepository categoryRepo,
+    ICategoryService categoryRepo,
   ) {
     return SpeciesProvider(
       categoryRepo,
@@ -208,7 +208,7 @@ class SpeciesFamily extends Family<AsyncValue<List<Lookup>>> {
 class SpeciesProvider extends AutoDisposeFutureProvider<List<Lookup>> {
   /// See also [species].
   SpeciesProvider(
-    ICategoryRepository categoryRepo,
+    ICategoryService categoryRepo,
   ) : this._internal(
           (ref) => species(
             ref as SpeciesRef,
@@ -235,7 +235,7 @@ class SpeciesProvider extends AutoDisposeFutureProvider<List<Lookup>> {
     required this.categoryRepo,
   }) : super.internal();
 
-  final ICategoryRepository categoryRepo;
+  final ICategoryService categoryRepo;
 
   @override
   Override overrideWith(
@@ -278,7 +278,7 @@ class SpeciesProvider extends AutoDisposeFutureProvider<List<Lookup>> {
 // ignore: unused_element
 mixin SpeciesRef on AutoDisposeFutureProviderRef<List<Lookup>> {
   /// The parameter `categoryRepo` of this provider.
-  ICategoryRepository get categoryRepo;
+  ICategoryService get categoryRepo;
 }
 
 class _SpeciesProviderElement
@@ -286,8 +286,7 @@ class _SpeciesProviderElement
   _SpeciesProviderElement(super.provider);
 
   @override
-  ICategoryRepository get categoryRepo =>
-      (origin as SpeciesProvider).categoryRepo;
+  ICategoryService get categoryRepo => (origin as SpeciesProvider).categoryRepo;
 }
 
 String _$sizeCategoriesHash() => r'5c045baee48886efb397d1bad4e350210db7659f';
@@ -303,7 +302,7 @@ class SizeCategoriesFamily extends Family<AsyncValue<List<SizeCategory>>> {
 
   /// See also [sizeCategories].
   SizeCategoriesProvider call(
-    ICategoryRepository categoryRepo,
+    ICategoryService categoryRepo,
   ) {
     return SizeCategoriesProvider(
       categoryRepo,
@@ -339,7 +338,7 @@ class SizeCategoriesProvider
     extends AutoDisposeFutureProvider<List<SizeCategory>> {
   /// See also [sizeCategories].
   SizeCategoriesProvider(
-    ICategoryRepository categoryRepo,
+    ICategoryService categoryRepo,
   ) : this._internal(
           (ref) => sizeCategories(
             ref as SizeCategoriesRef,
@@ -367,7 +366,7 @@ class SizeCategoriesProvider
     required this.categoryRepo,
   }) : super.internal();
 
-  final ICategoryRepository categoryRepo;
+  final ICategoryService categoryRepo;
 
   @override
   Override overrideWith(
@@ -411,7 +410,7 @@ class SizeCategoriesProvider
 // ignore: unused_element
 mixin SizeCategoriesRef on AutoDisposeFutureProviderRef<List<SizeCategory>> {
   /// The parameter `categoryRepo` of this provider.
-  ICategoryRepository get categoryRepo;
+  ICategoryService get categoryRepo;
 }
 
 class _SizeCategoriesProviderElement
@@ -420,7 +419,7 @@ class _SizeCategoriesProviderElement
   _SizeCategoriesProviderElement(super.provider);
 
   @override
-  ICategoryRepository get categoryRepo =>
+  ICategoryService get categoryRepo =>
       (origin as SizeCategoriesProvider).categoryRepo;
 }
 // ignore_for_file: type=lint

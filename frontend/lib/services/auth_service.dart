@@ -6,13 +6,13 @@ import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:http/http.dart' as http;
 
-abstract interface class IAuthRepository {
+abstract interface class IAuthService {
   Future<Result<TokenResponse>> login(String email, String password);
   Future<Result<TokenResponse>> register(CreateUserRequest req);
   Future<Result<TokenResponse>> refreshToken(String token);
 }
 
-class AuthRepository implements IAuthRepository {
+class AuthService implements IAuthService {
   @override
   Future<Result<TokenResponse>> login(String email, String password) async {
     return makeRequest(200, () async {

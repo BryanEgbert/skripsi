@@ -5,13 +5,13 @@ import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/size_category.dart';
 import 'package:http/http.dart' as http;
 
-abstract interface class ICategoryRepository {
+abstract interface class ICategoryService {
   Future<Result<ListData<Lookup>>> getVetSpecialties();
   Future<Result<ListData<Lookup>>> getSpecies();
   Future<Result<ListData<SizeCategory>>> getSizeCategories();
 }
 
-class CategoryRepository implements ICategoryRepository {
+class CategoryService implements ICategoryService {
   @override
   Future<Result<ListData<Lookup>>> getVetSpecialties() async {
     return makeRequest(200, () async {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/provider/category_provider.dart';
-import 'package:frontend/repository/category_repository.dart';
+import 'package:frontend/repository/category_service.dart';
 
 class SelectVetSpecialtiesPage extends ConsumerStatefulWidget {
   const SelectVetSpecialtiesPage({super.key});
@@ -19,7 +19,7 @@ class _SelectVetSpecialtiesPageState
   @override
   Widget build(BuildContext context) {
     final AsyncValue<List<Lookup>> vetSpecialties =
-        ref.read(vetSpecialtiesProvider(CategoryRepository()));
+        ref.read(vetSpecialtiesProvider(CategoryService()));
 
     return Scaffold(
       appBar: AppBar(

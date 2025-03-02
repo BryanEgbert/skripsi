@@ -5,7 +5,7 @@ import 'package:frontend/model/pet_daycare.dart';
 import 'package:frontend/model/request/pet_daycare_filters.dart';
 import 'package:frontend/model/response/list_response.dart';
 
-abstract interface class IPetDaycareRepository {
+abstract interface class IPetDaycareService {
   Future<Result<PetDaycareDetails>> getById(
       String token, int petDaycareId, Coordinate coord);
   Future<Result<ListData<PetDaycare>>> getPetDaycares(

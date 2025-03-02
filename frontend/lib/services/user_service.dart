@@ -8,7 +8,7 @@ import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/user.dart';
 import 'package:http/http.dart' as http;
 
-abstract interface class IUserRepository {
+abstract interface class IUserService {
   Future<User> getUser(String token, int id);
   Future<Result<ListData<User>>> getVets(
       String token, PaginationQueryParams pagination,
@@ -17,7 +17,7 @@ abstract interface class IUserRepository {
   Future<Result<void>> updateUser(String token, UpdateUserRequest reqBody);
 }
 
-class UserRepository implements IUserRepository {
+class UserService implements IUserService {
   @override
   Future<Result<void>> deleteUser(String token) async {
     return makeRequest(200, () async {

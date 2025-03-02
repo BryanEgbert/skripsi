@@ -2,14 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/size_category.dart';
-import 'package:frontend/repository/category_repository.dart';
+import 'package:frontend/repository/category_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'category_provider.g.dart';
 
 @riverpod
 Future<List<Lookup>> vetSpecialties(
-    Ref ref, ICategoryRepository categoryRepo) async {
+    Ref ref, ICategoryService categoryRepo) async {
   final res = await categoryRepo.getVetSpecialties();
 
   switch (res) {
@@ -21,7 +21,7 @@ Future<List<Lookup>> vetSpecialties(
 }
 
 @riverpod
-Future<List<Lookup>> species(Ref ref, ICategoryRepository categoryRepo) async {
+Future<List<Lookup>> species(Ref ref, ICategoryService categoryRepo) async {
   final res = await categoryRepo.getSpecies();
 
   switch (res) {
@@ -34,7 +34,7 @@ Future<List<Lookup>> species(Ref ref, ICategoryRepository categoryRepo) async {
 
 @riverpod
 Future<List<SizeCategory>> sizeCategories(
-    Ref ref, ICategoryRepository categoryRepo) async {
+    Ref ref, ICategoryService categoryRepo) async {
   final res = await categoryRepo.getSizeCategories();
 
   switch (res) {

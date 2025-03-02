@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/provider/category_provider.dart';
-import 'package:frontend/repository/category_repository.dart';
+import 'package:frontend/repository/category_service.dart';
 
 class SelectSpeciesModal extends ConsumerStatefulWidget {
   const SelectSpeciesModal({super.key});
@@ -17,7 +17,7 @@ class _SelectSpeciesPageState extends ConsumerState<SelectSpeciesModal> {
 
   @override
   Widget build(BuildContext context) {
-    final CategoryRepository repo = CategoryRepository();
+    final CategoryService repo = CategoryService();
     final AsyncValue<List<Lookup>> species = ref.read(speciesProvider(repo));
 
     return switch (species) {

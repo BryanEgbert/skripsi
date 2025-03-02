@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/size_category.dart';
 import 'package:frontend/provider/category_provider.dart';
-import 'package:frontend/repository/category_repository.dart';
+import 'package:frontend/repository/category_service.dart';
 
 class SelectPetSizeModal extends ConsumerStatefulWidget {
   const SelectPetSizeModal({super.key});
@@ -18,7 +18,7 @@ class _SelectPetSizeModalState extends ConsumerState<SelectPetSizeModal> {
   @override
   Widget build(BuildContext context) {
     final AsyncValue<List<SizeCategory>> species =
-        ref.read(sizeCategoriesProvider(CategoryRepository()));
+        ref.read(sizeCategoriesProvider(CategoryService()));
 
     return switch (species) {
       AsyncData(:final value) =>
