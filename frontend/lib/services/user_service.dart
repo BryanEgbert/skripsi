@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
@@ -23,8 +24,10 @@ class UserService implements IUserService {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
-      final res = await http.delete(Uri.parse("$host/users"),
-          headers: {"Authorization": "Bearer $token"});
+      final res = await Dio().delete(
+        "$host/users",
+        options: Options(headers: {"Authorization": "Bearer $token"}),
+      );
 
       return res;
     });
@@ -48,9 +51,11 @@ class UserService implements IUserService {
         ...pagination.toMap(),
       };
 
-      final res = await http.get(
-        Uri.parse("$host/users/vets").replace(queryParameters: queryParams),
-        headers: {HttpHeaders.authorizationHeader: "Bearer $token"},
+      final res = await Dio().get(
+        "$host/users/vets",
+        queryParameters: queryParams,
+        options: Options(
+            headers: {HttpHeaders.authorizationHeader: "Bearer $token"}),
       );
 
       return res;
@@ -63,26 +68,43 @@ class UserService implements IUserService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      Map<String, String> headers = {
-        HttpHeaders.contentTypeHeader: "multipart/form-data",
-        HttpHeaders.authorizationHeader: "Bearer $token",
-      };
+      // Map<String, String> headers = {
+      //   HttpHeaders.contentTypeHeader: "multipart/form-data",
+      //   HttpHeaders.authorizationHeader: "Bearer $token",
+      // };
 
-      var req = http.MultipartRequest("PUT", Uri.parse("$host/users"))
-        ..headers.addAll(headers)
-        ..fields.addAll(reqBody.toMap());
+      // var req = http.MultipartRequest("PUT", Uri.parse("$host/users"))
+      //   ..headers.addAll(headers)
+      //   ..fields.addAll(reqBody.toMap());
 
-      req.files.add(
-        http.MultipartFile(
-          "image",
-          reqBody.image.readAsBytes().asStream(),
-          reqBody.image.lengthSync(),
-          filename: reqBody.image.path,
+      // req.files.add(
+      //   http.MultipartFile(
+      //     "image",
+      //     reqBody.image.readAsBytes().asStream(),
+      //     reqBody.image.lengthSync(),
+      //     filename: reqBody.image.path,
+      //   ),
+      // );
+
+      // var res = await req.send();
+      // var response = await http.Response.fromStream(res);
+
+      FormData formData = FormData.fromMap({
+        ...reqBody.toMap(),
+        "image": MultipartFile.fromFile(reqBody.image.path,
+            filename: reqBody.image.path.split('/').last),
+      });
+
+      final response = await Dio().put(
+        "$host/users",
+        options: Options(
+          headers: {
+            Headers.contentTypeHeader: Headers.multipartFormDataContentType,
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
         ),
+        data: formData,
       );
-
-      var res = await req.send();
-      var response = await http.Response.fromStream(res);
 
       return response;
     });

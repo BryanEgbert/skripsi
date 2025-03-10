@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
@@ -27,26 +28,42 @@ class PetService implements IPetService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      Map<String, String> headers = {
-        HttpHeaders.contentTypeHeader: "multipart/form-data",
-        HttpHeaders.authorizationHeader: "Bearer $token",
-      };
+      // Map<String, String> headers = {
+      //   HttpHeaders.contentTypeHeader: "multipart/form-data",
+      //   HttpHeaders.authorizationHeader: "Bearer $token",
+      // };
 
-      var req = http.MultipartRequest("POST", Uri.parse("$host/pets"))
-        ..headers.addAll(headers)
-        ..fields.addAll(reqBody.toMap());
+      // var req = http.MultipartRequest("POST", Uri.parse("$host/pets"))
+      //   ..headers.addAll(headers)
+      //   ..fields.addAll(reqBody.toMap());
 
-      req.files.add(
-        http.MultipartFile(
-          "image",
-          reqBody.image.readAsBytes().asStream(),
-          reqBody.image.lengthSync(),
-          filename: reqBody.image.path,
+      // req.files.add(
+      //   http.MultipartFile(
+      //     "image",
+      //     reqBody.image.readAsBytes().asStream(),
+      //     reqBody.image.lengthSync(),
+      //     filename: reqBody.image.path,
+      //   ),
+      // );
+
+      // final res = await req.send();
+      // var response = await http.Response.fromStream(res);
+
+      FormData formData = FormData.fromMap({
+        ...reqBody.toMap(),
+        "image": MultipartFile.fromFile(reqBody.image.path,
+            filename: reqBody.image.path.split('/').last),
+      });
+
+      final response = await Dio().post(
+        "$host/users",
+        options: Options(
+          headers: {
+            Headers.contentTypeHeader: Headers.multipartFormDataContentType,
+          },
         ),
+        data: formData,
       );
-
-      final res = await req.send();
-      var response = await http.Response.fromStream(res);
 
       return response;
     });
@@ -58,10 +75,13 @@ class PetService implements IPetService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await http.delete(Uri.parse("$host/pets/$id"), headers: {
-        HttpHeaders.authorizationHeader: "Bearer $token",
-        HttpHeaders.contentTypeHeader: "application/json",
-      });
+      final res = await Dio().delete(
+        "$host/pets/$id",
+        options: Options(headers: {
+          HttpHeaders.authorizationHeader: "Bearer $token",
+          Headers.contentTypeHeader: Headers.jsonContentType,
+        }),
+      );
 
       return res;
     });
@@ -73,9 +93,12 @@ class PetService implements IPetService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await http.get(Uri.parse("$host/pets/$id"), headers: {
-        HttpHeaders.authorizationHeader: "Bearer $token",
-      });
+      final res = await Dio().get(
+        "$host/pets/$id",
+        options: Options(headers: {
+          HttpHeaders.authorizationHeader: "Bearer $token",
+        }),
+      );
 
       return res;
     }, (res) => Pet.fromJson(res));
@@ -88,13 +111,15 @@ class PetService implements IPetService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await http.get(
-          Uri.parse("$host/pets").replace(
-            queryParameters: pagination.toMap(),
-          ),
+      final res = await Dio().get(
+        "$host/pets",
+        queryParameters: pagination.toMap(),
+        options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",
-          });
+          },
+        ),
+      );
 
       return res;
     }, (res) => ListData.fromJson(res, Pet.fromJson));
@@ -106,26 +131,43 @@ class PetService implements IPetService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      Map<String, String> headers = {
-        HttpHeaders.contentTypeHeader: "multipart/form-data",
-        HttpHeaders.authorizationHeader: "Bearer $token",
-      };
+      // Map<String, String> headers = {
+      //   HttpHeaders.contentTypeHeader: "multipart/form-data",
+      //   HttpHeaders.authorizationHeader: "Bearer $token",
+      // };
 
-      var req = http.MultipartRequest("PUT", Uri.parse("$host/pets/$id"))
-        ..headers.addAll(headers)
-        ..fields.addAll(reqBody.toMap());
+      // var req = http.MultipartRequest("PUT", Uri.parse("$host/pets/$id"))
+      //   ..headers.addAll(headers)
+      //   ..fields.addAll(reqBody.toMap());
 
-      req.files.add(
-        http.MultipartFile(
-          "image",
-          reqBody.image.readAsBytes().asStream(),
-          reqBody.image.lengthSync(),
-          filename: reqBody.image.path,
+      // req.files.add(
+      //   http.MultipartFile(
+      //     "image",
+      //     reqBody.image.readAsBytes().asStream(),
+      //     reqBody.image.lengthSync(),
+      //     filename: reqBody.image.path,
+      //   ),
+      // );
+
+      // final res = await req.send();
+      // var response = await http.Response.fromStream(res);
+
+      FormData formData = FormData.fromMap({
+        ...reqBody.toMap(),
+        "image": MultipartFile.fromFile(reqBody.image.path,
+            filename: reqBody.image.path.split('/').last),
+      });
+
+      final response = await Dio().put(
+        "$host/pets/$id",
+        options: Options(
+          headers: {
+            Headers.contentTypeHeader: Headers.multipartFormDataContentType,
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
         ),
+        data: formData,
       );
-
-      final res = await req.send();
-      var response = await http.Response.fromStream(res);
 
       return response;
     });
@@ -138,13 +180,13 @@ class PetService implements IPetService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await http.get(
-          Uri.parse("$host/daycare/$petDaycareId/pets").replace(
-            queryParameters: pagination.toMap(),
-          ),
-          headers: {
-            HttpHeaders.authorizationHeader: "Bearer $token",
-          });
+      final res = await Dio().get(
+        "$host/daycare/$petDaycareId/pets",
+        queryParameters: pagination.toMap(),
+        options: Options(headers: {
+          HttpHeaders.authorizationHeader: "Bearer $token",
+        }),
+      );
 
       return res;
     }, (res) => ListData.fromJson(res, Pet.fromJson));

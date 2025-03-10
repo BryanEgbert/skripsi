@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/provider/database_provider.dart';
-import 'package:frontend/services/database_service.dart';
 import 'package:frontend/widgets/home.dart';
 import 'package:frontend/widgets/welcome.dart';
 import 'package:google_fonts/google_fonts.dart';

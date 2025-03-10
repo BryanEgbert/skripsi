@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_user_request.dart';
@@ -19,15 +20,13 @@ class AuthService implements IAuthService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      var res = await http.post(
-        Uri.parse("$host/login"),
-        headers: <String, String>{
-          "Content-Type": "application/json",
-        },
-        body: json.encode({
+      var res = await Dio().post(
+        "$host/login",
+        options: Options(contentType: Headers.jsonContentType),
+        data: {
           "email": email,
           "password": password,
-        }),
+        },
       );
 
       return res;
@@ -40,14 +39,10 @@ class AuthService implements IAuthService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      var res = await http.post(
-        Uri.parse("$host/refresh"),
-        headers: <String, String>{
-          "Content-Type": "application/json; charset=UTF-8",
-        },
-        body: jsonEncode(
-          {"refreshToken": token},
-        ),
+      var res = await Dio().post(
+        "$host/refresh",
+        options: Options(contentType: Headers.jsonContentType),
+        data: {"refreshToken": token},
       );
 
       return res;
@@ -60,23 +55,41 @@ class AuthService implements IAuthService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      Map<String, String> headers = {"Content-Type": "multipart/form-data"};
+      // Map<String, String> headers = {"Content-Type": "multipart/form-data"};
 
-      var req = http.MultipartRequest("POST", Uri.parse("$host/users"))
-        ..headers.addAll(headers)
-        ..fields.addAll(reqBody.toMap());
+      // var req = http.MultipartRequest("POST", Uri.parse("$host/users"))
+      //   ..headers.addAll(headers)
+      //   ..fields.addAll(reqBody.toMap());
 
-      req.files.add(
-        http.MultipartFile(
-          "image",
-          reqBody.image.readAsBytes().asStream(),
-          reqBody.image.lengthSync(),
-          filename: reqBody.image.path,
+      // req.files.add(
+      //   http.MultipartFile(
+      //     "image",
+      //     reqBody.image.readAsBytes().asStream(),
+      //     reqBody.image.lengthSync(),
+      //     filename: reqBody.image.path,
+      //   ),
+      // );
+
+      // var res = await req.send();
+      // var response = await http.Response.fromStream(res);
+
+      // return response;
+
+      FormData formData = FormData.fromMap({
+        ...reqBody.toMap(),
+        "image": MultipartFile.fromFile(reqBody.image.path,
+            filename: reqBody.image.path.split('/').last),
+      });
+
+      final response = await Dio().post(
+        "$host/users",
+        options: Options(
+          headers: {
+            Headers.contentTypeHeader: Headers.multipartFormDataContentType,
+          },
         ),
+        data: formData,
       );
-
-      var res = await req.send();
-      var response = await http.Response.fromStream(res);
 
       return response;
     }, (res) => TokenResponse.fromJson(res));

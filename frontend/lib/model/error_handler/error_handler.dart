@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:frontend/model/response/error_response.dart';
-import 'package:http/http.dart';
 
-final Exception unknownException = Exception("Unknown Error");
+final String unknownErr = "Unknown Error";
 
 sealed class Result<T> {
   const Result();
@@ -19,10 +19,9 @@ sealed class Result<T> {
   factory Result.notFoundErr(String error) => NotFoundError(error);
   factory Result.timeoutErr() => TimeoutError();
 
-  factory Result.networkErr(SocketException error) =>
-      NetworkError(error.message);
+  factory Result.networkErr(String error) => NetworkError(error);
 
-  factory Result.err(Exception error) => Error(error.toString());
+  factory Result.err(String error) => Error(error);
 }
 
 final class Ok<T> extends Result<T> {
@@ -77,7 +76,7 @@ Future<Result<T>> makeRequest<T>(
     if (res.statusCode == successStatusCode) {
       T? resp;
       if (parse != null) {
-        resp = parse(jsonDecode(res.body) as Map<String, dynamic>);
+        resp = parse(res.data);
       }
 
       return Result.ok(resp);
@@ -85,7 +84,7 @@ Future<Result<T>> makeRequest<T>(
       switch (res.statusCode) {
         case 400:
           ErrorResponse errorRes = ErrorResponse.fromJson(
-              jsonDecode(res.body) as Map<String, dynamic>);
+              jsonDecode(res.data) as Map<String, dynamic>);
 
           return Result.badRequestErr(errorRes.message);
         case 401:
@@ -95,18 +94,25 @@ Future<Result<T>> makeRequest<T>(
         case 404:
           return Result.notFoundErr("URL doesn't exists");
         case 500:
-          ErrorResponse errorRes = ErrorResponse.fromJson(
-              jsonDecode(res.body) as Map<String, dynamic>);
-          return Result.internalServerErr(errorRes.message);
+          if (res.data != null) {
+            ErrorResponse errorRes = ErrorResponse.fromJson(res.data);
+            return Result.internalServerErr(errorRes.message);
+          } else {
+            return Result.internalServerErr(
+                "Something's wrong, please try again later");
+          }
         default:
-          return Result.err(unknownException);
+          return Result.err(unknownErr);
       }
     }
-  } on SocketException catch (e) {
-    return Result.networkErr(e);
-  } on TimeoutException catch (_) {
-    return Result.timeoutErr();
-  } on Exception catch (e) {
-    return Result.err(e);
+  } on DioException catch (e) {
+    return switch (e.type) {
+      DioExceptionType.connectionTimeout => Result.timeoutErr(),
+      DioExceptionType.sendTimeout => Result.timeoutErr(),
+      DioExceptionType.receiveTimeout => Result.timeoutErr(),
+      DioExceptionType.connectionError =>
+        Result.networkErr(e.message ?? "Failed to connect to server"),
+      _ => Result.err(e.message ?? "Unknown error")
+    };
   }
 }

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/lookup.dart';
@@ -18,7 +19,7 @@ class CategoryService implements ICategoryService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      var res = await http.get(Uri.parse("$host/vet-specialties"));
+      var res = await Dio().get("$host/vet-specialties");
 
       return res;
     }, (res) => ListData.fromJson(res, Lookup.fromJson));
@@ -30,7 +31,7 @@ class CategoryService implements ICategoryService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      var res = await http.get(Uri.parse("$host/size-categoriess"));
+      var res = await Dio().get("$host/size-categoriess");
 
       return res;
     }, (res) => ListData<SizeCategory>.fromJson(res, SizeCategory.fromJson));
@@ -42,7 +43,7 @@ class CategoryService implements ICategoryService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      var res = await http.get(Uri.parse("$host/vet-specialties"));
+      var res = await Dio().get("$host/vet-specialties");
 
       return res;
     }, (res) => ListData.fromJson(res, Lookup.fromJson));

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
@@ -21,13 +22,15 @@ class ReviewService implements IReviewService {
     return makeRequest(201, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
-      var res = await http.post(
-        Uri.parse("$host/$petDaycareId/reviews"),
-        headers: {
-          "Content-Type": "application/json; charset=UTF-8",
-          "Authorization": "Bearer $token",
-        },
-        body: reqBody.toJson(),
+      var res = await Dio().post(
+        "$host/$petDaycareId/reviews",
+        options: Options(
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            "Authorization": "Bearer $token",
+          },
+        ),
+        data: reqBody.toJson(),
       );
 
       return res;
@@ -39,9 +42,11 @@ class ReviewService implements IReviewService {
     return makeRequest(204, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
-      var res = await http.delete(
-        Uri.parse("$host/$petDaycareId/reviews"),
-        headers: {"Authorization": "Bearer $token"},
+      var res = await Dio().delete(
+        "$host/$petDaycareId/reviews",
+        options: Options(
+          headers: {"Authorization": "Bearer $token"},
+        ),
       );
 
       return res;
@@ -54,10 +59,12 @@ class ReviewService implements IReviewService {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
-      var res = await http.delete(
-        Uri.parse("$host/$petDaycareId/reviews")
-            .replace(queryParameters: pagination.toMap()),
-        headers: {"Authorization": "Bearer $token"},
+      var res = await Dio().get(
+        "$host/$petDaycareId/reviews",
+        queryParameters: pagination.toMap(),
+        options: Options(
+          headers: {"Authorization": "Bearer $token"},
+        ),
       );
 
       return res;

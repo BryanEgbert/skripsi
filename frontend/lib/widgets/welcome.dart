@@ -23,25 +23,8 @@ class WelcomeWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     LoginForm(),
-                    Row(
-                      children: <Widget>[
-                        Expanded(child: Divider()),
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text("or"),
-                        ),
-                        Expanded(child: Divider()),
-                      ],
-                    ),
-                    FilledButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => const PickRolePage()),
-                        );
-                      },
-                      child: const Text("Create An Account"),
-                    ),
+                    separator(),
+                    createAccountButton(context),
                   ],
                 ),
               ),
@@ -49,6 +32,30 @@ class WelcomeWidget extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  FilledButton createAccountButton(BuildContext context) {
+    return FilledButton(
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const PickRolePage()),
+        );
+      },
+      child: const Text("Create An Account"),
+    );
+  }
+
+  Row separator() {
+    return Row(
+      children: <Widget>[
+        Expanded(child: Divider()),
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 10),
+          child: Text("or"),
+        ),
+        Expanded(child: Divider()),
+      ],
     );
   }
 }

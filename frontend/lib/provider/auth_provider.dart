@@ -45,7 +45,7 @@ class Auth extends _$Auth {
           state = AsyncData(tokenRes.value);
           break;
         case Error():
-          return Future.error(tokenRes.error);
+          state = AsyncError(tokenRes.error, StackTrace.current);
       }
     }
 
@@ -55,10 +55,11 @@ class Auth extends _$Auth {
 
       switch (tokenRes) {
         case Ok():
+          dbService.insert(tokenRes.value!);
           state = AsyncData(tokenRes.value);
           break;
         case Error():
-          return Future.error(tokenRes.error);
+          state = AsyncError(tokenRes.error, StackTrace.current);
       }
     }
   }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
@@ -26,13 +27,15 @@ class SlotService implements ISlotService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await http.post(
-        Uri.parse("$host/daycare/$petDaycareId/slot"),
-        headers: {
-          HttpHeaders.contentTypeHeader: "applicaton/json",
-          HttpHeaders.authorizationHeader: "Bearer $token",
-        },
-        body: reqBody.toJson(),
+      final res = await Dio().post(
+        "$host/daycare/$petDaycareId/slot",
+        options: Options(
+          headers: {
+            HttpHeaders.contentTypeHeader: "applicaton/json",
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
+        data: reqBody.toJson(),
       );
 
       return res;
@@ -46,13 +49,15 @@ class SlotService implements ISlotService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await http.post(
-        Uri.parse("$host/daycare/slot/$slotId"),
-        headers: {
-          HttpHeaders.contentTypeHeader: "applicaton/json",
-          HttpHeaders.authorizationHeader: "Bearer $token",
-        },
-        body: reqBody.toJson(),
+      final res = await Dio().patch(
+        "$host/daycare/slot/$slotId",
+        options: Options(
+          headers: {
+            HttpHeaders.contentTypeHeader: "applicaton/json",
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
+        data: reqBody.toJson(),
       );
 
       return res;
@@ -66,16 +71,19 @@ class SlotService implements ISlotService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await http.get(
-        Uri.parse("$host/daycare/$petDaycareId/slot").replace(queryParameters: {
+      final res = await Dio().get(
+        "$host/daycare/$petDaycareId/slot",
+        queryParameters: {
           "year": year,
           "month": month,
           "species": speciesId,
           ...pagination.toMap(),
-        }),
-        headers: {
-          HttpHeaders.authorizationHeader: "Bearer $token",
         },
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
       );
 
       return res;

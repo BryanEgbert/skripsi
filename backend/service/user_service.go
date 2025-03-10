@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/BryanEgbert/skripsi/helper"
@@ -145,18 +144,17 @@ func (s *UserServiceImpl) CreateUser(request model.CreateUserRequest) (*model.To
 			return nil, errors.New("VetSpecialty is required for vet role")
 		}
 
-		vetSpecialtyIds := strings.Split(*request.VetSpecialtyID, ",")
-		if len(vetSpecialtyIds) <= 0 {
+		if len(*request.VetSpecialtyID) <= 0 {
 			return nil, errors.New("VetSpecialty is required for vet role")
 		}
 
 		// Validate all VetSpecialty IDs exist
 		var validSpecialties []model.VetSpecialty
-		if err := s.db.Where("id IN ?", vetSpecialtyIds).Find(&validSpecialties).Error; err != nil {
+		if err := s.db.Where("id IN ?", *request.VetSpecialtyID).Find(&validSpecialties).Error; err != nil {
 			return nil, err
 		}
 
-		if len(validSpecialties) != len(vetSpecialtyIds) {
+		if len(validSpecialties) != len(*request.VetSpecialtyID) {
 			return nil, errors.New("One or more VetSpecialty IDs are invalid")
 		}
 
