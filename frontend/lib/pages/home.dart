@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/widgets/pet_daycares_view.dart';
-import 'package:frontend/widgets/pets_view.dart';
+import 'package:frontend/pages/pet_daycares_view.dart';
+import 'package:frontend/pages/pets_view.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});

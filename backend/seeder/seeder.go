@@ -62,16 +62,6 @@ func SeedTable(db *gorm.DB) error {
 		return err
 	}
 
-	// Insert Species records
-	species := []model.Species{
-		{Name: "dogs"},
-		{Name: "cats"},
-		{Name: "rabbits"},
-	}
-	if err := db.Create(&species).Error; err != nil {
-		return err
-	}
-
 	// Insert SizeCategory records
 	sizeCategories := []model.SizeCategory{
 		{Name: "small", MinWeight: 0, MaxWeight: 10},
@@ -81,6 +71,19 @@ func SeedTable(db *gorm.DB) error {
 		{Name: "all size", MinWeight: 0, MaxWeight: 100},
 	}
 	if err := db.Create(&sizeCategories).Error; err != nil {
+		return err
+	}
+
+	// Insert Species records
+	petCategory := []model.PetCategory{
+		{Name: "small dogs", SizeCategory: sizeCategories[0]},
+		{Name: "medium dogs", SizeCategory: sizeCategories[1]},
+		{Name: "large dogs", SizeCategory: sizeCategories[2]},
+		{Name: "giant dogs", SizeCategory: sizeCategories[3]},
+		{Name: "cats"},
+		{Name: "rabbits"},
+	}
+	if err := db.Create(&petCategory).Error; err != nil {
 		return err
 	}
 
@@ -113,7 +116,7 @@ func SeedTable(db *gorm.DB) error {
 			Address:       "123 Bark St",
 			Latitude:      40.7128,
 			Longitude:     -74.0060,
-			Price:         100000.0,
+			// Price:         100000.0,
 			OwnerID:       users[1].ID,
 			DailyWalks:    dailyWalks[1],
 			DailyPlaytime: dailyPlaytimes[1],
@@ -124,7 +127,7 @@ func SeedTable(db *gorm.DB) error {
 			Description:       "DOG daycare jakarta desc",
 			Latitude:          -6.266167,
 			Longitude:         106.808214,
-			Price:             150000.0,
+			// Price:             150000.0,
 			OwnerID:           users[2].ID,
 			DailyWalks:        dailyWalks[1],
 			BookedNum:         1,
@@ -138,10 +141,11 @@ func SeedTable(db *gorm.DB) error {
 			Address:       "123 Bark St",
 			Latitude:      40.7128,
 			Longitude:     -74.0060,
-			Price:         100000.0,
+			// Price:         100000.0,
 			OwnerID:       users[5].ID,
 			DailyWalks:    dailyWalks[1],
 			DailyPlaytime: dailyPlaytimes[1],
+			BookedNum: 10,
 		},
 	}
 
@@ -150,9 +154,9 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	slots := []model.Slots{
-		{DaycareID: daycare[0].ID, SpeciesID: 1, SizeCategoryID: 1, MaxNumber: 5},
-		{DaycareID: daycare[0].ID, SpeciesID: 2, SizeCategoryID: 2, MaxNumber: 8},
-		{DaycareID: daycare[1].ID, SpeciesID: 1, SizeCategoryID: 5, MaxNumber: 20},
+		{DaycareID: daycare[0].ID, PetCategoryID: 1, MaxNumber: 5, Price: 100000.0},
+		{DaycareID: daycare[0].ID, PetCategoryID: 2, MaxNumber: 8, Price: 100000.0},
+		{DaycareID: daycare[1].ID, PetCategoryID: 1, MaxNumber: 20, Price: 100000.0},
 	}
 
 	if err := db.Create(&slots).Error; err != nil {
@@ -162,10 +166,10 @@ func SeedTable(db *gorm.DB) error {
 	petImg := "test.com/image/dog.jpeg"
 	pet := []model.Pet{
 		{
-			Name: "Buddy", ImageUrl: &petImg, Status: "idle", OwnerID: users[0].ID, SpeciesID: 1, SizeID: 1,
+			Name: "Buddy", ImageUrl: &petImg, Status: "idle", OwnerID: users[0].ID, PetCategoryID: 1,
 		},
 		{
-			Name: "Buddy2", ImageUrl: &petImg, Status: "idle", OwnerID: users[0].ID, SpeciesID: 1, SizeID: 2,
+			Name: "Buddy2", ImageUrl: &petImg, Status: "idle", OwnerID: users[0].ID, PetCategoryID: 1,
 		},
 	}
 

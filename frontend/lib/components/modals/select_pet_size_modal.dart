@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/model/lookup.dart';
+import 'package:frontend/model/size_category.dart';
 import 'package:frontend/provider/category_provider.dart';
 import 'package:frontend/services/category_service.dart';
 
-class SelectSpeciesModal extends ConsumerStatefulWidget {
-  const SelectSpeciesModal({super.key});
+class SelectPetSizeModal extends ConsumerStatefulWidget {
+  const SelectPetSizeModal({super.key});
 
   @override
-  ConsumerState<SelectSpeciesModal> createState() => _SelectSpeciesPageState();
+  ConsumerState<SelectPetSizeModal> createState() => _SelectPetSizeModalState();
 }
 
-class _SelectSpeciesPageState extends ConsumerState<SelectSpeciesModal> {
+class _SelectPetSizeModalState extends ConsumerState<SelectPetSizeModal> {
   int speciesId = 0;
   int currentValue = 1;
 
   @override
   Widget build(BuildContext context) {
-    final CategoryService repo = CategoryService();
-    final AsyncValue<List<Lookup>> species = ref.read(speciesProvider(repo));
+    final AsyncValue<List<SizeCategory>> petCategories =
+        ref.read(sizeCategoriesProvider);
 
-    return switch (species) {
+    return switch (petCategories) {
       AsyncData(:final value) =>
         ListView.builder(itemBuilder: (context, index) {
           return RadioListTile(

@@ -37,15 +37,15 @@ func TestGetBookedPet(t *testing.T) {
 			Name:     "Buddy",
 			ImageUrl: "test.com/image/dog.jpeg",
 			Status:   "idle",
-			Species: model.Species{
+			PetCategory: model.PetCategoryDTO{
 				ID:   1,
-				Name: "dogs",
-			},
-			SizeCategory: model.SizeCategory{
-				ID:        1,
-				Name:      "small",
-				MinWeight: 0,
-				MaxWeight: 10,
+				Name: "small dogs",
+				SizeCategory: model.SizeCategory{
+					ID: 1,
+					Name: "small",
+					MinWeight: 0,
+					MaxWeight: 10,
+				},
 			},
 			Owner: model.UserDTO{
 				ID:       1,
@@ -138,8 +138,8 @@ func TestGetPetDaycare(t *testing.T) {
 				ID:                2,
 				Name:              "DOG Daycare Jakarta",
 				Address:           "Jl. Abdul Majid Raya No.31, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410",
-				Price:             150000.0,
-				PricingType:       "day",
+				// Price:             150000.0,
+				// PricingType:       "day",
 				Description:       "DOG daycare jakarta desc",
 				BookedNum:         1,
 				Distance:          1.140617942364012e+07,
@@ -186,8 +186,8 @@ func TestGetPetDaycare(t *testing.T) {
 				ID:                2,
 				Name:              "DOG Daycare Jakarta",
 				Address:           "Jl. Abdul Majid Raya No.31, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410",
-				Price:             150000.0,
-				PricingType:       "day",
+				// Price:             150000.0,
+				// PricingType:       "day",
 				Description:       "DOG daycare jakarta desc",
 				BookedNum:         1,
 				Distance:          0,
@@ -276,8 +276,7 @@ func TestGetPetDaycareSlot(t *testing.T) {
 			Name: "On get pet daycare slot, should return slot of the month",
 			ID:   1,
 			In: model.GetSlotRequest{
-				SpeciesID:      1,
-				SizeCategoryID: 1,
+				PetCategoryID: 1,
 				Year:           2025,
 				Month:          2,
 			},
@@ -293,7 +292,7 @@ func TestGetPetDaycareSlot(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			req, err := http.NewRequest("GET",
-				fmt.Sprintf("/daycare/%d/slot?species=%d&size=%d&year=%d&month=%d", test.ID, test.In.SpeciesID, test.In.SizeCategoryID, test.In.Year, test.In.Month),
+				fmt.Sprintf("/daycare/%d/slot?pet-category=%d&year=%d&month=%d", test.ID, test.In.PetCategoryID, test.In.Year, test.In.Month),
 				nil)
 			if err != nil {
 				t.Errorf("http NewRequest err: %v", err)

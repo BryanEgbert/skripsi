@@ -13,8 +13,6 @@ type PetDaycare struct {
 	Address           string  `gorm:"not null"`
 	Latitude          float64 `gorm:"not null"`
 	Longitude         float64 `gorm:"not null"`
-	Price             float64 `gorm:"not null"`
-	PricingType       string  `gorm:"default:'day'"`
 	Description       string
 	HasPickupService  bool    `gorm:"default:0"`
 	MustBeVaccinated  bool    `gorm:"default:0"`
@@ -64,8 +62,8 @@ type CreatePetDaycareRequest struct {
 	Name              string                  `form:"name" binding:"required"`
 	Address           string                  `form:"address" binding:"required"`
 	Description       string                  `form:"description"`
-	Price             float64                 `form:"price"`
-	PricingType       string                  `form:"pricingType"`
+	Price             []float64                 `form:"price[]"`
+	PricingType       []string                  `form:"pricingType[]"`
 	HasPickupService  bool                    `form:"hasPickupService"`
 	MustBeVaccinated  bool                    `form:"mustBeVaccinated"`
 	GroomingAvailable bool                    `form:"groomingAvailable"`
@@ -74,24 +72,23 @@ type CreatePetDaycareRequest struct {
 	DailyWalksID      uint                    `form:"dailyWalksId" binding:"required"`
 	DailyPlaytimeID   uint                    `form:"dailyPlaytimeId" binding:"required"`
 	Thumbnails        []*multipart.FileHeader `form:"thumbnails[]" binding:"required"`
-	SpeciesID         []uint                  `form:"speciesId[]" binding:"required"`
-	SizeCategoryID    []uint                  `form:"sizeCategoryId[]" binding:"required"`
+	PetCategoryID         []uint                  `form:"petCategoryId[]" binding:"required"`
 	MaxNumber         []int                   `form:"maxNumber[]" binding:"required"`
 	ThumbnailURLs     []string
 }
 
 type GetPetDaycaresRequest struct {
-	Latitude         float64
-	Longitude        float64
+	Latitude         *float64
+	Longitude        *float64
 	MinDistance      float64
 	MaxDistance      float64
 	Facilities       []string
-	MustBeVaccinated bool
-	DailyWalks       uint
-	DailyPlaytime    uint
+	MustBeVaccinated *bool
+	DailyWalks       *uint
+	DailyPlaytime    *uint
 	MinPrice         float64
 	MaxPrice         float64
-	PricingType      string
+	PricingType      *string
 }
 
 type GetPetDaycareDetailResponse struct {
@@ -99,8 +96,9 @@ type GetPetDaycareDetailResponse struct {
 	Name              string        `json:"name"`
 	Address           string        `json:"address"`
 	Distance          float64       `json:"distance"`
-	Price             float64       `json:"price"`
-	PricingType       string        `json:"pricingType"`
+	// Price             float64       `json:"price"`
+	// PricingType       string        `json:"pricingType"`
+	Pricings []PriceDetails `json:"pricings"`
 	Description       string        `json:"description"`
 	BookedNum         int64         `json:"bookedNum"`
 	AverageRating     float64       `json:"averageRating"`
@@ -121,12 +119,17 @@ type GetPetDaycaresResponse struct {
 	ID            uint    `json:"id"`
 	Name          string  `json:"name"`
 	Distance      float64 `json:"distance"`
-	ProfileImage  string  `json:"profileImage"`
 	AverageRating float64 `json:"averageRating"`
 	RatingCount   int     `json:"ratingCount"`
 	BookedNum     int64   `json:"bookedNum"`
-	Price         float64 `json:"price"`
+	Prices         []PriceDetails `json:"prices"`
 	Thumbnail     string  `json:"thumbnail"`
+}
+
+type PriceDetails struct {
+	PetCategory PetCategoryDTO `json:"petCategory"`
+	Price         float64 `json:"price"`
+	PricingType string `json:"pricingType"`
 }
 
 type BookSlotsRequest struct {

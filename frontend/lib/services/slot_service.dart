@@ -65,7 +65,7 @@ class SlotService implements ISlotService {
   }
 
   @override
-  Future<Result<ListData<Slot>>> getSlots(String token, int speciesId,
+  Future<Result<ListData<Slot>>> getSlots(String token, int petCategoryId,
       int petDaycareId, int year, int month, PaginationQueryParams pagination) {
     return makeRequest(200, () async {
       await dotenv.load();
@@ -76,7 +76,7 @@ class SlotService implements ISlotService {
         queryParameters: {
           "year": year,
           "month": month,
-          "species": speciesId,
+          "pet-category": petCategoryId,
           ...pagination.toMap(),
         },
         options: Options(

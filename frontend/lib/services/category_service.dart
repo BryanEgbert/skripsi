@@ -4,11 +4,10 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/size_category.dart';
-import 'package:http/http.dart' as http;
 
 abstract interface class ICategoryService {
   Future<Result<ListData<Lookup>>> getVetSpecialties();
-  Future<Result<ListData<Lookup>>> getSpecies();
+  Future<Result<ListData<Lookup>>> getPetCategories();
   Future<Result<ListData<SizeCategory>>> getSizeCategories();
 }
 
@@ -38,12 +37,12 @@ class CategoryService implements ICategoryService {
   }
 
   @override
-  Future<Result<ListData<Lookup>>> getSpecies() async {
+  Future<Result<ListData<Lookup>>> getPetCategories() async {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      var res = await Dio().get("$host/vet-specialties");
+      var res = await Dio().get("$host/pet-categories");
 
       return res;
     }, (res) => ListData.fromJson(res, Lookup.fromJson));

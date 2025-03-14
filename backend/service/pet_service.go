@@ -30,10 +30,10 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, daycareId uint, startID uint
 
 	rows, err := s.db.
 		Model(&model.Pet{}).
-		Select("pets.id,pets.name,pets.image_url,pets.status,species.*, size_categories.*, users.id, users.name, users.email, users.image_url, roles.id, roles.name, users.created_at").
+		Select("pets.id,pets.name,pets.image_url,pets.status,pet_categories.id, pet_categories.name, size_categories.*, users.id, users.name, users.email, users.image_url, roles.id, roles.name, users.created_at").
 		Joins("JOIN booked_slots on booked_slots.pet_id = pets.id").
-		Joins("JOIN species ON species.id = pets.species_id").
-		Joins("JOIN size_categories ON size_categories.id = pets.size_id").
+		Joins("JOIN pet_categories ON pet_categories.id = pets.pet_categories_id").
+		Joins("JOIN size_categories ON size_categories.id = pet_categories.size_category_id").
 		Joins("JOIN pet_daycares ON pet_daycares.id = booked_slots.daycare_id").
 		Joins("JOIN users ON users.id = pets.owner_id").
 		Joins("JOIN roles ON roles.id = users.role_id").
@@ -51,12 +51,12 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, daycareId uint, startID uint
 			&petDto.Name,
 			&petDto.ImageUrl,
 			&petDto.Status,
-			&petDto.Species.ID,
-			&petDto.Species.Name,
-			&petDto.SizeCategory.ID,
-			&petDto.SizeCategory.Name,
-			&petDto.SizeCategory.MinWeight,
-			&petDto.SizeCategory.MaxWeight,
+			&petDto.PetCategory.ID,
+			&petDto.PetCategory.Name,
+			&petDto.PetCategory.ID,
+			&petDto.PetCategory.Name,
+			&petDto.PetCategory.SizeCategory.MinWeight,
+			&petDto.PetCategory.SizeCategory.MaxWeight,
 			&petDto.Owner.ID,
 			&petDto.Owner.Name,
 			&petDto.Owner.Email,
@@ -72,13 +72,12 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, daycareId uint, startID uint
 	return &petDtos, nil
 }
 
-// GetPet fetches a single pet by ID, joining with Species and SizeCategory
 func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 	var pet model.Pet
 	if err := s.db.
 		Preload("BookedSlots").
-		Joins("Species").
-		Joins("SizeCategory").
+		Joins("PetCategory").
+		Joins("PetCategory.SizeCategory").
 		Joins("Owner").
 		Joins("Owner.Role").
 		First(&pet, id).Error; err != nil {
@@ -90,8 +89,7 @@ func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 		Name:         pet.Name,
 		ImageUrl:     *pet.ImageUrl,
 		Status:       pet.Status,
-		Species:      pet.Species,
-		SizeCategory: pet.SizeCategory,
+		PetCategory:  helper.ConvertPetCategoryToDTO(pet.PetCategory),
 		Owner:        helper.ConvertUserToDTO(pet.Owner),
 	}
 
@@ -103,8 +101,8 @@ func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]model.PetDTO, error) {
 	var pets []model.Pet
 	query := s.db.
-		Joins("Species").
-		Joins("SizeCategory").
+		Joins("PetCategory").
+		Joins("PetCategory.SizeCategory").
 		Joins("Owner").
 		Joins("Owner.Role").
 		Where("owner_id = ?", ownerID).
@@ -127,8 +125,7 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 			Name:         pet.Name,
 			ImageUrl:     *pet.ImageUrl,
 			Status:       pet.Status,
-			Species:      pet.Species,
-			SizeCategory: pet.SizeCategory,
+			PetCategory: helper.ConvertPetCategoryToDTO(pet.PetCategory),
 			Owner:        helper.ConvertUserToDTO(pet.Owner),
 		})
 	}
@@ -151,8 +148,7 @@ func (s *PetServiceImpl) UpdatePet(id uint, petDTO model.PetDTO) error {
 	pet.Name = petDTO.Name
 	pet.ImageUrl = &petDTO.ImageUrl
 	pet.Status = petDTO.Status
-	pet.SpeciesID = petDTO.Species.ID
-	pet.SizeID = petDTO.SizeCategory.ID
+	pet.PetCategoryID = petDTO.PetCategory.ID
 
 	err = s.db.Save(&pet).Error
 	if err != nil {
@@ -167,8 +163,7 @@ func (s *PetServiceImpl) CreatePet(ownerID uint, req model.PetRequest) error {
 		Name:      req.Name,
 		ImageUrl:  &req.ImageUrl,
 		OwnerID:   ownerID,
-		SpeciesID: req.SpeciesID,
-		SizeID:    req.SizeCategoryID,
+		PetCategoryID: req.PetCategoryID,
 	}
 
 	if err := s.db.Create(&pet).Error; err != nil {

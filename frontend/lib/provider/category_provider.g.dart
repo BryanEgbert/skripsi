@@ -6,421 +6,56 @@ part of 'category_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$vetSpecialtiesHash() => r'c55040fd0105703d1ddf6d36b3762aed30becfe7';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
+String _$vetSpecialtiesHash() => r'b651aa3df117e41ac644efce5cb7591a6a4d08ec';
 
 /// See also [vetSpecialties].
 @ProviderFor(vetSpecialties)
-const vetSpecialtiesProvider = VetSpecialtiesFamily();
-
-/// See also [vetSpecialties].
-class VetSpecialtiesFamily extends Family<AsyncValue<List<Lookup>>> {
-  /// See also [vetSpecialties].
-  const VetSpecialtiesFamily();
-
-  /// See also [vetSpecialties].
-  VetSpecialtiesProvider call(
-    ICategoryService categoryRepo,
-  ) {
-    return VetSpecialtiesProvider(
-      categoryRepo,
-    );
-  }
-
-  @override
-  VetSpecialtiesProvider getProviderOverride(
-    covariant VetSpecialtiesProvider provider,
-  ) {
-    return call(
-      provider.categoryRepo,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'vetSpecialtiesProvider';
-}
-
-/// See also [vetSpecialties].
-class VetSpecialtiesProvider extends AutoDisposeFutureProvider<List<Lookup>> {
-  /// See also [vetSpecialties].
-  VetSpecialtiesProvider(
-    ICategoryService categoryRepo,
-  ) : this._internal(
-          (ref) => vetSpecialties(
-            ref as VetSpecialtiesRef,
-            categoryRepo,
-          ),
-          from: vetSpecialtiesProvider,
-          name: r'vetSpecialtiesProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$vetSpecialtiesHash,
-          dependencies: VetSpecialtiesFamily._dependencies,
-          allTransitiveDependencies:
-              VetSpecialtiesFamily._allTransitiveDependencies,
-          categoryRepo: categoryRepo,
-        );
-
-  VetSpecialtiesProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.categoryRepo,
-  }) : super.internal();
-
-  final ICategoryService categoryRepo;
-
-  @override
-  Override overrideWith(
-    FutureOr<List<Lookup>> Function(VetSpecialtiesRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: VetSpecialtiesProvider._internal(
-        (ref) => create(ref as VetSpecialtiesRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        categoryRepo: categoryRepo,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeFutureProviderElement<List<Lookup>> createElement() {
-    return _VetSpecialtiesProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is VetSpecialtiesProvider &&
-        other.categoryRepo == categoryRepo;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, categoryRepo.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
+final vetSpecialtiesProvider = AutoDisposeFutureProvider<List<Lookup>>.internal(
+  vetSpecialties,
+  name: r'vetSpecialtiesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$vetSpecialtiesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin VetSpecialtiesRef on AutoDisposeFutureProviderRef<List<Lookup>> {
-  /// The parameter `categoryRepo` of this provider.
-  ICategoryService get categoryRepo;
-}
+typedef VetSpecialtiesRef = AutoDisposeFutureProviderRef<List<Lookup>>;
+String _$petCategoryHash() => r'618c0ba57d0392a7769cf69667f6a4407f362196';
 
-class _VetSpecialtiesProviderElement
-    extends AutoDisposeFutureProviderElement<List<Lookup>>
-    with VetSpecialtiesRef {
-  _VetSpecialtiesProviderElement(super.provider);
-
-  @override
-  ICategoryService get categoryRepo =>
-      (origin as VetSpecialtiesProvider).categoryRepo;
-}
-
-String _$speciesHash() => r'3d00b0e43ca717cc785a0556d8131a1c5819c8b0';
-
-/// See also [species].
-@ProviderFor(species)
-const speciesProvider = SpeciesFamily();
-
-/// See also [species].
-class SpeciesFamily extends Family<AsyncValue<List<Lookup>>> {
-  /// See also [species].
-  const SpeciesFamily();
-
-  /// See also [species].
-  SpeciesProvider call(
-    ICategoryService categoryRepo,
-  ) {
-    return SpeciesProvider(
-      categoryRepo,
-    );
-  }
-
-  @override
-  SpeciesProvider getProviderOverride(
-    covariant SpeciesProvider provider,
-  ) {
-    return call(
-      provider.categoryRepo,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'speciesProvider';
-}
-
-/// See also [species].
-class SpeciesProvider extends AutoDisposeFutureProvider<List<Lookup>> {
-  /// See also [species].
-  SpeciesProvider(
-    ICategoryService categoryRepo,
-  ) : this._internal(
-          (ref) => species(
-            ref as SpeciesRef,
-            categoryRepo,
-          ),
-          from: speciesProvider,
-          name: r'speciesProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$speciesHash,
-          dependencies: SpeciesFamily._dependencies,
-          allTransitiveDependencies: SpeciesFamily._allTransitiveDependencies,
-          categoryRepo: categoryRepo,
-        );
-
-  SpeciesProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.categoryRepo,
-  }) : super.internal();
-
-  final ICategoryService categoryRepo;
-
-  @override
-  Override overrideWith(
-    FutureOr<List<Lookup>> Function(SpeciesRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: SpeciesProvider._internal(
-        (ref) => create(ref as SpeciesRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        categoryRepo: categoryRepo,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeFutureProviderElement<List<Lookup>> createElement() {
-    return _SpeciesProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is SpeciesProvider && other.categoryRepo == categoryRepo;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, categoryRepo.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
+/// See also [petCategory].
+@ProviderFor(petCategory)
+final petCategoryProvider = AutoDisposeFutureProvider<List<Lookup>>.internal(
+  petCategory,
+  name: r'petCategoryProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$petCategoryHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin SpeciesRef on AutoDisposeFutureProviderRef<List<Lookup>> {
-  /// The parameter `categoryRepo` of this provider.
-  ICategoryService get categoryRepo;
-}
-
-class _SpeciesProviderElement
-    extends AutoDisposeFutureProviderElement<List<Lookup>> with SpeciesRef {
-  _SpeciesProviderElement(super.provider);
-
-  @override
-  ICategoryService get categoryRepo => (origin as SpeciesProvider).categoryRepo;
-}
-
-String _$sizeCategoriesHash() => r'f0f7030bf1c5c386ab04cc187f09e4747bd81cb2';
+typedef PetCategoryRef = AutoDisposeFutureProviderRef<List<Lookup>>;
+String _$sizeCategoriesHash() => r'3a34ff4fc7789d890f3f37f589feab151f51e5d5';
 
 /// See also [sizeCategories].
 @ProviderFor(sizeCategories)
-const sizeCategoriesProvider = SizeCategoriesFamily();
-
-/// See also [sizeCategories].
-class SizeCategoriesFamily extends Family<AsyncValue<List<SizeCategory>>> {
-  /// See also [sizeCategories].
-  const SizeCategoriesFamily();
-
-  /// See also [sizeCategories].
-  SizeCategoriesProvider call(
-    ICategoryService categoryRepo,
-  ) {
-    return SizeCategoriesProvider(
-      categoryRepo,
-    );
-  }
-
-  @override
-  SizeCategoriesProvider getProviderOverride(
-    covariant SizeCategoriesProvider provider,
-  ) {
-    return call(
-      provider.categoryRepo,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'sizeCategoriesProvider';
-}
-
-/// See also [sizeCategories].
-class SizeCategoriesProvider
-    extends AutoDisposeFutureProvider<List<SizeCategory>> {
-  /// See also [sizeCategories].
-  SizeCategoriesProvider(
-    ICategoryService categoryRepo,
-  ) : this._internal(
-          (ref) => sizeCategories(
-            ref as SizeCategoriesRef,
-            categoryRepo,
-          ),
-          from: sizeCategoriesProvider,
-          name: r'sizeCategoriesProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$sizeCategoriesHash,
-          dependencies: SizeCategoriesFamily._dependencies,
-          allTransitiveDependencies:
-              SizeCategoriesFamily._allTransitiveDependencies,
-          categoryRepo: categoryRepo,
-        );
-
-  SizeCategoriesProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.categoryRepo,
-  }) : super.internal();
-
-  final ICategoryService categoryRepo;
-
-  @override
-  Override overrideWith(
-    FutureOr<List<SizeCategory>> Function(SizeCategoriesRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: SizeCategoriesProvider._internal(
-        (ref) => create(ref as SizeCategoriesRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        categoryRepo: categoryRepo,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeFutureProviderElement<List<SizeCategory>> createElement() {
-    return _SizeCategoriesProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is SizeCategoriesProvider &&
-        other.categoryRepo == categoryRepo;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, categoryRepo.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
+final sizeCategoriesProvider =
+    AutoDisposeFutureProvider<List<SizeCategory>>.internal(
+  sizeCategories,
+  name: r'sizeCategoriesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$sizeCategoriesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin SizeCategoriesRef on AutoDisposeFutureProviderRef<List<SizeCategory>> {
-  /// The parameter `categoryRepo` of this provider.
-  ICategoryService get categoryRepo;
-}
-
-class _SizeCategoriesProviderElement
-    extends AutoDisposeFutureProviderElement<List<SizeCategory>>
-    with SizeCategoriesRef {
-  _SizeCategoriesProviderElement(super.provider);
-
-  @override
-  ICategoryService get categoryRepo =>
-      (origin as SizeCategoriesProvider).categoryRepo;
-}
+typedef SizeCategoriesRef = AutoDisposeFutureProviderRef<List<SizeCategory>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

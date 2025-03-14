@@ -30,8 +30,8 @@ func (c *CategoryController) GetVetSpecialties(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, model.ListData[model.VetSpecialty]{Data: *res})
 }
 
-func (c *CategoryController) GetSpecies(ctx *gin.Context) {
-	res, err := c.categoryService.GetSpecies()
+func (c *CategoryController) GetPetCategories(ctx *gin.Context) {
+	res, err := c.categoryService.GetPetCategories()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",
@@ -41,7 +41,7 @@ func (c *CategoryController) GetSpecies(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, model.ListData[model.Species]{Data: *res})
+	ctx.JSON(http.StatusOK, model.ListData[model.PetCategoryDTO]{Data: *res})
 }
 
 func (c *CategoryController) GetSizeCategories(ctx *gin.Context) {

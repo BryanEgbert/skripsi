@@ -41,15 +41,15 @@ func TestGetPet(t *testing.T) {
 				Name:     "Buddy",
 				ImageUrl: "test.com/image/dog.jpeg",
 				Status:   "idle",
-				Species: model.Species{
+				PetCategory: model.PetCategoryDTO{
 					ID:   1,
-					Name: "dogs",
-				},
-				SizeCategory: model.SizeCategory{
-					ID:        1,
-					Name:      "small",
-					MinWeight: 0,
-					MaxWeight: 10,
+					Name: "small dogs",
+					SizeCategory: model.SizeCategory{
+						ID:        1,
+						Name:      "small",
+						MinWeight: 0,
+						MaxWeight: 10,
+					},
 				},
 				Owner: model.UserDTO{
 					ID:       1,
@@ -120,15 +120,15 @@ func TestGetPets(t *testing.T) {
 					Name:     "Buddy",
 					ImageUrl: "test.com/image/dog.jpeg",
 					Status:   "idle",
-					Species: model.Species{
+					PetCategory: model.PetCategoryDTO{
 						ID:   1,
-						Name: "dogs",
-					},
-					SizeCategory: model.SizeCategory{
-						ID:        1,
-						Name:      "small",
-						MinWeight: 0,
-						MaxWeight: 10,
+						Name: "small dogs",
+						SizeCategory: model.SizeCategory{
+							ID:        1,
+							Name:      "small",
+							MinWeight: 0,
+							MaxWeight: 10,
+						},
 					},
 					Owner: model.UserDTO{
 						ID:       1,
@@ -146,15 +146,15 @@ func TestGetPets(t *testing.T) {
 					Name:     "Buddy2",
 					ImageUrl: "test.com/image/dog.jpeg",
 					Status:   "idle",
-					Species: model.Species{
+					PetCategory: model.PetCategoryDTO{
 						ID:   1,
 						Name: "dogs",
-					},
-					SizeCategory: model.SizeCategory{
-						ID:        2,
-						Name:      "medium",
-						MinWeight: 11,
-						MaxWeight: 26,
+						SizeCategory: model.SizeCategory{
+							ID:        2,
+							Name:      "medium",
+							MinWeight: 11,
+							MaxWeight: 26,
+						},
 					},
 					Owner: model.UserDTO{
 						ID:       1,
@@ -215,8 +215,7 @@ func TestCreatePet(t *testing.T) {
 			Token: token1,
 			In: model.PetRequest{
 				Name:           "new_pet",
-				SpeciesID:      2,
-				SizeCategoryID: 2,
+				PetCategoryID: 2,
 			},
 			ExpectedStatus: 201,
 		},
@@ -233,8 +232,7 @@ func TestCreatePet(t *testing.T) {
 
 			_ = writer.WriteField("name", test.In.Name)
 			_ = writer.WriteField("status", test.In.Status)
-			_ = writer.WriteField("speciesId", strconv.Itoa(int(test.In.SpeciesID)))
-			_ = writer.WriteField("sizeCategoryId", strconv.Itoa(int(test.In.SizeCategoryID)))
+			_ = writer.WriteField("petCategoryId", strconv.Itoa(int(test.In.PetCategoryID)))
 
 			formFile, err := writer.CreateFormFile("image", "image/test.jpeg")
 			if err != nil {
@@ -278,8 +276,7 @@ func TestUpdatePet(t *testing.T) {
 			In: model.PetRequest{
 				Name:           "update_name",
 				Status:         "sleeping",
-				SpeciesID:      2,
-				SizeCategoryID: 2,
+				PetCategoryID:      2,
 			},
 			Token:          token1,
 			ExpectedStatus: 204,
@@ -291,8 +288,7 @@ func TestUpdatePet(t *testing.T) {
 			In: model.PetRequest{
 				Name:           "update_name",
 				Status:         "sleeping",
-				SpeciesID:      2,
-				SizeCategoryID: 2,
+				PetCategoryID:      2,
 			},
 			ExpectedStatus: 404,
 		},
@@ -309,8 +305,7 @@ func TestUpdatePet(t *testing.T) {
 
 			_ = writer.WriteField("name", test.In.Name)
 			_ = writer.WriteField("status", test.In.Status)
-			_ = writer.WriteField("speciesId", strconv.Itoa(int(test.In.SpeciesID)))
-			_ = writer.WriteField("sizeCategoryId", strconv.Itoa(int(test.In.SizeCategoryID)))
+			_ = writer.WriteField("petCategoryId", strconv.Itoa(int(test.In.PetCategoryID)))
 
 			formFile, err := writer.CreateFormFile("image", "image/test.jpeg")
 			if err != nil {

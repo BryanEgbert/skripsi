@@ -14,8 +14,7 @@ class Pet with _$Pet {
     required String imageUrl,
     required String status,
     required User owner,
-    required Lookup species,
-    required SizeCategory sizeCategory,
+    required Lookup petCategory,
   }) = _Pet;
 
   factory Pet.fromJson(Map<String, dynamic> json) => _$PetFromJson(json);

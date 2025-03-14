@@ -8,9 +8,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'category_provider.g.dart';
 
 @riverpod
-Future<List<Lookup>> vetSpecialties(
-    Ref ref, ICategoryService categoryRepo) async {
-  final res = await categoryRepo.getVetSpecialties();
+Future<List<Lookup>> vetSpecialties(Ref ref) async {
+  CategoryService categoryService = CategoryService();
+  final res = await categoryService.getVetSpecialties();
 
   switch (res) {
     case Ok():
@@ -21,8 +21,9 @@ Future<List<Lookup>> vetSpecialties(
 }
 
 @riverpod
-Future<List<Lookup>> species(Ref ref, ICategoryService categoryRepo) async {
-  final res = await categoryRepo.getSpecies();
+Future<List<Lookup>> petCategory(Ref ref) async {
+  CategoryService categoryService = CategoryService();
+  final res = await categoryService.getPetCategories();
 
   switch (res) {
     case Ok():
@@ -33,9 +34,9 @@ Future<List<Lookup>> species(Ref ref, ICategoryService categoryRepo) async {
 }
 
 @riverpod
-Future<List<SizeCategory>> sizeCategories(
-    Ref ref, ICategoryService categoryRepo) async {
-  final res = await categoryRepo.getSizeCategories();
+Future<List<SizeCategory>> sizeCategories(Ref ref) async {
+  CategoryService categoryService = CategoryService();
+  final res = await categoryService.getSizeCategories();
 
   switch (res) {
     case Ok():

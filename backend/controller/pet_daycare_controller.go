@@ -192,19 +192,10 @@ func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
 }
 
 func (pdc *PetDaycareController) GetPetDaycareSlots(c *gin.Context) {
-	speciesId, err := strconv.ParseInt(c.Query("species"), 10, 32)
+	petCategoryId, err := strconv.ParseInt(c.Query("pet-category"), 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid species",
-			Error:   err.Error(),
-		})
-		return
-	}
-
-	sizeCategoryId, err := strconv.ParseInt(c.Query("size"), 10, 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid size category",
+			Message: "Invalid pet category",
 			Error:   err.Error(),
 		})
 		return
@@ -239,8 +230,7 @@ func (pdc *PetDaycareController) GetPetDaycareSlots(c *gin.Context) {
 	}
 
 	output, err := pdc.slotService.GetSlots(uint(petDaycareID), model.GetSlotRequest{
-		SpeciesID:      uint(speciesId),
-		SizeCategoryID: uint(sizeCategoryId),
+		PetCategoryID:      uint(petCategoryId),
 		Year:           int(year),
 		Month:          int(month),
 	})
@@ -339,9 +329,9 @@ func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 		return
 	}
 
-	if len(request.SpeciesID) != len(request.SizeCategoryID) || len(request.SpeciesID) != len(request.MaxNumber) || len(request.SizeCategoryID) != len(request.MaxNumber) {
+	if len(request.PetCategoryID) != len(request.MaxNumber) {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "speciesId, sizeCategoryId, and maxNumber must be the same length",
+			Message: "petCategoryId and maxNumber must be the same length",
 		})
 		return
 	}
@@ -400,9 +390,9 @@ func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 		return
 	}
 
-	if len(request.SpeciesID) != len(request.SizeCategoryID) || len(request.SpeciesID) != len(request.MaxNumber) || len(request.SizeCategoryID) != len(request.MaxNumber) {
+	if len(request.PetCategoryID) != len(request.MaxNumber) {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "speciesId, sizeCategoryId, and maxNumber must be the same length",
+			Message: "petCategoryId and maxNumber must be the same length",
 		})
 		return
 	}
@@ -436,22 +426,32 @@ func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 
 func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 	// Parse user GPS location
-	userLat, err := strconv.ParseFloat(c.Query("lat"), 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid latitude",
-			Error:   err.Error(),
-		})
-		return
+	var filters model.GetPetDaycaresRequest
+
+	if userLat := c.Query("lat"); userLat != "" {
+		value, err := strconv.ParseFloat(c.Query("lat"), 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "Invalid latitude",
+				Error:   err.Error(),
+			})
+			return
+		}
+
+		filters.Latitude = &value
 	}
 
-	userLng, err := strconv.ParseFloat(c.Query("long"), 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid longitude",
-			Error:   err.Error(),
-		})
-		return
+	if userLng := c.Query("long"); userLng != "" {
+		value, err := strconv.ParseFloat(c.Query("long"), 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "Invalid longitude",
+				Error:   err.Error(),
+			})
+			return
+		}
+
+		filters.Longitude = &value
 	}
 
 	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)
@@ -471,12 +471,6 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 		})
 		return
 	}
-
-	// Parse filters
-	var filters model.GetPetDaycaresRequest
-
-	filters.Latitude = userLat
-	filters.Longitude = userLng
 
 	if minDist := c.DefaultQuery("min-distance", "0"); minDist != "" {
 		value, _ := strconv.ParseFloat(minDist, 64)
@@ -502,20 +496,22 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 		filters.MaxPrice = value
 	}
 	if pricingType := c.DefaultQuery("pricing-type", "day"); pricingType != "" {
-		filters.PricingType = pricingType
+		filters.PricingType = &pricingType
 	}
 
-	if dailyWalksId := c.DefaultQuery("daily-walks", "1"); dailyWalksId != "" {
+	if dailyWalksId := c.Query("daily-walks"); dailyWalksId != "" {
 		value, _ := strconv.ParseUint(dailyWalksId, 10, 64)
-		filters.DailyWalks = uint(value)
+		valueUint := uint(value)
+		filters.DailyWalks = &valueUint
 	}
 
-	if dailyPlaytimeId := c.DefaultQuery("daily-playtime", "1"); dailyPlaytimeId != "" {
+	if dailyPlaytimeId := c.Query("daily-playtime"); dailyPlaytimeId != "" {
 		value, _ := strconv.ParseUint(dailyPlaytimeId, 10, 64)
-		filters.DailyPlaytime = uint(value)
+		valueUint := uint(value)
+		filters.DailyPlaytime = &valueUint
 	}
 
-	if mustBeVaccinated := c.DefaultQuery("vaccination-required", "1"); mustBeVaccinated != "" {
+	if mustBeVaccinated := c.Query("vaccination-required"); mustBeVaccinated != "" {
 		value, err := strconv.ParseBool(mustBeVaccinated)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, model.ErrorResponse{
@@ -525,7 +521,7 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 			return
 		}
 
-		filters.MustBeVaccinated = value
+		filters.MustBeVaccinated = &value
 	}
 
 	// Call service

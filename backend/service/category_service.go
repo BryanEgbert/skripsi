@@ -7,7 +7,7 @@ import (
 
 type CategoryService interface {
 	GetVetSpecialties() (*[]model.VetSpecialty, error);
-	GetSpecies()(*[]model.Species, error);
+	GetPetCategories()(*[]model.PetCategoryDTO, error);
 	GetSizeCategories()(*[]model.SizeCategory, error);
 }
 
@@ -29,14 +29,14 @@ func (s *CategoryServiceImpl) GetVetSpecialties() (*[]model.VetSpecialty, error)
 	return &vetSpecialties, nil
 }
 
-func (s *CategoryServiceImpl) GetSpecies()(*[]model.Species, error) {
-	var species []model.Species
+func (s *CategoryServiceImpl) GetPetCategories()(*[]model.PetCategoryDTO, error) {
+	var petCategoryDTOs []model.PetCategoryDTO
 
-	if err := s.db.Find(&species).Error; err != nil {
+	if err := s.db.Model(&model.PetCategory{}).Scan(&petCategoryDTOs).Error; err != nil {
 		return nil, err
 	}
 
-	return &species, nil
+	return &petCategoryDTOs, nil
 }
 
 func (s *CategoryServiceImpl) GetSizeCategories()(*[]model.SizeCategory, error) {

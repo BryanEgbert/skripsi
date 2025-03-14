@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/utils/validator.dart';
-import 'package:frontend/widgets/home.dart';
+import 'package:frontend/pages/home.dart';
 
 class LoginForm extends ConsumerStatefulWidget {
   const LoginForm({super.key});
@@ -40,11 +40,13 @@ class _LoginFormState extends ConsumerState<LoginForm> {
 
     if (auth.hasValue && !auth.isLoading) {
       if (auth.value != null) {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => HomeWidget(
-            key: Key("home"),
-          ),
-        ));
+        WidgetsBinding.instance.addPostFrameCallback(
+          (timeStamp) => Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => HomeWidget(
+              key: Key("home"),
+            ),
+          )),
+        );
       }
     }
 
@@ -86,7 +88,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           SizedBox(
             height: 16,
           ),
-          FilledButton(
+          ElevatedButton(
             key: Key("submit-btn"),
             onPressed: () async {
               if (!auth.isLoading) {
@@ -97,7 +99,9 @@ class _LoginFormState extends ConsumerState<LoginForm> {
                 }
               }
             },
-            child: Text((auth.isLoading) ? "Logging In..." : "Login"),
+            child: Text(
+              (auth.isLoading) ? "Logging In..." : "Login",
+            ),
           ),
         ],
       ),

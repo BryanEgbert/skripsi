@@ -7,8 +7,7 @@ class AppWelcomeText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 200),
+    return SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -25,7 +24,7 @@ class AppWelcomeText extends StatelessWidget {
                 TextSpan(
                   text: "AppName\n",
                   style: TextStyle(
-                    color: Colors.orangeAccent,
+                    color: Colors.orange,
                     fontWeight: FontWeight.bold,
                     fontSize: 40,
                   ),
@@ -34,8 +33,8 @@ class AppWelcomeText extends StatelessWidget {
                   text:
                       "The smarter way to find pet daycares & connect with vets!",
                   style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w300,
+                    fontSize: 24,
+                    fontWeight: FontWeight.normal,
                   ),
                 ),
               ],

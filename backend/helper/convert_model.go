@@ -54,8 +54,6 @@ func ConvertPetDaycareToDTO(daycare model.PetDaycare) model.PetDaycareDTO {
 		Name:              daycare.Name,
 		Address:           daycare.Address,
 		Description:       daycare.Description,
-		Price:             daycare.Price,
-		PricingType:       daycare.PricingType,
 		BookedNum:         daycare.BookedNum,
 		OwnerID:           daycare.OwnerID,
 		HasPickupService:  daycare.HasPickupService,
@@ -68,6 +66,14 @@ func ConvertPetDaycareToDTO(daycare model.PetDaycare) model.PetDaycareDTO {
 		DailyWalksID:      daycare.DailyWalksID,
 		DailyPlaytimeID:   daycare.DailyPlaytimeID,
 		ThumbnailURLs:     thumbnailURLs,
+	}
+}
+
+func ConvertPetCategoryToDTO (petCategory model.PetCategory) model.PetCategoryDTO {
+	return model.PetCategoryDTO{
+		ID: petCategory.ID,
+		Name: petCategory.Name,
+		SizeCategory: petCategory.SizeCategory,
 	}
 }
 
@@ -91,13 +97,24 @@ func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float6
 		averageRating = float64(totalRating) / float64(ratingCount)
 	}
 
+	pricings := []model.PriceDetails{}
+	for _, slot := range daycare.Slots {
+		pricings = append(pricings, model.PriceDetails{
+			PetCategory: model.PetCategoryDTO{
+				ID: slot.PetCategory.ID,
+				Name: slot.PetCategory.Name,
+				SizeCategory: slot.PetCategory.SizeCategory,
+			},
+			Price: slot.Price,
+			PricingType: slot.PricingType,
+		})
+	}
+
 	return model.GetPetDaycareDetailResponse{
 		ID:                daycare.ID,
 		Name:              daycare.Name,
 		Address:           daycare.Address,
 		Distance:          distance, // This should be calculated separately and passed as an argument
-		Price:             daycare.Price,
-		PricingType:       daycare.PricingType,
 		Description:       daycare.Description,
 		BookedNum:         daycare.BookedNum,
 		AverageRating:     averageRating,
@@ -112,5 +129,6 @@ func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float6
 		DailyWalks:        daycare.DailyWalks,
 		DailyPlaytime:     daycare.DailyPlaytime,
 		ThumbnailURLs:     thumbnailURLs,
+		Pricings: pricings,
 	}
 }

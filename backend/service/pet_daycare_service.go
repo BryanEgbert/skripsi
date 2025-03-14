@@ -12,7 +12,7 @@ import (
 
 type PetDaycareService interface {
 	CreatePetDaycare(userId uint, request model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
-	GetPetDaycares(req model.GetPetDaycaresRequest, startID uint, pageSize int) ([]model.GetPetDaycaresResponse, error)
+	GetPetDaycares(req model.GetPetDaycaresRequest, startID uint, pageSize int) (model.ListData[model.GetPetDaycaresResponse], error)
 	GetPetDaycare(id uint, lat float64, long float64) (*model.GetPetDaycareDetailResponse, error)
 	DeletePetDaycare(id uint, ownerId uint) error
 	UpdatePetDaycare(id uint, userId uint, newData model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
@@ -26,6 +26,7 @@ func NewPetDaycareService(db *gorm.DB) *PetDaycareServiceImpl {
 	return &PetDaycareServiceImpl{db: db}
 }
 
+// TODO: fix this
 func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat float64, long float64) (*model.GetPetDaycareDetailResponse, error) {
 	var daycare model.PetDaycare
 
@@ -38,6 +39,9 @@ func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat float64, long float64
 			Preload("DailyPlaytime").
 			Preload("Thumbnails").
 			Preload("Reviews").
+			Preload("Slots").
+			Preload("Slots.PetCategory").
+			Preload("Slots.PetCategory.SizeCategory").
 			Select("*, ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(longitude, latitude)) AS Distance", long, lat).
 			First(&daycare, id).Error; err != nil {
 			return nil, err
@@ -56,6 +60,9 @@ func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat float64, long float64
 			Preload("DailyPlaytime").
 			Preload("Thumbnails").
 			Preload("Reviews").
+			Preload("Slots").
+			Preload("Slots.PetCategory").
+			Preload("Slots.PetCategory.SizeCategory").
 			Find(&daycare, id).Error; err != nil {
 			return nil, err
 		}
@@ -87,8 +94,6 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 	daycare.Name = newData.Name
 	daycare.Address = newData.Address
 	daycare.Description = newData.Description
-	daycare.Price = newData.Price
-	daycare.PricingType = newData.PricingType
 	daycare.HasPickupService = newData.HasPickupService
 	daycare.MustBeVaccinated = newData.MustBeVaccinated
 	daycare.GroomingAvailable = newData.GroomingAvailable
@@ -124,7 +129,7 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 	}
 
 	// Handle Slots update (SpeciesID + SizeCategoryID + MaxNumber)
-	if len(newData.SpeciesID) > 0 && len(newData.SizeCategoryID) > 0 && len(newData.MaxNumber) > 0 {
+	if len(newData.PetCategoryID) > 0 && len(newData.MaxNumber) > 0 {
 		// Delete old slots
 		if err := tx.Where("daycare_id = ?", daycare.ID).Delete(&model.Slots{}).Error; err != nil {
 			tx.Rollback()
@@ -133,11 +138,10 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 
 		// Insert new slots
 		var slots []model.Slots
-		for i := range newData.SpeciesID {
+		for i := range newData.PetCategoryID {
 			slots = append(slots, model.Slots{
 				DaycareID:      daycare.ID,
-				SpeciesID:      newData.SpeciesID[i],
-				SizeCategoryID: newData.SizeCategoryID[i],
+				PetCategoryID:      newData.PetCategoryID[i],
 				MaxNumber:      newData.MaxNumber[i],
 			})
 		}
@@ -165,8 +169,6 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 		Name:              daycare.Name,
 		Address:           daycare.Address,
 		Description:       daycare.Description,
-		Price:             daycare.Price,
-		PricingType:       daycare.PricingType,
 		HasPickupService:  daycare.HasPickupService,
 		MustBeVaccinated:  daycare.MustBeVaccinated,
 		GroomingAvailable: daycare.GroomingAvailable,
@@ -177,17 +179,25 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 	}, nil
 }
 
-func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, startID uint, pageSize int) ([]model.GetPetDaycaresResponse, error) {
-	var daycares []model.PetDaycare
-	query := s.db
+func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, startID uint, pageSize int) (model.ListData[model.GetPetDaycaresResponse], error) {
+	results := []model.GetPetDaycaresResponse{}
 
-	if req.MaxDistance != 0 && req.Latitude != 0 && req.Longitude != 0 {
+	query := s.db.Table("pet_daycares").
+		Select("pet_daycares.id", "pet_daycares.name", fmt.Sprintf("ST_DistanceSphere(ST_MakePoint(%f, %f), ST_MakePoint(longitude, latitude))", 0.0, 0.0), "pet_daycares.booked_num").
+		Joins("JOIN daily_playtimes ON daily_playtimes.id = pet_daycares.daily_playtime_id").
+		Joins("JOIN daily_walks ON daily_walks.id = pet_daycares.daily_walks_id")
+	
+	if req.MaxDistance <= 0 && req.Latitude != nil && req.Longitude != nil {
 		query = query.Where(
-			"ST_Distance_Sphere(POINT(longitude, latitude), POINT(?, ?)) BETWEEN ? AND ?",
+			"ST_DistanceSphere(ST_MakePoint(longitude, latitude), ST_MakePoint(?, ?)) BETWEEN ? AND ?",
 			req.Longitude,
 			req.Latitude,
 			req.MinDistance,
 			req.MaxDistance)
+	}
+
+	if req.MustBeVaccinated != nil {
+		query = query.Where("must_be_vaccinated = ?", req.MustBeVaccinated)
 	}
 
 	if len(req.Facilities) > 0 {
@@ -203,46 +213,65 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		}
 	}
 
-	if req.MaxPrice <= 0 {
-		query = query.Where("price BETWEEN ? AND ?", req.MinPrice, req.MaxPrice)
+	if req.DailyPlaytime != nil {
+		query = query.Where("daily_playtimes.id = ?", req.DailyPlaytime)
 	}
 
-	// Fetch daycare data
-	if err := query.
-		Where("id > ? AND pricing_type = ? AND must_be_vaccinated = ?", startID, req.PricingType, req.MustBeVaccinated).
-		Preload("Owner").
-		Preload("Reviews").
-		Preload("Thumbnails").
-		Limit(pageSize).
-		Find(&daycares).Error; err != nil {
-		return nil, err
+	if req.DailyWalks != nil {
+		query = query.Where("daily_walks.id", req.DailyWalks)
 	}
 
-	// Transform result
-	var results []model.GetPetDaycaresResponse
-	for _, daycare := range daycares {
-		distance := helper.CalculateDistance(req.Latitude, req.Longitude, daycare.Latitude, daycare.Longitude)
-		avgRating, ratingCount := helper.CalculateRatings(daycare.Reviews)
+	rows, err := query.Rows()
+	if err != nil {
+		return model.ListData[model.GetPetDaycaresResponse]{Data: results}, err
+	}
+	defer rows.Close()
 
-		var firstThumbnail string
-		if len(daycare.Thumbnails) > 0 {
-			firstThumbnail = daycare.Thumbnails[0].ImageUrl
+	
+	for rows.Next() {
+		daycare := model.GetPetDaycaresResponse{Prices: []model.PriceDetails{}}
+
+		rows.Scan(&daycare.ID, &daycare.Name, &daycare.Distance, &daycare.BookedNum)
+		results = append(results, daycare)
+	}
+
+	for i, result := range results {
+		row := s.db.Table("thumbnails").Select("image_url").Where("daycare_id = ?", result.ID).Limit(1).Row()
+		row.Scan(&results[i].Thumbnail)
+
+		rows, err := s.db.Table("slots").
+			Select("pet_categories.id", "pet_categories.name", "size_categories.*", "slots.price", "slots.pricing_type").
+			Joins("JOIN pet_categories ON pet_categories.id = slots.pet_category_id").
+			Joins("JOIN size_categories ON size_categories.id = pet_categories.size_category_id").
+			Where("slots.daycare_id = ?", result.ID).
+			Rows()
+		if err != nil {
+			return model.ListData[model.GetPetDaycaresResponse]{Data: []model.GetPetDaycaresResponse{}}, err
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var price model.PriceDetails
+			rows.Scan(&price.PetCategory.ID, &price.PetCategory.Name, &price.PetCategory.SizeCategory.ID, &price.PetCategory.SizeCategory.Name, &price.PetCategory.SizeCategory.MinWeight, &price.PetCategory.SizeCategory.MaxWeight, &price.Price, &price.PricingType)
+
+			results[i].Prices = append(results[i].Prices, price)
 		}
 
-		results = append(results, model.GetPetDaycaresResponse{
-			ID:            daycare.ID,
-			Name:          daycare.Name,
-			Distance:      distance,
-			ProfileImage:  *daycare.Owner.ImageUrl,
-			AverageRating: avgRating,
-			RatingCount:   ratingCount,
-			BookedNum:     daycare.BookedNum,
-			Price:         daycare.Price,
-			Thumbnail:     firstThumbnail,
-		})
+		rows, err = s.db.Table("reviews").
+			Select("COUNT(*) AS rating_count, AVG(rate) AS average_rating").
+			Where("daycare_id = ?", result.ID).
+			Rows()
+		if err != nil {
+			return model.ListData[model.GetPetDaycaresResponse]{Data: []model.GetPetDaycaresResponse{}}, err
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			rows.Scan(&results[i].RatingCount, &results[i].AverageRating)
+		}
 	}
 
-	return results, nil
+	return model.ListData[model.GetPetDaycaresResponse]{Data: results}, nil
 }
 
 func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error) {
@@ -272,7 +301,6 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 	daycare := model.PetDaycare{
 		Name:              request.Name,
 		Address:           request.Address,
-		Price:             request.Price,
 		Latitude:          latitude,
 		Longitude:         longitude,
 		Description:       request.Description,
@@ -305,28 +333,21 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 	}
 
 	var slots []model.Slots
-	for i, species := range request.SpeciesID {
+	for i, petCategory := range request.PetCategoryID {
 		// Validate SpeciesID
-		var speciesExists bool
-		err := tx.Model(&model.Species{}).Select("count(*) > 0").Where("id = ?", species).Find(&speciesExists).Error
-		if err != nil || !speciesExists {
+		var petCategoryExists bool
+		err := tx.Model(&model.PetCategory{}).Select("count(*) > 0").Where("id = ?", petCategory).Find(&petCategoryExists).Error
+		if err != nil || !petCategoryExists {
 			tx.Rollback()
-			return nil, fmt.Errorf("invalid species ID: %d", species)
-		}
-
-		// Validate SizeCategoryID
-		var sizeExists bool
-		err = tx.Model(&model.SizeCategory{}).Select("count(*) > 0").Where("id = ?", request.SizeCategoryID[i]).Find(&sizeExists).Error
-		if err != nil || !sizeExists {
-			tx.Rollback()
-			return nil, fmt.Errorf("invalid size category ID: %d", request.SizeCategoryID[i])
+			return nil, fmt.Errorf("invalid pet category ID: %d", petCategory)
 		}
 
 		slots = append(slots, model.Slots{
 			DaycareID:      daycare.ID,
-			SpeciesID:      species,
-			SizeCategoryID: request.SizeCategoryID[i],
+			PetCategoryID:      petCategory,
 			MaxNumber:      request.MaxNumber[i],
+			Price: request.Price[i],
+			PricingType: request.PricingType[i],
 		})
 	}
 

@@ -25,8 +25,7 @@ mixin _$Pet {
   String get imageUrl => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
   User get owner => throw _privateConstructorUsedError;
-  Lookup get species => throw _privateConstructorUsedError;
-  SizeCategory get sizeCategory => throw _privateConstructorUsedError;
+  Lookup get petCategory => throw _privateConstructorUsedError;
 
   /// Serializes this Pet to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,12 +47,10 @@ abstract class $PetCopyWith<$Res> {
       String imageUrl,
       String status,
       User owner,
-      Lookup species,
-      SizeCategory sizeCategory});
+      Lookup petCategory});
 
   $UserCopyWith<$Res> get owner;
-  $LookupCopyWith<$Res> get species;
-  $SizeCategoryCopyWith<$Res> get sizeCategory;
+  $LookupCopyWith<$Res> get petCategory;
 }
 
 /// @nodoc
@@ -75,8 +72,7 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
     Object? imageUrl = null,
     Object? status = null,
     Object? owner = null,
-    Object? species = null,
-    Object? sizeCategory = null,
+    Object? petCategory = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -99,14 +95,10 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
           ? _value.owner
           : owner // ignore: cast_nullable_to_non_nullable
               as User,
-      species: null == species
-          ? _value.species
-          : species // ignore: cast_nullable_to_non_nullable
+      petCategory: null == petCategory
+          ? _value.petCategory
+          : petCategory // ignore: cast_nullable_to_non_nullable
               as Lookup,
-      sizeCategory: null == sizeCategory
-          ? _value.sizeCategory
-          : sizeCategory // ignore: cast_nullable_to_non_nullable
-              as SizeCategory,
     ) as $Val);
   }
 
@@ -124,19 +116,9 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $LookupCopyWith<$Res> get species {
-    return $LookupCopyWith<$Res>(_value.species, (value) {
-      return _then(_value.copyWith(species: value) as $Val);
-    });
-  }
-
-  /// Create a copy of Pet
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $SizeCategoryCopyWith<$Res> get sizeCategory {
-    return $SizeCategoryCopyWith<$Res>(_value.sizeCategory, (value) {
-      return _then(_value.copyWith(sizeCategory: value) as $Val);
+  $LookupCopyWith<$Res> get petCategory {
+    return $LookupCopyWith<$Res>(_value.petCategory, (value) {
+      return _then(_value.copyWith(petCategory: value) as $Val);
     });
   }
 }
@@ -153,15 +135,12 @@ abstract class _$$PetImplCopyWith<$Res> implements $PetCopyWith<$Res> {
       String imageUrl,
       String status,
       User owner,
-      Lookup species,
-      SizeCategory sizeCategory});
+      Lookup petCategory});
 
   @override
   $UserCopyWith<$Res> get owner;
   @override
-  $LookupCopyWith<$Res> get species;
-  @override
-  $SizeCategoryCopyWith<$Res> get sizeCategory;
+  $LookupCopyWith<$Res> get petCategory;
 }
 
 /// @nodoc
@@ -180,8 +159,7 @@ class __$$PetImplCopyWithImpl<$Res> extends _$PetCopyWithImpl<$Res, _$PetImpl>
     Object? imageUrl = null,
     Object? status = null,
     Object? owner = null,
-    Object? species = null,
-    Object? sizeCategory = null,
+    Object? petCategory = null,
   }) {
     return _then(_$PetImpl(
       id: null == id
@@ -204,14 +182,10 @@ class __$$PetImplCopyWithImpl<$Res> extends _$PetCopyWithImpl<$Res, _$PetImpl>
           ? _value.owner
           : owner // ignore: cast_nullable_to_non_nullable
               as User,
-      species: null == species
-          ? _value.species
-          : species // ignore: cast_nullable_to_non_nullable
+      petCategory: null == petCategory
+          ? _value.petCategory
+          : petCategory // ignore: cast_nullable_to_non_nullable
               as Lookup,
-      sizeCategory: null == sizeCategory
-          ? _value.sizeCategory
-          : sizeCategory // ignore: cast_nullable_to_non_nullable
-              as SizeCategory,
     ));
   }
 }
@@ -225,8 +199,7 @@ class _$PetImpl implements _Pet {
       required this.imageUrl,
       required this.status,
       required this.owner,
-      required this.species,
-      required this.sizeCategory});
+      required this.petCategory});
 
   factory _$PetImpl.fromJson(Map<String, dynamic> json) =>
       _$$PetImplFromJson(json);
@@ -242,13 +215,11 @@ class _$PetImpl implements _Pet {
   @override
   final User owner;
   @override
-  final Lookup species;
-  @override
-  final SizeCategory sizeCategory;
+  final Lookup petCategory;
 
   @override
   String toString() {
-    return 'Pet(id: $id, name: $name, imageUrl: $imageUrl, status: $status, owner: $owner, species: $species, sizeCategory: $sizeCategory)';
+    return 'Pet(id: $id, name: $name, imageUrl: $imageUrl, status: $status, owner: $owner, petCategory: $petCategory)';
   }
 
   @override
@@ -262,15 +233,14 @@ class _$PetImpl implements _Pet {
                 other.imageUrl == imageUrl) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.owner, owner) || other.owner == owner) &&
-            (identical(other.species, species) || other.species == species) &&
-            (identical(other.sizeCategory, sizeCategory) ||
-                other.sizeCategory == sizeCategory));
+            (identical(other.petCategory, petCategory) ||
+                other.petCategory == petCategory));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, name, imageUrl, status, owner, species, sizeCategory);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, imageUrl, status, owner, petCategory);
 
   /// Create a copy of Pet
   /// with the given fields replaced by the non-null parameter values.
@@ -295,8 +265,7 @@ abstract class _Pet implements Pet {
       required final String imageUrl,
       required final String status,
       required final User owner,
-      required final Lookup species,
-      required final SizeCategory sizeCategory}) = _$PetImpl;
+      required final Lookup petCategory}) = _$PetImpl;
 
   factory _Pet.fromJson(Map<String, dynamic> json) = _$PetImpl.fromJson;
 
@@ -311,9 +280,7 @@ abstract class _Pet implements Pet {
   @override
   User get owner;
   @override
-  Lookup get species;
-  @override
-  SizeCategory get sizeCategory;
+  Lookup get petCategory;
 
   /// Create a copy of Pet
   /// with the given fields replaced by the non-null parameter values.

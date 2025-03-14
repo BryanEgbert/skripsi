@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/provider/database_provider.dart';
-import 'package:frontend/widgets/home.dart';
-import 'package:frontend/widgets/welcome.dart';
+import 'package:frontend/pages/home.dart';
+import 'package:frontend/pages/welcome.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
@@ -39,24 +39,30 @@ class PetDaycareApp extends StatelessWidget {
             textTheme: GoogleFonts.poppinsTextTheme(
               Theme.of(context).textTheme,
             ),
+            appBarTheme: AppBarTheme(
+                iconTheme: IconThemeData(
+              color: Colors.orange,
+            )),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                backgroundColor: Color.fromARGB(255, 255, 168, 88),
+                backgroundColor: Colors.orange,
                 foregroundColor: Color.fromARGB(255, 253, 247, 242),
                 minimumSize: Size(50, 50),
+                textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
             filledButtonTheme: FilledButtonThemeData(
-              style: ElevatedButton.styleFrom(
+              style: FilledButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                backgroundColor: Color.fromARGB(255, 255, 168, 88),
+                backgroundColor: Colors.orange,
                 foregroundColor: Color.fromARGB(255, 253, 247, 242),
                 minimumSize: Size(50, 50),
+                textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
             )),
         // home: WelcomeWidget(),
@@ -64,15 +70,16 @@ class PetDaycareApp extends StatelessWidget {
           builder: (context, ref, child) {
             var provider = ref.watch(getTokenProvider);
 
-            if (provider.hasError && !provider.isLoading) {
-              return WelcomeWidget();
-            } else if (provider.hasValue && !provider.isLoading) {
-              return HomeWidget();
-            } else {
-              return Container(
-                color: Colors.white,
-              );
-            }
+            // if (provider.hasError && !provider.isLoading) {
+            //   return WelcomeWidget();
+            // } else if (provider.hasValue && !provider.isLoading) {
+            //   return HomeWidget();
+            // } else {
+            //   return Container(
+            //     color: Colors.white,
+            //   );
+            // }
+            return WelcomeWidget();
           },
         ));
   }

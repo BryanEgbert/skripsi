@@ -29,8 +29,7 @@ func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) 
 
 	slots := model.Slots{
 		DaycareID:      petDaycareId,
-		SpeciesID:      req.SpeciesID,
-		SizeCategoryID: req.SizeCategoryID,
+		PetCategoryID:      req.PetCategoryID,
 	}
 
 	if err := s.db.First(&slots).Error; err != nil {
@@ -115,12 +114,12 @@ func (s *SlotServiceImpl) EditSlotCount(slotId uint, req model.ReduceSlotsReques
 }
 
 func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) error {
-	var speciesId uint
+	var petCategoryID uint
 	if err := s.db.
 		Table("pet").
 		Select("species_id").
 		Where("id = ?", req.PetID).
-		Scan(&speciesId).
+		Scan(&petCategoryID).
 		Error; err != nil {
 		return err
 	}
@@ -135,7 +134,7 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 	}
 
 	slot := model.Slots{
-		SpeciesID: speciesId,
+		PetCategoryID: petCategoryID,
 		DaycareID: req.DaycareID,
 	}
 	if err := s.db.First(&slot).Error; err != nil {

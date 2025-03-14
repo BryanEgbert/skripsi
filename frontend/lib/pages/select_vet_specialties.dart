@@ -19,7 +19,7 @@ class _SelectVetSpecialtiesPageState
   @override
   Widget build(BuildContext context) {
     final AsyncValue<List<Lookup>> vetSpecialties =
-        ref.read(vetSpecialtiesProvider(CategoryService()));
+        ref.read(vetSpecialtiesProvider);
 
     return Scaffold(
       appBar: AppBar(

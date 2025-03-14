@@ -202,8 +202,7 @@ func (pc *PetController) UpdatePet(c *gin.Context) {
 		Name:         req.Name,
 		ImageUrl:     req.ImageUrl,
 		Status:       req.Status,
-		Species:      model.Species{ID: req.SpeciesID},
-		SizeCategory: model.SizeCategory{ID: req.SizeCategoryID},
+		PetCategory:  model.PetCategoryDTO{ID: req.PetCategoryID},
 	}); err != nil {
 		c.JSON(http.StatusNotFound, model.ErrorResponse{
 			Message: "Failed to update pet",

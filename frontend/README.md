@@ -18,5 +18,28 @@ samples, guidance on mobile development, and a full API reference.
 ## TODO List
 
 - pages
+- [x] Login page
+- [ ] Create account page
+  - [x] Select role page
+  - [x] Create user details page
+  - [x] Create pet page
+  - [ ] Choose vet specialty page
+  - **Create pet daycare pages**
+    - [ ] Create pet daycare details page
+    - [ ] Add pet daycare pictures page
+    - [ ] Edit pet daycare slot
+    - [ ] Edit pet daycare provided services page
+  - **View pages for pet owners**
+    - [ ] View pet daycares pages
+    - [ ] View pets pages
+    - [ ] View vets pages
+    - [ ] View bookings pages
+  - **View pages for pet daycares**
+    - [ ] View booked pets
+    - [ ] Get own pet daycare details
+    - [ ] Edit pet daycare
+    - [ ] Chat features
+    - [ ] Booking requests page
+
 - business logic
   - 

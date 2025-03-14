@@ -7,7 +7,7 @@ import (
 
 func RegisterCategoryRoutes(r *gin.Engine, categoryController *controller.CategoryController) *gin.Engine {
 	r.GET("/vet-specialties", categoryController.GetVetSpecialties)
-	r.GET("/species", categoryController.GetSpecies)
+	r.GET("/pet-categories", categoryController.GetPetCategories)
 	r.GET("size-categories", categoryController.GetSizeCategories)
 
 	return r
