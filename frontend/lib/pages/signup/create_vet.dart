@@ -1,90 +1,101 @@
-import 'package:flutter/material.dart';
-import 'package:frontend/utils/validator.dart';
+import 'dart:developer';
 
-class CreateVetPage extends StatefulWidget {
-  const CreateVetPage({super.key});
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/model/request/create_user_request.dart';
+import 'package:frontend/model/response/token_response.dart';
+import 'package:frontend/pages/vet_page.dart';
+import 'package:frontend/provider/auth_provider.dart';
+import 'package:frontend/provider/category_provider.dart';
+
+class CreateVetPage extends ConsumerStatefulWidget {
+  final CreateUserRequest reqBody;
+
+  const CreateVetPage({super.key, required this.reqBody});
 
   @override
-  State<CreateVetPage> createState() => _CreateVetPageState();
+  ConsumerState<CreateVetPage> createState() => _CreateVetPageState();
 }
 
-class _CreateVetPageState extends State<CreateVetPage> {
+class _CreateVetPageState extends ConsumerState<CreateVetPage> {
+  final List<int> chosenVetSpecialties = [];
+
   @override
   Widget build(BuildContext context) {
+    final vetSpecialties = ref.watch(vetSpecialtiesProvider);
+    AsyncValue<TokenResponse?> auth = ref.watch(authProvider);
+
+    if (auth.hasError && !auth.hasValue && !auth.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        var snackbar = SnackBar(
+          key: Key("error-message"),
+          content: Text(auth.error.toString()),
+          backgroundColor: Colors.red,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+        // ref.read(authProvider.notifier).reset();
+      });
+    }
+
+    if (auth.hasValue && !auth.hasError && !auth.isLoading) {
+      if (auth.value != null) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          // TODO: change push to replace, change widget too
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => VetMainPage(),
+          ));
+        });
+      }
+    }
+
     return Scaffold(
-      body: Form(
-        child: Column(
-          children: [
-            IconButton.filled(
-              key: Key("image-picker"),
-              onPressed: () {},
-              style: IconButton.styleFrom(
-                shape: CircleBorder(),
-              ),
-              icon: Icon(Icons.add_a_photo_rounded),
-            ),
-            TextFormField(
-              key: Key("name-input"),
-              // controller: _passwordEditingController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                labelText: "Name",
-              ),
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-            ),
-            TextFormField(
-              key: Key("email-input"),
-              // controller: _emailEditingController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                labelText: "Email",
-              ),
-              validator: (value) {
-                return validateEmail(value);
-              },
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            TextFormField(
-              key: Key("password-input"),
-              // controller: _passwordEditingController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                labelText: "Password",
-              ),
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              validator: (value) {
-                return validatePassword(value);
-              },
-            ),
-            InkWell(
-              onTap: () {},
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("Choose vet specialties"),
-                  const Icon(Icons.arrow_forward_ios_rounded),
-                ],
-              ),
-            ),
-            FilledButton(
-              onPressed: () {},
-              child: const Text("Create Account"),
-            ),
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(Icons.arrow_back_ios)),
+          title: Text(
+            "Choose Vet Specialties",
+            style: TextStyle(color: Colors.orange),
+          ),
+          centerTitle: false,
+          actions: [
+            // TODO: navigate to main page
+            IconButton(
+                onPressed: () async {
+                  await ref
+                      .read(authProvider.notifier)
+                      .register(widget.reqBody);
+                },
+                icon: Icon(Icons.check_rounded))
           ],
         ),
-      ),
-    );
+        backgroundColor: Color(0xFFFFF8F0),
+        body: switch (vetSpecialties) {
+          AsyncError() =>
+            Center(child: Text("Something is wrong, please try again later")),
+          AsyncData(:final value) => ListView.builder(
+              itemCount: value.length,
+              itemBuilder: (context, index) {
+                return CheckboxListTile(
+                  title: Text(value[index].name),
+                  value:
+                      widget.reqBody.vetSpecialtyId.contains(value[index].id),
+                  onChanged: (isChecked) {
+                    setState(() {
+                      if (isChecked == true) {
+                        widget.reqBody.vetSpecialtyId.add(value[index].id);
+                      } else {
+                        widget.reqBody.vetSpecialtyId.remove(value[index].id);
+                      }
+                      log("chosenVetSpecialty: ${widget.reqBody.vetSpecialtyId}");
+                    });
+                  },
+                );
+              },
+            ),
+          _ => Center(child: CircularProgressIndicator()),
+        });
   }
 }

@@ -44,7 +44,7 @@ type CreateUserRequest struct {
 	Email          string                `form:"email" binding:"required,email"`
 	Password       string                `form:"password" binding:"required"`
 	RoleID         uint                  `form:"roleId" binding:"required"`
-	VetSpecialtyID *[]uint               `form:"vetSpecialtyId"`
+	VetSpecialtyID *[]uint               `form:"vetSpecialtyId[]"`
 	Image          *multipart.FileHeader `form:"image"`
 	ImageUrl       string
 }

@@ -20,26 +20,28 @@ class _CreatePetPageState extends State<CreatePetPage> {
         title: const Text("Fill Pet Info"),
       ),
       body: SafeArea(
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SignupGuideText(
-                title: "Let's Set Up Your Account",
-                subtitle: "Enter your pet details to continue",
-              ),
-              SizedBox(height: 56),
-              PetDetailsForm(
-                onSubmit: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => HomeWidget(),
-                    ),
-                  );
-                },
-              ),
-            ],
+        child: SingleChildScrollView(
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SignupGuideText(
+                  title: "Let's Set Up Your Account",
+                  subtitle: "Enter your pet details to continue",
+                ),
+                SizedBox(height: 56),
+                PetDetailsForm(
+                  onSubmit: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => HomeWidget(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

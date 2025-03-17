@@ -14,6 +14,10 @@ class Auth extends _$Auth {
     return Future.value(null);
   }
 
+  Future<void> reset() async {
+    state = AsyncData(null);
+  }
+
   Future<void> login(String email, String password) async {
     state = AsyncLoading();
 
@@ -30,37 +34,40 @@ class Auth extends _$Auth {
       case Error():
         state = AsyncError(tokenRes.error, StackTrace.current);
     }
+  }
 
-    Future<void> register(CreateUserRequest user) async {
-      state = AsyncLoading();
+  Future<void> register(CreateUserRequest user) async {
+    state = AsyncLoading();
 
-      final dbService = DatabaseService();
-      final authService = AuthService();
+    final dbService = DatabaseService();
+    final authService = AuthService();
 
-      final tokenRes = await authService.register(user);
+    final tokenRes = await authService.register(user);
 
-      switch (tokenRes) {
-        case Ok():
-          dbService.insert(tokenRes.value!);
-          state = AsyncData(tokenRes.value);
-          break;
-        case Error():
-          state = AsyncError(tokenRes.error, StackTrace.current);
-      }
+    switch (tokenRes) {
+      case Ok():
+        dbService.insert(tokenRes.value!);
+        state = AsyncData(tokenRes.value);
+        break;
+      case Error():
+        state = AsyncError(tokenRes.error, StackTrace.current);
     }
+  }
 
-    Future<void> refreshToken(String token) async {
-      var repo = AuthService();
-      var tokenRes = await repo.refreshToken(token);
+  Future<void> refreshToken(String token) async {
+    state = AsyncLoading();
 
-      switch (tokenRes) {
-        case Ok():
-          dbService.insert(tokenRes.value!);
-          state = AsyncData(tokenRes.value);
-          break;
-        case Error():
-          state = AsyncError(tokenRes.error, StackTrace.current);
-      }
+    final dbService = DatabaseService();
+    var repo = AuthService();
+    var tokenRes = await repo.refreshToken(token);
+
+    switch (tokenRes) {
+      case Ok():
+        dbService.insert(tokenRes.value!);
+        state = AsyncData(tokenRes.value);
+        break;
+      case Error():
+        state = AsyncError(tokenRes.error, StackTrace.current);
     }
   }
 }

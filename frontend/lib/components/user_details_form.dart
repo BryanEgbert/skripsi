@@ -81,7 +81,7 @@ class _UserDetailsFormComponentState extends ConsumerState<UserDetailsForm> {
             },
           ),
           ElevatedButton(
-            onPressed: widget.onSubmit,
+            onPressed: () {},
             child: const Text("Next"),
           ),
         ],

@@ -6,24 +6,24 @@ class CreateUserRequest {
   final String password;
   final int roleId;
   final List<int> vetSpecialtyId;
-  final File image;
+  final File? image;
 
-  CreateUserRequest(
-    this.vetSpecialtyId,
-    this.image, {
+  CreateUserRequest({
     required this.name,
     required this.email,
     required this.password,
     required this.roleId,
+    required this.vetSpecialtyId,
+    this.image,
   });
 
-  Map<String, String> toMap() {
-    Map<String, String> map = {
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {
       "name": name,
       "email": email,
       "password": password,
       "roleId": roleId.toString(),
-      "vetSpecialtyId": vetSpecialtyId.join(','),
+      "vetSpecialtyId[]": vetSpecialtyId,
     };
 
     return map;

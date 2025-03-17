@@ -3,6 +3,7 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"path/filepath"
@@ -111,6 +112,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 			Message: "Invalid request body",
 			Error:   err.Error(),
 		})
+		log.Printf("JSON bind err: %v", err)
 		return
 	}
 
@@ -134,6 +136,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 				Message: "Failed to save image",
 				Error:   err.Error(),
 			})
+			log.Printf("Failed to save image: %v", err)
 			return
 		}
 
@@ -146,6 +149,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 			Message: "Failed to create new user",
 			Error:   err.Error(),
 		})
+		log.Printf("Failed to create user: %v", err)
 		return
 	}
 

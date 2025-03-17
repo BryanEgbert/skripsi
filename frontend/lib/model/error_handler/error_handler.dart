@@ -86,7 +86,7 @@ Future<Result<T>> makeRequest<T>(
           ErrorResponse errorRes = ErrorResponse.fromJson(
               jsonDecode(res.data) as Map<String, dynamic>);
 
-          return Result.badRequestErr(errorRes.message);
+          return Result.badRequestErr(errorRes.error);
         case 401:
           return Result.unauthorized("Invalid email or password");
         case 403:
@@ -111,7 +111,7 @@ Future<Result<T>> makeRequest<T>(
       DioExceptionType.sendTimeout => Result.timeoutErr(),
       DioExceptionType.receiveTimeout => Result.timeoutErr(),
       DioExceptionType.connectionError =>
-        Result.networkErr(e.message ?? "Failed to connect to server"),
+        Result.networkErr("Failed to connect to server"),
       _ => Result.err(e.message ?? "Unknown error")
     };
   }

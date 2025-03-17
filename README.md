@@ -49,3 +49,7 @@ NOTE: Must re-test everything
   - [x] View vets (filter based on specialty)
   - [x] View vet details
   - [x] Edit vet specialty (along with user profile)
+
+- Pet daycare changes
+  - [ ] Add operating hours
+  - [ ] When pet owner books a slot, cannot book the same day when it is past the pet daycare closing hours

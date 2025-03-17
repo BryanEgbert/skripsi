@@ -30,16 +30,15 @@ samples, guidance on mobile development, and a full API reference.
     - [ ] Edit pet daycare slot
     - [ ] Edit pet daycare provided services page
   - **View pages for pet owners**
-    - [ ] View pet daycares pages
-    - [ ] View pets pages
-    - [ ] View vets pages
-    - [ ] View bookings pages
+    - [ ] View pet daycares page
+    - [ ] View pets page
+    - [ ] View vets page
+    - [ ] View booking history page
+    - [ ] View booking detail
   - **View pages for pet daycares**
     - [ ] View booked pets
     - [ ] Get own pet daycare details
     - [ ] Edit pet daycare
     - [ ] Chat features
     - [ ] Booking requests page
-
-- business logic
-  - 
+    - [ ] Edit slot for the day

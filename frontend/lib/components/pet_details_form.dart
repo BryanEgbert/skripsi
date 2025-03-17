@@ -14,6 +14,7 @@ class PetDetailsForm extends ConsumerStatefulWidget {
 }
 
 class _PetDetailsFormState extends ConsumerState<PetDetailsForm> {
+  bool isNeutered = false;
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -71,10 +72,26 @@ class _PetDetailsFormState extends ConsumerState<PetDetailsForm> {
               ],
             ),
           ),
-          SizedBox(height: 0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Spayed/Neutered"),
+                Checkbox(
+                  value: isNeutered,
+                  onChanged: (value) {
+                    setState(() {
+                      isNeutered = value!;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
           ElevatedButton(
             onPressed: widget.onSubmit,
-            child: const Text("Create My Account"),
+            child: const Text("Next"),
           ),
         ],
       ),

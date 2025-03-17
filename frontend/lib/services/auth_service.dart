@@ -1,11 +1,10 @@
-import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/response/token_response.dart';
-import 'package:http/http.dart' as http;
 
 abstract interface class IAuthService {
   Future<Result<TokenResponse>> login(String email, String password);
@@ -77,9 +76,15 @@ class AuthService implements IAuthService {
 
       FormData formData = FormData.fromMap({
         ...reqBody.toMap(),
-        "image": MultipartFile.fromFile(reqBody.image.path,
-            filename: reqBody.image.path.split('/').last),
+        "image": reqBody.image != null
+            ? await MultipartFile.fromFile(reqBody.image!.path,
+                filename: reqBody.image!.path.split('/').last)
+            : null,
       });
+
+      log("Image filename: ${reqBody.image!.path.split('/').last}");
+
+      log("create user req: ${formData.files}");
 
       final response = await Dio().post(
         "$host/users",
