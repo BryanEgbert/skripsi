@@ -95,7 +95,7 @@ func SeedTable(db *gorm.DB) error {
 		vetSpecialties[2],
 	}
 
-	dummyImgUrl := "test.com/image/test.jpeg"
+	dummyImgUrl := "localhost:8080/assets/04b9a0746ce09d7b7c58584cc3bde041164440229927dc222bb03f8c83e658bc.jpg"
 
 	users := []model.User{
 		{Name: "John Doe", Email: "john@example.com", Password: password1, RoleID: 1, ImageUrl: &dummyImgUrl},
@@ -114,8 +114,9 @@ func SeedTable(db *gorm.DB) error {
 		{
 			Name:          "Happy Paws",
 			Address:       "123 Bark St",
-			Latitude:      40.7128,
-			Longitude:     -74.0060,
+			Latitude:      -6.17722188,
+			Longitude:     106.7909223,
+			Locality: "Grogol Petamburan",
 			// Price:         100000.0,
 			OwnerID:       users[1].ID,
 			DailyWalks:    dailyWalks[1],
@@ -127,6 +128,7 @@ func SeedTable(db *gorm.DB) error {
 			Description:       "DOG daycare jakarta desc",
 			Latitude:          -6.266167,
 			Longitude:         106.808214,
+			Locality: "Grogol Petamburan",
 			// Price:             150000.0,
 			OwnerID:           users[2].ID,
 			DailyWalks:        dailyWalks[1],
@@ -139,8 +141,9 @@ func SeedTable(db *gorm.DB) error {
 		{
 			Name:          "Happy Paws 2",
 			Address:       "123 Bark St",
-			Latitude:      40.7128,
-			Longitude:     -74.0060,
+			Latitude:      -6.22400791,
+			Longitude:     106.5889773,
+			Locality: "Grogol Petamburan",
 			// Price:         100000.0,
 			OwnerID:       users[5].ID,
 			DailyWalks:    dailyWalks[1],
@@ -243,8 +246,8 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	thumbnails := []model.Thumbnail{
-		{DaycareID: daycare[0].ID, ImageUrl: "test.com/image/thumbnail1.jpg"},
-		{DaycareID: daycare[1].ID, ImageUrl: "test.com/image/thumbnail2.jpg"},
+		{DaycareID: daycare[0].ID, ImageUrl: dummyImgUrl},
+		{DaycareID: daycare[1].ID, ImageUrl: dummyImgUrl},
 	}
 
 	if err := db.Create(&thumbnails).Error; err != nil {

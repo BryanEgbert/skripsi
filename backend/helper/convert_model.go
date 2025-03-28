@@ -11,15 +11,21 @@ import (
 // }
 
 func ConvertUserToDTO(user model.User) model.UserDTO {
-	return model.UserDTO{
+	dto := model.UserDTO{
 		ID:           user.ID,
 		Name:         user.Name,
 		Email:        user.Email,
 		Role:         user.Role,
 		CreatedAt:    user.CreatedAt.String(),
-		VetSpecialty: user.VetSpecialty,
 		ImageUrl:     *user.ImageUrl,
 	}
+
+	if (user.VetSpecialty == nil) {
+		dto.VetSpecialty = []model.VetSpecialty{}
+	} else {
+		dto.VetSpecialty = *user.VetSpecialty
+	}
+	return dto 
 }
 
 func ConvertUserToUpdateDTO(user model.User) model.UpdateUserDTO {

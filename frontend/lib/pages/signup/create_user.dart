@@ -3,11 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/signup_guide_text.dart';
-import 'package:frontend/components/user_details_form.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/pages/signup/create_vet.dart';
 import 'package:frontend/utils/validator.dart';
-import 'package:frontend/pages/signup/create_pet.dart';
+import 'package:frontend/pages/signup/enter_pet_details_page.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CreateUserPage extends StatefulWidget {
@@ -19,6 +18,8 @@ class CreateUserPage extends StatefulWidget {
 }
 
 class _CreateUserPageState extends State<CreateUserPage> {
+  final _formKey = GlobalKey<FormState>();
+
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -32,6 +33,37 @@ class _CreateUserPageState extends State<CreateUserPage> {
         _userProfilePicture = File(photo.path);
         log("profile: ${_userProfilePicture!.path}");
       });
+    }
+  }
+
+  void _navigateToNext() {
+    final createUserReq = CreateUserRequest(
+      name: _nameController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+      roleId: widget.roleId,
+      userImage: _userProfilePicture,
+      vetSpecialtyId: [],
+    );
+    if (_formKey.currentState!.validate()) {
+      if (widget.roleId == 1) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => EnterPetDetailsPage(
+                  createUserReq: createUserReq,
+                )));
+      } else if (widget.roleId == 3) {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => CreateVetPage(
+            reqBody: createUserReq,
+          ),
+        ));
+      } else {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => EnterPetDetailsPage(
+            createUserReq: createUserReq,
+          ),
+        ));
+      }
     }
   }
 
@@ -56,6 +88,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                 ),
                 SizedBox(height: 56),
                 Form(
+                  key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -99,40 +132,12 @@ class _CreateUserPageState extends State<CreateUserPage> {
                         enableSuggestions: false,
                         autocorrect: false,
                         validator: (value) {
+                          // TODO: change password validation
                           return validatePassword(value);
                         },
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          if (widget.roleId == 1) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => CreatePetPage(),
-                              ),
-                            );
-                          } else if (widget.roleId == 3) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => CreateVetPage(
-                                  reqBody: CreateUserRequest(
-                                    name: _nameController.text,
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                    roleId: widget.roleId,
-                                    image: _userProfilePicture,
-                                    vetSpecialtyId: [],
-                                  ),
-                                ),
-                              ),
-                            );
-                          } else {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => CreatePetPage(),
-                              ),
-                            );
-                          }
-                        },
+                        onPressed: _navigateToNext,
                         child: const Text("Next"),
                       ),
                     ],
@@ -146,7 +151,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
     );
   }
 
-  GestureDetector profilePicturePicker() {
+  Widget profilePicturePicker() {
     return GestureDetector(
       onTap: _pickImage,
       child: Stack(

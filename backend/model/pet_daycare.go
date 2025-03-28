@@ -11,6 +11,7 @@ type PetDaycare struct {
 	gorm.Model
 	Name              string  `gorm:"not null"`
 	Address           string  `gorm:"not null"`
+	Locality string `gorm:"not null"`
 	Latitude          float64 `gorm:"not null"`
 	Longitude         float64 `gorm:"not null"`
 	Description       string
@@ -61,6 +62,7 @@ type PetDaycareDTO struct {
 type CreatePetDaycareRequest struct {
 	Name              string                  `form:"name" binding:"required"`
 	Address           string                  `form:"address" binding:"required"`
+	Locality string `form:"locality" binding:"required"`
 	Description       string                  `form:"description"`
 	Price             []float64                 `form:"price[]"`
 	PricingType       []string                  `form:"pricingType[]"`
@@ -84,8 +86,8 @@ type GetPetDaycaresRequest struct {
 	MaxDistance      float64
 	Facilities       []string
 	MustBeVaccinated *bool
-	DailyWalks       *uint
-	DailyPlaytime    *uint
+	DailyWalks       uint
+	DailyPlaytime    uint
 	MinPrice         float64
 	MaxPrice         float64
 	PricingType      *string
@@ -96,6 +98,7 @@ type GetPetDaycareDetailResponse struct {
 	Name              string        `json:"name"`
 	Address           string        `json:"address"`
 	Distance          float64       `json:"distance"`
+	Locality string `json:"locality"`
 	// Price             float64       `json:"price"`
 	// PricingType       string        `json:"pricingType"`
 	Pricings []PriceDetails `json:"pricings"`
@@ -119,6 +122,7 @@ type GetPetDaycaresResponse struct {
 	ID            uint    `json:"id"`
 	Name          string  `json:"name"`
 	Distance      float64 `json:"distance"`
+	Locality string `json:"locality"`
 	AverageRating float64 `json:"averageRating"`
 	RatingCount   int     `json:"ratingCount"`
 	BookedNum     int64   `json:"bookedNum"`

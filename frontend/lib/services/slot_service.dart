@@ -8,7 +8,6 @@ import 'package:frontend/model/request/book_slot_request.dart';
 import 'package:frontend/model/request/reduce_slot_request.dart';
 import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/slot.dart';
-import 'package:http/http.dart' as http;
 
 abstract interface class ISlotService {
   Future<Result<ListData<Slot>>> getSlots(String token, int speciesId,
@@ -27,7 +26,13 @@ class SlotService implements ISlotService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await Dio().post(
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.post(
         "$host/daycare/$petDaycareId/slot",
         options: Options(
           headers: {
@@ -49,7 +54,13 @@ class SlotService implements ISlotService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await Dio().patch(
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.patch(
         "$host/daycare/slot/$slotId",
         options: Options(
           headers: {
@@ -71,7 +82,13 @@ class SlotService implements ISlotService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await Dio().get(
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
         "$host/daycare/$petDaycareId/slot",
         queryParameters: {
           "year": year,

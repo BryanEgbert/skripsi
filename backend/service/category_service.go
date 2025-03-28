@@ -30,13 +30,24 @@ func (s *CategoryServiceImpl) GetVetSpecialties() (*[]model.VetSpecialty, error)
 }
 
 func (s *CategoryServiceImpl) GetPetCategories()(*[]model.PetCategoryDTO, error) {
-	var petCategoryDTOs []model.PetCategoryDTO
+	var petCategories []model.PetCategory
+	var dto []model.PetCategoryDTO
 
-	if err := s.db.Model(&model.PetCategory{}).Scan(&petCategoryDTOs).Error; err != nil {
+	if err := s.db.
+		Preload("SizeCategory").
+		Find(&petCategories).Error; err != nil {
 		return nil, err
 	}
 
-	return &petCategoryDTOs, nil
+	for _, val := range petCategories {
+		dto = append(dto, model.PetCategoryDTO{
+			ID: val.ID,
+			Name: val.Name,
+			SizeCategory: val.SizeCategory,
+		})
+	}
+
+	return &dto, nil
 }
 
 func (s *CategoryServiceImpl) GetSizeCategories()(*[]model.SizeCategory, error) {

@@ -11,6 +11,7 @@ type Pet struct {
 	Name         string `gorm:"not null"`
 	ImageUrl     *string
 	Status       string       `gorm:"default:'idle'"`
+	Neutered bool `gorm:"not null"`
 	OwnerID      uint         `gorm:"not null"`
 	Owner        User         `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	PetCategoryID    uint         `gorm:"not null"`
@@ -23,6 +24,7 @@ type PetDTO struct {
 	Name         string       `json:"name"`
 	ImageUrl     string       `json:"imageUrl"`
 	Status       string       `json:"status"`
+	Neutered bool `json:"neutered"`
 	Owner        UserDTO      `json:"owner"`
 	PetCategory      PetCategoryDTO      `json:"petCategory"`
 }
@@ -32,9 +34,15 @@ type GetBookedPetsResponse struct {
 }
 
 type PetRequest struct {
-	Name           string                `form:"name" binding:"required"`
-	Image          *multipart.FileHeader `form:"image"`
+	Name           string                `form:"petName" binding:"required"`
+	PetImage          *multipart.FileHeader `form:"petProfilePicture"`
 	Status         string                `form:"status"`
+	Neutered bool `form:"neutered"`
 	PetCategoryID uint                  `form:"petCategoryId" binding:"required"`
-	ImageUrl       string
+	PetImageUrl       string
+}
+
+type PetAndVaccinationRecordRequest struct {
+	PetRequest
+	VaccineRecordRequest
 }

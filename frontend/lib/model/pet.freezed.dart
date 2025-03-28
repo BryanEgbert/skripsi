@@ -25,7 +25,7 @@ mixin _$Pet {
   String get imageUrl => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
   User get owner => throw _privateConstructorUsedError;
-  Lookup get petCategory => throw _privateConstructorUsedError;
+  PetCategory get petCategory => throw _privateConstructorUsedError;
 
   /// Serializes this Pet to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -47,10 +47,10 @@ abstract class $PetCopyWith<$Res> {
       String imageUrl,
       String status,
       User owner,
-      Lookup petCategory});
+      PetCategory petCategory});
 
   $UserCopyWith<$Res> get owner;
-  $LookupCopyWith<$Res> get petCategory;
+  $PetCategoryCopyWith<$Res> get petCategory;
 }
 
 /// @nodoc
@@ -98,7 +98,7 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
       petCategory: null == petCategory
           ? _value.petCategory
           : petCategory // ignore: cast_nullable_to_non_nullable
-              as Lookup,
+              as PetCategory,
     ) as $Val);
   }
 
@@ -116,8 +116,8 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $LookupCopyWith<$Res> get petCategory {
-    return $LookupCopyWith<$Res>(_value.petCategory, (value) {
+  $PetCategoryCopyWith<$Res> get petCategory {
+    return $PetCategoryCopyWith<$Res>(_value.petCategory, (value) {
       return _then(_value.copyWith(petCategory: value) as $Val);
     });
   }
@@ -135,12 +135,12 @@ abstract class _$$PetImplCopyWith<$Res> implements $PetCopyWith<$Res> {
       String imageUrl,
       String status,
       User owner,
-      Lookup petCategory});
+      PetCategory petCategory});
 
   @override
   $UserCopyWith<$Res> get owner;
   @override
-  $LookupCopyWith<$Res> get petCategory;
+  $PetCategoryCopyWith<$Res> get petCategory;
 }
 
 /// @nodoc
@@ -185,7 +185,7 @@ class __$$PetImplCopyWithImpl<$Res> extends _$PetCopyWithImpl<$Res, _$PetImpl>
       petCategory: null == petCategory
           ? _value.petCategory
           : petCategory // ignore: cast_nullable_to_non_nullable
-              as Lookup,
+              as PetCategory,
     ));
   }
 }
@@ -215,7 +215,7 @@ class _$PetImpl implements _Pet {
   @override
   final User owner;
   @override
-  final Lookup petCategory;
+  final PetCategory petCategory;
 
   @override
   String toString() {
@@ -265,7 +265,7 @@ abstract class _Pet implements Pet {
       required final String imageUrl,
       required final String status,
       required final User owner,
-      required final Lookup petCategory}) = _$PetImpl;
+      required final PetCategory petCategory}) = _$PetImpl;
 
   factory _Pet.fromJson(Map<String, dynamic> json) = _$PetImpl.fromJson;
 
@@ -280,7 +280,7 @@ abstract class _Pet implements Pet {
   @override
   User get owner;
   @override
-  Lookup get petCategory;
+  PetCategory get petCategory;
 
   /// Create a copy of Pet
   /// with the given fields replaced by the non-null parameter values.

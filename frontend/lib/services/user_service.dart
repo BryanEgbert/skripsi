@@ -7,7 +7,6 @@ import 'package:frontend/model/pagination_query_params.dart';
 import 'package:frontend/model/request/update_user_request.dart';
 import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/user.dart';
-import 'package:http/http.dart' as http;
 
 abstract interface class IUserService {
   Future<User> getUser(String token, int id);
@@ -24,7 +23,14 @@ class UserService implements IUserService {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
-      final res = await Dio().delete(
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.delete(
         "$host/users",
         options: Options(headers: {"Authorization": "Bearer $token"}),
       );
@@ -46,12 +52,18 @@ class UserService implements IUserService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
       Map<String, String> queryParams = {
         "specialty-id": specialtyId.toString(),
         ...pagination.toMap(),
       };
 
-      final res = await Dio().get(
+      final res = await dio.get(
         "$host/users/vets",
         queryParameters: queryParams,
         options: Options(
@@ -68,34 +80,19 @@ class UserService implements IUserService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      // Map<String, String> headers = {
-      //   HttpHeaders.contentTypeHeader: "multipart/form-data",
-      //   HttpHeaders.authorizationHeader: "Bearer $token",
-      // };
-
-      // var req = http.MultipartRequest("PUT", Uri.parse("$host/users"))
-      //   ..headers.addAll(headers)
-      //   ..fields.addAll(reqBody.toMap());
-
-      // req.files.add(
-      //   http.MultipartFile(
-      //     "image",
-      //     reqBody.image.readAsBytes().asStream(),
-      //     reqBody.image.lengthSync(),
-      //     filename: reqBody.image.path,
-      //   ),
-      // );
-
-      // var res = await req.send();
-      // var response = await http.Response.fromStream(res);
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
 
       FormData formData = FormData.fromMap({
         ...reqBody.toMap(),
-        "image": MultipartFile.fromFile(reqBody.image.path,
+        "userProfilePicture": MultipartFile.fromFile(reqBody.image.path,
             filename: reqBody.image.path.split('/').last),
       });
 
-      final response = await Dio().put(
+      final response = await dio.put(
         "$host/users",
         options: Options(
           headers: {

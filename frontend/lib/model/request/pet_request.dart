@@ -2,24 +2,28 @@ import 'dart:io';
 
 class PetRequest {
   final String name;
-  final File image;
-  final int speciesId;
-  final int sizeCategoryId;
+  final bool neutered;
+  final File? petImage;
+  final int petCategoryId;
 
-  PetRequest({
-    required this.name,
-    required this.speciesId,
-    required this.sizeCategoryId,
-    required this.image,
-  });
+  PetRequest(
+      {required this.name,
+      this.petImage,
+      required this.petCategoryId,
+      required this.neutered});
 
-  Map<String, String> toMap() {
-    Map<String, String> map = {
-      "name": name,
-      "speciesId": speciesId.toString(),
-      "sizeCategoryId": sizeCategoryId.toString(),
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {
+      "petName": name,
+      "neutered": neutered,
+      "petCategoryId": petCategoryId.toString(),
     };
 
     return map;
+  }
+
+  @override
+  String toString() {
+    return "PetRequest(name: $name, petCategoryId: $petCategoryId, image: ${petImage?.path})";
   }
 }

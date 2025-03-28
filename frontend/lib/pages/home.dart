@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/app_bar_actions.dart';
+import 'package:frontend/pages/booking_history_view.dart';
 import 'package:frontend/pages/pet_daycares_view.dart';
 import 'package:frontend/pages/pets_view.dart';
+import 'package:frontend/pages/vets_view.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});
@@ -10,33 +13,49 @@ class HomeWidget extends StatefulWidget {
 }
 
 class _HomeWidgetState extends State<HomeWidget> {
-  final int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    PetDaycaresView(),
     PetsView(),
+    PetDaycaresView(),
+    VetsView(),
+    BookingHistoryView(),
   ];
+
+  void _onItemTap(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Change based on roles
     return Scaffold(
       key: const Key("home"),
-      appBar: AppBar(),
       body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(items: [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.pets),
-          label: "Pets",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.house),
-          label: "Pet Daycares",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: "Profile",
-        ),
-      ]),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.pets),
+            label: "Pets",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.house),
+            label: "Pet Daycares",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.healing_rounded),
+            label: "Vets",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book_rounded),
+            label: "Booking History",
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTap,
+      ),
     );
   }
 }

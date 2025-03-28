@@ -478,10 +478,13 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 	}
 	if maxDist := c.Query("max-distance"); maxDist != "" {
 		value, err := strconv.ParseFloat(maxDist, 64)
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "max distance is required",
-			Error:   err.Error(),
-		})
+		if err != nil {
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "max distance is required",
+				Error:   err.Error(),
+			})
+			return
+		}
 		filters.MaxDistance = value
 	}
 	if facilities := c.Query("facilities"); facilities != "" {
@@ -495,20 +498,20 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 		value, _ := strconv.ParseFloat(maxPrice, 64)
 		filters.MaxPrice = value
 	}
-	if pricingType := c.DefaultQuery("pricing-type", "day"); pricingType != "" {
+	if pricingType := c.Query("pricing-type"); pricingType != "" {
 		filters.PricingType = &pricingType
 	}
 
-	if dailyWalksId := c.Query("daily-walks"); dailyWalksId != "" {
+	if dailyWalksId := c.DefaultQuery("daily-walks", "0"); dailyWalksId != "" {
 		value, _ := strconv.ParseUint(dailyWalksId, 10, 64)
 		valueUint := uint(value)
-		filters.DailyWalks = &valueUint
+		filters.DailyWalks = valueUint
 	}
 
-	if dailyPlaytimeId := c.Query("daily-playtime"); dailyPlaytimeId != "" {
+	if dailyPlaytimeId := c.DefaultQuery("daily-playtime", "0"); dailyPlaytimeId != "" {
 		value, _ := strconv.ParseUint(dailyPlaytimeId, 10, 64)
 		valueUint := uint(value)
-		filters.DailyPlaytime = &valueUint
+		filters.DailyPlaytime = valueUint
 	}
 
 	if mustBeVaccinated := c.Query("vaccination-required"); mustBeVaccinated != "" {

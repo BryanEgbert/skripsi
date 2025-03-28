@@ -1,13 +1,28 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/pages/signup/create_pet.dart';
 import 'package:frontend/utils/validator.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UserDetailsForm extends ConsumerStatefulWidget {
+  File? userProfilePicture;
+
   final VoidCallback onSubmit;
-  const UserDetailsForm({
+  final GlobalKey<FormState> formKey;
+  final TextEditingController nameController;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+
+  UserDetailsForm({
     super.key,
     required this.onSubmit,
+    required this.formKey,
+    required this.nameController,
+    required this.emailController,
+    required this.passwordController,
+    this.userProfilePicture,
   });
 
   @override
@@ -16,25 +31,64 @@ class UserDetailsForm extends ConsumerStatefulWidget {
 }
 
 class _UserDetailsFormComponentState extends ConsumerState<UserDetailsForm> {
+  Future<void> _pickImage() async {
+    final photo = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (photo != null) {
+      setState(() {
+        widget.userProfilePicture = File(photo.path);
+        log("profile: ${widget.userProfilePicture!.path}");
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: widget.formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 12,
         children: [
           // TODO: implement image picker logic
-          IconButton.filled(
-            key: Key("image-picker"),
-            onPressed: () {},
-            style: IconButton.styleFrom(
-              shape: CircleBorder(),
-              minimumSize: Size(100, 100),
-            ),
-            icon: Icon(
-              Icons.add_a_photo_rounded,
-              size: 32,
+          GestureDetector(
+            onTap: _pickImage,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: widget.userProfilePicture != null
+                        ? DecorationImage(
+                            image: FileImage(widget.userProfilePicture!),
+                            fit: BoxFit.cover,
+                          )
+                        : null,
+                    color: Colors.grey[300],
+                  ),
+                  child: widget.userProfilePicture == null
+                      ? Icon(Icons.edit, size: 40, color: Colors.grey[700])
+                      : null,
+                ),
+                if (widget.userProfilePicture != null)
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black54,
+                    ),
+                    child: Icon(
+                      Icons.edit,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+              ],
             ),
           ),
           SizedBox(height: 0),
@@ -81,7 +135,7 @@ class _UserDetailsFormComponentState extends ConsumerState<UserDetailsForm> {
             },
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: widget.onSubmit,
             child: const Text("Next"),
           ),
         ],

@@ -6,13 +6,14 @@ import (
 	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type PetService interface {
 	GetPet(id uint) (*model.PetDTO, error)
 	GetPets(ownerID uint, startID uint, pageSize int) (*[]model.PetDTO, error)
 	GetBookedPets(userId uint, daycareId uint, startID uint, pageSize int) (*[]model.PetDTO, error)
-	CreatePet(ownerID uint, req model.PetRequest) error
+	CreatePet(ownerID uint, req model.PetRequest) (uint, error)
 	UpdatePet(id uint, pet model.PetDTO) error
 	DeletePet(id uint) error
 }
@@ -89,6 +90,7 @@ func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 		Name:         pet.Name,
 		ImageUrl:     *pet.ImageUrl,
 		Status:       pet.Status,
+		Neutered: pet.Neutered,
 		PetCategory:  helper.ConvertPetCategoryToDTO(pet.PetCategory),
 		Owner:        helper.ConvertUserToDTO(pet.Owner),
 	}
@@ -125,6 +127,7 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 			Name:         pet.Name,
 			ImageUrl:     *pet.ImageUrl,
 			Status:       pet.Status,
+			Neutered: pet.Neutered,
 			PetCategory: helper.ConvertPetCategoryToDTO(pet.PetCategory),
 			Owner:        helper.ConvertUserToDTO(pet.Owner),
 		})
@@ -149,6 +152,7 @@ func (s *PetServiceImpl) UpdatePet(id uint, petDTO model.PetDTO) error {
 	pet.ImageUrl = &petDTO.ImageUrl
 	pet.Status = petDTO.Status
 	pet.PetCategoryID = petDTO.PetCategory.ID
+	pet.Neutered = petDTO.Neutered
 
 	err = s.db.Save(&pet).Error
 	if err != nil {
@@ -158,19 +162,22 @@ func (s *PetServiceImpl) UpdatePet(id uint, petDTO model.PetDTO) error {
 	return nil
 }
 
-func (s *PetServiceImpl) CreatePet(ownerID uint, req model.PetRequest) error {
+func (s *PetServiceImpl) CreatePet(ownerID uint, req model.PetRequest) (uint, error) {
 	pet := model.Pet{
 		Name:      req.Name,
-		ImageUrl:  &req.ImageUrl,
+		ImageUrl:  &req.PetImageUrl,
 		OwnerID:   ownerID,
 		PetCategoryID: req.PetCategoryID,
+		Neutered: req.Neutered,
 	}
 
-	if err := s.db.Create(&pet).Error; err != nil {
-		return err
+	if err := s.db.
+		Clauses(clause.Returning{}).
+		Create(&pet).Error; err != nil {
+		return 0, err
 	}
 
-	return nil
+	return pet.ID, nil
 }
 
 // DeletePet deletes a pet by ID

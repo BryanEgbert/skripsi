@@ -5,7 +5,6 @@ import 'package:frontend/model/pagination_query_params.dart';
 import 'package:frontend/model/request/create_review_request.dart';
 import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/reviews.dart';
-import 'package:http/http.dart' as http;
 
 abstract interface class IReviewService {
   Future<Result<ListData<Reviews>>> getReviews(
@@ -22,7 +21,14 @@ class ReviewService implements IReviewService {
     return makeRequest(201, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
-      var res = await Dio().post(
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      var res = await dio.post(
         "$host/$petDaycareId/reviews",
         options: Options(
           headers: {
@@ -42,7 +48,14 @@ class ReviewService implements IReviewService {
     return makeRequest(204, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
-      var res = await Dio().delete(
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      var res = await dio.delete(
         "$host/$petDaycareId/reviews",
         options: Options(
           headers: {"Authorization": "Bearer $token"},
@@ -59,7 +72,14 @@ class ReviewService implements IReviewService {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
-      var res = await Dio().get(
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      var res = await dio.get(
         "$host/$petDaycareId/reviews",
         queryParameters: pagination.toMap(),
         options: Options(

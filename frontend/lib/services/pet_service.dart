@@ -7,7 +7,6 @@ import 'package:frontend/model/pagination_query_params.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/response/list_response.dart';
-import 'package:http/http.dart' as http;
 
 abstract interface class IPetService {
   Future<Result<Pet>> getById(String token, String id);
@@ -28,35 +27,22 @@ class PetService implements IPetService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      // Map<String, String> headers = {
-      //   HttpHeaders.contentTypeHeader: "multipart/form-data",
-      //   HttpHeaders.authorizationHeader: "Bearer $token",
-      // };
-
-      // var req = http.MultipartRequest("POST", Uri.parse("$host/pets"))
-      //   ..headers.addAll(headers)
-      //   ..fields.addAll(reqBody.toMap());
-
-      // req.files.add(
-      //   http.MultipartFile(
-      //     "image",
-      //     reqBody.image.readAsBytes().asStream(),
-      //     reqBody.image.lengthSync(),
-      //     filename: reqBody.image.path,
-      //   ),
-      // );
-
-      // final res = await req.send();
-      // var response = await http.Response.fromStream(res);
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
 
       FormData formData = FormData.fromMap({
         ...reqBody.toMap(),
-        "image": MultipartFile.fromFile(reqBody.image.path,
-            filename: reqBody.image.path.split('/').last),
+        "petProfilePicture": reqBody.petImage != null
+            ? await MultipartFile.fromFile(reqBody.petImage!.path,
+                filename: reqBody.petImage!.path.split('/').last)
+            : null,
       });
 
-      final response = await Dio().post(
-        "$host/users",
+      final response = await dio.post(
+        "$host/pets",
         options: Options(
           headers: {
             Headers.contentTypeHeader: Headers.multipartFormDataContentType,
@@ -75,7 +61,13 @@ class PetService implements IPetService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await Dio().delete(
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.delete(
         "$host/pets/$id",
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",
@@ -93,7 +85,13 @@ class PetService implements IPetService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await Dio().get(
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
         "$host/pets/$id",
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",
@@ -111,7 +109,13 @@ class PetService implements IPetService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await Dio().get(
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
         "$host/pets",
         queryParameters: pagination.toMap(),
         options: Options(
@@ -130,6 +134,12 @@ class PetService implements IPetService {
     return makeRequest(204, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
 
       // Map<String, String> headers = {
       //   HttpHeaders.contentTypeHeader: "multipart/form-data",
@@ -154,11 +164,13 @@ class PetService implements IPetService {
 
       FormData formData = FormData.fromMap({
         ...reqBody.toMap(),
-        "image": MultipartFile.fromFile(reqBody.image.path,
-            filename: reqBody.image.path.split('/').last),
+        "image": reqBody.petImage != null
+            ? await MultipartFile.fromFile(reqBody.petImage!.path,
+                filename: reqBody.petImage!.path.split('/').last)
+            : null,
       });
 
-      final response = await Dio().put(
+      final response = await dio.put(
         "$host/pets/$id",
         options: Options(
           headers: {
@@ -180,7 +192,13 @@ class PetService implements IPetService {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      final res = await Dio().get(
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
         "$host/daycare/$petDaycareId/pets",
         queryParameters: pagination.toMap(),
         options: Options(headers: {

@@ -11,11 +11,14 @@ _$PetDaycareImpl _$$PetDaycareImplFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       distance: (json['distance'] as num).toDouble(),
-      profileImage: json['profileImage'] as String,
+      locality: json['locality'] as String,
       averageRating: (json['averageRating'] as num).toDouble(),
       ratingCount: (json['ratingCount'] as num).toInt(),
       bookedNum: (json['bookedNum'] as num).toInt(),
-      price: (json['price'] as num).toDouble(),
+      prices: (json['prices'] as List<dynamic>)
+          .map((e) =>
+              e == null ? null : Price.fromJson(e as Map<String, dynamic>))
+          .toList(),
       thumbnail: json['thumbnail'] as String,
     );
 
@@ -24,11 +27,11 @@ Map<String, dynamic> _$$PetDaycareImplToJson(_$PetDaycareImpl instance) =>
       'id': instance.id,
       'name': instance.name,
       'distance': instance.distance,
-      'profileImage': instance.profileImage,
+      'locality': instance.locality,
       'averageRating': instance.averageRating,
       'ratingCount': instance.ratingCount,
       'bookedNum': instance.bookedNum,
-      'price': instance.price,
+      'prices': instance.prices,
       'thumbnail': instance.thumbnail,
     };
 
@@ -38,6 +41,7 @@ _$PetDaycareDetailsImpl _$$PetDaycareDetailsImplFromJson(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       address: json['address'] as String,
+      locality: json['locality'] as String,
       distance: (json['distance'] as num).toDouble(),
       price: (json['price'] as num).toDouble(),
       pricingType: json['pricingType'] as String,
@@ -66,6 +70,7 @@ Map<String, dynamic> _$$PetDaycareDetailsImplToJson(
       'id': instance.id,
       'name': instance.name,
       'address': instance.address,
+      'locality': instance.locality,
       'distance': instance.distance,
       'price': instance.price,
       'pricingType': instance.pricingType,
@@ -83,4 +88,18 @@ Map<String, dynamic> _$$PetDaycareDetailsImplToJson(
       'dailyWalks': instance.dailyWalks,
       'dailyPlaytime': instance.dailyPlaytime,
       'thumbnailUrls': instance.thumbnailUrls,
+    };
+
+_$PriceImpl _$$PriceImplFromJson(Map<String, dynamic> json) => _$PriceImpl(
+      petCategory:
+          PetCategory.fromJson(json['petCategory'] as Map<String, dynamic>),
+      price: (json['price'] as num).toDouble(),
+      pricingType: json['pricingType'] as String,
+    );
+
+Map<String, dynamic> _$$PriceImplToJson(_$PriceImpl instance) =>
+    <String, dynamic>{
+      'petCategory': instance.petCategory,
+      'price': instance.price,
+      'pricingType': instance.pricingType,
     };

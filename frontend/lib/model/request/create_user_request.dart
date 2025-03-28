@@ -6,7 +6,7 @@ class CreateUserRequest {
   final String password;
   final int roleId;
   final List<int> vetSpecialtyId;
-  final File? image;
+  final File? userImage;
 
   CreateUserRequest({
     required this.name,
@@ -14,12 +14,12 @@ class CreateUserRequest {
     required this.password,
     required this.roleId,
     required this.vetSpecialtyId,
-    this.image,
+    this.userImage,
   });
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
-      "name": name,
+      "displayName": name,
       "email": email,
       "password": password,
       "roleId": roleId.toString(),
@@ -27,5 +27,10 @@ class CreateUserRequest {
     };
 
     return map;
+  }
+
+  @override
+  String toString() {
+    return "CreateUserRequest(name: $name, email: $email, password: $password, roleId: $roleId, vetSpecialtyId: $vetSpecialtyId)";
   }
 }

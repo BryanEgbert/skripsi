@@ -44,9 +44,6 @@ class _PetDetailsFormState extends ConsumerState<PetDetailsForm> {
               ),
               labelText: "Name",
             ),
-            obscureText: true,
-            enableSuggestions: false,
-            autocorrect: false,
           ),
           InkWell(
             onTap: () {

@@ -25,4 +25,9 @@ class UpdateUserRequest {
 
     return map;
   }
+
+  @override
+  String toString() {
+    return "UpdateUserRequest(name: $name, email: $email), roleId: $roleId, vetSpecialtyId: $vetSpecialtyId";
+  }
 }

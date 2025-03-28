@@ -61,7 +61,7 @@ func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize in
 				return nil, err
 			}
 			
-			user.VetSpecialty = &vetSpecialties
+			user.VetSpecialty = vetSpecialties
 			out = append(out, user)			
 		}
 	} else {
@@ -92,7 +92,7 @@ func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize in
 				return nil, err
 			}
 			
-			user.VetSpecialty = &vetSpecialties
+			user.VetSpecialty = vetSpecialties
 			out = append(out, user)
 		}
 	}
@@ -124,7 +124,7 @@ func (s *UserServiceImpl) CreateUser(request model.CreateUserRequest) (*model.To
 		Email:    request.Email,
 		Password: hashedPassword,
 		RoleID:   request.RoleID,
-		ImageUrl: &request.ImageUrl,
+		ImageUrl: &request.UserImageUrl,
 	}
 
 	// Validate Role exists
@@ -182,6 +182,7 @@ func (s *UserServiceImpl) CreateUser(request model.CreateUserRequest) (*model.To
 	}
 
 	return &model.TokenResponse{
+		UserID: user.ID,
 		AccessToken:  jwtToken,
 		RefreshToken: refreshToken,
 		ExpiryDate:   expiry.Unix(),

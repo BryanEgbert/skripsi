@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:frontend/model/response/error_response.dart';
 
 final String unknownErr = "Unknown Error";
+final String jwtExpired = "401";
 
 sealed class Result<T> {
   const Result();

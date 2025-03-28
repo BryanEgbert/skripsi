@@ -26,7 +26,7 @@ type UserDTO struct {
 	Email        string          `json:"email"`
 	ImageUrl     string          `json:"imageUrl"`
 	Role         Role          `json:"role"`
-	VetSpecialty *[]VetSpecialty `json:"vetSpecialties"`
+	VetSpecialty []VetSpecialty `json:"vetSpecialties"`
 	CreatedAt    string          `json:"createdAt"`
 }
 
@@ -40,13 +40,19 @@ type UpdateUserDTO struct {
 }
 
 type CreateUserRequest struct {
-	Name           string                `form:"name" binding:"required"`
+	Name           string                `form:"displayName" binding:"required"`
 	Email          string                `form:"email" binding:"required,email"`
 	Password       string                `form:"password" binding:"required"`
 	RoleID         uint                  `form:"roleId" binding:"required"`
 	VetSpecialtyID *[]uint               `form:"vetSpecialtyId[]"`
-	Image          *multipart.FileHeader `form:"image"`
-	ImageUrl       string
+	UserImage          *multipart.FileHeader `form:"userProfilePicture"`
+	UserImageUrl       string
+}
+
+type CreatePetOwnerRequest struct {
+	CreateUserRequest
+	PetRequest
+	VaccineRecordRequest
 }
 
 type UpdateUserRequest struct {

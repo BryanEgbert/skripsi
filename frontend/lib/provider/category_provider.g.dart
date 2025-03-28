@@ -23,11 +23,12 @@ final vetSpecialtiesProvider = AutoDisposeFutureProvider<List<Lookup>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef VetSpecialtiesRef = AutoDisposeFutureProviderRef<List<Lookup>>;
-String _$petCategoryHash() => r'618c0ba57d0392a7769cf69667f6a4407f362196';
+String _$petCategoryHash() => r'f4ce3f4fcc27d3ff32ef385c782f0d3689bda174';
 
 /// See also [petCategory].
 @ProviderFor(petCategory)
-final petCategoryProvider = AutoDisposeFutureProvider<List<Lookup>>.internal(
+final petCategoryProvider =
+    AutoDisposeFutureProvider<List<PetCategory>>.internal(
   petCategory,
   name: r'petCategoryProvider',
   debugGetCreateSourceHash:
@@ -38,7 +39,7 @@ final petCategoryProvider = AutoDisposeFutureProvider<List<Lookup>>.internal(
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef PetCategoryRef = AutoDisposeFutureProviderRef<List<Lookup>>;
+typedef PetCategoryRef = AutoDisposeFutureProviderRef<List<PetCategory>>;
 String _$sizeCategoriesHash() => r'3a34ff4fc7789d890f3f37f589feab151f51e5d5';
 
 /// See also [sizeCategories].

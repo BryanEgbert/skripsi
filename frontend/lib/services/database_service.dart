@@ -33,7 +33,7 @@ class DatabaseService {
 
     return TokenResponse(
       accessToken: tokenMaps[0][accessToken] as String,
-      refreshToken: tokenMaps[0][accessToken] as String,
+      refreshToken: tokenMaps[0][refreshToken] as String,
       expiryDate: tokenMaps[0][exp] as int,
     );
   }

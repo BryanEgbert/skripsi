@@ -182,12 +182,21 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, startID uint, pageSize int) (model.ListData[model.GetPetDaycaresResponse], error) {
 	results := []model.GetPetDaycaresResponse{}
 
+	var latitude float64 = 0.0
+	var longitude float64 = 0.0
+	isCoordinateNotNil := req.Latitude != nil && req.Longitude != nil
+
+	if isCoordinateNotNil {
+		latitude = *req.Latitude
+		longitude = *req.Longitude
+	}
+
 	query := s.db.Table("pet_daycares").
-		Select("pet_daycares.id", "pet_daycares.name", fmt.Sprintf("ST_DistanceSphere(ST_MakePoint(%f, %f), ST_MakePoint(longitude, latitude))", 0.0, 0.0), "pet_daycares.booked_num").
+		Select("pet_daycares.id", "pet_daycares.name", "pet_daycares.locality", fmt.Sprintf("ST_DistanceSphere(ST_MakePoint(%f, %f), ST_MakePoint(longitude, latitude))", longitude, latitude), "pet_daycares.booked_num").
 		Joins("JOIN daily_playtimes ON daily_playtimes.id = pet_daycares.daily_playtime_id").
 		Joins("JOIN daily_walks ON daily_walks.id = pet_daycares.daily_walks_id")
 	
-	if req.MaxDistance <= 0 && req.Latitude != nil && req.Longitude != nil {
+	if req.MaxDistance > 0 && isCoordinateNotNil {
 		query = query.Where(
 			"ST_DistanceSphere(ST_MakePoint(longitude, latitude), ST_MakePoint(?, ?)) BETWEEN ? AND ?",
 			req.Longitude,
@@ -213,12 +222,16 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		}
 	}
 
-	if req.DailyPlaytime != nil {
+	if req.DailyPlaytime != 0 {
 		query = query.Where("daily_playtimes.id = ?", req.DailyPlaytime)
 	}
 
-	if req.DailyWalks != nil {
+	if req.DailyWalks != 0 {
 		query = query.Where("daily_walks.id", req.DailyWalks)
+	}
+
+	if req.PricingType != nil {
+		query = query.Where("pricing_type = ?", *req.PricingType)
 	}
 
 	rows, err := query.Rows()
@@ -231,7 +244,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 	for rows.Next() {
 		daycare := model.GetPetDaycaresResponse{Prices: []model.PriceDetails{}}
 
-		rows.Scan(&daycare.ID, &daycare.Name, &daycare.Distance, &daycare.BookedNum)
+		rows.Scan(&daycare.ID, &daycare.Name, &daycare.Locality, &daycare.Distance, &daycare.BookedNum)
 		results = append(results, daycare)
 	}
 
@@ -301,6 +314,7 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 	daycare := model.PetDaycare{
 		Name:              request.Name,
 		Address:           request.Address,
+		Locality: request.Locality,
 		Latitude:          latitude,
 		Longitude:         longitude,
 		Description:       request.Description,

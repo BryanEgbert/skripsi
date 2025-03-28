@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/lookup.dart';
+import 'package:frontend/model/pet_category.dart';
 import 'package:frontend/model/size_category.dart';
 import 'package:frontend/services/category_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -21,7 +22,7 @@ Future<List<Lookup>> vetSpecialties(Ref ref) async {
 }
 
 @riverpod
-Future<List<Lookup>> petCategory(Ref ref) async {
+Future<List<PetCategory>> petCategory(Ref ref) async {
   CategoryService categoryService = CategoryService();
   final res = await categoryService.getPetCategories();
 

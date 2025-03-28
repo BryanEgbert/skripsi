@@ -22,6 +22,7 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
 
   @override
   Widget build(BuildContext context) {
+    log("req: ${widget.reqBody.name}");
     final vetSpecialties = ref.watch(vetSpecialtiesProvider);
     AsyncValue<TokenResponse?> auth = ref.watch(authProvider);
 
@@ -42,10 +43,12 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
     if (auth.hasValue && !auth.hasError && !auth.isLoading) {
       if (auth.value != null) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          // TODO: change push to replace, change widget too
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => VetMainPage(),
-          ));
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => VetMainPage(),
+            ),
+            (route) => false,
+          );
         });
       }
     }
@@ -64,9 +67,11 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
             // TODO: navigate to main page
             IconButton(
                 onPressed: () async {
-                  await ref
-                      .read(authProvider.notifier)
-                      .register(widget.reqBody);
+                  if (!auth.isLoading) {
+                    await ref
+                        .read(authProvider.notifier)
+                        .register(widget.reqBody);
+                  }
                 },
                 icon: Icon(Icons.check_rounded))
           ],

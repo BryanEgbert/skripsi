@@ -19,4 +19,10 @@ class TokenResponse {
       _$TokenResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$TokenResponseToJson(this);
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return "TokenResponse(accessToken: $accessToken, refreshToken: $refreshToken)";
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/model/lookup.dart';
+import 'package:frontend/model/pet_category.dart';
 import 'package:frontend/model/user.dart';
 
 part 'pet_daycare.freezed.dart';
@@ -11,11 +12,11 @@ class PetDaycare with _$PetDaycare {
     required int id,
     required String name,
     required double distance,
-    required String profileImage,
+    required String locality,
     required double averageRating,
     required int ratingCount,
     required int bookedNum,
-    required double price,
+    required List<Price?> prices,
     required String thumbnail,
   }) = _PetDaycare;
 
@@ -29,6 +30,7 @@ class PetDaycareDetails with _$PetDaycareDetails {
     required int id,
     required String name,
     required String address,
+    required String locality,
     required double distance,
     required double price,
     required String pricingType,
@@ -50,4 +52,15 @@ class PetDaycareDetails with _$PetDaycareDetails {
 
   factory PetDaycareDetails.fromJson(Map<String, dynamic> json) =>
       _$PetDaycareDetailsFromJson(json);
+}
+
+@freezed
+class Price with _$Price {
+  factory Price({
+    required PetCategory petCategory,
+    required double price,
+    required String pricingType,
+  }) = _Price;
+
+  factory Price.fromJson(Map<String, dynamic> json) => _$PriceFromJson(json);
 }
