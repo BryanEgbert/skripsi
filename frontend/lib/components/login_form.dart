@@ -41,11 +41,11 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     if (auth.hasValue && !auth.isLoading) {
       if (auth.value != null) {
         WidgetsBinding.instance.addPostFrameCallback(
-          (timeStamp) => Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => HomeWidget(
-              key: Key("home"),
+          (timeStamp) => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => HomeWidget(),
             ),
-          )),
+          ),
         );
       }
     }

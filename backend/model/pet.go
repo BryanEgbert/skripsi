@@ -39,7 +39,7 @@ type PetRequest struct {
 	Status         string                `form:"status"`
 	Neutered bool `form:"neutered"`
 	PetCategoryID uint                  `form:"petCategoryId" binding:"required"`
-	PetImageUrl       string
+	PetImageUrl       *string
 }
 
 type PetAndVaccinationRecordRequest struct {

@@ -58,7 +58,7 @@ class PetList extends _$PetList {
 
     var token = await dbService.get();
 
-    if (token.expiryDate < DateTime.now().millisecondsSinceEpoch / 1000) {
+    if (token.expiryDate <= DateTime.now().millisecondsSinceEpoch / 1000) {
       final refreshRes = await authService.refreshToken(token.refreshToken);
       switch (refreshRes) {
         case Ok<TokenResponse>():

@@ -10,11 +10,6 @@ class BookingHistoryView extends StatefulWidget {
 class _BookingHistoryViewState extends State<BookingHistoryView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Vets"),
-      ),
-      body: Text("Vets page"),
-    );
+    return Center(child: Text("Booking history page"));
   }
 }

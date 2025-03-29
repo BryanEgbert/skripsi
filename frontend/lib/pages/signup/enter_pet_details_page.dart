@@ -24,6 +24,7 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
   final _nameController = TextEditingController();
   bool _isNeutered = false;
   int petCategoryId = 0;
+  int petCategoryIndex = 0;
   File? _petProfilePicture;
 
   Future<void> _pickImage() async {
@@ -107,7 +108,7 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                                       children: [
                                         Text(
                                           petCategory
-                                              .value![petCategoryId - 1].name,
+                                              .value![petCategoryIndex].name,
                                           style: TextStyle(
                                               color: Colors.grey[600],
                                               fontSize: 12),
@@ -191,6 +192,7 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                     groupValue: petCategoryId,
                     onChanged: (int? v) {
                       setState(() {
+                        petCategoryIndex = index;
                         petCategoryId = v!;
                       });
                     });

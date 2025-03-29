@@ -9,7 +9,7 @@ part of 'pet.dart';
 _$PetImpl _$$PetImplFromJson(Map<String, dynamic> json) => _$PetImpl(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
-      imageUrl: json['imageUrl'] as String,
+      imageUrl: json['imageUrl'] as String?,
       status: json['status'] as String,
       owner: User.fromJson(json['owner'] as Map<String, dynamic>),
       petCategory:

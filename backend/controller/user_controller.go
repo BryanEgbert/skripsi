@@ -72,7 +72,8 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 
 	if req.PetImage != nil {
 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(createdUser.UserID, filepath.Ext(req.PetImage.Filename)))
-		req.PetImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, filename)
+		imageUrl := fmt.Sprintf("%s/%s", c.Request.Host, filename)
+		req.PetImageUrl = &imageUrl
 	
 		if err := c.SaveUploadedFile(req.PetImage, filename); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{

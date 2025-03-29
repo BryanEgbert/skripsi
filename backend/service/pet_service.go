@@ -122,15 +122,22 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 
 	var petDTOs []model.PetDTO
 	for _, pet := range pets {
-		petDTOs = append(petDTOs, model.PetDTO{
+		dto := model.PetDTO{
 			ID:           pet.ID,
 			Name:         pet.Name,
-			ImageUrl:     *pet.ImageUrl,
 			Status:       pet.Status,
 			Neutered: pet.Neutered,
 			PetCategory: helper.ConvertPetCategoryToDTO(pet.PetCategory),
 			Owner:        helper.ConvertUserToDTO(pet.Owner),
-		})
+		}
+
+		if pet.ImageUrl != nil {
+			dto.ImageUrl = *pet.ImageUrl
+		}
+
+		petDTOs = append(petDTOs, dto)
+
+
 	}
 
 	return &petDTOs, nil
@@ -165,7 +172,7 @@ func (s *PetServiceImpl) UpdatePet(id uint, petDTO model.PetDTO) error {
 func (s *PetServiceImpl) CreatePet(ownerID uint, req model.PetRequest) (uint, error) {
 	pet := model.Pet{
 		Name:      req.Name,
-		ImageUrl:  &req.PetImageUrl,
+		ImageUrl:  req.PetImageUrl,
 		OwnerID:   ownerID,
 		PetCategoryID: req.PetCategoryID,
 		Neutered: req.Neutered,
@@ -187,11 +194,13 @@ func (s *PetServiceImpl) DeletePet(id uint) error {
 		return err
 	}
 
-	if err := os.Remove(helper.GetFilePath(*pet.ImageUrl)); err != nil {
-		return err
+	if pet.ImageUrl != nil {
+		if err := os.Remove(helper.GetFilePath(*pet.ImageUrl)); err != nil {
+			return err
+		}
 	}
 
-	if err := s.db.Unscoped().Delete(&model.Pet{}, id).Error; err != nil {
+	if err := s.db.Unscoped().Delete(&pet).Error; err != nil {
 		return err
 	}
 	return nil

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 abstract class JsonObject<T> {
   T fromJson();
 }
@@ -10,13 +8,13 @@ class ListData<T> {
   ListData({required this.data});
 
   factory ListData.fromJson(Map<String, dynamic> json, Function fromJson) {
-    final items = json["data"];
+    final items = json["data"] as List?;
     if (items!.isEmpty) {
       return ListData(data: []);
     }
     return ListData<T>(
       data: List<T>.from(
-        items!.map(
+        items.map(
           (item) => fromJson(item),
         ),
       ),

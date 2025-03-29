@@ -22,7 +22,7 @@ Pet _$PetFromJson(Map<String, dynamic> json) {
 mixin _$Pet {
   int get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String get imageUrl => throw _privateConstructorUsedError;
+  String? get imageUrl => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
   User get owner => throw _privateConstructorUsedError;
   PetCategory get petCategory => throw _privateConstructorUsedError;
@@ -44,7 +44,7 @@ abstract class $PetCopyWith<$Res> {
   $Res call(
       {int id,
       String name,
-      String imageUrl,
+      String? imageUrl,
       String status,
       User owner,
       PetCategory petCategory});
@@ -69,7 +69,7 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? imageUrl = null,
+    Object? imageUrl = freezed,
     Object? status = null,
     Object? owner = null,
     Object? petCategory = null,
@@ -83,10 +83,10 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      imageUrl: null == imageUrl
+      imageUrl: freezed == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -132,7 +132,7 @@ abstract class _$$PetImplCopyWith<$Res> implements $PetCopyWith<$Res> {
   $Res call(
       {int id,
       String name,
-      String imageUrl,
+      String? imageUrl,
       String status,
       User owner,
       PetCategory petCategory});
@@ -156,7 +156,7 @@ class __$$PetImplCopyWithImpl<$Res> extends _$PetCopyWithImpl<$Res, _$PetImpl>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? imageUrl = null,
+    Object? imageUrl = freezed,
     Object? status = null,
     Object? owner = null,
     Object? petCategory = null,
@@ -170,10 +170,10 @@ class __$$PetImplCopyWithImpl<$Res> extends _$PetCopyWithImpl<$Res, _$PetImpl>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      imageUrl: null == imageUrl
+      imageUrl: freezed == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -209,7 +209,7 @@ class _$PetImpl implements _Pet {
   @override
   final String name;
   @override
-  final String imageUrl;
+  final String? imageUrl;
   @override
   final String status;
   @override
@@ -262,7 +262,7 @@ abstract class _Pet implements Pet {
   const factory _Pet(
       {required final int id,
       required final String name,
-      required final String imageUrl,
+      required final String? imageUrl,
       required final String status,
       required final User owner,
       required final PetCategory petCategory}) = _$PetImpl;
@@ -274,7 +274,7 @@ abstract class _Pet implements Pet {
   @override
   String get name;
   @override
-  String get imageUrl;
+  String? get imageUrl;
   @override
   String get status;
   @override

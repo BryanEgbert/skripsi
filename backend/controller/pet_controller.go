@@ -134,7 +134,8 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 
 	if req.PetImage != nil {
 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.PetImage.Filename)))
-		req.PetImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, filename)
+		imageUrl := fmt.Sprintf("%s/%s", c.Request.Host, filename)
+		req.PetImageUrl = &imageUrl
 	
 		if err := c.SaveUploadedFile(req.PetImage, filename); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
@@ -193,7 +194,8 @@ func (pc *PetController) UpdatePet(c *gin.Context) {
 	}
 
 	filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.PetImage.Filename)))
-	req.PetImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, filename)
+	imageUrl := fmt.Sprintf("%s/%s", c.Request.Host, filename)
+	req.PetImageUrl = &imageUrl
 
 	if err := c.SaveUploadedFile(req.PetImage, filename); err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
@@ -203,12 +205,17 @@ func (pc *PetController) UpdatePet(c *gin.Context) {
 		return
 	}
 
-	if err := pc.petService.UpdatePet(uint(petID), model.PetDTO{
+	dto := model.PetDTO{
 		Name:         req.Name,
-		ImageUrl:     req.PetImageUrl,
 		Status:       req.Status,
 		PetCategory:  model.PetCategoryDTO{ID: req.PetCategoryID},
-	}); err != nil {
+	}
+
+	if req.PetImageUrl != nil {
+		dto.ImageUrl = *req.PetImageUrl
+	}
+
+	if err := pc.petService.UpdatePet(uint(petID), dto); err != nil {
 		c.JSON(http.StatusNotFound, model.ErrorResponse{
 			Message: "Failed to update pet",
 			Error:   err.Error(),

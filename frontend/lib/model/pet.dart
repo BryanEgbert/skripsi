@@ -10,7 +10,7 @@ class Pet with _$Pet {
   const factory Pet({
     required int id,
     required String name,
-    required String imageUrl,
+    required String? imageUrl,
     required String status,
     required User owner,
     required PetCategory petCategory,

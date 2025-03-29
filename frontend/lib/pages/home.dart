@@ -35,8 +35,14 @@ class _HomeWidgetState extends State<HomeWidget> {
       key: const Key("home"),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        // type: BottomNavigationBarType.fixed,
+        // backgroundColor: Colors.orange,
+        selectedItemColor: Colors.white,
+
+        unselectedItemColor: Colors.white,
         items: [
           BottomNavigationBarItem(
+            backgroundColor: Colors.orangeAccent,
             icon: Icon(Icons.pets),
             label: "Pets",
           ),
