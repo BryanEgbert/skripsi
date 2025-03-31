@@ -91,7 +91,7 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 	}
 
 	// Update basic fields
-	daycare.Name = newData.Name
+	daycare.Name = newData.PetDaycareName
 	daycare.Address = newData.Address
 	daycare.Description = newData.Description
 	daycare.HasPickupService = newData.HasPickupService
@@ -296,10 +296,6 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 		return nil, errors.New("user cannot create pet daycare")
 	}
 
-	// TODO: get longitude and latitude
-	var longitude float64
-	var latitude float64
-
 	tx := s.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -312,11 +308,11 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 	}
 
 	daycare := model.PetDaycare{
-		Name:              request.Name,
+		Name:              request.PetDaycareName,
 		Address:           request.Address,
 		Locality: request.Locality,
-		Latitude:          latitude,
-		Longitude:         longitude,
+		Latitude:          request.Latitude,
+		Longitude:         request.Longitude,
 		Description:       request.Description,
 		OwnerID:           userId,
 		HasPickupService:  request.HasPickupService,

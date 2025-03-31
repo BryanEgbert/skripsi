@@ -9,6 +9,7 @@ import (
 func RegisterUserRoute(r *gin.Engine, userController *controller.UserController) *gin.Engine {
 	r.POST("/users", userController.CreateUser)
 	r.POST("/pet-owner", userController.CreatePetOwner)
+	r.POST("/pet-daycare-provider", userController.CreatePetDaycareProvider)
 
 	userRoutes := r.Group("/users")
 	userRoutes.GET("/vets", middleware.JWTAuth(), userController.GetVets)

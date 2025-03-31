@@ -112,15 +112,15 @@ func Setup(db *gorm.DB) *gin.Engine {
 	userService := service.NewUserService(db)
 	petService := service.NewPetService(db)
 	vaccineRecordService := service.NewVaccineService(db)
+	petDaycareService := service.NewPetDaycareService(db)
 	
-	userController := controller.NewUserController(userService, petService, vaccineRecordService)
+	userController := controller.NewUserController(userService, petService, vaccineRecordService, petDaycareService)
 
 	authService := service.NewAuthService(db)
 	authController := controller.NewAuthController(authService)
 
 	petController := controller.NewPetController(petService)
 
-	petDaycareService := service.NewPetDaycareService(db)
 	slotService := service.NewSlotService(db)
 	reviewService := service.NewReviewService(db)
 	petDaycareController := controller.NewPetDaycareController(petDaycareService, petService, slotService, reviewService)

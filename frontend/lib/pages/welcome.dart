@@ -9,7 +9,6 @@ class WelcomeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       body: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(

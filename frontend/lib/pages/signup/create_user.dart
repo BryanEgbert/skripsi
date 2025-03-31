@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/signup_guide_text.dart';
 import 'package:frontend/model/request/create_user_request.dart';
+import 'package:frontend/pages/create_pet_daycare_page.dart';
 import 'package:frontend/pages/signup/create_vet.dart';
 import 'package:frontend/utils/validator.dart';
 import 'package:frontend/pages/signup/enter_pet_details_page.dart';
@@ -51,16 +52,16 @@ class _CreateUserPageState extends State<CreateUserPage> {
             builder: (context) => EnterPetDetailsPage(
                   createUserReq: createUserReq,
                 )));
+      } else if (widget.roleId == 2) {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => CreatePetDaycarePage(
+            createUserReq: createUserReq,
+          ),
+        ));
       } else if (widget.roleId == 3) {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => CreateVetPage(
             reqBody: createUserReq,
-          ),
-        ));
-      } else {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => EnterPetDetailsPage(
-            createUserReq: createUserReq,
           ),
         ));
       }

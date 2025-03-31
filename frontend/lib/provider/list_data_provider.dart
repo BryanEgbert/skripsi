@@ -19,7 +19,7 @@ Future<ListData<PetDaycare>> petDaycares(
   final dbService = DatabaseService();
   final authService = AuthService();
 
-  final token = await dbService.get();
+  final token = await dbService.getToken();
 
   if (token.expiryDate >= DateTime.now().millisecondsSinceEpoch / 1000) {
     final refreshRes = await authService.refreshToken(token.refreshToken);

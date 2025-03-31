@@ -55,6 +55,11 @@ type CreatePetOwnerRequest struct {
 	VaccineRecordRequest
 }
 
+type CreatePetDaycareProviderRequest struct {
+	CreateUserRequest
+	CreatePetDaycareRequest
+}
+
 type UpdateUserRequest struct {
 	ID             uint
 	Name           string                `form:"name"`

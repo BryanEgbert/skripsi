@@ -60,9 +60,11 @@ type PetDaycareDTO struct {
 
 // CreatePetDaycareRequest represents the request payload
 type CreatePetDaycareRequest struct {
-	Name              string                  `form:"name" binding:"required"`
+	PetDaycareName              string                  `form:"petDaycareName" binding:"required"`
 	Address           string                  `form:"address" binding:"required"`
 	Locality string `form:"locality" binding:"required"`
+	Latitude float64 `form:"latitude" binding:"required"`
+	Longitude float64 `form:"longitude" binding:"required"`
 	Description       string                  `form:"description"`
 	Price             []float64                 `form:"price[]"`
 	PricingType       []string                  `form:"pricingType[]"`

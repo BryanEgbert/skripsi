@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
+import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
@@ -12,6 +13,8 @@ abstract interface class IAuthService {
   Future<Result<TokenResponse>> refreshToken(String token);
   Future<Result<TokenResponse>> createPetOwner(CreateUserRequest userReq,
       PetRequest petReq, VaccinationRecordRequest vaccineReq);
+  Future<Result<TokenResponse>> createPetDaycareProvider(
+      CreateUserRequest userReq, CreatePetDaycareRequest petDaycareReq);
 }
 
 class AuthService implements IAuthService {
@@ -137,6 +140,43 @@ class AuthService implements IAuthService {
 
       final response = await dio.post(
         "$host/pet-owner",
+        options: Options(
+          headers: {
+            Headers.contentTypeHeader: Headers.multipartFormDataContentType,
+          },
+        ),
+        data: formData,
+      );
+
+      return response;
+    }, (res) => TokenResponse.fromJson(res));
+  }
+
+  @override
+  Future<Result<TokenResponse>> createPetDaycareProvider(
+      CreateUserRequest userReq, CreatePetDaycareRequest petDaycareReq) {
+    return makeRequest(201, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      Map<String, dynamic> req = {
+        ...userReq.toMap(),
+        ...petDaycareReq.toMap(),
+        "thumbnails[]": petDaycareReq.thumbnails
+            .map((file) async => await MultipartFile.fromFile(file.path))
+            .toList(),
+      };
+
+      FormData formData = FormData.fromMap(req);
+
+      final response = await dio.post(
+        "$host/pet-daycare-provider",
         options: Options(
           headers: {
             Headers.contentTypeHeader: Headers.multipartFormDataContentType,

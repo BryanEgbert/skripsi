@@ -57,6 +57,7 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                   subtitle: "Enter your pet details to continue",
                 ),
                 SizedBox(height: 56),
+                // TODO: Add validation
                 Form(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -78,7 +79,6 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                       TextFormField(
                         controller: _nameController,
                         key: Key("name-input"),
-                        // controller: _passwordEditingController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),

@@ -9,5 +9,5 @@ part 'database_provider.g.dart';
 Future<TokenResponse> getToken(Ref ref) async {
   final dbService = DatabaseService();
 
-  return await dbService.get();
+  return await dbService.getToken();
 }

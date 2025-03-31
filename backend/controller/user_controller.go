@@ -22,11 +22,86 @@ type UserController struct {
 	UserService service.UserService
 	PetService service.PetService
 	VaccineRecordService service.VaccineService
+	PetDaycareService service.PetDaycareService
 }
 
 // NewUserController initializes a new controller
-func NewUserController(userService service.UserService, petService service.PetService, vaccineRecordService service.VaccineService) *UserController {
-	return &UserController{UserService: userService, PetService: petService, VaccineRecordService: vaccineRecordService}
+func NewUserController(userService service.UserService, petService service.PetService, vaccineRecordService service.VaccineService, petDaycareService service.PetDaycareService) *UserController {
+	return &UserController{UserService: userService, PetService: petService, VaccineRecordService: vaccineRecordService, PetDaycareService: petDaycareService}
+}
+
+func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
+	var req model.CreatePetDaycareProviderRequest
+
+	if err := c.ShouldBind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request body",
+			Error:   err.Error(),
+		})
+		log.Printf("JSON bind err: %v", err)
+		return
+	}
+
+	req.RoleID = 2
+
+	if req.UserImage != nil {
+		rand.New(rand.NewSource(time.Now().UnixNano())) // Seed to get different results each run
+		randomNum := rand.Uint64()
+		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(req.UserImage.Filename)))
+
+		if err := c.SaveUploadedFile(req.UserImage, imagePath); err != nil {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "Failed to save image",
+				Error:   err.Error(),
+			})
+			log.Printf("Failed to save user image: %v", err)
+			return
+		}
+
+		req.UserImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, imagePath)
+	}
+
+	createdUser, err := uc.UserService.CreateUser(req.CreateUserRequest)
+	if err != nil {
+		c.JSON(http.StatusConflict, model.ErrorResponse{
+			Message: "Failed to create new user",
+			Error:   err.Error(),
+		})
+		log.Printf("Failed to create user: %v", err)
+		return
+	}
+
+	if len(req.PetCategoryID) != len(req.MaxNumber) {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "petCategoryId and maxNumber must be the same length",
+		})
+		return
+	}
+
+	var thumbnailURLs []string
+	for _, thumbnail := range req.Thumbnails {
+		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(createdUser.UserID, filepath.Ext(thumbnail.Filename)))
+		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("%s/%s", c.Request.Host, filename))
+
+		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "Failed to save image",
+				Error:   err.Error(),
+			})
+			return
+		}
+	}
+	req.ThumbnailURLs = thumbnailURLs
+
+	if _, err := uc.PetDaycareService.CreatePetDaycare(createdUser.UserID, req.CreatePetDaycareRequest); err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to create pet daycare",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, createdUser)
 }
 
 func (uc *UserController) CreatePetOwner(c *gin.Context) {
@@ -48,7 +123,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 		randomNum := rand.Uint64()
 		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(req.VaccineRecordImage.Filename)))
 
-		if err := c.SaveUploadedFile(req.VaccineRecordImage, imagePath); err != nil {
+		if err := c.SaveUploadedFile(req.UserImage, imagePath); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save image",
 				Error:   err.Error(),

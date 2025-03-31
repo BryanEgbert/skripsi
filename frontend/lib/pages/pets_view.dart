@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/pet_list_provider.dart';
 
 class PetsView extends ConsumerStatefulWidget {
@@ -88,7 +89,6 @@ class _PetsViewState extends ConsumerState<PetsView> {
                           ),
                         ),
                         IconButton(
-                          // TODO: delete pet
                           onPressed: () {
                             ref.read(petListProvider.notifier).delete(item.id);
                           },
@@ -100,7 +100,13 @@ class _PetsViewState extends ConsumerState<PetsView> {
                       ],
                     ),
                     // TODO: navigate to view pet details
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PetDetailsPage(petId: item.id),
+                        ),
+                      );
+                    },
                   );
                 },
               ),

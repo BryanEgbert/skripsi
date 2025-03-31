@@ -17,7 +17,7 @@ class PetList extends _$PetList {
   Future<ListData<Pet>> _getPets() async {
     final dbService = DatabaseService();
     final authService = AuthService();
-    var token = await dbService.get();
+    var token = await dbService.getToken();
     log("token: $token");
 
     if (token.expiryDate <= DateTime.now().millisecondsSinceEpoch / 1000) {
@@ -56,7 +56,7 @@ class PetList extends _$PetList {
     final authService = AuthService();
     final petService = PetService();
 
-    var token = await dbService.get();
+    var token = await dbService.getToken();
 
     if (token.expiryDate <= DateTime.now().millisecondsSinceEpoch / 1000) {
       final refreshRes = await authService.refreshToken(token.refreshToken);
