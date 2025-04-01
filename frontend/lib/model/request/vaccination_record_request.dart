@@ -21,7 +21,6 @@ class VaccinationRecordRequest {
 
   @override
   String toString() {
-    // TODO: implement toString
     return "VaccinationRecordRequest(dateAdministered: $dateAdministered, nextDueDate: $nextDueDate)";
   }
 }

@@ -9,6 +9,8 @@ func RegisterCategoryRoutes(r *gin.Engine, categoryController *controller.Catego
 	r.GET("/vet-specialties", categoryController.GetVetSpecialties)
 	r.GET("/pet-categories", categoryController.GetPetCategories)
 	r.GET("size-categories", categoryController.GetSizeCategories)
+	r.GET("/daily-walks", categoryController.GetDailyWalks)
+	r.GET("/daily-playtimes", categoryController.GetDailyPlaytime)
 
 	return r
 }

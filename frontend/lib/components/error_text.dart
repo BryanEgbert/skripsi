@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/pages/welcome.dart';
 

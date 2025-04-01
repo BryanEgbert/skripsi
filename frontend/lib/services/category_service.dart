@@ -8,6 +8,8 @@ import 'package:frontend/model/size_category.dart';
 
 abstract interface class ICategoryService {
   Future<Result<ListData<Lookup>>> getVetSpecialties();
+  Future<Result<ListData<Lookup>>> getDailyWalks();
+  Future<Result<ListData<Lookup>>> getDailyPlaytime();
   Future<Result<ListData<PetCategory>>> getPetCategories();
   Future<Result<ListData<SizeCategory>>> getSizeCategories();
 }
@@ -43,7 +45,7 @@ class CategoryService implements ICategoryService {
         },
       ));
 
-      var res = await dio.get("$host/size-categoriess");
+      var res = await dio.get("$host/size-categories");
 
       return res;
     }, (res) => ListData<SizeCategory>.fromJson(res, SizeCategory.fromJson));
@@ -64,5 +66,41 @@ class CategoryService implements ICategoryService {
 
       return res;
     }, (res) => ListData.fromJson(res, PetCategory.fromJson));
+  }
+
+  @override
+  Future<Result<ListData<Lookup>>> getDailyPlaytime() {
+    return makeRequest(200, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      var res = await dio.get("$host/daily-playtimes");
+
+      return res;
+    }, (res) => ListData.fromJson(res, Lookup.fromJson));
+  }
+
+  @override
+  Future<Result<ListData<Lookup>>> getDailyWalks() {
+    return makeRequest(200, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      var res = await dio.get("$host/daily-walks");
+
+      return res;
+    }, (res) => ListData.fromJson(res, Lookup.fromJson));
   }
 }

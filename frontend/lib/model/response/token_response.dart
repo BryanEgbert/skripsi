@@ -22,7 +22,6 @@ class TokenResponse {
 
   @override
   String toString() {
-    // TODO: implement toString
     return "TokenResponse(accessToken: $accessToken, refreshToken: $refreshToken)";
   }
 }

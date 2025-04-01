@@ -22,6 +22,32 @@ Future<List<Lookup>> vetSpecialties(Ref ref) async {
 }
 
 @riverpod
+Future<List<Lookup>> dailyWalks(Ref ref) async {
+  CategoryService categoryService = CategoryService();
+  final res = await categoryService.getDailyWalks();
+
+  switch (res) {
+    case Ok():
+      return res.value!.data;
+    case Error():
+      return Future.error(res.error);
+  }
+}
+
+@riverpod
+Future<List<Lookup>> dailyPlaytimes(Ref ref) async {
+  CategoryService categoryService = CategoryService();
+  final res = await categoryService.getDailyPlaytime();
+
+  switch (res) {
+    case Ok():
+      return res.value!.data;
+    case Error():
+      return Future.error(res.error);
+  }
+}
+
+@riverpod
 Future<List<PetCategory>> petCategory(Ref ref) async {
   CategoryService categoryService = CategoryService();
   final res = await categoryService.getPetCategories();

@@ -57,3 +57,31 @@ func (c *CategoryController) GetSizeCategories(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, model.ListData[model.SizeCategory]{Data: *res})
 }
+
+func (c *CategoryController) GetDailyWalks(ctx *gin.Context) {
+	res, err := c.categoryService.GetDailyWalks()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Something's wrong, please try again later",
+			Error: err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, model.ListData[model.DailyWalks]{Data: *res})
+}
+
+func (c *CategoryController) GetDailyPlaytime(ctx *gin.Context) {
+	res, err := c.categoryService.GetDailyPlaytime()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Something's wrong, please try again later",
+			Error: err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, model.ListData[model.DailyPlaytime]{Data: *res})
+}

@@ -9,6 +9,8 @@ type CategoryService interface {
 	GetVetSpecialties() (*[]model.VetSpecialty, error);
 	GetPetCategories()(*[]model.PetCategoryDTO, error);
 	GetSizeCategories()(*[]model.SizeCategory, error);
+	GetDailyWalks()(*[]model.DailyWalks, error);
+	GetDailyPlaytime()(*[]model.DailyPlaytime, error);
 }
 
 type CategoryServiceImpl struct {
@@ -58,4 +60,24 @@ func (s *CategoryServiceImpl) GetSizeCategories()(*[]model.SizeCategory, error) 
 	}
 
 	return &sizeCategories, nil
+}
+
+func (s *CategoryServiceImpl) GetDailyWalks()(*[]model.DailyWalks, error) {
+	var dailyWalks []model.DailyWalks
+
+	if err := s.db.Find(&dailyWalks).Error; err != nil {
+		return nil, err
+	}
+
+	return &dailyWalks, nil
+}
+
+func (s *CategoryServiceImpl) GetDailyPlaytime()(*[]model.DailyPlaytime, error) {
+	var dailyPlaytimes []model.DailyPlaytime
+
+	if err := s.db.Find(&dailyPlaytimes).Error; err != nil {
+		return nil, err
+	}
+
+	return &dailyPlaytimes, nil
 }

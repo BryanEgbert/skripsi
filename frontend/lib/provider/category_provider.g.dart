@@ -23,6 +23,39 @@ final vetSpecialtiesProvider = AutoDisposeFutureProvider<List<Lookup>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef VetSpecialtiesRef = AutoDisposeFutureProviderRef<List<Lookup>>;
+String _$dailyWalksHash() => r'632293ed784f7a4cdce96f35d0c959365f3d1f8c';
+
+/// See also [dailyWalks].
+@ProviderFor(dailyWalks)
+final dailyWalksProvider = AutoDisposeFutureProvider<List<Lookup>>.internal(
+  dailyWalks,
+  name: r'dailyWalksProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$dailyWalksHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef DailyWalksRef = AutoDisposeFutureProviderRef<List<Lookup>>;
+String _$dailyPlaytimesHash() => r'05724373f5d6f5eeeec8e8672a41345b2f814a88';
+
+/// See also [dailyPlaytimes].
+@ProviderFor(dailyPlaytimes)
+final dailyPlaytimesProvider = AutoDisposeFutureProvider<List<Lookup>>.internal(
+  dailyPlaytimes,
+  name: r'dailyPlaytimesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$dailyPlaytimesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef DailyPlaytimesRef = AutoDisposeFutureProviderRef<List<Lookup>>;
 String _$petCategoryHash() => r'f4ce3f4fcc27d3ff32ef385c782f0d3689bda174';
 
 /// See also [petCategory].

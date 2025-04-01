@@ -8,6 +8,7 @@ import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/pages/signup/create_vaccination_records_page.dart';
 import 'package:frontend/provider/category_provider.dart';
+import 'package:frontend/utils/validator.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EnterPetDetailsPage extends ConsumerStatefulWidget {
@@ -57,7 +58,6 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                   subtitle: "Enter your pet details to continue",
                 ),
                 SizedBox(height: 56),
-                // TODO: Add validation
                 Form(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -85,52 +85,10 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                           ),
                           labelText: "Name",
                         ),
+                        validator: (value) => validateNotEmpty("Name", value),
                       ),
-                      InkWell(
-                        onTap: () {
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (context) =>
-                                  selectPetTypeModal(petCategory));
-                        },
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("Choose Your Pet's Type & Size"),
-                                  if (petCategoryId != 0)
-                                    Row(
-                                      children: [
-                                        Text(
-                                          petCategory
-                                              .value![petCategoryIndex].name,
-                                          style: TextStyle(
-                                              color: Colors.grey[600],
-                                              fontSize: 12),
-                                        ),
-                                        Icon(
-                                          Icons.arrow_forward_ios_rounded,
-                                          color: Colors.orange,
-                                        ),
-                                      ],
-                                    ),
-                                  if (petCategoryId == 0)
-                                    Icon(
-                                      Icons.arrow_forward_ios_rounded,
-                                      color: Colors.orange,
-                                    ),
-                                ],
-                              ),
-                            ),
-                            Divider(),
-                          ],
-                        ),
-                      ),
+                      // TODO: add not empty validation
+                      petCategoryInput(context, petCategory),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12.0),
                         child: Row(
@@ -171,6 +129,49 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget petCategoryInput(
+      BuildContext context, AsyncValue<List<PetCategory>> petCategory) {
+    return InkWell(
+      onTap: () {
+        showModalBottomSheet(
+            context: context,
+            builder: (context) => selectPetTypeModal(petCategory));
+      },
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Choose Your Pet's Type & Size"),
+                if (petCategoryId != 0)
+                  Row(
+                    children: [
+                      Text(
+                        petCategory.value![petCategoryIndex].name,
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: Colors.orange,
+                      ),
+                    ],
+                  ),
+                if (petCategoryId == 0)
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: Colors.orange,
+                  ),
+              ],
+            ),
+          ),
+          Divider(),
+        ],
       ),
     );
   }

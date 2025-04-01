@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/pages/booking_history_view.dart';
 import 'package:frontend/pages/pet_daycares_view.dart';
 import 'package:frontend/pages/pets_view.dart';

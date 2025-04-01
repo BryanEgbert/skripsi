@@ -5,6 +5,13 @@ String? validatePassword(String? value) {
   return null;
 }
 
+String? validateNotEmpty(String inputFieldName, String? value) {
+  if (value == null || value.isEmpty) {
+    return "$inputFieldName cannot be empty";
+  }
+  return null;
+}
+
 String? validateEmail(String? value) {
   if (value == null || value.isEmpty) {
     return "Email cannot be empty";

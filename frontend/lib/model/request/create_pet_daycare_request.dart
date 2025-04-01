@@ -1,24 +1,24 @@
 import 'dart:io';
 
 class CreatePetDaycareRequest {
-  final String petDaycareName;
-  final String address;
-  final String locality;
-  final double latitude;
-  final double longitude;
-  final String? description;
-  final List<double> price;
-  final List<String> pricingType;
-  final bool hasPickupService;
-  final bool mustBeVaccinated;
-  final bool groomingAvailable;
-  final bool foodProvided;
-  final String? foodBrand;
-  final int dailyWalksId;
-  final int dailyPlaytimeId;
-  final List<File> thumbnails;
-  final List<int> petCategoryId;
-  final List<int> maxNumber;
+  String petDaycareName;
+  String address;
+  String locality;
+  double latitude;
+  double longitude;
+  String? description;
+  List<double> price;
+  List<String> pricingType;
+  bool hasPickupService;
+  bool mustBeVaccinated;
+  bool groomingAvailable;
+  bool foodProvided;
+  String? foodBrand;
+  int dailyWalksId;
+  int dailyPlaytimeId;
+  List<File> thumbnails;
+  List<int> petCategoryId;
+  List<int> maxNumber;
 
   CreatePetDaycareRequest({
     required this.petDaycareName,

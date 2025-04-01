@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/pages/home.dart';
-import 'package:frontend/provider/database_provider.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -65,6 +63,7 @@ class PetDaycareApp extends StatelessWidget {
               textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
           )),
+      // TODO: change this
       home: WelcomeWidget(),
       // home: Consumer(
       //   builder: (context, ref, child) {

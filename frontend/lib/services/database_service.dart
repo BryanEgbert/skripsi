@@ -1,15 +1,12 @@
 import 'package:frontend/model/response/token_response.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:uuid/uuid.dart';
 
 class DatabaseService {
   final _tableName = "token";
-  final _sessionTable = "session";
   final accessToken = "accessToken";
   final refreshToken = "refreshToken";
   final exp = "exp";
-  final mapboxSessionId = "mapboxSessionId";
 
   Future<Database> getDatabase() async {
     final authDB = openDatabase(
@@ -18,14 +15,6 @@ class DatabaseService {
         await db.execute('''
           CREATE TABLE $_tableName($accessToken TEXT, $refreshToken TEXT, $exp INTEGER)
         ''');
-
-        // await db.execute("CREATE TABLE $_sessionTable($mapboxSessionId TEXT)");
-
-        // await db.insert(
-        //   _sessionTable,
-        //   {mapboxSessionId: Uuid().v4()},
-        //   conflictAlgorithm: ConflictAlgorithm.replace,
-        // );
         return;
       },
       version: 1,
@@ -33,18 +22,6 @@ class DatabaseService {
 
     return authDB;
   }
-
-  // Future<String> getMapboxSession() async {
-  //   final db = await getDatabase();
-  //   List<Map<String, Object?>> sessionMaps =
-  //       await db.query(_sessionTable, limit: 1);
-
-  //   if (sessionMaps.isEmpty) {
-  //     return Future.error("Session is empty");
-  //   }
-
-  //   return sessionMaps[0][mapboxSessionId] as String;
-  // }
 
   Future<TokenResponse> getToken() async {
     final db = await getDatabase();

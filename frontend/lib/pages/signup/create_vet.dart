@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/components/error_text.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/pages/vet_page.dart';
@@ -23,6 +24,7 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
   @override
   Widget build(BuildContext context) {
     log("req: ${widget.reqBody.name}");
+
     final vetSpecialties = ref.watch(vetSpecialtiesProvider);
     AsyncValue<TokenResponse?> auth = ref.watch(authProvider);
 
@@ -78,8 +80,11 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
         ),
         backgroundColor: Color(0xFFFFF8F0),
         body: switch (vetSpecialties) {
-          AsyncError() =>
-            Center(child: Text("Something is wrong, please try again later")),
+          AsyncError(:final error) => ErrorText(
+              errorText:
+                  "Something is wrong, please try again later\nerror message: $error",
+              onRefresh: () => ref.refresh(vetSpecialtiesProvider.future),
+            ),
           AsyncData(:final value) => ListView.builder(
               itemCount: value.length,
               itemBuilder: (context, index) {

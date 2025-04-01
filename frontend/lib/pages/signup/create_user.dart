@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/signup_guide_text.dart';
 import 'package:frontend/model/request/create_user_request.dart';
-import 'package:frontend/pages/create_pet_daycare_page.dart';
+import 'package:frontend/pages/signup/create_pet_daycare_page.dart';
 import 'package:frontend/pages/signup/create_vet.dart';
 import 'package:frontend/utils/validator.dart';
 import 'package:frontend/pages/signup/enter_pet_details_page.dart';
@@ -106,6 +106,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                           ),
                           labelText: "Display Name",
                         ),
+                        validator: (value) => validateNotEmpty("Name", value),
                       ),
                       TextFormField(
                         key: Key("email-input"),
@@ -133,7 +134,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                         enableSuggestions: false,
                         autocorrect: false,
                         validator: (value) {
-                          // TODO: change password validation
+                          // TODO: change password validation to make it stronger
                           return validatePassword(value);
                         },
                       ),

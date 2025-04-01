@@ -51,7 +51,6 @@ class _UserDetailsFormComponentState extends ConsumerState<UserDetailsForm> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 12,
         children: [
-          // TODO: implement image picker logic
           GestureDetector(
             onTap: _pickImage,
             child: Stack(
