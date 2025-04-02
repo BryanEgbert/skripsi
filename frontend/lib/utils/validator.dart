@@ -12,6 +12,22 @@ String? validateNotEmpty(String inputFieldName, String? value) {
   return null;
 }
 
+String? validatePriceInput(bool enabled, String? value) {
+  if (enabled && (double.tryParse(value!) ?? 0) <= 0) {
+    return "Enter a valid price";
+  }
+
+  return null;
+}
+
+String? validateSlotInput(bool enabled, String? value) {
+  if (enabled && (int.tryParse(value!) ?? 0) <= 0) {
+    return "Enter a valid slot number";
+  }
+
+  return null;
+}
+
 String? validateEmail(String? value) {
   if (value == null || value.isEmpty) {
     return "Email cannot be empty";

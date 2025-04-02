@@ -7,6 +7,7 @@ import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/pages/signup/create_pet_daycare_services.dart';
 import 'package:frontend/provider/category_provider.dart';
+import 'package:frontend/utils/validator.dart';
 
 class CreatePetDaycareSlots extends ConsumerStatefulWidget {
   final CreateUserRequest createUserReq;
@@ -23,28 +24,30 @@ class CreatePetDaycareSlots extends ConsumerStatefulWidget {
 }
 
 class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
+  final _formKey = GlobalKey<FormState>();
+
   final _allDogSizePriceController = TextEditingController();
-  final _allDogSizePricingTypeController = TextEditingController();
+  final _allDogSizePricingTypeController = TextEditingController(text: "day");
   final _allDogSizeSlotController = TextEditingController();
 
   final _smallDogPriceController = TextEditingController();
-  final _smallDogPricingTypeController = TextEditingController();
+  final _smallDogPricingTypeController = TextEditingController(text: "day");
   final _smallDogSlotController = TextEditingController();
 
   final _mediumDogPriceController = TextEditingController();
-  final _mediumDogPricingTypeController = TextEditingController();
+  final _mediumDogPricingTypeController = TextEditingController(text: "day");
   final _mediumDogSlotController = TextEditingController();
 
   final _largeDogPriceController = TextEditingController();
-  final _largeDogPricingTypeController = TextEditingController();
+  final _largeDogPricingTypeController = TextEditingController(text: "day");
   final _largeDogSlotController = TextEditingController();
 
   final _catsPriceController = TextEditingController();
-  final _catsPricingTypeController = TextEditingController();
+  final _catsPricingTypeController = TextEditingController(text: "day");
   final _catsSlotController = TextEditingController();
 
   final _bunniesPriceController = TextEditingController();
-  final _bunniesPricingTypeController = TextEditingController();
+  final _bunniesPricingTypeController = TextEditingController(text: "day");
   final _bunniesSlotController = TextEditingController();
 
   bool _acceptDogs = false;
@@ -62,6 +65,10 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
   bool _acceptBunnies = false;
 
   void _submitForm() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     _petCategoryIds = [];
     _prices = [];
     _pricingTypes = [];
@@ -127,50 +134,6 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
         }
       }
     }
-    // if (_separateBySize && _acceptSmallDog) {
-    //   petCategoryIds.add(1);
-    //   prices.add(double.tryParse(_smallDogPriceController.text) ?? 0.0);
-    //   pricingTypes.add(_smallDogPricingTypeController.text);
-    //   maxNumbers.add(int.tryParse(_smallDogSlotController.text) ?? 0);
-    // } else {
-    //   int index = petCategoryIds.indexOf(1);
-    //   if (index != -1) {
-    //     petCategoryIds.removeAt(index);
-    //     prices.removeAt(index);
-    //     pricingTypes.removeAt(index);
-    //     maxNumbers.removeAt(index);
-    //   }
-    // }
-
-    // if (_separateBySize && _acceptMediumDog) {
-    //   petCategoryIds.add(2);
-    //   prices.add(double.tryParse(_mediumDogPriceController.text) ?? 0.0);
-    //   pricingTypes.add(_mediumDogPricingTypeController.text);
-    //   maxNumbers.add(int.tryParse(_mediumDogSlotController.text) ?? 0);
-    // } else {
-    //   int index = petCategoryIds.indexOf(2);
-    //   if (index != -1) {
-    //     petCategoryIds.removeAt(index);
-    //     prices.removeAt(index);
-    //     pricingTypes.removeAt(index);
-    //     maxNumbers.removeAt(index);
-    //   }
-    // }
-
-    // if (_separateBySize && _acceptLargeDog) {
-    //   petCategoryIds.add(3);
-    //   prices.add(double.tryParse(_largeDogPriceController.text) ?? 0.0);
-    //   pricingTypes.add(_largeDogPricingTypeController.text);
-    //   maxNumbers.add(int.tryParse(_largeDogSlotController.text) ?? 0);
-    // } else {
-    //   int index = petCategoryIds.indexOf(3);
-    //   if (index != -1) {
-    //     petCategoryIds.removeAt(index);
-    //     prices.removeAt(index);
-    //     pricingTypes.removeAt(index);
-    //     maxNumbers.removeAt(index);
-    //   }
-    // }
 
     if (_acceptCats) {
       _petCategoryIds.add(4);
@@ -246,148 +209,159 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
           AsyncData(:final value) => SafeArea(
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 16),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        "Dogs",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                        ),
-                      ),
-                      CheckboxListTile(
-                        title: Text("Accept Dogs?"),
-                        subtitle:
-                            Text("Check if you allow dogs in your daycare"),
-                        value: _acceptDogs,
-                        onChanged: (value) {
-                          setState(() {
-                            _acceptDogs = value!;
-                          });
-                        },
-                      ),
-                      if (_acceptDogs) ...[
-                        RadioListTile(
-                          title: Text("All-Sized Dogs"),
-                          subtitle: Text("One capacity for dogs of any size."),
-                          value: false,
-                          groupValue: _separateBySize,
-                          onChanged: (value) {
-                            setState(() {
-                              _separateBySize = value as bool;
-                            });
-                          },
-                        ),
-                        priceSlotInput(
-                          !_separateBySize,
-                          _allDogSizePriceController,
-                          _allDogSizePricingTypeController,
-                          _allDogSizeSlotController,
-                        ),
-                        RadioListTile(
-                          title: Text("Separate by Size"),
-                          subtitle: Text("Different capacities for each size."),
-                          value: true,
-                          groupValue: _separateBySize,
-                          onChanged: (value) {
-                            setState(() {
-                              _separateBySize = value as bool;
-                            });
-                          },
-                        ),
-                        if (_separateBySize) ...[
-                          buildSizedCheckbox(
-                            "Small-Sized Breeds",
-                            "0 - 5kg",
-                            _acceptSmallDog,
-                            (val) {
-                              setState(() {
-                                _acceptSmallDog = val ?? false;
-                              });
-                            },
-                          ),
-                          priceSlotInput(
-                            _acceptSmallDog,
-                            _smallDogPriceController,
-                            _smallDogPricingTypeController,
-                            _smallDogSlotController,
-                          ),
-                          buildSizedCheckbox(
-                            "Medium-Sized Breeds",
-                            "5 - 10kg",
-                            _acceptMediumDog,
-                            (val) {
-                              setState(() {
-                                _acceptMediumDog = val ?? false;
-                              });
-                            },
-                          ),
-                          priceSlotInput(
-                            _acceptMediumDog,
-                            _mediumDogPriceController,
-                            _mediumDogPricingTypeController,
-                            _mediumDogSlotController,
-                          ),
-                          buildSizedCheckbox(
-                            "Large-Sized Breeds",
-                            "10 - 15kg",
-                            _acceptLargeDog,
-                            (val) {
-                              setState(() {
-                                _acceptLargeDog = val ?? false;
-                              });
-                            },
-                          ),
-                          priceSlotInput(
-                            _acceptLargeDog,
-                            _largeDogPriceController,
-                            _largeDogPricingTypeController,
-                            _largeDogSlotController,
-                          ),
-                        ],
-                      ],
-                      SizedBox(height: 20),
-                      Text("Others",
+                child: Form(
+                  key: _formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          "Dogs",
                           style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.orange)),
-                      buildCheckboxTile("Accept cats?", _acceptCats, (value) {
-                        setState(() {
-                          _acceptCats = value!;
-                        });
-                      }),
-                      priceSlotInput(
-                        _acceptCats,
-                        _catsPriceController,
-                        _catsPricingTypeController,
-                        _catsSlotController,
-                      ),
-                      buildCheckboxTile("Accept bunnies?", _acceptBunnies,
-                          (value) {
-                        setState(() {
-                          _acceptBunnies = value!;
-                        });
-                      }),
-                      priceSlotInput(
-                        _acceptBunnies,
-                        _bunniesPriceController,
-                        _bunniesPricingTypeController,
-                        _bunniesSlotController,
-                      ),
-                      SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: _submitForm,
-                        child: Text(
-                          "Next",
-                          style: TextStyle(fontSize: 18, color: Colors.white),
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 24)
-                    ],
+                        CheckboxListTile(
+                          title: Text("Accept Dogs?"),
+                          subtitle:
+                              Text("Check if you allow dogs in your daycare"),
+                          value: _acceptDogs,
+                          onChanged: (value) {
+                            setState(() {
+                              _acceptDogs = value!;
+                            });
+                          },
+                        ),
+                        if (_acceptDogs) ...[
+                          RadioListTile(
+                            title: Text("All-Sized Dogs"),
+                            subtitle:
+                                Text("One capacity for dogs of any size."),
+                            value: false,
+                            groupValue: _separateBySize,
+                            onChanged: (value) {
+                              setState(() {
+                                _separateBySize = value as bool;
+                              });
+                            },
+                          ),
+                          priceSlotInput(
+                            context,
+                            !_separateBySize,
+                            _allDogSizePriceController,
+                            _allDogSizePricingTypeController,
+                            _allDogSizeSlotController,
+                          ),
+                          RadioListTile(
+                            title: Text("Separate by Size"),
+                            subtitle:
+                                Text("Different capacities for each size."),
+                            value: true,
+                            groupValue: _separateBySize,
+                            onChanged: (value) {
+                              setState(() {
+                                _separateBySize = value as bool;
+                              });
+                            },
+                          ),
+                          if (_separateBySize) ...[
+                            buildSizedCheckbox(
+                              "Small-Sized Breeds",
+                              "0 - 5kg",
+                              _acceptSmallDog,
+                              (val) {
+                                setState(() {
+                                  _acceptSmallDog = val ?? false;
+                                });
+                              },
+                            ),
+                            priceSlotInput(
+                              context,
+                              _acceptSmallDog,
+                              _smallDogPriceController,
+                              _smallDogPricingTypeController,
+                              _smallDogSlotController,
+                            ),
+                            buildSizedCheckbox(
+                              "Medium-Sized Breeds",
+                              "5 - 10kg",
+                              _acceptMediumDog,
+                              (val) {
+                                setState(() {
+                                  _acceptMediumDog = val ?? false;
+                                });
+                              },
+                            ),
+                            priceSlotInput(
+                              context,
+                              _acceptMediumDog,
+                              _mediumDogPriceController,
+                              _mediumDogPricingTypeController,
+                              _mediumDogSlotController,
+                            ),
+                            buildSizedCheckbox(
+                              "Large-Sized Breeds",
+                              "10 - 15kg",
+                              _acceptLargeDog,
+                              (val) {
+                                setState(() {
+                                  _acceptLargeDog = val ?? false;
+                                });
+                              },
+                            ),
+                            priceSlotInput(
+                              context,
+                              _acceptLargeDog,
+                              _largeDogPriceController,
+                              _largeDogPricingTypeController,
+                              _largeDogSlotController,
+                            ),
+                          ],
+                        ],
+                        SizedBox(height: 20),
+                        Text("Others",
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.orange)),
+                        buildCheckboxTile("Accept cats?", _acceptCats, (value) {
+                          setState(() {
+                            _acceptCats = value!;
+                          });
+                        }),
+                        priceSlotInput(
+                          context,
+                          _acceptCats,
+                          _catsPriceController,
+                          _catsPricingTypeController,
+                          _catsSlotController,
+                        ),
+                        buildCheckboxTile("Accept bunnies?", _acceptBunnies,
+                            (value) {
+                          setState(() {
+                            _acceptBunnies = value!;
+                          });
+                        }),
+                        priceSlotInput(
+                          context,
+                          _acceptBunnies,
+                          _bunniesPriceController,
+                          _bunniesPricingTypeController,
+                          _bunniesSlotController,
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: _submitForm,
+                          child: Text(
+                            "Next",
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                        ),
+                        SizedBox(height: 24)
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -398,6 +372,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
 
   // TODO: use AbsorbPointer to disable
   Widget priceSlotInput(
+      BuildContext context,
       bool enabled,
       TextEditingController priceController,
       TextEditingController pricingTypeController,
@@ -408,32 +383,66 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       children: [
         Text("Rp."),
         Expanded(
-          child: TextField(
+          child: TextFormField(
             controller: priceController,
             enabled: enabled,
             decoration: InputDecoration(
               labelText: "Price",
             ),
             keyboardType: TextInputType.number,
+            validator: (value) => validatePriceInput(enabled, value),
           ),
         ),
         Text("/"),
         Expanded(
-            child: TextField(
+            child: TextFormField(
           controller: pricingTypeController,
           enabled: enabled,
+          readOnly: true,
           decoration: InputDecoration(
             labelText: "",
+            suffixIcon: Icon(Icons.navigate_next),
           ),
+          onTap: () async {
+            pricingTypeController.text = await showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      title: const Text("Day"),
+                      onTap: () {
+                        setState(() {
+                          pricingTypeController.text = "day";
+                        });
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      title: const Text("Night"),
+                      onTap: () {
+                        setState(() {
+                          pricingTypeController.text = "night";
+                        });
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
         )),
         Expanded(
-          child: TextField(
+          child: TextFormField(
             controller: slotController,
             enabled: enabled,
             decoration: InputDecoration(
-              labelText: "Slot",
+              labelText: "# of Slot",
             ),
             keyboardType: TextInputType.number,
+            validator: (value) => validateSlotInput(enabled, value),
           ),
         ),
       ],

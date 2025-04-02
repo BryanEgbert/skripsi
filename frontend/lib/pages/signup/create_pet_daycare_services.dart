@@ -34,6 +34,7 @@ class _CreatePetDaycareServicesState
   int _dailyWalksId = 0;
   int _dailyPlaytimeId = 0;
 
+  // TODO: validate if _dailyWalksId and daily playtimeId is not 0
   void _submitForm() {
     widget.createPetDaycareReq.foodProvided = _foodProvided;
     widget.createPetDaycareReq.groomingAvailable = _groomingServiceProvided;
@@ -45,9 +46,35 @@ class _CreatePetDaycareServicesState
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Change to daily walks and daily playtime to show modal
+    final auth = ref.watch(authProvider);
+
     final dailyWalks = ref.watch(dailyWalksProvider);
     final dailyPlaytime = ref.watch(dailyPlaytimesProvider);
+
+    if (auth.hasError && !auth.hasValue && !auth.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        var snackbar = SnackBar(
+          key: Key("error-message"),
+          content: Text(auth.error.toString()),
+          backgroundColor: Colors.red,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      });
+    }
+
+    if (auth.hasValue && !auth.hasError && !auth.isLoading) {
+      if (auth.value != null) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => PetDaycareHomePage(),
+            ),
+            (route) => false,
+          );
+        });
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
