@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
@@ -168,10 +170,15 @@ class AuthService implements IAuthService {
       Map<String, dynamic> req = {
         ...userReq.toMap(),
         ...petDaycareReq.toMap(),
-        "thumbnails[]": petDaycareReq.thumbnails
-            .map((file) async => await MultipartFile.fromFile(file.path))
-            .toList(),
+        "thumbnails[]": await Future.wait(
+          petDaycareReq.thumbnails
+              .map((file) async => await MultipartFile.fromFile(file.path,
+                  filename: file.path.split('/').last))
+              .toList(),
+        )
       };
+
+      log("[INFO] $req");
 
       FormData formData = FormData.fromMap(req);
 

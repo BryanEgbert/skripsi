@@ -42,6 +42,8 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 		return
 	}
 
+	log.Printf("petCategory: %v", req.PetCategoryID)
+
 	req.RoleID = 2
 
 	if req.UserImage != nil {
@@ -51,7 +53,7 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 
 		if err := c.SaveUploadedFile(req.UserImage, imagePath); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-				Message: "Failed to save image",
+				Message: "Failed to save user image",
 				Error:   err.Error(),
 			})
 			log.Printf("Failed to save user image: %v", err)
@@ -80,12 +82,14 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 
 	var thumbnailURLs []string
 	for _, thumbnail := range req.Thumbnails {
+		log.Printf("filename: %s", thumbnail.Filename)
 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(createdUser.UserID, filepath.Ext(thumbnail.Filename)))
 		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("%s/%s", c.Request.Host, filename))
 
 		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
+			log.Printf("Failed to save pet daycare image: %v", err)
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-				Message: "Failed to save image",
+				Message: "Failed to save pet daycare images",
 				Error:   err.Error(),
 			})
 			return

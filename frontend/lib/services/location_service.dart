@@ -122,7 +122,7 @@ class MockLocationService implements ILocationService {
                   "name": "Central Jakarta"
                 },
                 "place": {"id": "dXJuOm1ieHBsYzpJdXc", "name": "Jakarta"},
-                "locality": null,
+                "locality": {"id": "dXJuOm1ieHBsYzpJdXc", "name": "Grogol"},
                 "neighborhood": {
                   "id": "dXJuOm1ieHBsYzpJdXc",
                   "name": "Mock Neighborhood"

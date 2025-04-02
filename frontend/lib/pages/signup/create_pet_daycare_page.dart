@@ -26,11 +26,11 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
-  final _addressController = TextEditingController();
   final _openingHoursController = TextEditingController();
   final _closingHoursController = TextEditingController();
   final _descriptionController = TextEditingController();
 
+  String _address = "";
   double _latitude = 0.0;
   double _longitude = 0.0;
   String _locality = "";
@@ -54,7 +54,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
 
     final createPetDaycareReq = CreatePetDaycareRequest(
       petDaycareName: _nameController.text,
-      address: _addressController.text,
+      address: _address,
       description: _descriptionController.text,
       locality: _locality,
       latitude: _latitude,
@@ -71,6 +71,8 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
       petCategoryId: [],
       maxNumber: [],
     );
+
+    log("[INFO] $createPetDaycareReq");
 
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -273,6 +275,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
           case Ok<RetrieveResponse>():
             _locality =
                 res.value!.features[0].properties.context.locality!.name;
+            _address = res.value!.features[0].properties.context.address!.name;
             _latitude = res.value!.features[0].properties.coordinates.latitude;
             _longitude =
                 res.value!.features[0].properties.coordinates.longitude;

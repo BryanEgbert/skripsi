@@ -1,4 +1,5 @@
 import 'package:frontend/model/error_handler/error_handler.dart';
+import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
@@ -60,6 +61,26 @@ class Auth extends _$Auth {
     final authService = AuthService();
 
     final tokenRes = await authService.createPetOwner(user, petReq, vaccineReq);
+
+    switch (tokenRes) {
+      case Ok():
+        await dbService.insert(tokenRes.value!);
+        state = AsyncData(tokenRes.value);
+        break;
+      case Error():
+        state = AsyncError(tokenRes.error, StackTrace.current);
+    }
+  }
+
+  Future<void> createPetDaycareProvider(
+      CreateUserRequest userReq, CreatePetDaycareRequest petDaycareReq) async {
+    state = AsyncLoading();
+
+    final dbService = DatabaseService();
+    final authService = AuthService();
+
+    final tokenRes =
+        await authService.createPetDaycareProvider(userReq, petDaycareReq);
 
     switch (tokenRes) {
       case Ok():

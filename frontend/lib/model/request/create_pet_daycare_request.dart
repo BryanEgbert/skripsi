@@ -47,6 +47,8 @@ class CreatePetDaycareRequest {
       'address': address,
       'locality': locality,
       'description': description,
+      'longitude': longitude,
+      "latitude": latitude,
       'price[]': price.map((e) => e.toString()).toList(),
       'pricingType[]': pricingType,
       'hasPickupService': hasPickupService.toString(),
@@ -56,11 +58,34 @@ class CreatePetDaycareRequest {
       'foodBrand': foodBrand,
       'dailyWalksId': dailyWalksId.toString(),
       'dailyPlaytimeId': dailyPlaytimeId.toString(),
-      // 'thumbnails[]': thumbnails.map((path) => MultipartFile.fromFileSync(path)).toList(),
       'petCategoryId[]': petCategoryId.map((e) => e.toString()).toList(),
       'maxNumber[]': maxNumber.map((e) => e.toString()).toList(),
     };
 
     return map;
+  }
+
+  @override
+  String toString() {
+    return """CreatePetDaycareRequest(
+    petDaycareName: $petDaycareName, 
+    address: $address, 
+    locality: $locality, 
+    latitude: $latitude, 
+    longitude: $longitude, 
+    description: $description, 
+    price: $price, 
+    pricingType: $pricingType, 
+    hasPickupService: $hasPickupService, 
+    mustBeVaccinated: $mustBeVaccinated, 
+    groomingAvailable: $groomingAvailable, 
+    foodProvided: $foodProvided, 
+    foodBrand: $foodBrand, 
+    dailyWalksId: $dailyWalksId, 
+    dailyPlaytimeId: $dailyPlaytimeId, 
+    thumbnails: $thumbnails, 
+    petCategoryId: $petCategoryId, 
+    maxNumber: $maxNumber
+  )""";
   }
 }

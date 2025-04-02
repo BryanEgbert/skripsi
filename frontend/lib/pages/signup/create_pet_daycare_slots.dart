@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
@@ -21,18 +23,206 @@ class CreatePetDaycareSlots extends ConsumerStatefulWidget {
 }
 
 class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
+  final _allDogSizePriceController = TextEditingController();
+  final _allDogSizePricingTypeController = TextEditingController();
+  final _allDogSizeSlotController = TextEditingController();
+
+  final _smallDogPriceController = TextEditingController();
+  final _smallDogPricingTypeController = TextEditingController();
+  final _smallDogSlotController = TextEditingController();
+
+  final _mediumDogPriceController = TextEditingController();
+  final _mediumDogPricingTypeController = TextEditingController();
+  final _mediumDogSlotController = TextEditingController();
+
+  final _largeDogPriceController = TextEditingController();
+  final _largeDogPricingTypeController = TextEditingController();
+  final _largeDogSlotController = TextEditingController();
+
+  final _catsPriceController = TextEditingController();
+  final _catsPricingTypeController = TextEditingController();
+  final _catsSlotController = TextEditingController();
+
+  final _bunniesPriceController = TextEditingController();
+  final _bunniesPricingTypeController = TextEditingController();
+  final _bunniesSlotController = TextEditingController();
+
   bool _acceptDogs = false;
   bool _acceptSmallDog = false;
   bool _acceptMediumDog = false;
   bool _acceptLargeDog = false;
 
+  List<int> _petCategoryIds = [];
+  List<double> _prices = [];
+  List<String> _pricingTypes = [];
+  List<int> _maxNumbers = [];
+
   bool _separateBySize = false;
   bool _acceptCats = false;
   bool _acceptBunnies = false;
 
+  void _submitForm() {
+    _petCategoryIds = [];
+    _prices = [];
+    _pricingTypes = [];
+    _maxNumbers = [];
+
+    if (_separateBySize == false) {
+      _petCategoryIds.addAll([1, 2, 3]);
+
+      _prices.add(double.tryParse(_allDogSizePriceController.text) ?? 0.0);
+      _prices.add(double.tryParse(_allDogSizePriceController.text) ?? 0.0);
+      _prices.add(double.tryParse(_allDogSizePriceController.text) ?? 0.0);
+
+      _pricingTypes.add(_allDogSizePricingTypeController.text);
+      _pricingTypes.add(_allDogSizePricingTypeController.text);
+      _pricingTypes.add(_allDogSizePricingTypeController.text);
+
+      _maxNumbers.add(int.tryParse(_allDogSizeSlotController.text) ?? 0);
+      _maxNumbers.add(int.tryParse(_allDogSizeSlotController.text) ?? 0);
+      _maxNumbers.add(int.tryParse(_allDogSizeSlotController.text) ?? 0);
+    } else {
+      if (_acceptSmallDog) {
+        _petCategoryIds.add(1);
+        _prices.add(double.tryParse(_smallDogPriceController.text) ?? 0.0);
+        _pricingTypes.add(_smallDogPricingTypeController.text);
+        _maxNumbers.add(int.tryParse(_smallDogSlotController.text) ?? 0);
+      } else {
+        int index = _petCategoryIds.indexOf(1);
+        if (index != -1) {
+          _petCategoryIds.removeAt(index);
+          _prices.removeAt(index);
+          _pricingTypes.removeAt(index);
+          _maxNumbers.removeAt(index);
+        }
+      }
+
+      if (_acceptMediumDog) {
+        _petCategoryIds.add(2);
+        _prices.add(double.tryParse(_mediumDogPriceController.text) ?? 0.0);
+        _pricingTypes.add(_mediumDogPricingTypeController.text);
+        _maxNumbers.add(int.tryParse(_mediumDogSlotController.text) ?? 0);
+      } else {
+        int index = _petCategoryIds.indexOf(2);
+        if (index != -1) {
+          _petCategoryIds.removeAt(index);
+          _prices.removeAt(index);
+          _pricingTypes.removeAt(index);
+          _maxNumbers.removeAt(index);
+        }
+      }
+
+      if (_acceptLargeDog) {
+        _petCategoryIds.add(3);
+        _prices.add(double.tryParse(_largeDogPriceController.text) ?? 0.0);
+        _pricingTypes.add(_largeDogPricingTypeController.text);
+        _maxNumbers.add(int.tryParse(_largeDogSlotController.text) ?? 0);
+      } else {
+        int index = _petCategoryIds.indexOf(3);
+        if (index != -1) {
+          _petCategoryIds.removeAt(index);
+          _prices.removeAt(index);
+          _pricingTypes.removeAt(index);
+          _maxNumbers.removeAt(index);
+        }
+      }
+    }
+    // if (_separateBySize && _acceptSmallDog) {
+    //   petCategoryIds.add(1);
+    //   prices.add(double.tryParse(_smallDogPriceController.text) ?? 0.0);
+    //   pricingTypes.add(_smallDogPricingTypeController.text);
+    //   maxNumbers.add(int.tryParse(_smallDogSlotController.text) ?? 0);
+    // } else {
+    //   int index = petCategoryIds.indexOf(1);
+    //   if (index != -1) {
+    //     petCategoryIds.removeAt(index);
+    //     prices.removeAt(index);
+    //     pricingTypes.removeAt(index);
+    //     maxNumbers.removeAt(index);
+    //   }
+    // }
+
+    // if (_separateBySize && _acceptMediumDog) {
+    //   petCategoryIds.add(2);
+    //   prices.add(double.tryParse(_mediumDogPriceController.text) ?? 0.0);
+    //   pricingTypes.add(_mediumDogPricingTypeController.text);
+    //   maxNumbers.add(int.tryParse(_mediumDogSlotController.text) ?? 0);
+    // } else {
+    //   int index = petCategoryIds.indexOf(2);
+    //   if (index != -1) {
+    //     petCategoryIds.removeAt(index);
+    //     prices.removeAt(index);
+    //     pricingTypes.removeAt(index);
+    //     maxNumbers.removeAt(index);
+    //   }
+    // }
+
+    // if (_separateBySize && _acceptLargeDog) {
+    //   petCategoryIds.add(3);
+    //   prices.add(double.tryParse(_largeDogPriceController.text) ?? 0.0);
+    //   pricingTypes.add(_largeDogPricingTypeController.text);
+    //   maxNumbers.add(int.tryParse(_largeDogSlotController.text) ?? 0);
+    // } else {
+    //   int index = petCategoryIds.indexOf(3);
+    //   if (index != -1) {
+    //     petCategoryIds.removeAt(index);
+    //     prices.removeAt(index);
+    //     pricingTypes.removeAt(index);
+    //     maxNumbers.removeAt(index);
+    //   }
+    // }
+
+    if (_acceptCats) {
+      _petCategoryIds.add(4);
+      _prices.add(double.tryParse(_catsPriceController.text) ?? 0.0);
+      _pricingTypes.add(_catsPricingTypeController.text);
+      _maxNumbers.add(int.tryParse(_catsSlotController.text) ?? 0);
+    } else {
+      int index = _petCategoryIds.indexOf(4);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
+      }
+    }
+
+    if (_acceptBunnies) {
+      _petCategoryIds.add(5);
+      _prices.add(double.tryParse(_bunniesPriceController.text) ?? 0.0);
+      _pricingTypes.add(_bunniesPricingTypeController.text);
+      _maxNumbers.add(int.tryParse(_bunniesSlotController.text) ?? 0);
+    } else {
+      int index = _petCategoryIds.indexOf(5);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
+      }
+    }
+
+    log("[INFO] prices: $_prices, pet category: $_petCategoryIds, pricingType: $_pricingTypes, maxNumbers: $_maxNumbers");
+
+    widget.createPetDaycareReq.price = _prices;
+    widget.createPetDaycareReq.pricingType = _pricingTypes;
+    widget.createPetDaycareReq.petCategoryId = _petCategoryIds;
+    widget.createPetDaycareReq.maxNumber = _maxNumbers;
+
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => CreatePetDaycareServices(
+        createPetDaycareReq: widget.createPetDaycareReq,
+        createUserReq: widget.createUserReq,
+      ),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final petCategory = ref.watch(petCategoryProvider);
+
+    log("[INFO] prices: $_prices, pet category: $_petCategoryIds, pricingType: $_pricingTypes");
+    log("[INFO] acceptSmallDog: $_acceptSmallDog, separateBySize: $_separateBySize");
 
     return Scaffold(
         appBar: AppBar(
@@ -91,7 +281,12 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                             });
                           },
                         ),
-                        priceSlotInput(!_separateBySize),
+                        priceSlotInput(
+                          !_separateBySize,
+                          _allDogSizePriceController,
+                          _allDogSizePricingTypeController,
+                          _allDogSizeSlotController,
+                        ),
                         RadioListTile(
                           title: Text("Separate by Size"),
                           subtitle: Text("Different capacities for each size."),
@@ -114,7 +309,12 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                               });
                             },
                           ),
-                          priceSlotInput(_acceptSmallDog),
+                          priceSlotInput(
+                            _acceptSmallDog,
+                            _smallDogPriceController,
+                            _smallDogPricingTypeController,
+                            _smallDogSlotController,
+                          ),
                           buildSizedCheckbox(
                             "Medium-Sized Breeds",
                             "5 - 10kg",
@@ -125,7 +325,12 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                               });
                             },
                           ),
-                          priceSlotInput(_acceptMediumDog),
+                          priceSlotInput(
+                            _acceptMediumDog,
+                            _mediumDogPriceController,
+                            _mediumDogPricingTypeController,
+                            _mediumDogSlotController,
+                          ),
                           buildSizedCheckbox(
                             "Large-Sized Breeds",
                             "10 - 15kg",
@@ -136,7 +341,12 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                               });
                             },
                           ),
-                          priceSlotInput(_acceptLargeDog),
+                          priceSlotInput(
+                            _acceptLargeDog,
+                            _largeDogPriceController,
+                            _largeDogPricingTypeController,
+                            _largeDogSlotController,
+                          ),
                         ],
                       ],
                       SizedBox(height: 20),
@@ -150,21 +360,27 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                           _acceptCats = value!;
                         });
                       }),
-                      priceSlotInput(_acceptCats),
+                      priceSlotInput(
+                        _acceptCats,
+                        _catsPriceController,
+                        _catsPricingTypeController,
+                        _catsSlotController,
+                      ),
                       buildCheckboxTile("Accept bunnies?", _acceptBunnies,
                           (value) {
                         setState(() {
                           _acceptBunnies = value!;
                         });
                       }),
-                      priceSlotInput(_acceptBunnies),
+                      priceSlotInput(
+                        _acceptBunnies,
+                        _bunniesPriceController,
+                        _bunniesPricingTypeController,
+                        _bunniesSlotController,
+                      ),
                       SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => CreatePetDaycareServices(),
-                          ));
-                        },
+                        onPressed: _submitForm,
                         child: Text(
                           "Next",
                           style: TextStyle(fontSize: 18, color: Colors.white),
@@ -181,7 +397,11 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
   }
 
   // TODO: use AbsorbPointer to disable
-  Widget priceSlotInput(bool enabled) {
+  Widget priceSlotInput(
+      bool enabled,
+      TextEditingController priceController,
+      TextEditingController pricingTypeController,
+      TextEditingController slotController) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       spacing: 8,
@@ -189,6 +409,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
         Text("Rp."),
         Expanded(
           child: TextField(
+            controller: priceController,
             enabled: enabled,
             decoration: InputDecoration(
               labelText: "Price",
@@ -199,6 +420,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
         Text("/"),
         Expanded(
             child: TextField(
+          controller: pricingTypeController,
           enabled: enabled,
           decoration: InputDecoration(
             labelText: "",
@@ -206,6 +428,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
         )),
         Expanded(
           child: TextField(
+            controller: slotController,
             enabled: enabled,
             decoration: InputDecoration(
               labelText: "Slot",
