@@ -67,10 +67,12 @@ func (s *AuthServiceImpl) Login(email string, password string) (*model.TokenResp
 
 // RefreshToken function
 func (s *AuthServiceImpl) RefreshToken(refreshToken string) (*model.TokenResponse, error) {
-	var tokenRecord model.RefreshToken
+	tokenRecord := model.RefreshToken{
+		Token: refreshToken,
+	}
 
 	// Check if refresh token exists
-	if err := s.db.Where("token = ?", refreshToken).First(&tokenRecord).Error; err != nil {
+	if err := s.db.First(&tokenRecord).Error; err != nil {
 		return nil, errors.New("invalid refresh token")
 	}
 

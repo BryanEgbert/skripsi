@@ -66,7 +66,7 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, daycareId uint, startID uint
 			&petDto.Owner.Role.Name,
 			&petDto.Owner.CreatedAt,
 		)
-		
+
 		petDtos = append(petDtos, petDto)
 	}
 
@@ -77,6 +77,7 @@ func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 	var pet model.Pet
 	if err := s.db.
 		Preload("BookedSlots").
+		Preload("VaccineRecords").
 		Joins("PetCategory").
 		Joins("PetCategory.SizeCategory").
 		Joins("Owner").
@@ -86,13 +87,13 @@ func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 	}
 
 	petDTO := model.PetDTO{
-		ID:           pet.ID,
-		Name:         pet.Name,
-		ImageUrl:     *pet.ImageUrl,
-		Status:       pet.Status,
-		Neutered: pet.Neutered,
-		PetCategory:  helper.ConvertPetCategoryToDTO(pet.PetCategory),
-		Owner:        helper.ConvertUserToDTO(pet.Owner),
+		ID:          pet.ID,
+		Name:        pet.Name,
+		ImageUrl:    *pet.ImageUrl,
+		Status:      pet.Status,
+		Neutered:    pet.Neutered,
+		PetCategory: helper.ConvertPetCategoryToDTO(pet.PetCategory),
+		Owner:       helper.ConvertUserToDTO(pet.Owner),
 	}
 
 	return &petDTO, nil
@@ -123,12 +124,12 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 	var petDTOs []model.PetDTO
 	for _, pet := range pets {
 		dto := model.PetDTO{
-			ID:           pet.ID,
-			Name:         pet.Name,
-			Status:       pet.Status,
-			Neutered: pet.Neutered,
+			ID:          pet.ID,
+			Name:        pet.Name,
+			Status:      pet.Status,
+			Neutered:    pet.Neutered,
 			PetCategory: helper.ConvertPetCategoryToDTO(pet.PetCategory),
-			Owner:        helper.ConvertUserToDTO(pet.Owner),
+			Owner:       helper.ConvertUserToDTO(pet.Owner),
 		}
 
 		if pet.ImageUrl != nil {
@@ -136,7 +137,6 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 		}
 
 		petDTOs = append(petDTOs, dto)
-
 
 	}
 
@@ -171,11 +171,11 @@ func (s *PetServiceImpl) UpdatePet(id uint, petDTO model.PetDTO) error {
 
 func (s *PetServiceImpl) CreatePet(ownerID uint, req model.PetRequest) (uint, error) {
 	pet := model.Pet{
-		Name:      req.Name,
-		ImageUrl:  req.PetImageUrl,
-		OwnerID:   ownerID,
+		Name:          req.Name,
+		ImageUrl:      req.PetImageUrl,
+		OwnerID:       ownerID,
 		PetCategoryID: req.PetCategoryID,
-		Neutered: req.Neutered,
+		Neutered:      req.Neutered,
 	}
 
 	if err := s.db.

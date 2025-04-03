@@ -63,6 +63,8 @@ class AuthService implements IAuthService {
         data: {"refreshToken": token},
       );
 
+      log("[INFO] refresh: $res");
+
       return res;
     }, (res) => TokenResponse.fromJson(res));
   }

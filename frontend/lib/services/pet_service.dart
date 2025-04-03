@@ -7,13 +7,16 @@ import 'package:frontend/model/pagination_query_params.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/response/list_response.dart';
+import 'package:frontend/model/vaccine_record.dart';
 
 abstract interface class IPetService {
-  Future<Result<Pet>> getById(String token, String id);
+  Future<Result<Pet>> getById(String token, int id);
   Future<Result<ListData<Pet>>> getPets(
       String token, PaginationQueryParams pagination);
   Future<Result<ListData<Pet>>> getBookedPets(
       String token, int petDaycareId, PaginationQueryParams pagination);
+  Future<Result<ListData<VaccineRecord>>> getVaccineRecords(
+      String token, int petId, PaginationQueryParams pagination);
 
   Future<Result<void>> createPet(String token, PetRequest reqBody);
   Future<Result<void>> updatePet(String token, int id, PetRequest reqBody);
@@ -79,7 +82,7 @@ class PetService implements IPetService {
   }
 
   @override
-  Future<Result<Pet>> getById(String token, String id) {
+  Future<Result<Pet>> getById(String token, int id) {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
@@ -207,5 +210,30 @@ class PetService implements IPetService {
 
       return res;
     }, (res) => ListData.fromJson(res, Pet.fromJson));
+  }
+
+  @override
+  Future<Result<ListData<VaccineRecord>>> getVaccineRecords(
+      String token, int petId, PaginationQueryParams pagination) {
+    return makeRequest(200, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
+        "$host/vaccine-record/$petId",
+        queryParameters: pagination.toMap(),
+        options: Options(headers: {
+          HttpHeaders.authorizationHeader: "Bearer $token",
+        }),
+      );
+
+      return res;
+    }, (res) => ListData.fromJson(res, VaccineRecord.fromJson));
   }
 }

@@ -8,25 +8,26 @@ import (
 
 type Pet struct {
 	gorm.Model
-	Name         string `gorm:"not null"`
-	ImageUrl     *string
-	Status       string       `gorm:"default:'idle'"`
-	Neutered bool `gorm:"not null"`
-	OwnerID      uint         `gorm:"not null"`
-	Owner        User         `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	PetCategoryID    uint         `gorm:"not null"`
-	PetCategory      PetCategory      `gorm:"foreignKey:PetCategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	BookedSlots  []BookedSlot `gorm:"foreignKey:PetID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-Many with BookedSlot
+	Name           string `gorm:"not null"`
+	ImageUrl       *string
+	Status         string          `gorm:"default:'idle'"`
+	Neutered       bool            `gorm:"not null"`
+	OwnerID        uint            `gorm:"not null"`
+	Owner          User            `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	PetCategoryID  uint            `gorm:"not null"`
+	PetCategory    PetCategory     `gorm:"foreignKey:PetCategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	BookedSlots    []BookedSlot    `gorm:"foreignKey:PetID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-Many with BookedSlot
+	VaccineRecords []VaccineRecord `gorm:"foreignKey:PetID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type PetDTO struct {
-	ID           uint         `json:"id"`
-	Name         string       `json:"name"`
-	ImageUrl     string       `json:"imageUrl"`
-	Status       string       `json:"status"`
-	Neutered bool `json:"neutered"`
-	Owner        UserDTO      `json:"owner"`
-	PetCategory      PetCategoryDTO      `json:"petCategory"`
+	ID          uint           `json:"id"`
+	Name        string         `json:"name"`
+	ImageUrl    string         `json:"imageUrl"`
+	Status      string         `json:"status"`
+	Neutered    bool           `json:"neutered"`
+	Owner       UserDTO        `json:"owner"`
+	PetCategory PetCategoryDTO `json:"petCategory"`
 }
 
 type GetBookedPetsResponse struct {
@@ -34,12 +35,12 @@ type GetBookedPetsResponse struct {
 }
 
 type PetRequest struct {
-	Name           string                `form:"petName" binding:"required"`
-	PetImage          *multipart.FileHeader `form:"petProfilePicture"`
-	Status         string                `form:"status"`
-	Neutered bool `form:"neutered"`
+	Name          string                `form:"petName" binding:"required"`
+	PetImage      *multipart.FileHeader `form:"petProfilePicture"`
+	Status        string                `form:"status"`
+	Neutered      bool                  `form:"neutered"`
 	PetCategoryID uint                  `form:"petCategoryId" binding:"required"`
-	PetImageUrl       *string
+	PetImageUrl   *string
 }
 
 type PetAndVaccinationRecordRequest struct {

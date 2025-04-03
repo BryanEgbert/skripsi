@@ -23,15 +23,18 @@ samples, guidance on mobile development, and a full API reference.
   - [x] Select role page
   - [x] Create user details page
   - [x] Create pet page
-  - [ ] Choose vet specialty page
+  - [x] Choose vet specialty page
   - **Create pet daycare pages**
     - [ ] Create pet daycare details page
-    - [ ] Add pet daycare pictures page
-    - [ ] Edit pet daycare slot
+      - add validation for operating hours
+    - [x] Add pet daycare pictures page
+    - [x] Edit pet daycare slot
     - [ ] Edit pet daycare provided services page
+      - add validation
   - **View pages for pet owners**
     - [ ] View pet daycares page
-    - [ ] View pets page
+    - [x] View pets page
+    - [ ] View pet details page
     - [ ] View vets page
     - [ ] View booking history page
     - [ ] View booking detail

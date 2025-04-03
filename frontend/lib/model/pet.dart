@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/model/pet_category.dart';
 import 'package:frontend/model/user.dart';
+import 'package:frontend/model/vaccine_record.dart';
 
 part 'pet.freezed.dart';
 part 'pet.g.dart';

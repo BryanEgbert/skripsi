@@ -366,11 +366,13 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                 ),
               ),
             ),
-          _ => Center(child: CircularProgressIndicator()),
+          _ => Center(
+                child: CircularProgressIndicator(
+              color: Colors.orange,
+            )),
         });
   }
 
-  // TODO: use AbsorbPointer to disable
   Widget priceSlotInput(
       BuildContext context,
       bool enabled,

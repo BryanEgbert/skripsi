@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
+import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/pet_list_provider.dart';
@@ -30,7 +31,10 @@ class _PetsViewState extends ConsumerState<PetsView> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text("Pets"),
+          title: Text(
+            "Pets",
+            style: TextStyle(color: Colors.orange),
+          ),
           actions: appBarActions(),
         ),
         floatingActionButton: FloatingActionButton(
@@ -54,19 +58,7 @@ class _PetsViewState extends ConsumerState<PetsView> {
                   var imageUrl = item.imageUrl ?? "";
 
                   return ListTile(
-                    leading: CircleAvatar(
-                      child: Image.network(
-                        imageUrl.replaceFirst(
-                            RegExp(r'localhost:8080'), "http://10.0.2.2:8080"),
-                        errorBuilder: (context, error, stackTrace) {
-                          return CircleAvatar(
-                            child: Center(
-                              child: Icon(Icons.hide_image),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                    leading: DefaultCircleAvatar(imageUrl: imageUrl),
                     title: Text(item.name),
                     subtitle: Text(
                         "Pet category: ${item.petCategory.name}\nStatus: ${item.status}"),

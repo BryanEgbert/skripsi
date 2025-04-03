@@ -12,20 +12,20 @@ import (
 
 func ConvertUserToDTO(user model.User) model.UserDTO {
 	dto := model.UserDTO{
-		ID:           user.ID,
-		Name:         user.Name,
-		Email:        user.Email,
-		Role:         user.Role,
-		CreatedAt:    user.CreatedAt.String(),
-		ImageUrl:     *user.ImageUrl,
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		Role:      user.Role,
+		CreatedAt: user.CreatedAt.String(),
+		ImageUrl:  *user.ImageUrl,
 	}
 
-	if (user.VetSpecialty == nil) {
+	if user.VetSpecialty == nil {
 		dto.VetSpecialty = []model.VetSpecialty{}
 	} else {
 		dto.VetSpecialty = *user.VetSpecialty
 	}
-	return dto 
+	return dto
 }
 
 func ConvertUserToUpdateDTO(user model.User) model.UpdateUserDTO {
@@ -75,12 +75,26 @@ func ConvertPetDaycareToDTO(daycare model.PetDaycare) model.PetDaycareDTO {
 	}
 }
 
-func ConvertPetCategoryToDTO (petCategory model.PetCategory) model.PetCategoryDTO {
+func ConvertPetCategoryToDTO(petCategory model.PetCategory) model.PetCategoryDTO {
 	return model.PetCategoryDTO{
-		ID: petCategory.ID,
-		Name: petCategory.Name,
+		ID:           petCategory.ID,
+		Name:         petCategory.Name,
 		SizeCategory: petCategory.SizeCategory,
 	}
+}
+
+func ConvertVaccineRecordsToDTO(vaccineRecords []model.VaccineRecord) []model.VaccineRecordDTO {
+	out := []model.VaccineRecordDTO{}
+	for _, record := range vaccineRecords {
+		out = append(out, model.VaccineRecordDTO{
+			ID:               record.ID,
+			DateAdministered: record.DateAdministered,
+			NextDueDate:      record.NextDueDate,
+			ImageURL:         record.ImageURL,
+		})
+	}
+
+	return out
 }
 
 func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float64) model.GetPetDaycareDetailResponse {
@@ -107,11 +121,11 @@ func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float6
 	for _, slot := range daycare.Slots {
 		pricings = append(pricings, model.PriceDetails{
 			PetCategory: model.PetCategoryDTO{
-				ID: slot.PetCategory.ID,
-				Name: slot.PetCategory.Name,
+				ID:           slot.PetCategory.ID,
+				Name:         slot.PetCategory.Name,
 				SizeCategory: slot.PetCategory.SizeCategory,
 			},
-			Price: slot.Price,
+			Price:       slot.Price,
 			PricingType: slot.PricingType,
 		})
 	}
@@ -135,6 +149,6 @@ func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float6
 		DailyWalks:        daycare.DailyWalks,
 		DailyPlaytime:     daycare.DailyPlaytime,
 		ThumbnailURLs:     thumbnailURLs,
-		Pricings: pricings,
+		Pricings:          pricings,
 	}
 }

@@ -112,23 +112,23 @@ func SeedTable(db *gorm.DB) error {
 
 	daycare := []model.PetDaycare{
 		{
-			Name:          "Happy Paws",
-			Address:       "123 Bark St",
-			Latitude:      -6.17722188,
-			Longitude:     106.7909223,
-			Locality: "Grogol Petamburan",
+			Name:      "Happy Paws",
+			Address:   "123 Bark St",
+			Latitude:  -6.17722188,
+			Longitude: 106.7909223,
+			Locality:  "Grogol Petamburan",
 			// Price:         100000.0,
 			OwnerID:       users[1].ID,
 			DailyWalks:    dailyWalks[1],
 			DailyPlaytime: dailyPlaytimes[1],
 		},
 		{
-			Name:              "DOG Daycare Jakarta",
-			Address:           "Jl. Abdul Majid Raya No.31, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410",
-			Description:       "DOG daycare jakarta desc",
-			Latitude:          -6.266167,
-			Longitude:         106.808214,
-			Locality: "Grogol Petamburan",
+			Name:        "DOG Daycare Jakarta",
+			Address:     "Jl. Abdul Majid Raya No.31, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410",
+			Description: "DOG daycare jakarta desc",
+			Latitude:    -6.266167,
+			Longitude:   106.808214,
+			Locality:    "Grogol Petamburan",
 			// Price:             150000.0,
 			OwnerID:           users[2].ID,
 			DailyWalks:        dailyWalks[1],
@@ -139,16 +139,16 @@ func SeedTable(db *gorm.DB) error {
 			FoodBrand:         "Pedigree",
 		},
 		{
-			Name:          "Happy Paws 2",
-			Address:       "123 Bark St",
-			Latitude:      -6.22400791,
-			Longitude:     106.5889773,
-			Locality: "Grogol Petamburan",
+			Name:      "Happy Paws 2",
+			Address:   "123 Bark St",
+			Latitude:  -6.22400791,
+			Longitude: 106.5889773,
+			Locality:  "Grogol Petamburan",
 			// Price:         100000.0,
 			OwnerID:       users[5].ID,
 			DailyWalks:    dailyWalks[1],
 			DailyPlaytime: dailyPlaytimes[1],
-			BookedNum: 10,
+			BookedNum:     10,
 		},
 	}
 
@@ -166,7 +166,7 @@ func SeedTable(db *gorm.DB) error {
 		return err
 	}
 
-	petImg := "test.com/image/dog.jpeg"
+	petImg := "https://picsum.photos/id/237/200/300"
 	pet := []model.Pet{
 		{
 			Name: "Buddy", ImageUrl: &petImg, Status: "idle", OwnerID: users[0].ID, PetCategoryID: 1,
@@ -177,6 +177,147 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	if err := db.Create(&pet).Error; err != nil {
+		return err
+	}
+
+	vaccineRecordImgUrl := "https://picsum.photos/id/28/200/300"
+
+	vaccineRecords := []model.VaccineRecord{
+		{
+			DateAdministered: "2024-03-10",
+			NextDueDate:      "2025-03-10",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[0].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-02-15",
+			NextDueDate:      "2025-02-15",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[1].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-03-10",
+			NextDueDate:      "2025-03-10",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[0].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-02-15",
+			NextDueDate:      "2025-02-15",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[1].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-03-10",
+			NextDueDate:      "2025-03-10",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[0].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-02-15",
+			NextDueDate:      "2025-02-15",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[1].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-03-10",
+			NextDueDate:      "2025-03-10",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[0].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-02-15",
+			NextDueDate:      "2025-02-15",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[1].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-03-10",
+			NextDueDate:      "2025-03-10",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[0].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-02-15",
+			NextDueDate:      "2025-02-15",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[1].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-03-10",
+			NextDueDate:      "2025-03-10",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[0].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-02-15",
+			NextDueDate:      "2025-02-15",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[1].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-03-10",
+			NextDueDate:      "2025-03-10",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[0].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-02-15",
+			NextDueDate:      "2025-02-15",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[1].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-03-10",
+			NextDueDate:      "2025-03-10",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[0].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-02-15",
+			NextDueDate:      "2025-02-15",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[1].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-03-10",
+			NextDueDate:      "2025-03-10",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[0].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-02-15",
+			NextDueDate:      "2025-02-15",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[1].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-03-10",
+			NextDueDate:      "2025-03-10",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[0].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-02-15",
+			NextDueDate:      "2025-02-15",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[1].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-03-10",
+			NextDueDate:      "2025-03-10",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[0].ID, // Ensure the pet exists
+		},
+		{
+			DateAdministered: "2024-02-15",
+			NextDueDate:      "2025-02-15",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[1].ID, // Ensure the pet exists
+		},
+	}
+
+	if err := db.Create(&vaccineRecords).Error; err != nil {
 		return err
 	}
 
@@ -255,7 +396,7 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	transaction := model.Transaction{
-		UserID: users[0].ID,
+		UserID:       users[0].ID,
 		PetDaycareID: daycare[0].ID, BookedSlotID: bookedSlot[0].ID, Status: "completed",
 	}
 

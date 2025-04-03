@@ -113,7 +113,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	petService := service.NewPetService(db)
 	vaccineRecordService := service.NewVaccineService(db)
 	petDaycareService := service.NewPetDaycareService(db)
-	
+
 	userController := controller.NewUserController(userService, petService, vaccineRecordService, petDaycareService)
 
 	authService := service.NewAuthService(db)
@@ -128,6 +128,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	categoryService := service.NewCategoryService(db)
 	categoryController := controller.NewCategoryController(categoryService)
 
+	vaccineRecordController := controller.NewVaccineRecordController(vaccineRecordService)
 
 	r.Static("/assets", "./image")
 	r = routes.RegisterUserRoute(r, userController)
@@ -135,6 +136,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	r = routes.RegisterPetRoutes(r, petController)
 	r = routes.RegisterPetDaycareRoutes(r, petDaycareController)
 	r = routes.RegisterCategoryRoutes(r, categoryController)
+	r = routes.RegisterVaccineRecordRoute(r, vaccineRecordController)
 
 	return r
 }
