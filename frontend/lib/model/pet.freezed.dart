@@ -25,6 +25,7 @@ mixin _$Pet {
   String? get imageUrl => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
   User get owner => throw _privateConstructorUsedError;
+  bool get neutered => throw _privateConstructorUsedError;
   PetCategory get petCategory => throw _privateConstructorUsedError;
 
   /// Serializes this Pet to a JSON map.
@@ -47,6 +48,7 @@ abstract class $PetCopyWith<$Res> {
       String? imageUrl,
       String status,
       User owner,
+      bool neutered,
       PetCategory petCategory});
 
   $UserCopyWith<$Res> get owner;
@@ -72,6 +74,7 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
     Object? imageUrl = freezed,
     Object? status = null,
     Object? owner = null,
+    Object? neutered = null,
     Object? petCategory = null,
   }) {
     return _then(_value.copyWith(
@@ -95,6 +98,10 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
           ? _value.owner
           : owner // ignore: cast_nullable_to_non_nullable
               as User,
+      neutered: null == neutered
+          ? _value.neutered
+          : neutered // ignore: cast_nullable_to_non_nullable
+              as bool,
       petCategory: null == petCategory
           ? _value.petCategory
           : petCategory // ignore: cast_nullable_to_non_nullable
@@ -135,6 +142,7 @@ abstract class _$$PetImplCopyWith<$Res> implements $PetCopyWith<$Res> {
       String? imageUrl,
       String status,
       User owner,
+      bool neutered,
       PetCategory petCategory});
 
   @override
@@ -159,6 +167,7 @@ class __$$PetImplCopyWithImpl<$Res> extends _$PetCopyWithImpl<$Res, _$PetImpl>
     Object? imageUrl = freezed,
     Object? status = null,
     Object? owner = null,
+    Object? neutered = null,
     Object? petCategory = null,
   }) {
     return _then(_$PetImpl(
@@ -182,6 +191,10 @@ class __$$PetImplCopyWithImpl<$Res> extends _$PetCopyWithImpl<$Res, _$PetImpl>
           ? _value.owner
           : owner // ignore: cast_nullable_to_non_nullable
               as User,
+      neutered: null == neutered
+          ? _value.neutered
+          : neutered // ignore: cast_nullable_to_non_nullable
+              as bool,
       petCategory: null == petCategory
           ? _value.petCategory
           : petCategory // ignore: cast_nullable_to_non_nullable
@@ -199,6 +212,7 @@ class _$PetImpl implements _Pet {
       required this.imageUrl,
       required this.status,
       required this.owner,
+      required this.neutered,
       required this.petCategory});
 
   factory _$PetImpl.fromJson(Map<String, dynamic> json) =>
@@ -215,11 +229,13 @@ class _$PetImpl implements _Pet {
   @override
   final User owner;
   @override
+  final bool neutered;
+  @override
   final PetCategory petCategory;
 
   @override
   String toString() {
-    return 'Pet(id: $id, name: $name, imageUrl: $imageUrl, status: $status, owner: $owner, petCategory: $petCategory)';
+    return 'Pet(id: $id, name: $name, imageUrl: $imageUrl, status: $status, owner: $owner, neutered: $neutered, petCategory: $petCategory)';
   }
 
   @override
@@ -233,14 +249,16 @@ class _$PetImpl implements _Pet {
                 other.imageUrl == imageUrl) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.owner, owner) || other.owner == owner) &&
+            (identical(other.neutered, neutered) ||
+                other.neutered == neutered) &&
             (identical(other.petCategory, petCategory) ||
                 other.petCategory == petCategory));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, imageUrl, status, owner, petCategory);
+  int get hashCode => Object.hash(
+      runtimeType, id, name, imageUrl, status, owner, neutered, petCategory);
 
   /// Create a copy of Pet
   /// with the given fields replaced by the non-null parameter values.
@@ -265,6 +283,7 @@ abstract class _Pet implements Pet {
       required final String? imageUrl,
       required final String status,
       required final User owner,
+      required final bool neutered,
       required final PetCategory petCategory}) = _$PetImpl;
 
   factory _Pet.fromJson(Map<String, dynamic> json) = _$PetImpl.fromJson;
@@ -279,6 +298,8 @@ abstract class _Pet implements Pet {
   String get status;
   @override
   User get owner;
+  @override
+  bool get neutered;
   @override
   PetCategory get petCategory;
 

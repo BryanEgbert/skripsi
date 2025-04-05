@@ -206,7 +206,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                   "Something is wrong, please try again later\nerror message: $error",
               onRefresh: () => ref.refresh(petCategoryProvider.future),
             ),
-          AsyncData(:final value) => SafeArea(
+          AsyncData() => SafeArea(
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 16),
                 child: Form(

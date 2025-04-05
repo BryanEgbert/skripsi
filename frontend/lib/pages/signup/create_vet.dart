@@ -8,6 +8,7 @@ import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/pages/vet_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/category_provider.dart';
+import 'package:frontend/utils/handle_error.dart';
 
 class CreateVetPage extends ConsumerStatefulWidget {
   final CreateUserRequest reqBody;
@@ -28,19 +29,7 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
     final vetSpecialties = ref.watch(vetSpecialtiesProvider);
     AsyncValue<TokenResponse?> auth = ref.watch(authProvider);
 
-    if (auth.hasError && !auth.hasValue && !auth.isLoading) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        var snackbar = SnackBar(
-          key: Key("error-message"),
-          content: Text(auth.error.toString()),
-          backgroundColor: Colors.red,
-        );
-
-        ScaffoldMessenger.of(context).showSnackBar(snackbar);
-
-        // ref.read(authProvider.notifier).reset();
-      });
-    }
+    handleError(auth, context);
 
     if (auth.hasValue && !auth.hasError && !auth.isLoading) {
       if (auth.value != null) {

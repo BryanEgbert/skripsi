@@ -8,7 +8,6 @@ import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/pages/pet_daycare_home_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/category_provider.dart';
-import 'package:frontend/provider/list_data_provider.dart';
 
 class CreatePetDaycareServices extends ConsumerStatefulWidget {
   final CreateUserRequest createUserReq;

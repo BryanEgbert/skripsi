@@ -7,7 +7,9 @@ import (
 )
 
 func RegisterVaccineRecordRoute(r *gin.Engine, vaccineRecordController *controller.VaccineRecordController) *gin.Engine {
-	r.GET("/vaccine-record/:petId", middleware.JWTAuth(), vaccineRecordController.GetVaccineRecords)
+	r.GET("/vaccination-record/:petId", middleware.JWTAuth(), vaccineRecordController.GetVaccineRecords)
+	r.POST("/vaccination-record/:petId", middleware.JWTAuth(), vaccineRecordController.CreateVaccineRecords)
+	r.DELETE("/vaccination-record/:vaccineRecordId", middleware.JWTAuth(), vaccineRecordController.DeleteVaccineRecords)
 
 	return r
 }

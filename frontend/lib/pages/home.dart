@@ -46,14 +46,17 @@ class _HomeWidgetState extends State<HomeWidget> {
             label: "Pets",
           ),
           BottomNavigationBarItem(
+            backgroundColor: Colors.orangeAccent,
             icon: Icon(Icons.house),
             label: "Pet Daycares",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.healing_rounded),
+            backgroundColor: Colors.orangeAccent,
+            icon: Icon(Icons.medical_services),
             label: "Vets",
           ),
           BottomNavigationBarItem(
+            backgroundColor: Colors.orangeAccent,
             icon: Icon(Icons.menu_book_rounded),
             label: "Booking History",
           ),

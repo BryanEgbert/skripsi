@@ -78,7 +78,7 @@ void main() {
       final res = await userRepository.updateUser(
         token!.accessToken,
         UpdateUserRequest(
-          File("${Directory.current.path}/test/test.jpeg"),
+          image: File("${Directory.current.path}/test/test.jpeg"),
           name: "updated_user",
           email: "update@email.com",
           roleId: 1,

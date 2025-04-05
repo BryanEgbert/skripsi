@@ -19,10 +19,10 @@ import (
 
 // UserController struct
 type UserController struct {
-	UserService service.UserService
-	PetService service.PetService
+	UserService          service.UserService
+	PetService           service.PetService
 	VaccineRecordService service.VaccineService
-	PetDaycareService service.PetDaycareService
+	PetDaycareService    service.PetDaycareService
 }
 
 // NewUserController initializes a new controller
@@ -153,7 +153,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(createdUser.UserID, filepath.Ext(req.PetImage.Filename)))
 		imageUrl := fmt.Sprintf("%s/%s", c.Request.Host, filename)
 		req.PetImageUrl = &imageUrl
-	
+
 		if err := c.SaveUploadedFile(req.PetImage, filename); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save pet image",
@@ -176,7 +176,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 	if req.VaccineRecordImage != nil {
 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(createdUser.UserID, filepath.Ext(req.VaccineRecordImage.Filename)))
 		req.VaccineRecordImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, filename)
-	
+
 		if err := c.SaveUploadedFile(req.VaccineRecordImage, filename); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save vaccine record image",
@@ -187,7 +187,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 	}
 
 	if req.DateAdministered != "" && req.NextDueDate != "" && req.VaccineRecordImage != nil {
-		_, err = uc.VaccineRecordService.CreateVaccineRecords(createdUser.UserID, petID, req.VaccineRecordRequest)
+		_, err = uc.VaccineRecordService.CreateVaccineRecords(petID, req.VaccineRecordRequest)
 		if err != nil {
 			c.JSON(http.StatusConflict, model.ErrorResponse{
 				Message: "Failed to create new vaccine record",
@@ -199,10 +199,10 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, model.TokenResponse{
-		UserID: createdUser.UserID,
-		AccessToken: createdUser.AccessToken,
+		UserID:       createdUser.UserID,
+		AccessToken:  createdUser.AccessToken,
 		RefreshToken: createdUser.RefreshToken,
-		ExpiryDate: createdUser.ExpiryDate,
+		ExpiryDate:   createdUser.ExpiryDate,
 	})
 }
 

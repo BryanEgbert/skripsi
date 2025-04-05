@@ -99,7 +99,7 @@ func ConvertVaccineRecordsToDTO(vaccineRecords []model.VaccineRecord) []model.Va
 
 func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float64) model.GetPetDaycareDetailResponse {
 	// Extract thumbnail URLs
-	var thumbnailURLs []string
+	thumbnailURLs := []string{}
 	for _, thumbnail := range daycare.Thumbnails {
 		thumbnailURLs = append(thumbnailURLs, thumbnail.ImageUrl)
 	}

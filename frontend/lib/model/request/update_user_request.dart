@@ -5,22 +5,22 @@ class UpdateUserRequest {
   final String email;
   final int roleId;
   final List<int> vetSpecialtyId;
-  final File image;
+  final File? image;
 
-  UpdateUserRequest(
-    this.image, {
+  UpdateUserRequest({
     required this.name,
     required this.email,
     required this.roleId,
     required this.vetSpecialtyId,
+    this.image,
   });
 
-  Map<String, String> toMap() {
-    Map<String, String> map = {
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {
       "name": name,
       "email": email,
       "roleId": roleId.toString(),
-      "vetSpecialtyId": vetSpecialtyId.join(','),
+      "vetSpecialtyId[]": vetSpecialtyId,
     };
 
     return map;

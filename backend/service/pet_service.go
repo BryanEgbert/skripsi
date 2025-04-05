@@ -151,15 +151,17 @@ func (s *PetServiceImpl) UpdatePet(id uint, petDTO model.PetDTO) error {
 		return err
 	}
 
-	if err := os.Remove(helper.GetFilePath(*pet.ImageUrl)); err != nil {
-		return err
+	if pet.ImageUrl != nil {
+		os.Remove(helper.GetFilePath(*pet.ImageUrl))
 	}
 
 	pet.Name = petDTO.Name
-	pet.ImageUrl = &petDTO.ImageUrl
 	pet.Status = petDTO.Status
 	pet.PetCategoryID = petDTO.PetCategory.ID
 	pet.Neutered = petDTO.Neutered
+	if petDTO.ImageUrl != "" {
+		pet.ImageUrl = &petDTO.ImageUrl
+	}
 
 	err = s.db.Save(&pet).Error
 	if err != nil {
@@ -195,9 +197,7 @@ func (s *PetServiceImpl) DeletePet(id uint) error {
 	}
 
 	if pet.ImageUrl != nil {
-		if err := os.Remove(helper.GetFilePath(*pet.ImageUrl)); err != nil {
-			return err
-		}
+		os.Remove(helper.GetFilePath(*pet.ImageUrl))
 	}
 
 	if err := s.db.Unscoped().Delete(&pet).Error; err != nil {

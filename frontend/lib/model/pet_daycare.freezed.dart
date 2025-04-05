@@ -27,7 +27,7 @@ mixin _$PetDaycare {
   double get averageRating => throw _privateConstructorUsedError;
   int get ratingCount => throw _privateConstructorUsedError;
   int get bookedNum => throw _privateConstructorUsedError;
-  List<Price?> get prices => throw _privateConstructorUsedError;
+  List<Price> get prices => throw _privateConstructorUsedError;
   String get thumbnail => throw _privateConstructorUsedError;
 
   /// Serializes this PetDaycare to a JSON map.
@@ -54,7 +54,7 @@ abstract class $PetDaycareCopyWith<$Res> {
       double averageRating,
       int ratingCount,
       int bookedNum,
-      List<Price?> prices,
+      List<Price> prices,
       String thumbnail});
 }
 
@@ -115,7 +115,7 @@ class _$PetDaycareCopyWithImpl<$Res, $Val extends PetDaycare>
       prices: null == prices
           ? _value.prices
           : prices // ignore: cast_nullable_to_non_nullable
-              as List<Price?>,
+              as List<Price>,
       thumbnail: null == thumbnail
           ? _value.thumbnail
           : thumbnail // ignore: cast_nullable_to_non_nullable
@@ -140,7 +140,7 @@ abstract class _$$PetDaycareImplCopyWith<$Res>
       double averageRating,
       int ratingCount,
       int bookedNum,
-      List<Price?> prices,
+      List<Price> prices,
       String thumbnail});
 }
 
@@ -199,7 +199,7 @@ class __$$PetDaycareImplCopyWithImpl<$Res>
       prices: null == prices
           ? _value._prices
           : prices // ignore: cast_nullable_to_non_nullable
-              as List<Price?>,
+              as List<Price>,
       thumbnail: null == thumbnail
           ? _value.thumbnail
           : thumbnail // ignore: cast_nullable_to_non_nullable
@@ -219,7 +219,7 @@ class _$PetDaycareImpl implements _PetDaycare {
       required this.averageRating,
       required this.ratingCount,
       required this.bookedNum,
-      required final List<Price?> prices,
+      required final List<Price> prices,
       required this.thumbnail})
       : _prices = prices;
 
@@ -240,9 +240,9 @@ class _$PetDaycareImpl implements _PetDaycare {
   final int ratingCount;
   @override
   final int bookedNum;
-  final List<Price?> _prices;
+  final List<Price> _prices;
   @override
-  List<Price?> get prices {
+  List<Price> get prices {
     if (_prices is EqualUnmodifiableListView) return _prices;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_prices);
@@ -317,7 +317,7 @@ abstract class _PetDaycare implements PetDaycare {
       required final double averageRating,
       required final int ratingCount,
       required final int bookedNum,
-      required final List<Price?> prices,
+      required final List<Price> prices,
       required final String thumbnail}) = _$PetDaycareImpl;
 
   factory _PetDaycare.fromJson(Map<String, dynamic> json) =
@@ -338,7 +338,7 @@ abstract class _PetDaycare implements PetDaycare {
   @override
   int get bookedNum;
   @override
-  List<Price?> get prices;
+  List<Price> get prices;
   @override
   String get thumbnail;
 
@@ -361,8 +361,7 @@ mixin _$PetDaycareDetails {
   String get address => throw _privateConstructorUsedError;
   String get locality => throw _privateConstructorUsedError;
   double get distance => throw _privateConstructorUsedError;
-  double get price => throw _privateConstructorUsedError;
-  String get pricingType => throw _privateConstructorUsedError;
+  List<Price> get pricings => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   int get bookedNum => throw _privateConstructorUsedError;
   double get averageRating => throw _privateConstructorUsedError;
@@ -400,8 +399,7 @@ abstract class $PetDaycareDetailsCopyWith<$Res> {
       String address,
       String locality,
       double distance,
-      double price,
-      String pricingType,
+      List<Price> pricings,
       String description,
       int bookedNum,
       double averageRating,
@@ -442,8 +440,7 @@ class _$PetDaycareDetailsCopyWithImpl<$Res, $Val extends PetDaycareDetails>
     Object? address = null,
     Object? locality = null,
     Object? distance = null,
-    Object? price = null,
-    Object? pricingType = null,
+    Object? pricings = null,
     Object? description = null,
     Object? bookedNum = null,
     Object? averageRating = null,
@@ -480,14 +477,10 @@ class _$PetDaycareDetailsCopyWithImpl<$Res, $Val extends PetDaycareDetails>
           ? _value.distance
           : distance // ignore: cast_nullable_to_non_nullable
               as double,
-      price: null == price
-          ? _value.price
-          : price // ignore: cast_nullable_to_non_nullable
-              as double,
-      pricingType: null == pricingType
-          ? _value.pricingType
-          : pricingType // ignore: cast_nullable_to_non_nullable
-              as String,
+      pricings: null == pricings
+          ? _value.pricings
+          : pricings // ignore: cast_nullable_to_non_nullable
+              as List<Price>,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -592,8 +585,7 @@ abstract class _$$PetDaycareDetailsImplCopyWith<$Res>
       String address,
       String locality,
       double distance,
-      double price,
-      String pricingType,
+      List<Price> pricings,
       String description,
       int bookedNum,
       double averageRating,
@@ -635,8 +627,7 @@ class __$$PetDaycareDetailsImplCopyWithImpl<$Res>
     Object? address = null,
     Object? locality = null,
     Object? distance = null,
-    Object? price = null,
-    Object? pricingType = null,
+    Object? pricings = null,
     Object? description = null,
     Object? bookedNum = null,
     Object? averageRating = null,
@@ -673,14 +664,10 @@ class __$$PetDaycareDetailsImplCopyWithImpl<$Res>
           ? _value.distance
           : distance // ignore: cast_nullable_to_non_nullable
               as double,
-      price: null == price
-          ? _value.price
-          : price // ignore: cast_nullable_to_non_nullable
-              as double,
-      pricingType: null == pricingType
-          ? _value.pricingType
-          : pricingType // ignore: cast_nullable_to_non_nullable
-              as String,
+      pricings: null == pricings
+          ? _value._pricings
+          : pricings // ignore: cast_nullable_to_non_nullable
+              as List<Price>,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -750,8 +737,7 @@ class _$PetDaycareDetailsImpl implements _PetDaycareDetails {
       required this.address,
       required this.locality,
       required this.distance,
-      required this.price,
-      required this.pricingType,
+      required final List<Price> pricings,
       required this.description,
       required this.bookedNum,
       required this.averageRating,
@@ -766,7 +752,8 @@ class _$PetDaycareDetailsImpl implements _PetDaycareDetails {
       required this.dailyWalks,
       required this.dailyPlaytime,
       required final List<String> thumbnailUrls})
-      : _thumbnailUrls = thumbnailUrls;
+      : _pricings = pricings,
+        _thumbnailUrls = thumbnailUrls;
 
   factory _$PetDaycareDetailsImpl.fromJson(Map<String, dynamic> json) =>
       _$$PetDaycareDetailsImplFromJson(json);
@@ -781,10 +768,14 @@ class _$PetDaycareDetailsImpl implements _PetDaycareDetails {
   final String locality;
   @override
   final double distance;
+  final List<Price> _pricings;
   @override
-  final double price;
-  @override
-  final String pricingType;
+  List<Price> get pricings {
+    if (_pricings is EqualUnmodifiableListView) return _pricings;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_pricings);
+  }
+
   @override
   final String description;
   @override
@@ -821,7 +812,7 @@ class _$PetDaycareDetailsImpl implements _PetDaycareDetails {
 
   @override
   String toString() {
-    return 'PetDaycareDetails(id: $id, name: $name, address: $address, locality: $locality, distance: $distance, price: $price, pricingType: $pricingType, description: $description, bookedNum: $bookedNum, averageRating: $averageRating, ratingCount: $ratingCount, hasPickupService: $hasPickupService, mustBeVaccinated: $mustBeVaccinated, groomingAvailable: $groomingAvailable, foodProvided: $foodProvided, foodBrand: $foodBrand, createdAt: $createdAt, owner: $owner, dailyWalks: $dailyWalks, dailyPlaytime: $dailyPlaytime, thumbnailUrls: $thumbnailUrls)';
+    return 'PetDaycareDetails(id: $id, name: $name, address: $address, locality: $locality, distance: $distance, pricings: $pricings, description: $description, bookedNum: $bookedNum, averageRating: $averageRating, ratingCount: $ratingCount, hasPickupService: $hasPickupService, mustBeVaccinated: $mustBeVaccinated, groomingAvailable: $groomingAvailable, foodProvided: $foodProvided, foodBrand: $foodBrand, createdAt: $createdAt, owner: $owner, dailyWalks: $dailyWalks, dailyPlaytime: $dailyPlaytime, thumbnailUrls: $thumbnailUrls)';
   }
 
   @override
@@ -836,9 +827,7 @@ class _$PetDaycareDetailsImpl implements _PetDaycareDetails {
                 other.locality == locality) &&
             (identical(other.distance, distance) ||
                 other.distance == distance) &&
-            (identical(other.price, price) || other.price == price) &&
-            (identical(other.pricingType, pricingType) ||
-                other.pricingType == pricingType) &&
+            const DeepCollectionEquality().equals(other._pricings, _pricings) &&
             (identical(other.description, description) ||
                 other.description == description) &&
             (identical(other.bookedNum, bookedNum) ||
@@ -877,8 +866,7 @@ class _$PetDaycareDetailsImpl implements _PetDaycareDetails {
         address,
         locality,
         distance,
-        price,
-        pricingType,
+        const DeepCollectionEquality().hash(_pricings),
         description,
         bookedNum,
         averageRating,
@@ -919,8 +907,7 @@ abstract class _PetDaycareDetails implements PetDaycareDetails {
       required final String address,
       required final String locality,
       required final double distance,
-      required final double price,
-      required final String pricingType,
+      required final List<Price> pricings,
       required final String description,
       required final int bookedNum,
       required final double averageRating,
@@ -950,9 +937,7 @@ abstract class _PetDaycareDetails implements PetDaycareDetails {
   @override
   double get distance;
   @override
-  double get price;
-  @override
-  String get pricingType;
+  List<Price> get pricings;
   @override
   String get description;
   @override

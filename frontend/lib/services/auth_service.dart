@@ -46,7 +46,7 @@ class AuthService implements IAuthService {
   }
 
   @override
-  Future<Result<TokenResponse>> refreshToken(String token) async {
+  Future<Result<TokenResponse>> refreshToken(String refreshToken) async {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
@@ -59,11 +59,11 @@ class AuthService implements IAuthService {
 
       var res = await dio.post(
         "$host/refresh",
-        options: Options(contentType: Headers.jsonContentType),
-        data: {"refreshToken": token},
+        options: Options(
+          contentType: Headers.jsonContentType,
+        ),
+        data: {"refreshToken": refreshToken},
       );
-
-      log("[INFO] refresh: $res");
 
       return res;
     }, (res) => TokenResponse.fromJson(res));
@@ -118,7 +118,7 @@ class AuthService implements IAuthService {
 
       Map<String, dynamic> req = {
         ...userReq.toMap(),
-        ...petReq.toMap(),
+        ...await petReq.toMap(),
         ...vaccineReq.toMap(),
       };
 
@@ -128,11 +128,11 @@ class AuthService implements IAuthService {
             filename: userReq.userImage!.path.split('/').last);
       }
 
-      if (petReq.petImage != null) {
-        req["petProfilePicture"] = await MultipartFile.fromFile(
-            petReq.petImage!.path,
-            filename: petReq.petImage!.path.split('/').last);
-      }
+      // if (petReq.petImage != null) {
+      //   req["petProfilePicture"] = await MultipartFile.fromFile(
+      //       petReq.petImage!.path,
+      //       filename: petReq.petImage!.path.split('/').last);
+      // }
 
       if (vaccineReq.vaccineRecordImage != null) {
         req["vaccineRecordImage"] = await MultipartFile.fromFile(

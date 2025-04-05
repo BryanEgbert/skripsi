@@ -1,6 +1,8 @@
 package service
 
 import (
+	"os"
+
 	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"gorm.io/gorm"
@@ -9,7 +11,8 @@ import (
 
 type VaccineService interface {
 	GetVaccineRecords(petId uint, lastID uint, limit int) (*[]model.VaccineRecordDTO, error)
-	CreateVaccineRecords(userId uint, petId uint, req model.VaccineRecordRequest) (uint, error)
+	CreateVaccineRecords(petId uint, req model.VaccineRecordRequest) (uint, error)
+	DeleteVaccineRecords(vaccineRecordId uint) error
 }
 
 type VaccineServiceImpl struct {
@@ -34,7 +37,7 @@ func (s *VaccineServiceImpl) GetVaccineRecords(petId uint, lastID uint, limit in
 	return &dto, nil
 }
 
-func (s *VaccineServiceImpl) CreateVaccineRecords(userId uint, petId uint, req model.VaccineRecordRequest) (uint, error) {
+func (s *VaccineServiceImpl) CreateVaccineRecords(petId uint, req model.VaccineRecordRequest) (uint, error) {
 	vaccineRecord := model.VaccineRecord{
 		PetID:            petId,
 		DateAdministered: req.DateAdministered,
@@ -49,4 +52,19 @@ func (s *VaccineServiceImpl) CreateVaccineRecords(userId uint, petId uint, req m
 	}
 
 	return vaccineRecord.ID, nil
+}
+
+func (s *VaccineServiceImpl) DeleteVaccineRecords(vaccineRecordId uint) error {
+	var vaccineRecord model.VaccineRecord
+	if err := s.db.First(&vaccineRecord, vaccineRecordId).Error; err != nil {
+		return err
+	}
+
+	os.Remove(helper.GetFilePath(vaccineRecord.ImageURL))
+
+	if err := s.db.Unscoped().Delete(&vaccineRecord).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

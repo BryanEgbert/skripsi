@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/coordinate.dart';
@@ -29,8 +31,25 @@ class PetDaycareService implements IPetDaycareService {
   @override
   Future<Result<PetDaycareDetails>> getById(
       String token, int petDaycareId, Coordinate coord) {
-    // TODO: implement getById
-    throw UnimplementedError();
+    return makeRequest(200, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      var dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
+        "$host/daycare/$petDaycareId",
+        options: Options(headers: {
+          HttpHeaders.authorizationHeader: "Bearer $token",
+        }),
+      );
+
+      return res;
+    }, (res) => PetDaycareDetails.fromJson(res));
   }
 
   @override

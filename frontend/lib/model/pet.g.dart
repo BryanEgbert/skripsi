@@ -12,6 +12,7 @@ _$PetImpl _$$PetImplFromJson(Map<String, dynamic> json) => _$PetImpl(
       imageUrl: json['imageUrl'] as String?,
       status: json['status'] as String,
       owner: User.fromJson(json['owner'] as Map<String, dynamic>),
+      neutered: json['neutered'] as bool,
       petCategory:
           PetCategory.fromJson(json['petCategory'] as Map<String, dynamic>),
     );
@@ -22,5 +23,6 @@ Map<String, dynamic> _$$PetImplToJson(_$PetImpl instance) => <String, dynamic>{
       'imageUrl': instance.imageUrl,
       'status': instance.status,
       'owner': instance.owner,
+      'neutered': instance.neutered,
       'petCategory': instance.petCategory,
     };

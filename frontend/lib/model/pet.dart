@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/model/pet_category.dart';
 import 'package:frontend/model/user.dart';
-import 'package:frontend/model/vaccine_record.dart';
 
 part 'pet.freezed.dart';
 part 'pet.g.dart';
@@ -14,6 +13,7 @@ class Pet with _$Pet {
     required String? imageUrl,
     required String status,
     required User owner,
+    required bool neutered,
     required PetCategory petCategory,
   }) = _Pet;
 

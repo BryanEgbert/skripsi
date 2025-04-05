@@ -16,7 +16,7 @@ class PetDaycare with _$PetDaycare {
     required double averageRating,
     required int ratingCount,
     required int bookedNum,
-    required List<Price?> prices,
+    required List<Price> prices,
     required String thumbnail,
   }) = _PetDaycare;
 
@@ -32,8 +32,7 @@ class PetDaycareDetails with _$PetDaycareDetails {
     required String address,
     required String locality,
     required double distance,
-    required double price,
-    required String pricingType,
+    required List<Price> pricings,
     required String description,
     required int bookedNum,
     required double averageRating,

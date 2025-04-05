@@ -59,6 +59,7 @@ func (s *AuthServiceImpl) Login(email string, password string) (*model.TokenResp
 	}
 
 	return &model.TokenResponse{
+		UserID:       user.ID,
 		AccessToken:  token,
 		RefreshToken: refreshToken,
 		ExpiryDate:   expiry.Unix(), // Add expiry timestamp
@@ -103,6 +104,7 @@ func (s *AuthServiceImpl) RefreshToken(refreshToken string) (*model.TokenRespons
 	}
 
 	return &model.TokenResponse{
+		UserID:       tokenRecord.UserID,
 		AccessToken:  newToken,
 		RefreshToken: newRefreshToken,
 		ExpiryDate:   expiry.Unix(), // Add expiry timestamp

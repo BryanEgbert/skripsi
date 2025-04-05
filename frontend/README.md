@@ -19,7 +19,7 @@ samples, guidance on mobile development, and a full API reference.
 
 - pages
 - [x] Login page
-- [ ] Create account page
+- [x] Create account page
   - [x] Select role page
   - [x] Create user details page
   - [x] Create pet page
@@ -34,10 +34,20 @@ samples, guidance on mobile development, and a full API reference.
   - **View pages for pet owners**
     - [ ] View pet daycares page
     - [x] View pets page
+      - add pagination
     - [ ] View pet details page
+      - [x] view vaccination records
+      - [x] view pet information
+      - [ ] delete pet
+      - [ ] update pet info
+      - [ ] add vaccine record
+      - [ ] delete vaccine record
+      - [ ] edit vaccine record
     - [ ] View vets page
     - [ ] View booking history page
     - [ ] View booking detail
+    - [ ] edit profile
+    - [ ] logout
   - **View pages for pet daycares**
     - [ ] View booked pets
     - [ ] Get own pet daycare details

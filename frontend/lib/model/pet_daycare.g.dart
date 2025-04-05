@@ -16,8 +16,7 @@ _$PetDaycareImpl _$$PetDaycareImplFromJson(Map<String, dynamic> json) =>
       ratingCount: (json['ratingCount'] as num).toInt(),
       bookedNum: (json['bookedNum'] as num).toInt(),
       prices: (json['prices'] as List<dynamic>)
-          .map((e) =>
-              e == null ? null : Price.fromJson(e as Map<String, dynamic>))
+          .map((e) => Price.fromJson(e as Map<String, dynamic>))
           .toList(),
       thumbnail: json['thumbnail'] as String,
     );
@@ -43,8 +42,9 @@ _$PetDaycareDetailsImpl _$$PetDaycareDetailsImplFromJson(
       address: json['address'] as String,
       locality: json['locality'] as String,
       distance: (json['distance'] as num).toDouble(),
-      price: (json['price'] as num).toDouble(),
-      pricingType: json['pricingType'] as String,
+      pricings: (json['pricings'] as List<dynamic>)
+          .map((e) => Price.fromJson(e as Map<String, dynamic>))
+          .toList(),
       description: json['description'] as String,
       bookedNum: (json['bookedNum'] as num).toInt(),
       averageRating: (json['averageRating'] as num).toDouble(),
@@ -72,8 +72,7 @@ Map<String, dynamic> _$$PetDaycareDetailsImplToJson(
       'address': instance.address,
       'locality': instance.locality,
       'distance': instance.distance,
-      'price': instance.price,
-      'pricingType': instance.pricingType,
+      'pricings': instance.pricings,
       'description': instance.description,
       'bookedNum': instance.bookedNum,
       'averageRating': instance.averageRating,

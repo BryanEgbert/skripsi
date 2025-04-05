@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/components/profile_image_picker.dart';
 import 'package:frontend/components/signup_guide_text.dart';
 import 'package:frontend/model/pet_category.dart';
 import 'package:frontend/model/request/create_user_request.dart';
@@ -64,17 +65,9 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     spacing: 12,
                     children: [
-                      IconButton.filled(
-                        key: Key("image-picker"),
-                        onPressed: () {},
-                        style: IconButton.styleFrom(
-                          shape: CircleBorder(),
-                          minimumSize: Size(100, 100),
-                        ),
-                        icon: Icon(
-                          Icons.add_a_photo_rounded,
-                          size: 32,
-                        ),
+                      ProfileImagePicker(
+                        onTap: _pickImage,
+                        image: _petProfilePicture,
                       ),
                       TextFormField(
                         controller: _nameController,
@@ -88,7 +81,51 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                         validator: (value) => validateNotEmpty("Name", value),
                       ),
                       // TODO: add not empty validation
-                      petCategoryInput(context, petCategory),
+                      InkWell(
+                        onTap: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (context) =>
+                                  selectPetTypeModal(petCategory));
+                        },
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Choose Your Pet's Type & Size"),
+                                  if (petCategoryId != 0)
+                                    Row(
+                                      children: [
+                                        Text(
+                                          petCategory
+                                              .value![petCategoryIndex].name,
+                                          style: TextStyle(
+                                              color: Colors.grey[600],
+                                              fontSize: 12),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_forward_ios_rounded,
+                                          color: Colors.orange,
+                                        ),
+                                      ],
+                                    ),
+                                  if (petCategoryId == 0)
+                                    Icon(
+                                      Icons.arrow_forward_ios_rounded,
+                                      color: Colors.orange,
+                                    ),
+                                ],
+                              ),
+                            ),
+                            Divider(),
+                          ],
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12.0),
                         child: Row(

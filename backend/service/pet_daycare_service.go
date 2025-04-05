@@ -13,7 +13,7 @@ import (
 type PetDaycareService interface {
 	CreatePetDaycare(userId uint, request model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
 	GetPetDaycares(req model.GetPetDaycaresRequest, startID uint, pageSize int) (model.ListData[model.GetPetDaycaresResponse], error)
-	GetPetDaycare(id uint, lat float64, long float64) (*model.GetPetDaycareDetailResponse, error)
+	GetPetDaycare(id uint, lat *float64, long *float64) (*model.GetPetDaycareDetailResponse, error)
 	DeletePetDaycare(id uint, ownerId uint) error
 	UpdatePetDaycare(id uint, userId uint, newData model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
 }
@@ -27,11 +27,11 @@ func NewPetDaycareService(db *gorm.DB) *PetDaycareServiceImpl {
 }
 
 // TODO: fix this
-func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat float64, long float64) (*model.GetPetDaycareDetailResponse, error) {
+func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat *float64, long *float64) (*model.GetPetDaycareDetailResponse, error) {
 	var daycare model.PetDaycare
 
 	// Use ST_DistanceSphere to calculate the distance if coordinates are provided
-	if lat != 0.0 && long != 0.0 {
+	if lat != nil && long != nil {
 		if err := s.db.
 			Preload("Owner").
 			Preload("Owner.Role").
@@ -140,9 +140,9 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 		var slots []model.Slots
 		for i := range newData.PetCategoryID {
 			slots = append(slots, model.Slots{
-				DaycareID:      daycare.ID,
-				PetCategoryID:      newData.PetCategoryID[i],
-				MaxNumber:      newData.MaxNumber[i],
+				DaycareID:     daycare.ID,
+				PetCategoryID: newData.PetCategoryID[i],
+				MaxNumber:     newData.MaxNumber[i],
 			})
 		}
 
@@ -195,7 +195,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		Select("pet_daycares.id", "pet_daycares.name", "pet_daycares.locality", fmt.Sprintf("ST_DistanceSphere(ST_MakePoint(%f, %f), ST_MakePoint(longitude, latitude))", longitude, latitude), "pet_daycares.booked_num").
 		Joins("JOIN daily_playtimes ON daily_playtimes.id = pet_daycares.daily_playtime_id").
 		Joins("JOIN daily_walks ON daily_walks.id = pet_daycares.daily_walks_id")
-	
+
 	if req.MaxDistance > 0 && isCoordinateNotNil {
 		query = query.Where(
 			"ST_DistanceSphere(ST_MakePoint(longitude, latitude), ST_MakePoint(?, ?)) BETWEEN ? AND ?",
@@ -240,7 +240,6 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 	}
 	defer rows.Close()
 
-	
 	for rows.Next() {
 		daycare := model.GetPetDaycaresResponse{Prices: []model.PriceDetails{}}
 
@@ -310,7 +309,7 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 	daycare := model.PetDaycare{
 		Name:              request.PetDaycareName,
 		Address:           request.Address,
-		Locality: request.Locality,
+		Locality:          request.Locality,
 		Latitude:          request.Latitude,
 		Longitude:         request.Longitude,
 		Description:       request.Description,
@@ -353,11 +352,11 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 		}
 
 		slots = append(slots, model.Slots{
-			DaycareID:      daycare.ID,
-			PetCategoryID:      petCategory,
-			MaxNumber:      request.MaxNumber[i],
-			Price: request.Price[i],
-			PricingType: request.PricingType[i],
+			DaycareID:     daycare.ID,
+			PetCategoryID: petCategory,
+			MaxNumber:     request.MaxNumber[i],
+			Price:         request.Price[i],
+			PricingType:   request.PricingType[i],
 		})
 	}
 

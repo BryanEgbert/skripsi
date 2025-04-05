@@ -95,7 +95,7 @@ func SeedTable(db *gorm.DB) error {
 		vetSpecialties[2],
 	}
 
-	dummyImgUrl := "localhost:8080/assets/04b9a0746ce09d7b7c58584cc3bde041164440229927dc222bb03f8c83e658bc.jpg"
+	dummyImgUrl := "https://picsum.photos/id/1/200/300"
 
 	users := []model.User{
 		{Name: "John Doe", Email: "john@example.com", Password: password1, RoleID: 1, ImageUrl: &dummyImgUrl},

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
@@ -89,15 +91,25 @@ class Auth extends _$Auth {
         break;
       case Error():
         state = AsyncError(tokenRes.error, StackTrace.current);
+        break;
     }
   }
 
-  Future<void> refreshToken(String token) async {
+  Future<void> logOut() async {
+    state = AsyncLoading();
+
+    final dbService = DatabaseService();
+    await dbService.delete();
+
+    state = AsyncData(null);
+  }
+
+  Future<void> refreshToken(String refreshToken) async {
     state = AsyncLoading();
 
     final dbService = DatabaseService();
     var repo = AuthService();
-    var tokenRes = await repo.refreshToken(token);
+    var tokenRes = await repo.refreshToken(refreshToken);
 
     switch (tokenRes) {
       case Ok():
@@ -106,6 +118,7 @@ class Auth extends _$Auth {
         break;
       case Error():
         state = AsyncError(tokenRes.error, StackTrace.current);
+        break;
     }
   }
 }

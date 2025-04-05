@@ -230,9 +230,9 @@ func (pdc *PetDaycareController) GetPetDaycareSlots(c *gin.Context) {
 	}
 
 	output, err := pdc.slotService.GetSlots(uint(petDaycareID), model.GetSlotRequest{
-		PetCategoryID:      uint(petCategoryId),
-		Year:           int(year),
-		Month:          int(month),
+		PetCategoryID: uint(petCategoryId),
+		Year:          int(year),
+		Month:         int(month),
 	})
 	if err != nil {
 		c.JSON(http.StatusNotFound, model.ErrorResponse{
@@ -255,22 +255,33 @@ func (pdc *PetDaycareController) GetPetDaycare(c *gin.Context) {
 		return
 	}
 
-	latitude, err := strconv.ParseFloat(c.Query("lat"), 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid latitude",
-			Error:   err.Error(),
-		})
-		return
+	var latitude *float64
+	var longitude *float64
+
+	if c.Query("lat") != "" {
+		value, err := strconv.ParseFloat(c.Query("lat"), 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "Invalid latitude",
+				Error:   err.Error(),
+			})
+			return
+		}
+
+		latitude = &value
 	}
 
-	longitude, err := strconv.ParseFloat(c.Query("long"), 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid longitude",
-			Error:   err.Error(),
-		})
-		return
+	if c.Query("long") != "" {
+		value, err := strconv.ParseFloat(c.Query("long"), 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "Invalid longitude",
+				Error:   err.Error(),
+			})
+			return
+		}
+
+		longitude = &value
 	}
 
 	output, err := pdc.petDaycareService.GetPetDaycare(uint(petDaycareID), latitude, longitude)

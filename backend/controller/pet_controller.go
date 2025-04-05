@@ -101,7 +101,7 @@ func (pc *PetController) GetPets(c *gin.Context) {
 		return
 	}
 
-	log.Printf("pets: %v", *pets);
+	log.Printf("pets: %v", *pets)
 
 	c.JSON(http.StatusOK, model.ListData[model.PetDTO]{Data: *pets})
 }
@@ -136,7 +136,7 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.PetImage.Filename)))
 		imageUrl := fmt.Sprintf("%s/%s", c.Request.Host, filename)
 		req.PetImageUrl = &imageUrl
-	
+
 		if err := c.SaveUploadedFile(req.PetImage, filename); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save image",
@@ -193,22 +193,25 @@ func (pc *PetController) UpdatePet(c *gin.Context) {
 		return
 	}
 
-	filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.PetImage.Filename)))
-	imageUrl := fmt.Sprintf("%s/%s", c.Request.Host, filename)
-	req.PetImageUrl = &imageUrl
+	if req.PetImage != nil {
+		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.PetImage.Filename)))
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
+		req.PetImageUrl = &imageUrl
 
-	if err := c.SaveUploadedFile(req.PetImage, filename); err != nil {
-		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-			Message: "Upload image error",
-			Error:   err.Error(),
-		})
-		return
+		log.Printf("pet image: %s", *req.PetImageUrl)
+		if err := c.SaveUploadedFile(req.PetImage, filename); err != nil {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "Upload image error",
+				Error:   err.Error(),
+			})
+			return
+		}
 	}
 
 	dto := model.PetDTO{
-		Name:         req.Name,
-		Status:       req.Status,
-		PetCategory:  model.PetCategoryDTO{ID: req.PetCategoryID},
+		Name:        req.Name,
+		Status:      req.Status,
+		PetCategory: model.PetCategoryDTO{ID: req.PetCategoryID},
 	}
 
 	if req.PetImageUrl != nil {

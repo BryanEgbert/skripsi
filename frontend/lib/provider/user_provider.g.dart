@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'pet_list_provider.dart';
+part of 'user_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$petListHash() => r'48c17405055e90a9509a5b55538122423664abef';
+String _$userStateHash() => r'81e38f5e0dacc451e51c7ed098614a95362ca2a8';
 
-/// See also [PetList].
-@ProviderFor(PetList)
-final petListProvider =
-    AutoDisposeAsyncNotifierProvider<PetList, ListData<Pet>>.internal(
-  PetList.new,
-  name: r'petListProvider',
+/// See also [UserState].
+@ProviderFor(UserState)
+final userStateProvider =
+    AutoDisposeAsyncNotifierProvider<UserState, int>.internal(
+  UserState.new,
+  name: r'userStateProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$petListHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$userStateHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$PetList = AutoDisposeAsyncNotifier<ListData<Pet>>;
+typedef _$UserState = AutoDisposeAsyncNotifier<int>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

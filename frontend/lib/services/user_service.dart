@@ -9,7 +9,7 @@ import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/user.dart';
 
 abstract interface class IUserService {
-  Future<User> getUser(String token, int id);
+  Future<Result<User>> getUser(String token, int id);
   Future<Result<ListData<User>>> getVets(
       String token, PaginationQueryParams pagination,
       [int specialtyId = 0]);
@@ -40,8 +40,25 @@ class UserService implements IUserService {
   }
 
   @override
-  Future<User> getUser(String token, int id) async {
-    throw UnimplementedError();
+  Future<Result<User>> getUser(String token, int id) async {
+    return makeRequest(200, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
+        "$host/users/$id",
+        options: Options(
+            headers: {HttpHeaders.authorizationHeader: "Bearer $token"}),
+      );
+
+      return res;
+    }, (res) => User.fromJson(res));
   }
 
   @override
@@ -86,11 +103,15 @@ class UserService implements IUserService {
         },
       ));
 
-      FormData formData = FormData.fromMap({
-        ...reqBody.toMap(),
-        "userProfilePicture": MultipartFile.fromFile(reqBody.image.path,
-            filename: reqBody.image.path.split('/').last),
-      });
+      Map<String, dynamic> reqMap = reqBody.toMap();
+
+      if (reqBody.image != null) {
+        reqMap["userProfilePicture"] = await MultipartFile.fromFile(
+            reqBody.image!.path,
+            filename: reqBody.image!.path.split('/').last);
+      }
+
+      FormData formData = FormData.fromMap(reqMap);
 
       final response = await dio.put(
         "$host/users",

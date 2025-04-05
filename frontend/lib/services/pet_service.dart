@@ -143,34 +143,15 @@ class PetService implements IPetService {
         },
       ));
 
-      // Map<String, String> headers = {
-      //   HttpHeaders.contentTypeHeader: "multipart/form-data",
-      //   HttpHeaders.authorizationHeader: "Bearer $token",
-      // };
+      Map<String, dynamic> reqMap = reqBody.toMap();
 
-      // var req = http.MultipartRequest("PUT", Uri.parse("$host/pets/$id"))
-      //   ..headers.addAll(headers)
-      //   ..fields.addAll(reqBody.toMap());
+      if (reqBody.petImage != null) {
+        reqMap["petProfilePicture"] = await MultipartFile.fromFile(
+            reqBody.petImage!.path,
+            filename: reqBody.petImage!.path.split('/').last);
+      }
 
-      // req.files.add(
-      //   http.MultipartFile(
-      //     "image",
-      //     reqBody.image.readAsBytes().asStream(),
-      //     reqBody.image.lengthSync(),
-      //     filename: reqBody.image.path,
-      //   ),
-      // );
-
-      // final res = await req.send();
-      // var response = await http.Response.fromStream(res);
-
-      FormData formData = FormData.fromMap({
-        ...reqBody.toMap(),
-        "image": reqBody.petImage != null
-            ? await MultipartFile.fromFile(reqBody.petImage!.path,
-                filename: reqBody.petImage!.path.split('/').last)
-            : null,
-      });
+      FormData formData = FormData.fromMap(reqMap);
 
       final response = await dio.put(
         "$host/pets/$id",
@@ -226,7 +207,7 @@ class PetService implements IPetService {
       ));
 
       final res = await dio.get(
-        "$host/vaccine-record/$petId",
+        "$host/vaccination-record/$petId",
         queryParameters: pagination.toMap(),
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",

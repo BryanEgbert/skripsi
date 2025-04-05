@@ -6,12 +6,12 @@ part of 'pet_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$petStateHash() => r'94d5db75999b2958821ab7c0e91cace46d3a87e8';
+String _$petStateHash() => r'207cb4afb3d0834ba31dc2aa9cd4633da9a8f838';
 
 /// See also [PetState].
 @ProviderFor(PetState)
 final petStateProvider =
-    AutoDisposeAsyncNotifierProvider<PetState, Pet?>.internal(
+    AutoDisposeAsyncNotifierProvider<PetState, int?>.internal(
   PetState.new,
   name: r'petStateProvider',
   debugGetCreateSourceHash:
@@ -20,6 +20,6 @@ final petStateProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$PetState = AutoDisposeAsyncNotifier<Pet?>;
+typedef _$PetState = AutoDisposeAsyncNotifier<int?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
