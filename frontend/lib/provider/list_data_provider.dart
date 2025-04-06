@@ -12,6 +12,7 @@ import 'package:frontend/model/vaccine_record.dart';
 import 'package:frontend/services/pet_daycare_service.dart';
 import 'package:frontend/services/pet_service.dart';
 import 'package:frontend/services/user_service.dart';
+import 'package:frontend/services/vaccination_record_service.dart';
 import 'package:frontend/utils/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -62,6 +63,22 @@ Future<ListData<VaccineRecord>> vaccineRecords(Ref ref, int petId,
   final petService = PetService();
   final res = await petService.getVaccineRecords(token.accessToken, petId,
       PaginationQueryParams(lastId: lastId, pageSize: pageSize));
+
+  switch (res) {
+    case Ok():
+      return res.value!;
+    case Error():
+      return Future.error(res.error);
+  }
+}
+
+@riverpod
+Future<VaccineRecord> getVaccinationRecordById(
+    Ref ref, int vaccinationRecordId) async {
+  TokenResponse token = await refreshToken();
+
+  final service = VaccinationRecordService();
+  final res = await service.getById(token.accessToken, vaccinationRecordId);
 
   switch (res) {
     case Ok():

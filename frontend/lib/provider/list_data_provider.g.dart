@@ -502,6 +502,143 @@ class _VaccineRecordsProviderElement
   int get pageSize => (origin as VaccineRecordsProvider).pageSize;
 }
 
+String _$getVaccinationRecordByIdHash() =>
+    r'9a64e1b44a30b7f9488f527ed936cbb40a596d21';
+
+/// See also [getVaccinationRecordById].
+@ProviderFor(getVaccinationRecordById)
+const getVaccinationRecordByIdProvider = GetVaccinationRecordByIdFamily();
+
+/// See also [getVaccinationRecordById].
+class GetVaccinationRecordByIdFamily extends Family<AsyncValue<VaccineRecord>> {
+  /// See also [getVaccinationRecordById].
+  const GetVaccinationRecordByIdFamily();
+
+  /// See also [getVaccinationRecordById].
+  GetVaccinationRecordByIdProvider call(
+    int vaccinationRecordId,
+  ) {
+    return GetVaccinationRecordByIdProvider(
+      vaccinationRecordId,
+    );
+  }
+
+  @override
+  GetVaccinationRecordByIdProvider getProviderOverride(
+    covariant GetVaccinationRecordByIdProvider provider,
+  ) {
+    return call(
+      provider.vaccinationRecordId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getVaccinationRecordByIdProvider';
+}
+
+/// See also [getVaccinationRecordById].
+class GetVaccinationRecordByIdProvider
+    extends AutoDisposeFutureProvider<VaccineRecord> {
+  /// See also [getVaccinationRecordById].
+  GetVaccinationRecordByIdProvider(
+    int vaccinationRecordId,
+  ) : this._internal(
+          (ref) => getVaccinationRecordById(
+            ref as GetVaccinationRecordByIdRef,
+            vaccinationRecordId,
+          ),
+          from: getVaccinationRecordByIdProvider,
+          name: r'getVaccinationRecordByIdProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getVaccinationRecordByIdHash,
+          dependencies: GetVaccinationRecordByIdFamily._dependencies,
+          allTransitiveDependencies:
+              GetVaccinationRecordByIdFamily._allTransitiveDependencies,
+          vaccinationRecordId: vaccinationRecordId,
+        );
+
+  GetVaccinationRecordByIdProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.vaccinationRecordId,
+  }) : super.internal();
+
+  final int vaccinationRecordId;
+
+  @override
+  Override overrideWith(
+    FutureOr<VaccineRecord> Function(GetVaccinationRecordByIdRef provider)
+        create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetVaccinationRecordByIdProvider._internal(
+        (ref) => create(ref as GetVaccinationRecordByIdRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        vaccinationRecordId: vaccinationRecordId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<VaccineRecord> createElement() {
+    return _GetVaccinationRecordByIdProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetVaccinationRecordByIdProvider &&
+        other.vaccinationRecordId == vaccinationRecordId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, vaccinationRecordId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetVaccinationRecordByIdRef
+    on AutoDisposeFutureProviderRef<VaccineRecord> {
+  /// The parameter `vaccinationRecordId` of this provider.
+  int get vaccinationRecordId;
+}
+
+class _GetVaccinationRecordByIdProviderElement
+    extends AutoDisposeFutureProviderElement<VaccineRecord>
+    with GetVaccinationRecordByIdRef {
+  _GetVaccinationRecordByIdProviderElement(super.provider);
+
+  @override
+  int get vaccinationRecordId =>
+      (origin as GetVaccinationRecordByIdProvider).vaccinationRecordId;
+}
+
 String _$petListHash() => r'cfff2dafdba3f9e8789e968aa6f62ad808454d81';
 
 /// See also [petList].

@@ -74,7 +74,7 @@ class _CreateVaccinationRecordsPageState
                 SizedBox(
                   height: 48,
                 ),
-                vaccineRecordImagePicker(),
+                _vaccineRecordImagePicker(),
                 TextField(
                   controller: _dateAdministeredController,
                   decoration: InputDecoration(
@@ -192,7 +192,7 @@ class _CreateVaccinationRecordsPageState
     );
   }
 
-  Widget vaccineRecordImagePicker() {
+  Widget _vaccineRecordImagePicker() {
     return GestureDetector(
       onTap: _pickImage,
       child: _vaccinationPhoto == null

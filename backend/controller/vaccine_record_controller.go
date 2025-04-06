@@ -20,6 +20,88 @@ func NewVaccineRecordController(vaccineRecordService service.VaccineService) *Va
 	return &VaccineRecordController{vaccineRecordService: vaccineRecordService}
 }
 
+func (vc *VaccineRecordController) GetVaccineRecord(c *gin.Context) {
+	vaccineRecordId, err := strconv.ParseUint(c.Param("vaccineRecordId"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid ID",
+		})
+
+		return
+	}
+
+	out, err := vc.vaccineRecordService.GetVaccineRecord(uint(vaccineRecordId))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to fetch data",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, out)
+}
+
+func (vc *VaccineRecordController) UpdateVaccineRecords(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	vaccineRecordId, err := strconv.ParseUint(c.Param("vaccineRecordId"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid ID",
+		})
+
+		return
+	}
+
+	var req model.VaccineRecordRequest
+	if err := c.Bind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request data",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	if req.VaccineRecordImage != nil {
+		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.VaccineRecordImage.Filename)))
+		imageUrl := fmt.Sprintf("%s/%s", c.Request.Host, filename)
+		req.VaccineRecordImageUrl = imageUrl
+
+		if err := c.SaveUploadedFile(req.VaccineRecordImage, filename); err != nil {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "Failed to save image",
+				Error:   err.Error(),
+			})
+			return
+		}
+	}
+
+	if err := vc.vaccineRecordService.UpdateVaccineRecord(uint(vaccineRecordId), req); err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to update vaccination record",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
 func (vc *VaccineRecordController) DeleteVaccineRecords(c *gin.Context) {
 	vaccineRecordId, err := strconv.ParseUint(c.Param("vaccineRecordId"), 10, 64)
 	if err != nil {
@@ -92,7 +174,7 @@ func (vc *VaccineRecordController) CreateVaccineRecords(c *gin.Context) {
 
 	if _, err = vc.vaccineRecordService.CreateVaccineRecords(uint(petID), req); err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-			Message: "Failed to create vaccine records",
+			Message: "Failed to create vaccination record",
 			Error:   err.Error(),
 		})
 		return

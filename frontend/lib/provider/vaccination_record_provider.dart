@@ -30,16 +30,32 @@ class VaccinationRecordState extends _$VaccinationRecordState {
     }
   }
 
-  Future<void> delete(int petId) async {
+  Future<void> updateRecord(
+      int vaccinationRecordId, VaccinationRecordRequest req) async {
     TokenResponse token = await refreshToken();
 
     final service = VaccinationRecordService();
-    final res = await service.delete(token.accessToken, petId);
+    final res =
+        await service.update(token.accessToken, vaccinationRecordId, req);
 
     switch (res) {
       case Ok():
         state = AsyncData(204);
-        ref.invalidate(vaccineRecordsProvider(petId));
+
+      case Error():
+        state = AsyncError(res.error, StackTrace.current);
+    }
+  }
+
+  Future<void> delete(int vaccinationRecordId) async {
+    TokenResponse token = await refreshToken();
+
+    final service = VaccinationRecordService();
+    final res = await service.delete(token.accessToken, vaccinationRecordId);
+
+    switch (res) {
+      case Ok():
+        state = AsyncData(204);
       case Error():
         state = AsyncError(res.error, StackTrace.current);
     }

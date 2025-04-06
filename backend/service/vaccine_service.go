@@ -10,8 +10,10 @@ import (
 )
 
 type VaccineService interface {
+	GetVaccineRecord(id uint) (*model.VaccineRecordDTO, error)
 	GetVaccineRecords(petId uint, lastID uint, limit int) (*[]model.VaccineRecordDTO, error)
 	CreateVaccineRecords(petId uint, req model.VaccineRecordRequest) (uint, error)
+	UpdateVaccineRecord(id uint, req model.VaccineRecordRequest) error
 	DeleteVaccineRecords(vaccineRecordId uint) error
 }
 
@@ -21,6 +23,38 @@ type VaccineServiceImpl struct {
 
 func NewVaccineService(db *gorm.DB) *VaccineServiceImpl {
 	return &VaccineServiceImpl{db: db}
+}
+
+func (s *VaccineServiceImpl) GetVaccineRecord(id uint) (*model.VaccineRecordDTO, error) {
+	var record model.VaccineRecord
+	err := s.db.First(&record, id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	dto := helper.ConvertVaccineRecordToDTO(record)
+
+	return &dto, nil
+}
+
+func (s *VaccineServiceImpl) UpdateVaccineRecord(id uint, req model.VaccineRecordRequest) error {
+	var record model.VaccineRecord
+	err := s.db.First(&record, id).Error
+	if err != nil {
+		return err
+	}
+
+	os.Remove(helper.GetFilePath(record.ImageURL))
+
+	record.DateAdministered = req.DateAdministered
+	record.NextDueDate = req.NextDueDate
+	record.ImageURL = req.VaccineRecordImageUrl
+
+	if err := s.db.Save(&record).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *VaccineServiceImpl) GetVaccineRecords(petId uint, lastID uint, limit int) (*[]model.VaccineRecordDTO, error) {

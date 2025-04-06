@@ -97,6 +97,17 @@ func ConvertVaccineRecordsToDTO(vaccineRecords []model.VaccineRecord) []model.Va
 	return out
 }
 
+func ConvertVaccineRecordToDTO(vaccineRecord model.VaccineRecord) model.VaccineRecordDTO {
+	out := model.VaccineRecordDTO{
+		ID:               vaccineRecord.ID,
+		DateAdministered: vaccineRecord.DateAdministered,
+		NextDueDate:      vaccineRecord.NextDueDate,
+		ImageURL:         vaccineRecord.ImageURL,
+	}
+
+	return out
+}
+
 func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float64) model.GetPetDaycareDetailResponse {
 	// Extract thumbnail URLs
 	thumbnailURLs := []string{}

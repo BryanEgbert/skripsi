@@ -1,8 +1,7 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/vaccine_record.dart';
+import 'package:frontend/pages/edit/edit_vaccination_record_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/vaccination_record_provider.dart';
 import 'package:frontend/utils/formatter.dart';
@@ -173,9 +172,10 @@ class _PaginatedListViewState
                       PopupMenuItem(
                         value: "edit",
                         child: Text("Edit"),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditVaccinationRecordPage(vaccineRecord.id),))
+                        },
                       ),
-                      // TODO: delete function
                       PopupMenuItem(
                         value: "delete",
                         child: Text(
@@ -186,7 +186,7 @@ class _PaginatedListViewState
                           ref
                               .read(vaccinationRecordStateProvider.notifier)
                               .delete(vaccineRecord.id);
-                          log("[INFO] index: $index");
+                          // ref.invalidate(vaccineRecordsProvider(widget.petId));
                           setState(() {
                             _records.removeAt(index);
                           });
