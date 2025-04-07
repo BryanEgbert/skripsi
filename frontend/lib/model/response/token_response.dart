@@ -5,13 +5,14 @@ part 'token_response.g.dart';
 @JsonSerializable()
 class TokenResponse {
   final String accessToken, refreshToken;
-  final int userId;
+  final int userId, roleId;
 
   @JsonKey(name: "exp")
   final int expiryDate;
 
   TokenResponse({
     required this.userId,
+    required this.roleId,
     required this.accessToken,
     required this.refreshToken,
     required this.expiryDate,
@@ -24,6 +25,6 @@ class TokenResponse {
 
   @override
   String toString() {
-    return "TokenResponse(userId: $userId, accessToken: $accessToken, refreshToken: $refreshToken)";
+    return "TokenResponse(userId: $userId, roleId: $roleId, accessToken: $accessToken, refreshToken: $refreshToken)";
   }
 }

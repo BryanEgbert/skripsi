@@ -140,7 +140,7 @@ func (vc *VaccineRecordController) CreateVaccineRecords(c *gin.Context) {
 		return
 	}
 
-	petID, err := strconv.ParseUint(c.Param("petId"), 10, 64)
+	petID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid pet ID",
@@ -184,7 +184,7 @@ func (vc *VaccineRecordController) CreateVaccineRecords(c *gin.Context) {
 }
 
 func (vc *VaccineRecordController) GetVaccineRecords(c *gin.Context) {
-	petID, err := strconv.ParseUint(c.Param("petId"), 10, 64)
+	petID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid pet ID",

@@ -1,9 +1,13 @@
+import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/components/modals/select_pet_type_modal.dart';
 import 'package:frontend/components/profile_image_picker.dart';
 import 'package:frontend/components/signup_guide_text.dart';
+import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/pet_category.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/request/pet_request.dart';
@@ -23,10 +27,14 @@ class EnterPetDetailsPage extends ConsumerStatefulWidget {
 }
 
 class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
+  final _formKey = GlobalKey<FormState>();
+
   final _nameController = TextEditingController();
+  final _petCategoryController = TextEditingController();
+  final _petCategoryFocusNode = FocusNode();
+
   bool _isNeutered = false;
-  int petCategoryId = 0;
-  int petCategoryIndex = 0;
+  int _petCategoryId = 0;
   File? _petProfilePicture;
 
   Future<void> _pickImage() async {
@@ -39,13 +47,34 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
     }
   }
 
+  void _submitForm() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => CreateVaccinationRecordsPage(
+        createUserReq: widget.createUserReq,
+        createPetReq: PetRequest(
+          neutered: _isNeutered,
+          name: _nameController.text,
+          petCategoryId: _petCategoryId,
+          petImage: _petProfilePicture,
+        ),
+      ),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final petCategory = ref.watch(petCategoryProvider);
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Fill Pet Info"),
+        leading: IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(Icons.arrow_back_ios)),
+        title: const Text(
+          "Fill Pet Info",
+          style: TextStyle(color: Colors.orange),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -60,6 +89,7 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                 ),
                 SizedBox(height: 56),
                 Form(
+                  key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -80,51 +110,29 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                         ),
                         validator: (value) => validateNotEmpty("Name", value),
                       ),
-                      // TODO: add not empty validation
-                      InkWell(
-                        onTap: () {
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (context) =>
-                                  selectPetTypeModal(petCategory));
-                        },
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("Choose Your Pet's Type & Size"),
-                                  if (petCategoryId != 0)
-                                    Row(
-                                      children: [
-                                        Text(
-                                          petCategory
-                                              .value![petCategoryIndex].name,
-                                          style: TextStyle(
-                                              color: Colors.grey[600],
-                                              fontSize: 12),
-                                        ),
-                                        Icon(
-                                          Icons.arrow_forward_ios_rounded,
-                                          color: Colors.orange,
-                                        ),
-                                      ],
-                                    ),
-                                  if (petCategoryId == 0)
-                                    Icon(
-                                      Icons.arrow_forward_ios_rounded,
-                                      color: Colors.orange,
-                                    ),
-                                ],
-                              ),
-                            ),
-                            Divider(),
-                          ],
+                      TextFormField(
+                        controller: _petCategoryController,
+                        focusNode: _petCategoryFocusNode,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          suffixIcon: Icon(Icons.navigate_next),
+                          labelText: "Pet category",
                         ),
+                        onTap: () async {
+                          _petCategoryFocusNode.unfocus();
+
+                          final out = await showModalBottomSheet<Lookup>(
+                              context: context,
+                              builder: (context) => SelectPetTypeModal());
+
+                          if (out == null) {
+                            return;
+                          }
+                          _petCategoryController.text = out.name;
+                          _petCategoryId = out.id;
+                        },
+                        validator: (value) =>
+                            validateNotEmpty("Pet category", value),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -144,19 +152,7 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => CreateVaccinationRecordsPage(
-                              createUserReq: widget.createUserReq,
-                              createPetReq: PetRequest(
-                                neutered: _isNeutered,
-                                name: _nameController.text,
-                                petCategoryId: petCategoryId,
-                                petImage: _petProfilePicture,
-                              ),
-                            ),
-                          ));
-                        },
+                        onPressed: _submitForm,
                         child: const Text("Next"),
                       ),
                     ],
@@ -167,88 +163,6 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget petCategoryInput(
-      BuildContext context, AsyncValue<List<PetCategory>> petCategory) {
-    return InkWell(
-      onTap: () {
-        showModalBottomSheet(
-            context: context,
-            builder: (context) => selectPetTypeModal(petCategory));
-      },
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Choose Your Pet's Type & Size"),
-                if (petCategoryId != 0)
-                  Row(
-                    children: [
-                      Text(
-                        petCategory.value![petCategoryIndex].name,
-                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        color: Colors.orange,
-                      ),
-                    ],
-                  ),
-                if (petCategoryId == 0)
-                  Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: Colors.orange,
-                  ),
-              ],
-            ),
-          ),
-          Divider(),
-        ],
-      ),
-    );
-  }
-
-  Widget selectPetTypeModal(AsyncValue<List<PetCategory>> petCategory) {
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return switch (petCategory) {
-          AsyncData(:final value) => ListView.builder(
-              itemCount: value.length,
-              itemBuilder: (context, index) {
-                return RadioListTile(
-                    title: Text(value[index].name),
-                    subtitle: (value[index].sizeCategory.id != 0)
-                        ? Text(
-                            "${value[index].sizeCategory.minWeight.toInt()} kg - ${value[index].sizeCategory.maxWeight.toInt()} kg")
-                        : null,
-                    value: value[index].id,
-                    groupValue: petCategoryId,
-                    onChanged: (int? v) {
-                      setState(() {
-                        petCategoryIndex = index;
-                        petCategoryId = v!;
-                      });
-                    });
-              }),
-          AsyncError() => SizedBox(
-              height: double.infinity,
-              width: double.infinity,
-              child: Center(child: const Text("Something's wrong")),
-            ),
-          _ => SizedBox(
-              height: double.infinity,
-              width: double.infinity,
-              child: Center(
-                child: const CircularProgressIndicator(),
-              ),
-            ),
-        };
-      },
     );
   }
 

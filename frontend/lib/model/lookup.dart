@@ -12,4 +12,9 @@ class Lookup with _$Lookup {
   }) = _Lookup;
 
   factory Lookup.fromJson(Map<String, dynamic> json) => _$LookupFromJson(json);
+
+  @override
+  String toString() {
+    return "Lookup(id: $id, name: $name)";
+  }
 }

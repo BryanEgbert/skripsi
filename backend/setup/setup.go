@@ -133,7 +133,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	r.Static("/image", "./image")
 	r = routes.RegisterUserRoute(r, userController)
 	r = routes.RegisterAuthRoute(r, authController)
-	r = routes.RegisterPetRoutes(r, petController)
+	r = routes.RegisterPetRoutes(r, petController, vaccineRecordController)
 	r = routes.RegisterPetDaycareRoutes(r, petDaycareController)
 	r = routes.RegisterCategoryRoutes(r, categoryController)
 	r = routes.RegisterVaccineRecordRoute(r, vaccineRecordController)

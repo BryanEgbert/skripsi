@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/select_pet_type_modal.dart';
 import 'package:frontend/components/profile_image_picker.dart';
+import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/pet_category.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/provider/category_provider.dart';
@@ -24,10 +25,14 @@ class EditPetDetailsPage extends ConsumerStatefulWidget {
 }
 
 class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
+  final _formKey = GlobalKey<FormState>();
+
   final _nameController = TextEditingController();
+  final _petCategoryController = TextEditingController();
+  final _petCategoryFocusNode = FocusNode();
+
   bool _isNeutered = false;
-  int petCategoryId = 0;
-  int petCategoryIndex = 0;
+  int _petCategoryId = 0;
   File? _petProfilePicture;
 
   Future<void> _pickImage() async {
@@ -45,8 +50,6 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
     final pet = ref.watch(getPetByIdProvider(widget.petId));
     final petState = ref.watch(petStateProvider);
 
-    log("[INFO] $petState");
-    final petCategory = ref.watch(petCategoryProvider);
     handleError(petState, context);
 
     if (petState.hasValue && !petState.isLoading) {
@@ -76,12 +79,13 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
         AsyncData(:final value) => Builder(builder: (context) {
             _nameController.text = value!.name;
             _isNeutered = value.neutered;
-            petCategoryId = value.petCategory.id;
+            _petCategoryId = value.petCategory.id;
 
             return SafeArea(
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 16),
                 child: Form(
+                  key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -103,8 +107,30 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                             hintText: value.name),
                         validator: (value) => validateNotEmpty("Name", value),
                       ),
-                      // TODO: add not empty validation
-                      petCategoryInput(context, petCategory),
+                      TextFormField(
+                        controller: _petCategoryController,
+                        focusNode: _petCategoryFocusNode,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          suffixIcon: Icon(Icons.navigate_next),
+                          labelText: "Pet category",
+                        ),
+                        onTap: () async {
+                          _petCategoryFocusNode.unfocus();
+
+                          final out = await showModalBottomSheet<Lookup>(
+                            context: context,
+                            builder: (context) => SelectPetTypeModal(),
+                          );
+
+                          if (out == null) return;
+
+                          _petCategoryController.text = out.name;
+                          _petCategoryId = out.id;
+                        },
+                        validator: (value) =>
+                            validateNotEmpty("Pet category", value),
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12.0),
                         child: Row(
@@ -126,11 +152,13 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                         onPressed: () async {
                           if (petState.isLoading) return;
 
+                          if (!_formKey.currentState!.validate()) return;
+
                           await ref.read(petStateProvider.notifier).editPet(
                                 widget.petId,
                                 PetRequest(
                                   name: _nameController.text,
-                                  petCategoryId: petCategoryId,
+                                  petCategoryId: _petCategoryId,
                                   neutered: _isNeutered,
                                   petImage: _petProfilePicture,
                                   status: value.status,
@@ -155,59 +183,6 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
             ),
           ),
       },
-    );
-  }
-
-  Widget petCategoryInput(
-      BuildContext context, AsyncValue<List<PetCategory>> petCategory) {
-    return InkWell(
-      onTap: () {
-        showModalBottomSheet(
-          context: context,
-          builder: (context) => SelectPetTypeModal(
-            petCategoryId,
-            petCategory,
-            (value, index) {
-              setState(() {
-                petCategoryIndex = index;
-                petCategoryId = value!;
-              });
-            },
-          ),
-        );
-      },
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Choose Your Pet's Type & Size"),
-                if (petCategoryId != 0)
-                  Row(
-                    children: [
-                      Text(
-                        petCategory.value![petCategoryIndex].name,
-                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        color: Colors.orange,
-                      ),
-                    ],
-                  ),
-                if (petCategoryId == 0)
-                  Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: Colors.orange,
-                  ),
-              ],
-            ),
-          ),
-          Divider(),
-        ],
-      ),
     );
   }
 }

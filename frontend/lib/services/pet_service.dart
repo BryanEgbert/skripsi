@@ -14,7 +14,7 @@ abstract interface class IPetService {
   Future<Result<ListData<Pet>>> getPets(
       String token, PaginationQueryParams pagination);
   Future<Result<ListData<Pet>>> getBookedPets(
-      String token, int petDaycareId, PaginationQueryParams pagination);
+      String token, PaginationQueryParams pagination);
   Future<Result<ListData<VaccineRecord>>> getVaccineRecords(
       String token, int petId, PaginationQueryParams pagination);
 
@@ -170,7 +170,7 @@ class PetService implements IPetService {
 
   @override
   Future<Result<ListData<Pet>>> getBookedPets(
-      String token, int petDaycareId, PaginationQueryParams pagination) {
+      String token, PaginationQueryParams pagination) {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
@@ -182,7 +182,7 @@ class PetService implements IPetService {
       ));
 
       final res = await dio.get(
-        "$host/daycare/$petDaycareId/pets",
+        "$host/daycare/pets",
         queryParameters: pagination.toMap(),
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",
@@ -207,7 +207,7 @@ class PetService implements IPetService {
       ));
 
       final res = await dio.get(
-        "$host/vaccination-record/$petId",
+        "$host/pets/$petId/vaccination-record",
         queryParameters: pagination.toMap(),
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",

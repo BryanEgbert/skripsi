@@ -14,7 +14,9 @@ import 'package:intl/intl.dart';
 
 class EditVaccinationRecordPage extends ConsumerStatefulWidget {
   final int vaccinationRecordId;
-  const EditVaccinationRecordPage(this.vaccinationRecordId, {super.key});
+  final int petId;
+  const EditVaccinationRecordPage(this.vaccinationRecordId, this.petId,
+      {super.key});
 
   @override
   ConsumerState<EditVaccinationRecordPage> createState() =>
@@ -27,8 +29,10 @@ class _EditVaccinationRecordPageState
   final _nextDueDateController = TextEditingController();
 
   File? _vaccinationPhoto;
-  bool _isDateAdministeredFilled = false;
+  bool _isDateAdministeredFilled = true;
   DateTime _dateAdministered = DateTime.now();
+  bool _hasLoaded = false;
+  String? _vaccinationRecordImageUrl;
 
   Future<void> _pickImage() async {
     final photo = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -48,7 +52,7 @@ class _EditVaccinationRecordPageState
     );
     ref
         .read(vaccinationRecordStateProvider.notifier)
-        .updateRecord(widget.vaccinationRecordId, req);
+        .updateRecord(widget.petId, widget.vaccinationRecordId, req);
   }
 
   @override
@@ -81,18 +85,29 @@ class _EditVaccinationRecordPageState
   }
 
   Widget _buildBody(BuildContext context, VaccineRecord value) {
-    return Builder(builder: (context) {
-      DateTime parsedDateAdministered = DateTime.parse(value.dateAdministered);
-      DateTime parsedNextDueDate = DateTime.parse(value.nextDueDate);
+    DateTime parsedDateAdministered = DateTime.parse(value.dateAdministered);
+    DateTime parsedNextDueDate = DateTime.parse(value.nextDueDate);
+    if (!_hasLoaded) {
+      _vaccinationRecordImageUrl = value.imageUrl;
+      _dateAdministered = parsedDateAdministered;
 
       _dateAdministeredController.text =
           DateFormat('yyyy-MM-dd').format(parsedDateAdministered);
+
       _nextDueDateController.text =
           DateFormat('yyyy-MM-dd').format(parsedNextDueDate);
 
-      return Center(
-          child: SingleChildScrollView(
+      _hasLoaded = true;
+    }
+
+    return Center(
+        child: SingleChildScrollView(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16),
         child: Column(
+          spacing: 12,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _vaccineRecordImagePicker(),
             TextField(
@@ -107,7 +122,7 @@ class _EditVaccinationRecordPageState
               onTap: () async {
                 final pickedDate = await showDatePicker(
                   context: context,
-                  initialDate: DateTime.now(),
+                  initialDate: parsedDateAdministered,
                   firstDate: DateTime(1970),
                   lastDate: DateTime.now(),
                 );
@@ -142,6 +157,7 @@ class _EditVaccinationRecordPageState
               onTap: () async {
                 final pickedDate = await showDatePicker(
                   context: context,
+                  initialDate: parsedNextDueDate,
                   firstDate: _dateAdministered,
                   lastDate: DateTime.now().add(Duration(days: 3653)),
                 );
@@ -161,14 +177,14 @@ class _EditVaccinationRecordPageState
             ),
           ],
         ),
-      ));
-    });
+      ),
+    ));
   }
 
   Widget _vaccineRecordImagePicker() {
     return GestureDetector(
       onTap: _pickImage,
-      child: _vaccinationPhoto == null
+      child: _vaccinationPhoto == null && _vaccinationRecordImageUrl == null
           ? Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -192,13 +208,14 @@ class _EditVaccinationRecordPageState
             )
           : ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.file(
-                _vaccinationPhoto!,
-                height: 150,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
+              child: (_vaccinationPhoto != null)
+                  ? Image.file(
+                      _vaccinationPhoto!,
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.network(_vaccinationRecordImageUrl!)),
     );
   }
 }

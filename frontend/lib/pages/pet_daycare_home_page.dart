@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/details/pet_daycare_details_page.dart';
+import 'package:frontend/pages/view_booked_pets_page.dart';
+import 'package:frontend/pages/view_booking_requests_page.dart';
+import 'package:frontend/pages/view_slots_page.dart';
 
 class PetDaycareHomePage extends StatefulWidget {
   const PetDaycareHomePage({super.key});
@@ -10,7 +14,12 @@ class PetDaycareHomePage extends StatefulWidget {
 class _PetDaycareHomePageState extends State<PetDaycareHomePage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [];
+  final List<Widget> _pages = [
+    ViewBookedPetsPage(),
+    ViewBookingRequestsPage(),
+    ViewSlotsPage(),
+    PetDaycareDetailsPage.my(),
+  ];
 
   void _onItemTap(int index) {
     setState(() {
@@ -36,16 +45,19 @@ class _PetDaycareHomePageState extends State<PetDaycareHomePage> {
             label: "Booked Pets",
           ),
           BottomNavigationBarItem(
+            backgroundColor: Colors.orangeAccent,
             icon: Icon(Icons.house),
             label: "Booking Requests",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.healing_rounded),
+            backgroundColor: Colors.orangeAccent,
+            icon: Icon(Icons.calendar_month_rounded),
             label: "Slots",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_rounded),
-            label: "Booking History",
+            backgroundColor: Colors.orangeAccent,
+            icon: Icon(Icons.house),
+            label: "My Pet Daycare",
           ),
         ],
         currentIndex: _selectedIndex,

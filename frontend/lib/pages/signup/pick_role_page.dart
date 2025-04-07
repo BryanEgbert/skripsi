@@ -15,17 +15,19 @@ class PickRolePage extends StatelessWidget {
       ),
       body: Container(
         margin: EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SignupGuideText(
-              title: "Join Our Pet Daycare Community!",
-              subtitle: "Choose your role to get started:",
-            ),
-            SizedBox(height: 56),
-            displayRoleButtons(context)
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SignupGuideText(
+                title: "Join Our Pet Daycare Community!",
+                subtitle: "Choose your role to get started:",
+              ),
+              SizedBox(height: 56),
+              displayRoleButtons(context)
+            ],
+          ),
         ),
       ),
     );

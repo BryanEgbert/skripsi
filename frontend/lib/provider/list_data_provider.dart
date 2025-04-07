@@ -107,6 +107,24 @@ Future<ListData<Pet>> petList(Ref ref,
 }
 
 @riverpod
+Future<ListData<Pet>> bookedPets(Ref ref,
+    [int lastId = 0, int pageSize = 10]) async {
+  TokenResponse token = await refreshToken();
+
+  final petService = PetService();
+
+  final res = await petService.getBookedPets(
+      token.accessToken, PaginationQueryParams());
+
+  switch (res) {
+    case Ok():
+      return res.value!;
+    case Error():
+      return Future.error(res.error);
+  }
+}
+
+@riverpod
 Future<Pet?> getPetById(Ref ref, int petId) async {
   TokenResponse token = await refreshToken();
 
@@ -142,6 +160,21 @@ Future<User> getMyUser(Ref ref) async {
 
   final userService = UserService();
   final res = await userService.getUser(token.accessToken, token.userId);
+
+  switch (res) {
+    case Ok():
+      return res.value!;
+    case Error():
+      return Future.error(res.error);
+  }
+}
+
+@riverpod
+Future<PetDaycareDetails> getMyPetDaycare(Ref ref) async {
+  TokenResponse token = await refreshToken();
+
+  final petDaycareService = PetDaycareService();
+  final res = await petDaycareService.getMy(token.accessToken);
 
   switch (res) {
     case Ok():

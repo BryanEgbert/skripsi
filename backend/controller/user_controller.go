@@ -105,7 +105,13 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, createdUser)
+	c.JSON(http.StatusCreated, model.TokenResponse{
+		UserID:       createdUser.UserID,
+		RoleID:       createdUser.RoleID,
+		AccessToken:  createdUser.AccessToken,
+		RefreshToken: createdUser.RefreshToken,
+		ExpiryDate:   createdUser.ExpiryDate,
+	})
 }
 
 func (uc *UserController) CreatePetOwner(c *gin.Context) {
@@ -200,6 +206,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, model.TokenResponse{
 		UserID:       createdUser.UserID,
+		RoleID:       1,
 		AccessToken:  createdUser.AccessToken,
 		RefreshToken: createdUser.RefreshToken,
 		ExpiryDate:   createdUser.ExpiryDate,

@@ -145,6 +145,7 @@ func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float6
 		ID:                daycare.ID,
 		Name:              daycare.Name,
 		Address:           daycare.Address,
+		Locality:          daycare.Locality,
 		Distance:          distance, // This should be calculated separately and passed as an argument
 		Description:       daycare.Description,
 		BookedNum:         daycare.BookedNum,

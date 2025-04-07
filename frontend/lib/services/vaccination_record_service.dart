@@ -38,7 +38,7 @@ class VaccinationRecordService implements IVaccinationRecordService {
       });
 
       final response = await dio.post(
-        "$host/vaccination-record/$petId",
+        "$host/$petId/vaccination-record",
         options: Options(
           headers: {
             Headers.contentTypeHeader: Headers.multipartFormDataContentType,

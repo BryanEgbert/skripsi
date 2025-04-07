@@ -9,6 +9,7 @@ part of 'token_response.dart';
 TokenResponse _$TokenResponseFromJson(Map<String, dynamic> json) =>
     TokenResponse(
       userId: (json['userId'] as num).toInt(),
+      roleId: (json['roleId'] as num).toInt(),
       accessToken: json['accessToken'] as String,
       refreshToken: json['refreshToken'] as String,
       expiryDate: (json['exp'] as num).toInt(),
@@ -19,5 +20,6 @@ Map<String, dynamic> _$TokenResponseToJson(TokenResponse instance) =>
       'accessToken': instance.accessToken,
       'refreshToken': instance.refreshToken,
       'userId': instance.userId,
+      'roleId': instance.roleId,
       'exp': instance.expiryDate,
     };

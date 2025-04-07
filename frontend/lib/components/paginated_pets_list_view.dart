@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
+import 'package:frontend/components/error_text.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
@@ -22,6 +23,7 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
   int _lastId = 0;
   bool _isFetching = false;
   bool _hasMoreData = true;
+  String? _error;
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
@@ -32,26 +34,27 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
   }
 
   void _fetchMoreData() {
-    if (!_hasMoreData) return; // Stop fetching if no more data
+    if (!_hasMoreData) return;
 
-    setState(() => _isFetching = true);
+    setState(() {
+      _isFetching = true;
+      _error = null;
+    });
 
-    ref
-        .read(petListProvider(_lastId, widget.pageSize).future)
-        .then((newData) {
-          if (newData.data.isNotEmpty) {
-            setState(() {
-              _records.addAll(newData.data);
-              _lastId = newData.data.last.id;
-            });
-          } else {
-            setState(() {
-              _hasMoreData = false;
-            });
-          }
-        })
-        .catchError((e) {})
-        .whenComplete(() => setState(() => _isFetching = false));
+    ref.read(petListProvider(_lastId, widget.pageSize).future).then((newData) {
+      if (newData.data.isNotEmpty) {
+        setState(() {
+          _records.addAll(newData.data);
+          _lastId = newData.data.last.id;
+        });
+      } else {
+        setState(() {
+          _hasMoreData = false;
+        });
+      }
+    }).catchError((e) {
+      _error = e as String;
+    }).whenComplete(() => setState(() => _isFetching = false));
   }
 
   @override
@@ -77,29 +80,34 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
               child: CircularProgressIndicator(
               color: Colors.orange,
             ))
-          : ListView.builder(
-              physics: AlwaysScrollableScrollPhysics(),
-              controller: _scrollController,
-              itemCount: _records.length + 1,
-              itemBuilder: (context, index) {
-                if (index < _records.length) {
-                  return _buildListTile(context, _records[index]);
-                } else {
-                  if (_isFetching) {
-                    return Center(
-                        child: CircularProgressIndicator(
-                      color: Colors.orange,
-                    ));
-                  }
+          : (_error == null)
+              ? ListView.builder(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  controller: _scrollController,
+                  itemCount: _records.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index < _records.length) {
+                      return _buildListTile(context, _records[index]);
+                    } else {
+                      if (_isFetching) {
+                        return Center(
+                            child: CircularProgressIndicator(
+                          color: Colors.orange,
+                        ));
+                      }
 
-                  return SizedBox();
-                }
-              },
-            ),
+                      return SizedBox();
+                    }
+                  },
+                )
+              : ErrorText(
+                  errorText: _error!,
+                  onRefresh: () => _fetchMoreData(),
+                ),
     );
   }
 
-  ListTile _buildListTile(BuildContext context, Pet item) {
+  Widget _buildListTile(BuildContext context, Pet item) {
     return ListTile(
       leading: DefaultCircleAvatar(imageUrl: item.imageUrl ?? ""),
       title: Text(item.name),

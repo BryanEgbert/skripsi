@@ -14,4 +14,9 @@ class VaccineRecord with _$VaccineRecord {
 
   factory VaccineRecord.fromJson(Map<String, dynamic> json) =>
       _$VaccineRecordFromJson(json);
+
+  @override
+  String toString() {
+    return "VaccineRecord(id: $id)";
+  }
 }

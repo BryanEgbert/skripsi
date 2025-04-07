@@ -12,6 +12,7 @@ import (
 
 type PetDaycareService interface {
 	CreatePetDaycare(userId uint, request model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
+	GetMyPetDaycare(userId uint) (*model.GetPetDaycareDetailResponse, error)
 	GetPetDaycares(req model.GetPetDaycaresRequest, startID uint, pageSize int) (model.ListData[model.GetPetDaycaresResponse], error)
 	GetPetDaycare(id uint, lat *float64, long *float64) (*model.GetPetDaycareDetailResponse, error)
 	DeletePetDaycare(id uint, ownerId uint) error
@@ -26,7 +27,30 @@ func NewPetDaycareService(db *gorm.DB) *PetDaycareServiceImpl {
 	return &PetDaycareServiceImpl{db: db}
 }
 
-// TODO: fix this
+func (s *PetDaycareServiceImpl) GetMyPetDaycare(userId uint) (*model.GetPetDaycareDetailResponse, error) {
+	daycare := model.PetDaycare{
+		OwnerID: userId,
+	}
+
+	if err := s.db.
+		Preload("Owner").
+		Preload("Owner.Role").
+		Preload("DailyWalks").
+		Preload("DailyPlaytime").
+		Preload("Thumbnails").
+		Preload("Reviews").
+		Preload("Slots").
+		Preload("Slots.PetCategory").
+		Preload("Slots.PetCategory.SizeCategory").
+		First(&daycare).Error; err != nil {
+		return nil, err
+	}
+
+	dto := helper.ConvertPetDaycareToDetailResponse(daycare, 0)
+
+	return &dto, nil
+}
+
 func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat *float64, long *float64) (*model.GetPetDaycareDetailResponse, error) {
 	var daycare model.PetDaycare
 
@@ -46,12 +70,6 @@ func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat *float64, long *float
 			First(&daycare, id).Error; err != nil {
 			return nil, err
 		}
-
-		var thumbnails []model.Thumbnail
-		if err := s.db.Where("daycare_id = ?", id).Find(&thumbnails).Error; err != nil {
-			return nil, err
-		}
-		daycare.Thumbnails = thumbnails
 	} else {
 		if err := s.db.
 			Preload("Owner").

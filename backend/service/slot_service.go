@@ -28,8 +28,8 @@ func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) 
 	lastDay := firstDay.AddDate(0, 1, -1)
 
 	slots := model.Slots{
-		DaycareID:      petDaycareId,
-		PetCategoryID:      req.PetCategoryID,
+		DaycareID:     petDaycareId,
+		PetCategoryID: req.PetCategoryID,
 	}
 
 	if err := s.db.First(&slots).Error; err != nil {
@@ -135,7 +135,7 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 
 	slot := model.Slots{
 		PetCategoryID: petCategoryID,
-		DaycareID: req.DaycareID,
+		DaycareID:     req.DaycareID,
 	}
 	if err := s.db.First(&slot).Error; err != nil {
 		return err
@@ -155,10 +155,11 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 
 	if err := s.db.
 		Model(&model.BookedSlot{
-			PetID:     req.PetID,
-			DaycareID: req.DaycareID,
-			StartDate: req.StartDate,
-			EndDate:   req.EndDate,
+			PetID:            req.PetID,
+			DaycareID:        req.DaycareID,
+			StartDate:        req.StartDate,
+			EndDate:          req.EndDate,
+			UsePickupService: req.UsePickupService,
 		}).
 		Count(&bookedSlotsCount).
 		Error; err != nil {

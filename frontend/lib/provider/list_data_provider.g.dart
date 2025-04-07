@@ -785,6 +785,153 @@ class _PetListProviderElement
   int get pageSize => (origin as PetListProvider).pageSize;
 }
 
+String _$bookedPetsHash() => r'2b69dde2bdbf3900222b46dd07ddfeae19799d08';
+
+/// See also [bookedPets].
+@ProviderFor(bookedPets)
+const bookedPetsProvider = BookedPetsFamily();
+
+/// See also [bookedPets].
+class BookedPetsFamily extends Family<AsyncValue<ListData<Pet>>> {
+  /// See also [bookedPets].
+  const BookedPetsFamily();
+
+  /// See also [bookedPets].
+  BookedPetsProvider call([
+    int lastId = 0,
+    int pageSize = 10,
+  ]) {
+    return BookedPetsProvider(
+      lastId,
+      pageSize,
+    );
+  }
+
+  @override
+  BookedPetsProvider getProviderOverride(
+    covariant BookedPetsProvider provider,
+  ) {
+    return call(
+      provider.lastId,
+      provider.pageSize,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'bookedPetsProvider';
+}
+
+/// See also [bookedPets].
+class BookedPetsProvider extends AutoDisposeFutureProvider<ListData<Pet>> {
+  /// See also [bookedPets].
+  BookedPetsProvider([
+    int lastId = 0,
+    int pageSize = 10,
+  ]) : this._internal(
+          (ref) => bookedPets(
+            ref as BookedPetsRef,
+            lastId,
+            pageSize,
+          ),
+          from: bookedPetsProvider,
+          name: r'bookedPetsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$bookedPetsHash,
+          dependencies: BookedPetsFamily._dependencies,
+          allTransitiveDependencies:
+              BookedPetsFamily._allTransitiveDependencies,
+          lastId: lastId,
+          pageSize: pageSize,
+        );
+
+  BookedPetsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.lastId,
+    required this.pageSize,
+  }) : super.internal();
+
+  final int lastId;
+  final int pageSize;
+
+  @override
+  Override overrideWith(
+    FutureOr<ListData<Pet>> Function(BookedPetsRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: BookedPetsProvider._internal(
+        (ref) => create(ref as BookedPetsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        lastId: lastId,
+        pageSize: pageSize,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<ListData<Pet>> createElement() {
+    return _BookedPetsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is BookedPetsProvider &&
+        other.lastId == lastId &&
+        other.pageSize == pageSize;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, lastId.hashCode);
+    hash = _SystemHash.combine(hash, pageSize.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin BookedPetsRef on AutoDisposeFutureProviderRef<ListData<Pet>> {
+  /// The parameter `lastId` of this provider.
+  int get lastId;
+
+  /// The parameter `pageSize` of this provider.
+  int get pageSize;
+}
+
+class _BookedPetsProviderElement
+    extends AutoDisposeFutureProviderElement<ListData<Pet>> with BookedPetsRef {
+  _BookedPetsProviderElement(super.provider);
+
+  @override
+  int get lastId => (origin as BookedPetsProvider).lastId;
+  @override
+  int get pageSize => (origin as BookedPetsProvider).pageSize;
+}
+
 String _$getPetByIdHash() => r'08687354051de5f79006bcc1f00fbf6b8814b317';
 
 /// See also [getPetById].
@@ -1061,6 +1208,24 @@ final getMyUserProvider = AutoDisposeFutureProvider<User>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GetMyUserRef = AutoDisposeFutureProviderRef<User>;
+String _$getMyPetDaycareHash() => r'9e044aa370f0e8e70f30670bbea38df63e9c75ef';
+
+/// See also [getMyPetDaycare].
+@ProviderFor(getMyPetDaycare)
+final getMyPetDaycareProvider =
+    AutoDisposeFutureProvider<PetDaycareDetails>.internal(
+  getMyPetDaycare,
+  name: r'getMyPetDaycareProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$getMyPetDaycareHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef GetMyPetDaycareRef = AutoDisposeFutureProviderRef<PetDaycareDetails>;
 String _$getPetDaycareByIdHash() => r'3452a6ffd0a9b9bb8dfaef70e8867c8be1632d33';
 
 /// See also [getPetDaycareById].

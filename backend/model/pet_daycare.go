@@ -11,7 +11,7 @@ type PetDaycare struct {
 	gorm.Model
 	Name              string  `gorm:"not null"`
 	Address           string  `gorm:"not null"`
-	Locality string `gorm:"not null"`
+	Locality          string  `gorm:"not null"`
 	Latitude          float64 `gorm:"not null"`
 	Longitude         float64 `gorm:"not null"`
 	Description       string
@@ -41,6 +41,7 @@ type PetDaycareDTO struct {
 	ID                uint       `json:"id"`
 	Name              string     `json:"name"`
 	Address           string     `json:"address"`
+	Locality          string     `json:"locality"`
 	Description       string     `json:"description"`
 	Price             float64    `json:"price"`
 	PricingType       string     `json:"pricingType"`
@@ -60,14 +61,14 @@ type PetDaycareDTO struct {
 
 // CreatePetDaycareRequest represents the request payload
 type CreatePetDaycareRequest struct {
-	PetDaycareName              string                  `form:"petDaycareName" binding:"required"`
+	PetDaycareName    string                  `form:"petDaycareName" binding:"required"`
 	Address           string                  `form:"address" binding:"required"`
-	Locality string `form:"locality" binding:"required"`
-	Latitude float64 `form:"latitude" binding:"required"`
-	Longitude float64 `form:"longitude" binding:"required"`
+	Locality          string                  `form:"locality" binding:"required"`
+	Latitude          float64                 `form:"latitude" binding:"required"`
+	Longitude         float64                 `form:"longitude" binding:"required"`
 	Description       string                  `form:"description"`
-	Price             []float64                 `form:"price[]"`
-	PricingType       []string                  `form:"pricingType[]"`
+	Price             []float64               `form:"price[]"`
+	PricingType       []string                `form:"pricingType[]"`
 	HasPickupService  bool                    `form:"hasPickupService"`
 	MustBeVaccinated  bool                    `form:"mustBeVaccinated"`
 	GroomingAvailable bool                    `form:"groomingAvailable"`
@@ -76,7 +77,7 @@ type CreatePetDaycareRequest struct {
 	DailyWalksID      uint                    `form:"dailyWalksId" binding:"required"`
 	DailyPlaytimeID   uint                    `form:"dailyPlaytimeId" binding:"required"`
 	Thumbnails        []*multipart.FileHeader `form:"thumbnails[]" binding:"required"`
-	PetCategoryID         []uint                  `form:"petCategoryId[]" binding:"required"`
+	PetCategoryID     []uint                  `form:"petCategoryId[]" binding:"required"`
 	MaxNumber         []int                   `form:"maxNumber[]" binding:"required"`
 	ThumbnailURLs     []string
 }
@@ -96,46 +97,46 @@ type GetPetDaycaresRequest struct {
 }
 
 type GetPetDaycareDetailResponse struct {
-	ID                uint          `json:"id"`
-	Name              string        `json:"name"`
-	Address           string        `json:"address"`
-	Distance          float64       `json:"distance"`
-	Locality string `json:"locality"`
+	ID       uint    `json:"id"`
+	Name     string  `json:"name"`
+	Address  string  `json:"address"`
+	Distance float64 `json:"distance"`
+	Locality string  `json:"locality"`
 	// Price             float64       `json:"price"`
 	// PricingType       string        `json:"pricingType"`
-	Pricings []PriceDetails `json:"pricings"`
-	Description       string        `json:"description"`
-	BookedNum         int64         `json:"bookedNum"`
-	AverageRating     float64       `json:"averageRating"`
-	RatingCount       int           `json:"ratingCount"`
-	HasPickupService  bool          `json:"hasPickupService"`
-	MustBeVaccinated  bool          `json:"mustBeVaccinated"`
-	GroomingAvailable bool          `json:"groomingAvailable"`
-	FoodProvided      bool          `json:"foodProvided"`
-	FoodBrand         string        `json:"foodBrand"`
-	CreatedAt         string        `json:"createdAt"`
-	Owner             UserDTO       `json:"owner"`
-	DailyWalks        DailyWalks    `json:"dailyWalks"`
-	DailyPlaytime     DailyPlaytime `json:"dailyPlaytime"`
-	ThumbnailURLs     []string      `json:"thumbnailUrls"`
+	Pricings          []PriceDetails `json:"pricings"`
+	Description       string         `json:"description"`
+	BookedNum         int64          `json:"bookedNum"`
+	AverageRating     float64        `json:"averageRating"`
+	RatingCount       int            `json:"ratingCount"`
+	HasPickupService  bool           `json:"hasPickupService"`
+	MustBeVaccinated  bool           `json:"mustBeVaccinated"`
+	GroomingAvailable bool           `json:"groomingAvailable"`
+	FoodProvided      bool           `json:"foodProvided"`
+	FoodBrand         string         `json:"foodBrand"`
+	CreatedAt         string         `json:"createdAt"`
+	Owner             UserDTO        `json:"owner"`
+	DailyWalks        DailyWalks     `json:"dailyWalks"`
+	DailyPlaytime     DailyPlaytime  `json:"dailyPlaytime"`
+	ThumbnailURLs     []string       `json:"thumbnailUrls"`
 }
 
 type GetPetDaycaresResponse struct {
-	ID            uint    `json:"id"`
-	Name          string  `json:"name"`
-	Distance      float64 `json:"distance"`
-	Locality string `json:"locality"`
-	AverageRating float64 `json:"averageRating"`
-	RatingCount   int     `json:"ratingCount"`
-	BookedNum     int64   `json:"bookedNum"`
-	Prices         []PriceDetails `json:"prices"`
-	Thumbnail     string  `json:"thumbnail"`
+	ID            uint           `json:"id"`
+	Name          string         `json:"name"`
+	Distance      float64        `json:"distance"`
+	Locality      string         `json:"locality"`
+	AverageRating float64        `json:"averageRating"`
+	RatingCount   int            `json:"ratingCount"`
+	BookedNum     int64          `json:"bookedNum"`
+	Prices        []PriceDetails `json:"prices"`
+	Thumbnail     string         `json:"thumbnail"`
 }
 
 type PriceDetails struct {
 	PetCategory PetCategoryDTO `json:"petCategory"`
-	Price         float64 `json:"price"`
-	PricingType string `json:"pricingType"`
+	Price       float64        `json:"price"`
+	PricingType string         `json:"pricingType"`
 }
 
 type BookSlotsRequest struct {

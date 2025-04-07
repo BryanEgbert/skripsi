@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
@@ -64,6 +65,8 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
   bool _acceptCats = false;
   bool _acceptBunnies = false;
 
+  String? _error;
+
   void _submitForm() {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -73,6 +76,18 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
     _prices = [];
     _pricingTypes = [];
     _maxNumbers = [];
+
+    if (!_acceptDogs &&
+        !_acceptSmallDog &&
+        !_acceptMediumDog &&
+        !_acceptLargeDog &&
+        !_acceptCats &&
+        !_acceptBunnies) {
+      setState(() {
+        _error = "Must accept at least one pet";
+      });
+      return;
+    }
 
     if (_separateBySize == false) {
       _petCategoryIds.addAll([1, 2, 3]);
@@ -187,6 +202,18 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
     log("[INFO] prices: $_prices, pet category: $_petCategoryIds, pricingType: $_pricingTypes");
     log("[INFO] acceptSmallDog: $_acceptSmallDog, separateBySize: $_separateBySize");
 
+    if (_error != null) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        var snackbar = SnackBar(
+          key: Key("error-message"),
+          content: Text(_error!),
+          backgroundColor: Colors.red,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+        _error = null;
+      });
+    }
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -388,6 +415,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
           child: TextFormField(
             controller: priceController,
             enabled: enabled,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
               labelText: "Price",
             ),
@@ -409,28 +437,35 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
             pricingTypeController.text = await showModalBottomSheet(
               context: context,
               builder: (context) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ListTile(
-                      title: const Text("Day"),
-                      onTap: () {
-                        setState(() {
-                          pricingTypeController.text = "day";
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                    ListTile(
-                      title: const Text("Night"),
-                      onTap: () {
-                        setState(() {
-                          pricingTypeController.text = "night";
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
+                return Container(
+                  margin: EdgeInsets.fromLTRB(12, 12, 12, 32),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Choose Pricing Type",
+                        style: TextStyle(color: Colors.orange[600]),
+                      ),
+                      ListTile(
+                        title: const Text("Day"),
+                        onTap: () {
+                          setState(() {
+                            pricingTypeController.text = "day";
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                      ListTile(
+                        title: const Text("Night"),
+                        onTap: () {
+                          setState(() {
+                            pricingTypeController.text = "night";
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  ),
                 );
               },
             );
@@ -440,6 +475,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
           child: TextFormField(
             controller: slotController,
             enabled: enabled,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
               labelText: "# of Slot",
             ),

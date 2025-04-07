@@ -255,8 +255,8 @@ func (pdc *PetDaycareController) GetPetDaycare(c *gin.Context) {
 		return
 	}
 
-	var latitude *float64
-	var longitude *float64
+	var latitude *float64 = nil
+	var longitude *float64 = nil
 
 	if c.Query("lat") != "" {
 		value, err := strconv.ParseFloat(c.Query("lat"), 64)
@@ -435,6 +435,35 @@ func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 	c.JSON(http.StatusCreated, daycare)
 }
 
+func (pdc *PetDaycareController) GetMyPetdaycare(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	out, err := pdc.petDaycareService.GetMyPetDaycare(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to fetch data",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, out)
+}
+
 func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 	// Parse user GPS location
 	var filters model.GetPetDaycaresRequest
@@ -605,14 +634,6 @@ func (pdc *PetDaycareController) GetBookedPets(c *gin.Context) {
 		return
 	}
 
-	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid pet daycare ID",
-		})
-		return
-	}
-
 	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
@@ -631,7 +652,7 @@ func (pdc *PetDaycareController) GetBookedPets(c *gin.Context) {
 		return
 	}
 
-	out, err := pdc.petService.GetBookedPets(userID, uint(petDaycareID), uint(lastID), pageSize)
+	out, err := pdc.petService.GetBookedPets(userID, uint(lastID), pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to fetch pets",

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/vaccine_record.dart';
@@ -93,7 +95,7 @@ class _PaginatedListViewState
               itemCount: _records.length + 1,
               itemBuilder: (context, index) {
                 if (index < _records.length) {
-                  return _buildVaccineCard(_records[index]!, index);
+                  return _buildVaccineCard(_records[index], index);
                 } else {
                   if (_isFetching) {
                     return Center(
@@ -173,7 +175,10 @@ class _PaginatedListViewState
                         value: "edit",
                         child: Text("Edit"),
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditVaccinationRecordPage(vaccineRecord.id),))
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => EditVaccinationRecordPage(
+                                vaccineRecord.id, widget.petId),
+                          ));
                         },
                       ),
                       PopupMenuItem(
@@ -186,7 +191,6 @@ class _PaginatedListViewState
                           ref
                               .read(vaccinationRecordStateProvider.notifier)
                               .delete(vaccineRecord.id);
-                          // ref.invalidate(vaccineRecordsProvider(widget.petId));
                           setState(() {
                             _records.removeAt(index);
                           });

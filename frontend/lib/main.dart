@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/pages/home.dart';
+import 'package:frontend/pages/pet_daycare_home_page.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/database_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -65,8 +66,6 @@ class PetDaycareApp extends StatelessWidget {
               textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
           )),
-      // TODO: change this
-      // home: WelcomeWidget(),
       home: Consumer(
         builder: (context, ref, child) {
           var provider = ref.watch(getTokenProvider);
@@ -74,7 +73,12 @@ class PetDaycareApp extends StatelessWidget {
           if (provider.hasError && !provider.isLoading) {
             return WelcomeWidget();
           } else if (provider.hasValue && !provider.isLoading) {
-            return HomeWidget();
+            // TODO: add for roleID of 3
+            if (provider.value!.roleId == 1) {
+              return HomeWidget();
+            } else {
+              return PetDaycareHomePage();
+            }
           } else {
             return Container(
               color: Colors.white,

@@ -7,6 +7,7 @@ class DatabaseService {
   final accessToken = "accessToken";
   final refreshToken = "refreshToken";
   final userId = "userId";
+  final roleId = "roleId";
   final exp = "exp";
 
   Future<Database> getDatabase() async {
@@ -14,7 +15,7 @@ class DatabaseService {
       join(await getDatabasesPath(), 'token.db'),
       onCreate: (db, version) async {
         await db.execute('''
-          CREATE TABLE $_tableName($accessToken TEXT, $refreshToken TEXT, $exp INTEGER, $userId INTEGER)
+          CREATE TABLE $_tableName($accessToken TEXT, $refreshToken TEXT, $exp INTEGER, $userId INTEGER, $roleId INTEGER)
         ''');
         return;
       },
@@ -38,6 +39,7 @@ class DatabaseService {
       refreshToken: tokenMaps[0][refreshToken] as String,
       expiryDate: tokenMaps[0][exp] as int,
       userId: tokenMaps[0][userId] as int,
+      roleId: tokenMaps[0][roleId] as int,
     );
   }
 

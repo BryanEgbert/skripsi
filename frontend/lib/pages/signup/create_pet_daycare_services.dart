@@ -2,12 +2,14 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/components/modals/select_lookup_modal.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/pages/pet_daycare_home_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/category_provider.dart';
+import 'package:frontend/utils/validator.dart';
 
 class CreatePetDaycareServices extends ConsumerStatefulWidget {
   final CreateUserRequest createUserReq;
@@ -25,6 +27,13 @@ class CreatePetDaycareServices extends ConsumerStatefulWidget {
 
 class _CreatePetDaycareServicesState
     extends ConsumerState<CreatePetDaycareServices> {
+  final _formKey = GlobalKey<FormState>();
+
+  final _dailyWalkController = TextEditingController();
+  final _dailyPlaytimeController = TextEditingController();
+
+  final _categoryFocusNode = FocusNode();
+
   bool _petVaccinationRequired = false;
   bool _groomingServiceProvided = false;
   bool _pickupServiceProvided = false;
@@ -33,22 +42,31 @@ class _CreatePetDaycareServicesState
   int _dailyWalksId = 0;
   int _dailyPlaytimeId = 0;
 
-  // TODO: validate if _dailyWalksId and daily playtimeId is not 0
   void _submitForm() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     widget.createPetDaycareReq.foodProvided = _foodProvided;
     widget.createPetDaycareReq.groomingAvailable = _groomingServiceProvided;
     widget.createPetDaycareReq.mustBeVaccinated = _petVaccinationRequired;
     widget.createPetDaycareReq.hasPickupService = _pickupServiceProvided;
     widget.createPetDaycareReq.dailyWalksId = _dailyWalksId;
     widget.createPetDaycareReq.dailyPlaytimeId = _dailyPlaytimeId;
+
+    ref.read(authProvider.notifier).createPetDaycareProvider(
+        widget.createUserReq, widget.createPetDaycareReq);
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => PetDaycareHomePage(),
+      ),
+      (route) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
-
-    final dailyWalks = ref.watch(dailyWalksProvider);
-    final dailyPlaytime = ref.watch(dailyPlaytimesProvider);
 
     if (auth.hasError && !auth.hasValue && !auth.isLoading) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -154,37 +172,85 @@ class _CreatePetDaycareServicesState
               ),
             ),
             // TODO: update value on subtitle
-            additionalServicesListTiles(
-              context,
-              dailyWalks,
-              dailyPlaytime,
-              (value) {
-                setState(() {
-                  _dailyWalksId = value ?? 0;
-                });
-              },
-              (value) {
-                setState(() {
-                  _dailyPlaytimeId = value ?? 0;
-                });
-              },
+            // additionalServicesListTiles(
+            //   context,
+            //   dailyWalks,
+            //   dailyPlaytime,
+            //   (value) {
+            //     setState(() {
+            //       _dailyWalksId = value ?? 0;
+            //     });
+            //   },
+            //   (value) {
+            //     setState(() {
+            //       _dailyPlaytimeId = value ?? 0;
+            //     });
+            //   },
+            // ),
+
+            Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _dailyWalkController,
+                      focusNode: _categoryFocusNode,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        suffixIcon: Icon(Icons.navigate_next),
+                        labelText: "Daily Walks Provided",
+                        border: InputBorder.none,
+                      ),
+                      onTap: () async {
+                        _categoryFocusNode.unfocus();
+
+                        final out = await showModalBottomSheet<Lookup>(
+                            context: context,
+                            builder: (context) =>
+                                SelectLookupModal(LookupCategory.dailyWalk));
+
+                        if (out == null) {
+                          return;
+                        }
+                        _dailyWalkController.text = out.name;
+                        _dailyWalksId = out.id;
+                      },
+                      validator: (value) => validateNotEmpty("Input", value),
+                    ),
+                    TextFormField(
+                      controller: _dailyPlaytimeController,
+                      focusNode: _categoryFocusNode,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        suffixIcon: Icon(Icons.navigate_next),
+                        labelText: "Daily Playtime Provided",
+                        border: InputBorder.none,
+                      ),
+                      onTap: () async {
+                        _categoryFocusNode.unfocus();
+
+                        final out = await showModalBottomSheet<Lookup>(
+                            context: context,
+                            builder: (context) => SelectLookupModal(
+                                LookupCategory.dailyPlaytime));
+
+                        if (out == null) {
+                          return;
+                        }
+                        _dailyPlaytimeController.text = out.name;
+                        _dailyPlaytimeId = out.id;
+                      },
+                      validator: (value) => validateNotEmpty("Input", value),
+                    ),
+                  ],
+                ),
+              ),
             ),
             SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () {
-                _submitForm();
-
-                log("[INFO] ${widget.createPetDaycareReq}");
-
-                ref.read(authProvider.notifier).createPetDaycareProvider(
-                    widget.createUserReq, widget.createPetDaycareReq);
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (context) => PetDaycareHomePage(),
-                  ),
-                  (route) => false,
-                );
-              },
+              onPressed: _submitForm,
               child: Text(
                 "Next",
                 style: TextStyle(fontSize: 18, color: Colors.white),

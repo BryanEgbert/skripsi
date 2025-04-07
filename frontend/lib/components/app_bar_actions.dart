@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/edit/edit_user_page.dart';
+import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/auth_provider.dart';
 
 List<Widget> appBarActions(Auth auth) {
@@ -26,6 +27,10 @@ List<Widget> appBarActions(Auth auth) {
             ),
             onTap: () {
               auth.logOut();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => WelcomeWidget()),
+                (route) => false,
+              );
             },
           ),
         ];

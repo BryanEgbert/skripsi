@@ -124,11 +124,6 @@ class _$LookupImpl implements _Lookup {
   final String name;
 
   @override
-  String toString() {
-    return 'Lookup(id: $id, name: $name)';
-  }
-
-  @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&

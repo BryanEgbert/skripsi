@@ -55,7 +55,6 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
           ),
           centerTitle: false,
           actions: [
-            // TODO: navigate to main page
             IconButton(
                 onPressed: () async {
                   if (!auth.isLoading) {

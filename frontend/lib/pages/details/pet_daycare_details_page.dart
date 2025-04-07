@@ -6,6 +6,7 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/image_slider.dart';
 import 'package:frontend/model/pet_daycare.dart';
+import 'package:frontend/pages/edit/edit_pet_daycare_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:readmore/readmore.dart';
@@ -14,6 +15,7 @@ class PetDaycareDetailsPage extends ConsumerStatefulWidget {
   final int petDaycareId;
   final double? latitude;
   final double? longitude;
+
   const PetDaycareDetailsPage(this.petDaycareId,
       {super.key, this.latitude, this.longitude});
 
@@ -25,10 +27,17 @@ class PetDaycareDetailsPage extends ConsumerStatefulWidget {
 }
 
 class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
+  bool _usePickupService = false;
+
   @override
   Widget build(BuildContext context) {
-    final daycare = ref.watch(getPetDaycareByIdProvider(
-        widget.petDaycareId, widget.latitude, widget.longitude));
+    AsyncValue<PetDaycareDetails> daycare;
+    if (widget.petDaycareId != 0) {
+      daycare = ref.watch(getPetDaycareByIdProvider(
+          widget.petDaycareId, widget.latitude, widget.longitude));
+    } else {
+      daycare = ref.watch(getMyPetDaycareProvider);
+    }
 
     log("[INFO] $daycare");
 
@@ -67,14 +76,29 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
           backgroundColor: const Color(0xFFFFF8F0),
           appBar: AppBar(
             backgroundColor: Colors.white,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.orange),
-              onPressed: () => Navigator.pop(context),
-            ),
+            leading: (widget.petDaycareId != 0)
+                ? IconButton(
+                    icon:
+                        const Icon(Icons.arrow_back_ios, color: Colors.orange),
+                    onPressed: () => Navigator.pop(context),
+                  )
+                : null,
             title: const Text('Pet Daycare',
                 style: TextStyle(color: Colors.orange)),
             actions: appBarActions(ref.read(authProvider.notifier)),
           ),
+          floatingActionButton: (widget.petDaycareId == 0)
+              ? FloatingActionButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => EditPetDaycarePage(),
+                    ));
+                  },
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.orange,
+                  child: Icon(Icons.edit),
+                )
+              : null,
           body: _buildBody(value),
         );
 
@@ -110,9 +134,20 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       color: Colors.orange,
                     ),
                   ),
+                  if (widget.latitude != null &&
+                      widget.longitude != null &&
+                      widget.petDaycareId != 0) ...[
+                    Text(
+                      "${(value.distance.toDouble() / 1000).toStringAsFixed(2)}km away",
+                      style: TextStyle(fontSize: 12),
+                      maxLines: 2,
+                    ),
+                    SizedBox(height: 4),
+                  ],
                   Text(
                     value.address,
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 12),
+                    maxLines: 2,
                   ),
                   const SizedBox(height: 4),
                   Row(
@@ -261,8 +296,19 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            if (widget.petDaycareId != 0)
+            if (widget.petDaycareId != 0) ...[
+              const SizedBox(height: 16),
+              CheckboxListTile(
+                  checkColor: Colors.orange,
+                  tileColor: Color(0xFFFFF1E1),
+                  value: _usePickupService,
+                  onChanged: (value) {
+                    setState(() {
+                      if (value != null) {
+                        _usePickupService = value;
+                      }
+                    });
+                  }),
               Container(
                 margin: EdgeInsets.only(right: 12),
                 child: ElevatedButton(
@@ -270,6 +316,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                   child: Text("Book A Slot"),
                 ),
               ),
+            ]
           ],
         ),
       ),

@@ -50,7 +50,8 @@ func (s *AuthServiceImpl) Login(email string, password string) (*model.TokenResp
 
 	// Store refresh token in DB
 	refreshTokenRecord := model.RefreshToken{
-		UserID:    user.ID,
+		UserID: user.ID,
+
 		Token:     refreshToken,
 		ExpiresAt: time.Now().Add(14 * 24 * time.Hour), // 14 days expiration
 	}
@@ -60,6 +61,7 @@ func (s *AuthServiceImpl) Login(email string, password string) (*model.TokenResp
 
 	return &model.TokenResponse{
 		UserID:       user.ID,
+		RoleID:       user.RoleID,
 		AccessToken:  token,
 		RefreshToken: refreshToken,
 		ExpiryDate:   expiry.Unix(), // Add expiry timestamp
@@ -68,6 +70,7 @@ func (s *AuthServiceImpl) Login(email string, password string) (*model.TokenResp
 
 // RefreshToken function
 func (s *AuthServiceImpl) RefreshToken(refreshToken string) (*model.TokenResponse, error) {
+
 	tokenRecord := model.RefreshToken{
 		Token: refreshToken,
 	}
@@ -80,6 +83,11 @@ func (s *AuthServiceImpl) RefreshToken(refreshToken string) (*model.TokenRespons
 	if time.Now().After(tokenRecord.ExpiresAt) {
 		s.db.Unscoped().Delete(&tokenRecord)
 		return nil, errors.New("refresh token has expired")
+	}
+
+	var user model.User
+	if err := s.db.First(&user, tokenRecord.UserID).Error; err != nil {
+		return nil, errors.New("failed to fetch user")
 	}
 
 	// Delete the old refresh token
@@ -105,6 +113,7 @@ func (s *AuthServiceImpl) RefreshToken(refreshToken string) (*model.TokenRespons
 
 	return &model.TokenResponse{
 		UserID:       tokenRecord.UserID,
+		RoleID:       user.RoleID,
 		AccessToken:  newToken,
 		RefreshToken: newRefreshToken,
 		ExpiryDate:   expiry.Unix(), // Add expiry timestamp

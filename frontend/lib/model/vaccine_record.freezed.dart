@@ -159,11 +159,6 @@ class _$VaccineRecordImpl implements _VaccineRecord {
   final String imageUrl;
 
   @override
-  String toString() {
-    return 'VaccineRecord(id: $id, dateAdministered: $dateAdministered, nextDueDate: $nextDueDate, imageUrl: $imageUrl)';
-  }
-
-  @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&

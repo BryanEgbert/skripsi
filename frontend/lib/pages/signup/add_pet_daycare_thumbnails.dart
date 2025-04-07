@@ -46,6 +46,7 @@ class _AddPetDaycareThumbnailsState extends State<AddPetDaycareThumbnails> {
       setState(() {
         _errorText = "Must contains at least one image";
       });
+      return;
     }
 
     Navigator.of(context).push(MaterialPageRoute(
@@ -88,62 +89,62 @@ class _AddPetDaycareThumbnailsState extends State<AddPetDaycareThumbnails> {
               subtitle: "Add images of your pet daycare (min. 1 image)",
             ),
             SizedBox(height: 56),
-            Expanded(
-              child: GridView.builder(
-                itemCount: 9,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () => _pickImage(index),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey[300],
-                        image: _images[index] != null
-                            ? DecorationImage(
-                                image: FileImage(_images[index]!),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                      ),
-                      child: _images[index] == null
-                          ? Icon(Icons.image, color: Colors.black54, size: 32)
-                          : Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.black45,
-                                  ),
-                                  child: IconButton(
-                                    icon: Icon(
-                                      index == 0
-                                          ? Icons.edit
-                                          : Icons
-                                              .delete, // First image = edit, others = delete
-                                      color: Colors.white,
-                                    ),
-                                    onPressed: () {
-                                      if (index == 0) {
-                                        _pickImage(index); // Edit first image
-                                      } else {
-                                        _deleteImage(
-                                            index); // Delete other images
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                    ),
-                  );
-                },
+            GridView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: 9,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
               ),
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () => _pickImage(index),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.grey[300],
+                      image: _images[index] != null
+                          ? DecorationImage(
+                              image: FileImage(_images[index]!),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                    ),
+                    child: _images[index] == null
+                        ? Icon(Icons.image, color: Colors.black54, size: 32)
+                        : Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.black45,
+                                ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    index == 0
+                                        ? Icons.edit
+                                        : Icons
+                                            .delete, // First image = edit, others = delete
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    if (index == 0) {
+                                      _pickImage(index); // Edit first image
+                                    } else {
+                                      _deleteImage(
+                                          index); // Delete other images
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                );
+              },
             ),
             ElevatedButton(
               onPressed: _submitForm,
