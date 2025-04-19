@@ -11,6 +11,7 @@ class PetCategory with _$PetCategory {
     required int id,
     required String name,
     required SizeCategory sizeCategory,
+    required int slotAmount,
   }) = _PetCategory;
 
   factory PetCategory.fromJson(Map<String, dynamic> json) =>

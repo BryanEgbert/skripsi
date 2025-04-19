@@ -12,11 +12,11 @@ import 'package:frontend/model/vaccine_record.dart';
 abstract interface class IPetService {
   Future<Result<Pet>> getById(String token, int id);
   Future<Result<ListData<Pet>>> getPets(
-      String token, PaginationQueryParams pagination);
+      String token, CursorBasedPaginationQueryParams pagination);
   Future<Result<ListData<Pet>>> getBookedPets(
-      String token, PaginationQueryParams pagination);
+      String token, CursorBasedPaginationQueryParams pagination);
   Future<Result<ListData<VaccineRecord>>> getVaccineRecords(
-      String token, int petId, PaginationQueryParams pagination);
+      String token, int petId, CursorBasedPaginationQueryParams pagination);
 
   Future<Result<void>> createPet(String token, PetRequest reqBody);
   Future<Result<void>> updatePet(String token, int id, PetRequest reqBody);
@@ -106,7 +106,7 @@ class PetService implements IPetService {
 
   @override
   Future<Result<ListData<Pet>>> getPets(
-      String token, PaginationQueryParams pagination) {
+      String token, CursorBasedPaginationQueryParams pagination) {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
@@ -170,7 +170,7 @@ class PetService implements IPetService {
 
   @override
   Future<Result<ListData<Pet>>> getBookedPets(
-      String token, PaginationQueryParams pagination) {
+      String token, CursorBasedPaginationQueryParams pagination) {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
@@ -195,7 +195,7 @@ class PetService implements IPetService {
 
   @override
   Future<Result<ListData<VaccineRecord>>> getVaccineRecords(
-      String token, int petId, PaginationQueryParams pagination) {
+      String token, int petId, CursorBasedPaginationQueryParams pagination) {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;

@@ -3,12 +3,13 @@ package service
 import (
 	"errors"
 
+	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"gorm.io/gorm"
 )
 
 type ReviewService interface {
-	GetReviews(petDaycareId uint, startID uint, pageSize int) (*[]model.ReviewsDTO, error)
+	GetReviews(petDaycareId uint, page int, pageSize int) (*[]model.ReviewsDTO, error)
 	CreateReview(petDaycareId uint, userId uint, req model.CreateReviewRequest) error
 	DeleteReview(petDaycareId uint, userId uint) error
 }
@@ -21,18 +22,22 @@ func NewReviewService(db *gorm.DB) *ReviewServiceImpl {
 	return &ReviewServiceImpl{db: db}
 }
 
-func (r *ReviewServiceImpl) GetReviews(petDaycareId uint, startID uint, pageSize int) (*[]model.ReviewsDTO, error) {
-	var reviews []model.ReviewsDTO
+func (r *ReviewServiceImpl) GetReviews(petDaycareId uint, page int, pageSize int) (*[]model.ReviewsDTO, error) {
+	var reviews []model.Reviews
 	if err := r.db.
 		Preload("User").
-		Where("daycare_id = ? AND id > ?", petDaycareId, startID).
-		Order("id ASC").
+		Preload("User.Role").
+		Where("daycare_id = ?", petDaycareId).
+		Order("created_at DESC").
+		Offset((page - 1) * pageSize).
 		Limit(pageSize).
 		Find(&reviews).Error; err != nil {
 		return nil, err
 	}
 
-	return &reviews, nil
+	out := helper.ConvertReviewsToDto(reviews)
+
+	return &out, nil
 }
 
 func (r *ReviewServiceImpl) CreateReview(petDaycareId uint, userId uint, req model.CreateReviewRequest) error {

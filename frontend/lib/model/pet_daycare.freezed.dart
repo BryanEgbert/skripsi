@@ -21,9 +21,13 @@ PetDaycare _$PetDaycareFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$PetDaycare {
   int get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
+  String get name =>
+      throw _privateConstructorUsedError; // required String address,
   double get distance => throw _privateConstructorUsedError;
-  String get locality => throw _privateConstructorUsedError;
+  String get locality =>
+      throw _privateConstructorUsedError; // required String location,
+// required String openingHour,
+// required String closingHour,
   double get averageRating => throw _privateConstructorUsedError;
   int get ratingCount => throw _privateConstructorUsedError;
   int get bookedNum => throw _privateConstructorUsedError;
@@ -230,10 +234,14 @@ class _$PetDaycareImpl implements _PetDaycare {
   final int id;
   @override
   final String name;
+// required String address,
   @override
   final double distance;
   @override
   final String locality;
+// required String location,
+// required String openingHour,
+// required String closingHour,
   @override
   final double averageRating;
   @override
@@ -326,11 +334,13 @@ abstract class _PetDaycare implements PetDaycare {
   @override
   int get id;
   @override
-  String get name;
+  String get name; // required String address,
   @override
   double get distance;
   @override
-  String get locality;
+  String get locality; // required String location,
+// required String openingHour,
+// required String closingHour,
   @override
   double get averageRating;
   @override
@@ -360,6 +370,11 @@ mixin _$PetDaycareDetails {
   String get name => throw _privateConstructorUsedError;
   String get address => throw _privateConstructorUsedError;
   String get locality => throw _privateConstructorUsedError;
+  String get location => throw _privateConstructorUsedError;
+  double get latitude => throw _privateConstructorUsedError;
+  double get longitude => throw _privateConstructorUsedError;
+  String get openingHour => throw _privateConstructorUsedError;
+  String get closingHour => throw _privateConstructorUsedError;
   double get distance => throw _privateConstructorUsedError;
   List<Price> get pricings => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
@@ -398,6 +413,11 @@ abstract class $PetDaycareDetailsCopyWith<$Res> {
       String name,
       String address,
       String locality,
+      String location,
+      double latitude,
+      double longitude,
+      String openingHour,
+      String closingHour,
       double distance,
       List<Price> pricings,
       String description,
@@ -439,6 +459,11 @@ class _$PetDaycareDetailsCopyWithImpl<$Res, $Val extends PetDaycareDetails>
     Object? name = null,
     Object? address = null,
     Object? locality = null,
+    Object? location = null,
+    Object? latitude = null,
+    Object? longitude = null,
+    Object? openingHour = null,
+    Object? closingHour = null,
     Object? distance = null,
     Object? pricings = null,
     Object? description = null,
@@ -472,6 +497,26 @@ class _$PetDaycareDetailsCopyWithImpl<$Res, $Val extends PetDaycareDetails>
       locality: null == locality
           ? _value.locality
           : locality // ignore: cast_nullable_to_non_nullable
+              as String,
+      location: null == location
+          ? _value.location
+          : location // ignore: cast_nullable_to_non_nullable
+              as String,
+      latitude: null == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      longitude: null == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      openingHour: null == openingHour
+          ? _value.openingHour
+          : openingHour // ignore: cast_nullable_to_non_nullable
+              as String,
+      closingHour: null == closingHour
+          ? _value.closingHour
+          : closingHour // ignore: cast_nullable_to_non_nullable
               as String,
       distance: null == distance
           ? _value.distance
@@ -584,6 +629,11 @@ abstract class _$$PetDaycareDetailsImplCopyWith<$Res>
       String name,
       String address,
       String locality,
+      String location,
+      double latitude,
+      double longitude,
+      String openingHour,
+      String closingHour,
       double distance,
       List<Price> pricings,
       String description,
@@ -626,6 +676,11 @@ class __$$PetDaycareDetailsImplCopyWithImpl<$Res>
     Object? name = null,
     Object? address = null,
     Object? locality = null,
+    Object? location = null,
+    Object? latitude = null,
+    Object? longitude = null,
+    Object? openingHour = null,
+    Object? closingHour = null,
     Object? distance = null,
     Object? pricings = null,
     Object? description = null,
@@ -659,6 +714,26 @@ class __$$PetDaycareDetailsImplCopyWithImpl<$Res>
       locality: null == locality
           ? _value.locality
           : locality // ignore: cast_nullable_to_non_nullable
+              as String,
+      location: null == location
+          ? _value.location
+          : location // ignore: cast_nullable_to_non_nullable
+              as String,
+      latitude: null == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      longitude: null == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      openingHour: null == openingHour
+          ? _value.openingHour
+          : openingHour // ignore: cast_nullable_to_non_nullable
+              as String,
+      closingHour: null == closingHour
+          ? _value.closingHour
+          : closingHour // ignore: cast_nullable_to_non_nullable
               as String,
       distance: null == distance
           ? _value.distance
@@ -736,6 +811,11 @@ class _$PetDaycareDetailsImpl implements _PetDaycareDetails {
       required this.name,
       required this.address,
       required this.locality,
+      required this.location,
+      required this.latitude,
+      required this.longitude,
+      required this.openingHour,
+      required this.closingHour,
       required this.distance,
       required final List<Price> pricings,
       required this.description,
@@ -766,6 +846,16 @@ class _$PetDaycareDetailsImpl implements _PetDaycareDetails {
   final String address;
   @override
   final String locality;
+  @override
+  final String location;
+  @override
+  final double latitude;
+  @override
+  final double longitude;
+  @override
+  final String openingHour;
+  @override
+  final String closingHour;
   @override
   final double distance;
   final List<Price> _pricings;
@@ -812,7 +902,7 @@ class _$PetDaycareDetailsImpl implements _PetDaycareDetails {
 
   @override
   String toString() {
-    return 'PetDaycareDetails(id: $id, name: $name, address: $address, locality: $locality, distance: $distance, pricings: $pricings, description: $description, bookedNum: $bookedNum, averageRating: $averageRating, ratingCount: $ratingCount, hasPickupService: $hasPickupService, mustBeVaccinated: $mustBeVaccinated, groomingAvailable: $groomingAvailable, foodProvided: $foodProvided, foodBrand: $foodBrand, createdAt: $createdAt, owner: $owner, dailyWalks: $dailyWalks, dailyPlaytime: $dailyPlaytime, thumbnailUrls: $thumbnailUrls)';
+    return 'PetDaycareDetails(id: $id, name: $name, address: $address, locality: $locality, location: $location, latitude: $latitude, longitude: $longitude, openingHour: $openingHour, closingHour: $closingHour, distance: $distance, pricings: $pricings, description: $description, bookedNum: $bookedNum, averageRating: $averageRating, ratingCount: $ratingCount, hasPickupService: $hasPickupService, mustBeVaccinated: $mustBeVaccinated, groomingAvailable: $groomingAvailable, foodProvided: $foodProvided, foodBrand: $foodBrand, createdAt: $createdAt, owner: $owner, dailyWalks: $dailyWalks, dailyPlaytime: $dailyPlaytime, thumbnailUrls: $thumbnailUrls)';
   }
 
   @override
@@ -825,6 +915,16 @@ class _$PetDaycareDetailsImpl implements _PetDaycareDetails {
             (identical(other.address, address) || other.address == address) &&
             (identical(other.locality, locality) ||
                 other.locality == locality) &&
+            (identical(other.location, location) ||
+                other.location == location) &&
+            (identical(other.latitude, latitude) ||
+                other.latitude == latitude) &&
+            (identical(other.longitude, longitude) ||
+                other.longitude == longitude) &&
+            (identical(other.openingHour, openingHour) ||
+                other.openingHour == openingHour) &&
+            (identical(other.closingHour, closingHour) ||
+                other.closingHour == closingHour) &&
             (identical(other.distance, distance) ||
                 other.distance == distance) &&
             const DeepCollectionEquality().equals(other._pricings, _pricings) &&
@@ -865,6 +965,11 @@ class _$PetDaycareDetailsImpl implements _PetDaycareDetails {
         name,
         address,
         locality,
+        location,
+        latitude,
+        longitude,
+        openingHour,
+        closingHour,
         distance,
         const DeepCollectionEquality().hash(_pricings),
         description,
@@ -906,6 +1011,11 @@ abstract class _PetDaycareDetails implements PetDaycareDetails {
       required final String name,
       required final String address,
       required final String locality,
+      required final String location,
+      required final double latitude,
+      required final double longitude,
+      required final String openingHour,
+      required final String closingHour,
       required final double distance,
       required final List<Price> pricings,
       required final String description,
@@ -934,6 +1044,16 @@ abstract class _PetDaycareDetails implements PetDaycareDetails {
   String get address;
   @override
   String get locality;
+  @override
+  String get location;
+  @override
+  double get latitude;
+  @override
+  double get longitude;
+  @override
+  String get openingHour;
+  @override
+  String get closingHour;
   @override
   double get distance;
   @override

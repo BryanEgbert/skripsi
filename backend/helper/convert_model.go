@@ -12,19 +12,23 @@ import (
 
 func ConvertUserToDTO(user model.User) model.UserDTO {
 	dto := model.UserDTO{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Role:      user.Role,
-		CreatedAt: user.CreatedAt.String(),
-		ImageUrl:  *user.ImageUrl,
+		ID:           user.ID,
+		Name:         user.Name,
+		Email:        user.Email,
+		Role:         user.Role,
+		CreatedAt:    user.CreatedAt.String(),
+		ImageUrl:     "",
+		VetSpecialty: []model.VetSpecialty{},
 	}
 
-	if user.VetSpecialty == nil {
-		dto.VetSpecialty = []model.VetSpecialty{}
-	} else {
+	if user.ImageUrl != nil {
+		dto.ImageUrl = *user.ImageUrl
+	}
+
+	if user.VetSpecialty != nil {
 		dto.VetSpecialty = *user.VetSpecialty
 	}
+
 	return dto
 }
 
@@ -59,8 +63,12 @@ func ConvertPetDaycareToDTO(daycare model.PetDaycare) model.PetDaycareDTO {
 		ID:                daycare.ID,
 		Name:              daycare.Name,
 		Address:           daycare.Address,
+		Locality:          daycare.Locality,
+		Location:          daycare.Location,
 		Description:       daycare.Description,
 		BookedNum:         daycare.BookedNum,
+		OpeningHour:       daycare.OpeningHour.Format("15:04"),
+		ClosingHour:       daycare.ClosingHour.Format("15:04"),
 		OwnerID:           daycare.OwnerID,
 		HasPickupService:  daycare.HasPickupService,
 		MustBeVaccinated:  daycare.MustBeVaccinated,
@@ -108,6 +116,45 @@ func ConvertVaccineRecordToDTO(vaccineRecord model.VaccineRecord) model.VaccineR
 	return out
 }
 
+func ConvertReviewsToDto(reviews []model.Reviews) []model.ReviewsDTO {
+	out := []model.ReviewsDTO{}
+
+	for _, val := range reviews {
+		review := model.ReviewsDTO{
+			ID:          val.ID,
+			Rating:      val.Rate,
+			User:        ConvertUserToDTO(val.User),
+			Description: val.Description,
+			CreatedAt:   val.CreatedAt.Format(time.RFC3339),
+			Title:       val.Name,
+		}
+
+		out = append(out, review)
+	}
+
+	return out
+}
+
+func ConvertTransactionsToTransactionDTO(transactions []model.Transaction) []model.TransactionDTO {
+	var out []model.TransactionDTO
+
+	for _, val := range transactions {
+		out = append(out, model.TransactionDTO{
+			ID: val.ID,
+			Status: model.BookedSlotStatus{
+				ID:   val.BookedSlot.Status.ID,
+				Name: val.BookedSlot.Status.Name,
+			},
+			PetDaycare: ConvertPetDaycareToDetailResponse(val.PetDaycare, 0),
+			StartDate:  val.BookedSlot.StartDate.Format(time.RFC3339),
+			EndDate:    val.BookedSlot.EndDate.Format(time.RFC3339),
+		})
+
+	}
+
+	return out
+}
+
 func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float64) model.GetPetDaycareDetailResponse {
 	// Extract thumbnail URLs
 	thumbnailURLs := []string{}
@@ -135,6 +182,7 @@ func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float6
 				ID:           slot.PetCategory.ID,
 				Name:         slot.PetCategory.Name,
 				SizeCategory: slot.PetCategory.SizeCategory,
+				SlotAmount:   slot.MaxNumber,
 			},
 			Price:       slot.Price,
 			PricingType: slot.PricingType,
@@ -146,6 +194,11 @@ func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float6
 		Name:              daycare.Name,
 		Address:           daycare.Address,
 		Locality:          daycare.Locality,
+		Location:          daycare.Location,
+		Latitude:          daycare.Latitude,
+		Longitude:         daycare.Longitude,
+		OpeningHour:       daycare.OpeningHour.Format("15:04"),
+		ClosingHour:       daycare.ClosingHour.Format("15:04"),
 		Distance:          distance, // This should be calculated separately and passed as an argument
 		Description:       daycare.Description,
 		BookedNum:         daycare.BookedNum,

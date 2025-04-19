@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/components/error_text.dart';
 import 'package:frontend/model/pet_daycare.dart';
 import 'package:frontend/pages/details/pet_daycare_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
@@ -19,11 +22,13 @@ class PaginatedPetDaycareGridView extends ConsumerStatefulWidget {
 class _PaginatedPetDaycareGridViewState
     extends ConsumerState<PaginatedPetDaycareGridView> {
   final ScrollController _scrollController = ScrollController();
-  final List<PetDaycare> _records = [];
+  List<PetDaycare> _records = [];
 
   int _lastId = 0;
   bool _isFetching = false;
   bool _hasMoreData = true;
+
+  Object? _error;
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
@@ -43,19 +48,20 @@ class _PaginatedPetDaycareGridViewState
             petDaycaresProvider(widget.latitude, widget.longitude, _lastId, 10)
                 .future)
         .then((newData) {
-          if (newData.data.isNotEmpty) {
-            setState(() {
-              _records.addAll(newData.data);
-              _lastId = newData.data.last!.id;
-            });
-          } else {
-            setState(() {
-              _hasMoreData = false;
-            });
-          }
-        })
-        .catchError((e) {})
-        .whenComplete(() => setState(() => _isFetching = false));
+      if (newData.data.isNotEmpty) {
+        setState(() {
+          _records.addAll(newData.data);
+          _lastId = newData.data.last.id;
+        });
+      } else {
+        setState(() {
+          _hasMoreData = false;
+        });
+      }
+    }).catchError((e) {
+      log("err: $e");
+      _error = e;
+    }).whenComplete(() => setState(() => _isFetching = false));
   }
 
   @override
@@ -73,10 +79,20 @@ class _PaginatedPetDaycareGridViewState
 
   @override
   Widget build(BuildContext context) {
+    if (_error != null) {
+      return ErrorText(
+          errorText: _error.toString(),
+          onRefresh: () async {
+            _records = [];
+            _fetchMoreData();
+          });
+    }
+
     return RefreshIndicator(
-      onRefresh: () => ref.refresh(
-          petDaycaresProvider(widget.latitude, widget.longitude, _lastId, 10)
-              .future),
+      onRefresh: () async {
+        _records = [];
+        _fetchMoreData();
+      },
       child: (_isFetching && _records.isEmpty)
           ? Center(
               child: CircularProgressIndicator(

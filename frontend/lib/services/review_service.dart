@@ -7,8 +7,8 @@ import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/reviews.dart';
 
 abstract interface class IReviewService {
-  Future<Result<ListData<Reviews>>> getReviews(
-      String token, int petDaycareId, PaginationQueryParams pagination);
+  Future<Result<ListData<Reviews>>> getReviews(String token, int petDaycareId,
+      CursorBasedPaginationQueryParams pagination);
   Future<void> createReview(
       String token, int petDaycareId, CreateReviewRequest reqBody);
   Future<void> deleteReview(String token, int petDaycareId);
@@ -67,8 +67,8 @@ class ReviewService implements IReviewService {
   }
 
   @override
-  Future<Result<ListData<Reviews>>> getReviews(
-      String token, int petDaycareId, PaginationQueryParams pagination) {
+  Future<Result<ListData<Reviews>>> getReviews(String token, int petDaycareId,
+      CursorBasedPaginationQueryParams pagination) {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;

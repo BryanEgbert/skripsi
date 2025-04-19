@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:frontend/model/response/error_response.dart';
 
 final String unknownErr = "Unknown Error";
-final String jwtExpired = "401";
+final String jwtExpired = "Session expired";
 
 sealed class Result<T> {
   const Result();
@@ -75,6 +76,7 @@ Future<Result<T>> makeRequest<T>(
     final res = await reqFunc();
     if (res.statusCode == successStatusCode) {
       T? resp;
+      log("[INFO] ${res.data}");
       if (parse != null) {
         resp = parse(res.data);
       }

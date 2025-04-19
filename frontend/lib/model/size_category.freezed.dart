@@ -23,7 +23,7 @@ mixin _$SizeCategory {
   int get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   double get minWeight => throw _privateConstructorUsedError;
-  double get maxWeight => throw _privateConstructorUsedError;
+  double? get maxWeight => throw _privateConstructorUsedError;
 
   /// Serializes this SizeCategory to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,7 +41,7 @@ abstract class $SizeCategoryCopyWith<$Res> {
           SizeCategory value, $Res Function(SizeCategory) then) =
       _$SizeCategoryCopyWithImpl<$Res, SizeCategory>;
   @useResult
-  $Res call({int id, String name, double minWeight, double maxWeight});
+  $Res call({int id, String name, double minWeight, double? maxWeight});
 }
 
 /// @nodoc
@@ -62,7 +62,7 @@ class _$SizeCategoryCopyWithImpl<$Res, $Val extends SizeCategory>
     Object? id = null,
     Object? name = null,
     Object? minWeight = null,
-    Object? maxWeight = null,
+    Object? maxWeight = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -77,10 +77,10 @@ class _$SizeCategoryCopyWithImpl<$Res, $Val extends SizeCategory>
           ? _value.minWeight
           : minWeight // ignore: cast_nullable_to_non_nullable
               as double,
-      maxWeight: null == maxWeight
+      maxWeight: freezed == maxWeight
           ? _value.maxWeight
           : maxWeight // ignore: cast_nullable_to_non_nullable
-              as double,
+              as double?,
     ) as $Val);
   }
 }
@@ -93,7 +93,7 @@ abstract class _$$SizeCategoryImplCopyWith<$Res>
       __$$SizeCategoryImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name, double minWeight, double maxWeight});
+  $Res call({int id, String name, double minWeight, double? maxWeight});
 }
 
 /// @nodoc
@@ -112,7 +112,7 @@ class __$$SizeCategoryImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? minWeight = null,
-    Object? maxWeight = null,
+    Object? maxWeight = freezed,
   }) {
     return _then(_$SizeCategoryImpl(
       id: null == id
@@ -127,10 +127,10 @@ class __$$SizeCategoryImplCopyWithImpl<$Res>
           ? _value.minWeight
           : minWeight // ignore: cast_nullable_to_non_nullable
               as double,
-      maxWeight: null == maxWeight
+      maxWeight: freezed == maxWeight
           ? _value.maxWeight
           : maxWeight // ignore: cast_nullable_to_non_nullable
-              as double,
+              as double?,
     ));
   }
 }
@@ -154,7 +154,7 @@ class _$SizeCategoryImpl implements _SizeCategory {
   @override
   final double minWeight;
   @override
-  final double maxWeight;
+  final double? maxWeight;
 
   @override
   String toString() {
@@ -199,7 +199,7 @@ abstract class _SizeCategory implements SizeCategory {
       {required final int id,
       required final String name,
       required final double minWeight,
-      required final double maxWeight}) = _$SizeCategoryImpl;
+      required final double? maxWeight}) = _$SizeCategoryImpl;
 
   factory _SizeCategory.fromJson(Map<String, dynamic> json) =
       _$SizeCategoryImpl.fromJson;
@@ -211,7 +211,7 @@ abstract class _SizeCategory implements SizeCategory {
   @override
   double get minWeight;
   @override
-  double get maxWeight;
+  double? get maxWeight;
 
   /// Create a copy of SizeCategory
   /// with the given fields replaced by the non-null parameter values.

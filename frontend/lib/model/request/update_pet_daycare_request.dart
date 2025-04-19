@@ -1,6 +1,6 @@
 import 'dart:io';
 
-class CreatePetDaycareRequest {
+class UpdatePetDaycareRequest {
   String petDaycareName;
   String address;
   String locality;
@@ -22,8 +22,9 @@ class CreatePetDaycareRequest {
   List<File> thumbnails;
   List<int> petCategoryId;
   List<int> maxNumber;
+  List<int> thumbnailIndex;
 
-  CreatePetDaycareRequest({
+  UpdatePetDaycareRequest({
     required this.petDaycareName,
     required this.address,
     required this.location,
@@ -45,6 +46,7 @@ class CreatePetDaycareRequest {
     required this.thumbnails,
     required this.petCategoryId,
     required this.maxNumber,
+    required this.thumbnailIndex,
   });
 
   Map<String, dynamic> toMap() {
@@ -69,6 +71,7 @@ class CreatePetDaycareRequest {
       'dailyPlaytimeId': dailyPlaytimeId.toString(),
       'petCategoryId[]': petCategoryId.map((e) => e.toString()).toList(),
       'maxNumber[]': maxNumber.map((e) => e.toString()).toList(),
+      'thumbnailIndex[]': maxNumber.map((e) => e.toString()).toList(),
     };
 
     return map;
@@ -76,7 +79,7 @@ class CreatePetDaycareRequest {
 
   @override
   String toString() {
-    return """CreatePetDaycareRequest(
+    return """UpdatePetDaycareRequest(
     petDaycareName: $petDaycareName, 
     address: $address, 
     locality: $locality, 

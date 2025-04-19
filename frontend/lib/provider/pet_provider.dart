@@ -2,7 +2,6 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/provider/list_data_provider.dart';
-import 'package:frontend/provider/pet_state_provider.dart';
 import 'package:frontend/services/pet_service.dart';
 import 'package:frontend/utils/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -18,11 +17,15 @@ class PetState extends _$PetState {
 
   Future<void> deletePet(int petId) async {
     state = AsyncLoading();
-
-    TokenResponse token = await refreshToken();
+    TokenResponse? token;
+    try {
+      token = await refreshToken();
+    } catch (e) {
+      state = AsyncError(jwtExpired, StackTrace.current);
+    }
 
     final petService = PetService();
-    final res = await petService.deletePet(token.accessToken, petId);
+    final res = await petService.deletePet(token!.accessToken, petId);
 
     switch (res) {
       case Ok<void>():

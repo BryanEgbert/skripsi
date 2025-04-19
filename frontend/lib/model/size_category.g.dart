@@ -11,7 +11,7 @@ _$SizeCategoryImpl _$$SizeCategoryImplFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       minWeight: (json['minWeight'] as num).toDouble(),
-      maxWeight: (json['maxWeight'] as num).toDouble(),
+      maxWeight: (json['maxWeight'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$$SizeCategoryImplToJson(_$SizeCategoryImpl instance) =>

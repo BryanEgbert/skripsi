@@ -7,6 +7,7 @@ import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/image_slider.dart';
 import 'package:frontend/model/pet_daycare.dart';
 import 'package:frontend/pages/edit/edit_pet_daycare_page.dart';
+import 'package:frontend/pages/ratings_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:readmore/readmore.dart';
@@ -67,9 +68,11 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
               : null,
           body: ErrorText(
               errorText: error.toString(),
-              onRefresh: () => ref.refresh(getPetDaycareByIdProvider(
-                      widget.petDaycareId, widget.latitude, widget.longitude)
-                  .future)),
+              onRefresh: () => (widget.petDaycareId != 0)
+                  ? ref.refresh(getPetDaycareByIdProvider(widget.petDaycareId,
+                          widget.latitude, widget.longitude)
+                      .future)
+                  : ref.refresh(getMyPetDaycareProvider.future)),
         );
       case AsyncData(:final value):
         return Scaffold(
@@ -90,9 +93,11 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
           floatingActionButton: (widget.petDaycareId == 0)
               ? FloatingActionButton(
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => EditPetDaycarePage(),
-                    ));
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => EditPetDaycarePage(),
+                      ),
+                    );
                   },
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.orange,
@@ -185,6 +190,10 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                         fontWeight: FontWeight.bold,
                         color: Colors.orange,
                       ),
+                      lessStyle: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                      ),
                     ),
                 ],
               ),
@@ -244,6 +253,13 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                     Text("Pick-Up Service"),
                   ]),
                   Row(children: [
+                    value.groomingAvailable
+                        ? Icon(Icons.check, color: Colors.green)
+                        : Icon(Icons.close, color: Colors.red),
+                    SizedBox(width: 8),
+                    Text("Grooming Service"),
+                  ]),
+                  Row(children: [
                     value.foodProvided
                         ? Icon(Icons.check, color: Colors.green)
                         : Icon(Icons.close, color: Colors.red),
@@ -275,7 +291,14 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
             ),
             const SizedBox(height: 8),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => RatingsPage(
+                          value.id,
+                          ratingsAvg: value.averageRating,
+                          ratingsCount: value.ratingCount,
+                        )));
+              },
               child: Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(12),

@@ -17,7 +17,7 @@ func NewTransactionController(transactionService service.TransactionService) *Tr
 	return &TransactionController{transactionService}
 }
 
-func (tc *TransactionController) GetTransactiions(c *gin.Context) {
+func (tc *TransactionController) GetTransactions(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
@@ -34,7 +34,7 @@ func (tc *TransactionController) GetTransactiions(c *gin.Context) {
 		return
 	}
 
-	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)
+	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid last ID",
@@ -52,7 +52,7 @@ func (tc *TransactionController) GetTransactiions(c *gin.Context) {
 		return
 	}
 
-	out, err := tc.transactionService.GetTransactions(userID, uint(lastID), pageSize)
+	out, err := tc.transactionService.GetTransactions(userID, int(page), pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to fetch transactions",
@@ -61,5 +61,5 @@ func (tc *TransactionController) GetTransactiions(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, out)
+	c.JSON(http.StatusOK, model.ListData[model.TransactionDTO]{Data: *out})
 }

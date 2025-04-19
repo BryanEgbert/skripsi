@@ -13,6 +13,7 @@ _$ReviewsImpl _$$ReviewsImplFromJson(Map<String, dynamic> json) =>
       title: json['title'] as String,
       description: json['description'] as String,
       user: User.fromJson(json['user'] as Map<String, dynamic>),
+      createdAt: json['createdAt'] as String,
     );
 
 Map<String, dynamic> _$$ReviewsImplToJson(_$ReviewsImpl instance) =>
@@ -22,4 +23,5 @@ Map<String, dynamic> _$$ReviewsImplToJson(_$ReviewsImpl instance) =>
       'title': instance.title,
       'description': instance.description,
       'user': instance.user,
+      'createdAt': instance.createdAt,
     };

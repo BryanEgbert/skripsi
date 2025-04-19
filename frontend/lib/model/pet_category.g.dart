@@ -12,6 +12,7 @@ _$PetCategoryImpl _$$PetCategoryImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       sizeCategory:
           SizeCategory.fromJson(json['sizeCategory'] as Map<String, dynamic>),
+      slotAmount: (json['slotAmount'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$PetCategoryImplToJson(_$PetCategoryImpl instance) =>
@@ -19,4 +20,5 @@ Map<String, dynamic> _$$PetCategoryImplToJson(_$PetCategoryImpl instance) =>
       'id': instance.id,
       'name': instance.name,
       'sizeCategory': instance.sizeCategory,
+      'slotAmount': instance.slotAmount,
     };

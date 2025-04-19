@@ -29,6 +29,7 @@ type PetTestTable[T any] struct {
 
 func TestGetPet(t *testing.T) {
 	token1, _, _ := helper.CreateJWT(1)
+	ten := float32(10)
 
 	tests := []UserTestTable[int]{
 		{
@@ -48,7 +49,7 @@ func TestGetPet(t *testing.T) {
 						ID:        1,
 						Name:      "small",
 						MinWeight: 0,
-						MaxWeight: 10,
+						MaxWeight: &ten,
 					},
 				},
 				Owner: model.UserDTO{
@@ -57,7 +58,7 @@ func TestGetPet(t *testing.T) {
 					Email:    "john@example.com",
 					ImageUrl: "test.com/image/test.jpeg",
 					Role: model.Role{
-						ID: 1,
+						ID:   1,
 						Name: "pet owner",
 					},
 				},
@@ -107,6 +108,7 @@ func TestGetPet(t *testing.T) {
 
 func TestGetPets(t *testing.T) {
 	token1, _, _ := helper.CreateJWT(1)
+	ten := float32(10)
 
 	tests := []PetTestTable[int]{
 		{
@@ -127,7 +129,7 @@ func TestGetPets(t *testing.T) {
 							ID:        1,
 							Name:      "small",
 							MinWeight: 0,
-							MaxWeight: 10,
+							MaxWeight: &ten,
 						},
 					},
 					Owner: model.UserDTO{
@@ -136,7 +138,7 @@ func TestGetPets(t *testing.T) {
 						Email:    "john@example.com",
 						ImageUrl: "test.com/image/test.jpeg",
 						Role: model.Role{
-							ID: 1,
+							ID:   1,
 							Name: "pet owner",
 						},
 					},
@@ -153,7 +155,6 @@ func TestGetPets(t *testing.T) {
 							ID:        2,
 							Name:      "medium",
 							MinWeight: 11,
-							MaxWeight: 26,
 						},
 					},
 					Owner: model.UserDTO{
@@ -162,7 +163,7 @@ func TestGetPets(t *testing.T) {
 						Email:    "john@example.com",
 						ImageUrl: "test.com/image/test.jpeg",
 						Role: model.Role{
-							ID: 1,
+							ID:   1,
 							Name: "pet owner",
 						},
 					},
@@ -214,7 +215,7 @@ func TestCreatePet(t *testing.T) {
 			Name:  "On create pet, should return 201 on success",
 			Token: token1,
 			In: model.PetRequest{
-				Name:           "new_pet",
+				Name:          "new_pet",
 				PetCategoryID: 2,
 			},
 			ExpectedStatus: 201,
@@ -274,9 +275,9 @@ func TestUpdatePet(t *testing.T) {
 			Name: "On update pet, should return 204 if pet update successfully",
 			ID:   1,
 			In: model.PetRequest{
-				Name:           "update_name",
-				Status:         "sleeping",
-				PetCategoryID:      2,
+				Name:          "update_name",
+				Status:        "sleeping",
+				PetCategoryID: 2,
 			},
 			Token:          token1,
 			ExpectedStatus: 204,
@@ -286,9 +287,9 @@ func TestUpdatePet(t *testing.T) {
 			Token: token1,
 			ID:    10000,
 			In: model.PetRequest{
-				Name:           "update_name",
-				Status:         "sleeping",
-				PetCategoryID:      2,
+				Name:          "update_name",
+				Status:        "sleeping",
+				PetCategoryID: 2,
 			},
 			ExpectedStatus: 404,
 		},

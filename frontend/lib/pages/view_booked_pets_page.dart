@@ -44,7 +44,6 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
     });
 
     ref.read(bookedPetsProvider(_lastId, _pageSize).future).then((newData) {
-      log("[INFO] booked pets data: ${newData.data.length}");
       if (newData.data.isNotEmpty) {
         setState(() {
           _records.addAll(newData.data);
@@ -56,7 +55,8 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
         });
       }
     }).catchError((e) {
-      _error = e as String;
+      // _error = e as String;
+      log("[INFO] error: $e");
     }).whenComplete(() => setState(() => _isFetching = false));
   }
 
@@ -158,7 +158,10 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => PetDetailsPage(petId: item.id),
+            builder: (context) => PetDetailsPage(
+              petId: item.id,
+              isOwner: false,
+            ),
           ),
         );
       },

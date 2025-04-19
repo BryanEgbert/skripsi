@@ -32,8 +32,11 @@ class _SelectPetTypeModalState extends ConsumerState<SelectPetTypeModal> {
                       return ListTile(
                         title: Text(value[index].name),
                         subtitle: (value[index].sizeCategory.id != 0)
-                            ? Text(
-                                "${value[index].sizeCategory.minWeight.toInt()} kg - ${value[index].sizeCategory.maxWeight.toInt()} kg")
+                            ? (value[index].sizeCategory.maxWeight != null)
+                                ? Text(
+                                    "${value[index].sizeCategory.minWeight.toInt()} kg - ${value[index].sizeCategory.maxWeight!.toInt()} kg")
+                                : Text(
+                                    "${value[index].sizeCategory.minWeight.toInt()} kg+")
                             : null,
                         onTap: () {
                           Navigator.of(context).pop(

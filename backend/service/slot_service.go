@@ -165,11 +165,12 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 		Error; err != nil {
 		return err
 	}
+	// TODO: loop date instead of add counts
 
 	remainingSlots := slot.MaxNumber - int(bookedSlotsCount) - int(reducedSlotsCount)
 
 	if remainingSlots <= 0 {
-		return errors.New("Slots are full in between the chosen date")
+		return errors.New("slots are full in between the chosen date")
 	}
 
 	if pricingType == "night" && int(req.EndDate.Sub(req.StartDate)/(24*time.Hour)) < 2 {

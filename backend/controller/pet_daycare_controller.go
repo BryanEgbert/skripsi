@@ -3,6 +3,7 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -37,10 +38,10 @@ func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
 	}
 
 	// Get optional pagination parameters
-	lastIDQuery := c.Query("last-id")
-	var lastID uint64 = 0
-	if lastIDQuery != "" {
-		lastID, err = strconv.ParseUint(lastIDQuery, 10, 64)
+	rawPage := c.Query("page")
+	var page uint64 = 0
+	if rawPage != "" {
+		page, err = strconv.ParseUint(rawPage, 10, 64)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, model.ErrorResponse{
 				Message: "Invalid last ID",
@@ -65,7 +66,7 @@ func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
 	}
 
 	// Fetch reviews using the service
-	reviews, err := pdc.reviewService.GetReviews(uint(petDaycareID), uint(lastID), pageSize)
+	reviews, err := pdc.reviewService.GetReviews(uint(petDaycareID), int(page), pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to retrieve reviews",
@@ -325,14 +326,16 @@ func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 	petDaycareIDParam := c.Param("id")
 	petDaycareID, err := strconv.ParseUint(petDaycareIDParam, 10, 64)
 	if err != nil {
+		log.Printf("parse pet daycare id err: %v", err)
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid pet daycare ID",
 		})
 		return
 	}
 
-	var request model.CreatePetDaycareRequest
+	var request model.UpdatePetDaycareRequest
 	if err := c.ShouldBind(&request); err != nil {
+		log.Printf("Bind err: %v", err)
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid request data",
 			Error:   err.Error(),
@@ -349,15 +352,18 @@ func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 
 	var thumbnailURLs []string
 	for _, thumbnail := range request.Thumbnails {
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(thumbnail.Filename)))
-		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("%s/%s", c.Request.Host, filename))
+		if thumbnail != nil {
+			filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(thumbnail.Filename)))
+			// TODO: change url scheme?
+			thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("http://%s/%s", c.Request.Host, filename))
 
-		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
-			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-				Message: "Failed to save image",
-				Error:   err.Error(),
-			})
-			return
+			if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
+				c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+					Message: "Failed to save image",
+					Error:   err.Error(),
+				})
+				return
+			}
 		}
 	}
 	request.ThumbnailURLs = thumbnailURLs
@@ -411,7 +417,7 @@ func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 	var thumbnailURLs []string
 	for _, thumbnail := range request.Thumbnails {
 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(thumbnail.Filename)))
-		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("%s/%s", c.Request.Host, filename))
+		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("http://%s/%s", c.Request.Host, filename))
 
 		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
@@ -451,6 +457,8 @@ func (pdc *PetDaycareController) GetMyPetdaycare(c *gin.Context) {
 		})
 		return
 	}
+
+	log.Printf("userId: %d", userID)
 
 	out, err := pdc.petDaycareService.GetMyPetDaycare(userID)
 	if err != nil {

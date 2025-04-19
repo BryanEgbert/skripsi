@@ -19,6 +19,18 @@ func SeedTable(db *gorm.DB) error {
 		return err
 	}
 
+	bookedSlotStatus := []model.BookedSlotStatus{
+		{ID: 1, Name: "Waiting for confirmation"},
+		{ID: 2, Name: "Confirmed"},
+		{ID: 3, Name: "Rejected"},
+		{ID: 4, Name: "Done"},
+		{ID: 5, Name: "Cancelled"},
+	}
+
+	if err := db.Create(&bookedSlotStatus).Error; err != nil {
+		return err
+	}
+
 	dailyWalks := []model.DailyWalks{
 		{ID: 1, Name: "No walks provided"},
 		{ID: 2, Name: "one walk a day"},
@@ -62,13 +74,19 @@ func SeedTable(db *gorm.DB) error {
 		return err
 	}
 
+	five := float32(5.0)
+	ten := float32(10)
+	twentyFive := float32(25)
+	fortyFive := float32(45)
+
 	// Insert SizeCategory records
 	sizeCategories := []model.SizeCategory{
-		{Name: "small", MinWeight: 0, MaxWeight: 10},
-		{Name: "medium", MinWeight: 11, MaxWeight: 26},
-		{Name: "large", MinWeight: 27, MaxWeight: 45},
-		{Name: "giant", MinWeight: 45, MaxWeight: 100},
-		{Name: "all size", MinWeight: 0, MaxWeight: 100},
+		{Name: "miniature", MinWeight: 1, MaxWeight: &five},
+		{Name: "small", MinWeight: 5, MaxWeight: &ten},
+		{Name: "medium", MinWeight: 10, MaxWeight: &twentyFive},
+		{Name: "large", MinWeight: 25, MaxWeight: &fortyFive},
+		{Name: "giant", MinWeight: 45},
+		{Name: "all size", MinWeight: 0},
 	}
 	if err := db.Create(&sizeCategories).Error; err != nil {
 		return err
@@ -76,10 +94,11 @@ func SeedTable(db *gorm.DB) error {
 
 	// Insert Species records
 	petCategory := []model.PetCategory{
-		{Name: "small dogs", SizeCategory: sizeCategories[0]},
-		{Name: "medium dogs", SizeCategory: sizeCategories[1]},
-		{Name: "large dogs", SizeCategory: sizeCategories[2]},
-		{Name: "giant dogs", SizeCategory: sizeCategories[3]},
+		{Name: "miniature dogs", SizeCategory: sizeCategories[0]},
+		{Name: "small dogs", SizeCategory: sizeCategories[1]},
+		{Name: "medium dogs", SizeCategory: sizeCategories[2]},
+		{Name: "large dogs", SizeCategory: sizeCategories[3]},
+		{Name: "giant dogs", SizeCategory: sizeCategories[4]},
 		{Name: "cats"},
 		{Name: "rabbits"},
 	}
@@ -112,11 +131,14 @@ func SeedTable(db *gorm.DB) error {
 
 	daycare := []model.PetDaycare{
 		{
-			Name:      "Happy Paws",
-			Address:   "123 Bark St",
-			Latitude:  -6.17722188,
-			Longitude: 106.7909223,
-			Locality:  "Grogol Petamburan",
+			Name:        "Happy Paws",
+			Address:     "123 Bark St",
+			Latitude:    -6.17722188,
+			Longitude:   106.7909223,
+			Locality:    "Grogol Petamburan",
+			Location:    "Happy Paws",
+			OpeningHour: model.CustomTime{Time: time.Now()},
+			ClosingHour: model.CustomTime{Time: time.Now().Add(1 * time.Hour)},
 			// Price:         100000.0,
 			OwnerID:       users[1].ID,
 			DailyWalks:    dailyWalks[1],
@@ -125,10 +147,13 @@ func SeedTable(db *gorm.DB) error {
 		{
 			Name:        "DOG Daycare Jakarta",
 			Address:     "Jl. Abdul Majid Raya No.31, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410",
+			Location:    "DOG daycare jakarta",
 			Description: "DOG daycare jakarta desc",
 			Latitude:    -6.266167,
 			Longitude:   106.808214,
 			Locality:    "Grogol Petamburan",
+			OpeningHour: model.CustomTime{Time: time.Now()},
+			ClosingHour: model.CustomTime{Time: time.Now().Add(1 * time.Hour)},
 			// Price:             150000.0,
 			OwnerID:           users[2].ID,
 			DailyWalks:        dailyWalks[1],
@@ -139,11 +164,14 @@ func SeedTable(db *gorm.DB) error {
 			FoodBrand:         "Pedigree",
 		},
 		{
-			Name:      "Happy Paws 2",
-			Address:   "123 Bark St",
-			Latitude:  -6.22400791,
-			Longitude: 106.5889773,
-			Locality:  "Grogol Petamburan",
+			Name:        "Happy Paws 2",
+			Address:     "123 Bark St",
+			Location:    "Central Park Mall",
+			Latitude:    -6.22400791,
+			Longitude:   106.5889773,
+			Locality:    "Grogol Petamburan",
+			OpeningHour: model.CustomTime{Time: time.Now()},
+			ClosingHour: model.CustomTime{Time: time.Now().Add(1 * time.Hour)},
 			// Price:         100000.0,
 			OwnerID:       users[5].ID,
 			DailyWalks:    dailyWalks[1],
@@ -328,11 +356,13 @@ func SeedTable(db *gorm.DB) error {
 			PetID:     pet[0].ID,
 			StartDate: time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
 			EndDate:   time.Date(2025, time.February, 15, 0, 0, 0, 0, time.Local),
+			StatusID:  1,
 		},
 		{
 			UserID:    users[0].ID,
 			DaycareID: daycare[1].ID,
 			PetID:     pet[1].ID, StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 3),
+			StatusID: 1,
 		},
 	}
 
@@ -397,7 +427,7 @@ func SeedTable(db *gorm.DB) error {
 
 	transaction := model.Transaction{
 		UserID:       users[0].ID,
-		PetDaycareID: daycare[0].ID, BookedSlotID: bookedSlot[0].ID, Status: "completed",
+		PetDaycareID: daycare[0].ID, BookedSlotID: bookedSlot[0].ID,
 	}
 
 	if err := db.Create(&transaction).Error; err != nil {

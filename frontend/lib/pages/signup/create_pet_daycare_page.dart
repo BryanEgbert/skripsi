@@ -34,6 +34,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
   double _latitude = 0.0;
   double _longitude = 0.0;
   String _locality = "";
+  String? _location;
   String? _locationErrorText;
 
   final _sessionId = Uuid().v4();
@@ -55,7 +56,10 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
     final createPetDaycareReq = CreatePetDaycareRequest(
       petDaycareName: _nameController.text,
       address: _address,
+      location: _location!,
       description: _descriptionController.text,
+      openingHour: _openingHoursController.text,
+      closingHour: _closingHoursController.text,
       locality: _locality,
       latitude: _latitude,
       longitude: _longitude,
@@ -122,8 +126,8 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                         ),
                         validator: (value) => validateNotEmpty("Name", value),
                       ),
-                      locationInput(),
-                      operationHoursInput(context),
+                      _locationInput(),
+                      _operationHoursInput(context),
                       TextFormField(
                         controller: _descriptionController,
                         key: Key("description-input"),
@@ -151,8 +155,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
     );
   }
 
-  Widget operationHoursInput(BuildContext context) {
-    // TODO: add validation to closing hour
+  Widget _operationHoursInput(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -226,7 +229,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
     );
   }
 
-  Widget locationInput() {
+  Widget _locationInput() {
     return Autocomplete<SuggestionDetailsResponse>(
       fieldViewBuilder:
           (context, textEditingController, focusNode, onFieldSubmitted) {
@@ -276,6 +279,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
             _locality =
                 res.value!.features[0].properties.context.locality!.name;
             _address = res.value!.features[0].properties.context.address!.name;
+            _location = res.value!.features[0].properties.name;
             _latitude = res.value!.features[0].properties.coordinates.latitude;
             _longitude =
                 res.value!.features[0].properties.coordinates.longitude;

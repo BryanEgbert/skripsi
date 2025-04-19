@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,9 +6,7 @@ import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/select_pet_type_modal.dart';
 import 'package:frontend/components/profile_image_picker.dart';
 import 'package:frontend/model/lookup.dart';
-import 'package:frontend/model/pet_category.dart';
 import 'package:frontend/model/request/pet_request.dart';
-import 'package:frontend/provider/category_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/pet_provider.dart';
 import 'package:frontend/utils/handle_error.dart';

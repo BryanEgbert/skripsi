@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -8,11 +7,9 @@ import 'package:frontend/components/modals/select_pet_type_modal.dart';
 import 'package:frontend/components/profile_image_picker.dart';
 import 'package:frontend/components/signup_guide_text.dart';
 import 'package:frontend/model/lookup.dart';
-import 'package:frontend/model/pet_category.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/pages/signup/create_vaccination_records_page.dart';
-import 'package:frontend/provider/category_provider.dart';
 import 'package:frontend/utils/validator.dart';
 import 'package:image_picker/image_picker.dart';
 

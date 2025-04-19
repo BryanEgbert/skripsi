@@ -31,6 +31,7 @@ type UserCoordinate struct {
 func TestGetBookedPet(t *testing.T) {
 	token1, _, _ := helper.CreateJWT(1)
 	token2, _, _ := helper.CreateJWT(2)
+	var ten float32 = float32(10)
 	testPetDto := []model.PetDTO{
 		{
 			ID:       1,
@@ -41,10 +42,10 @@ func TestGetBookedPet(t *testing.T) {
 				ID:   1,
 				Name: "small dogs",
 				SizeCategory: model.SizeCategory{
-					ID: 1,
-					Name: "small",
+					ID:        1,
+					Name:      "small",
 					MinWeight: 0,
-					MaxWeight: 10,
+					MaxWeight: &ten,
 				},
 			},
 			Owner: model.UserDTO{
@@ -53,7 +54,7 @@ func TestGetBookedPet(t *testing.T) {
 				Email:    "john@example.com",
 				ImageUrl: "test.com/image/test.jpeg",
 				Role: model.Role{
-					ID: 1,
+					ID:   1,
 					Name: "pet owner",
 				},
 			},
@@ -135,9 +136,9 @@ func TestGetPetDaycare(t *testing.T) {
 			Token:          token1,
 			ExpectedStatus: 200,
 			ExpectedOutput: model.GetPetDaycareDetailResponse{
-				ID:                2,
-				Name:              "DOG Daycare Jakarta",
-				Address:           "Jl. Abdul Majid Raya No.31, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410",
+				ID:      2,
+				Name:    "DOG Daycare Jakarta",
+				Address: "Jl. Abdul Majid Raya No.31, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410",
 				// Price:             150000.0,
 				// PricingType:       "day",
 				Description:       "DOG daycare jakarta desc",
@@ -167,7 +168,7 @@ func TestGetPetDaycare(t *testing.T) {
 					Email:    "daycare@example.com",
 					ImageUrl: "test.com/image/test.jpeg",
 					Role: model.Role{
-						ID: 2,
+						ID:   2,
 						Name: "pet daycare provider",
 					},
 				},
@@ -183,9 +184,9 @@ func TestGetPetDaycare(t *testing.T) {
 			Token:          token1,
 			ExpectedStatus: 200,
 			ExpectedOutput: model.GetPetDaycareDetailResponse{
-				ID:                2,
-				Name:              "DOG Daycare Jakarta",
-				Address:           "Jl. Abdul Majid Raya No.31, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410",
+				ID:      2,
+				Name:    "DOG Daycare Jakarta",
+				Address: "Jl. Abdul Majid Raya No.31, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410",
 				// Price:             150000.0,
 				// PricingType:       "day",
 				Description:       "DOG daycare jakarta desc",
@@ -215,7 +216,7 @@ func TestGetPetDaycare(t *testing.T) {
 					Email:    "daycare@example.com",
 					ImageUrl: "test.com/image/test.jpeg",
 					Role: model.Role{
-						ID: 2,
+						ID:   2,
 						Name: "pet daycare provider",
 					},
 				},
@@ -277,8 +278,8 @@ func TestGetPetDaycareSlot(t *testing.T) {
 			ID:   1,
 			In: model.GetSlotRequest{
 				PetCategoryID: 1,
-				Year:           2025,
-				Month:          2,
+				Year:          2025,
+				Month:         2,
 			},
 			Token:          token1,
 			ExpectedStatus: 200,

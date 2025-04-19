@@ -23,6 +23,7 @@ mixin _$PetCategory {
   int get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   SizeCategory get sizeCategory => throw _privateConstructorUsedError;
+  int get slotAmount => throw _privateConstructorUsedError;
 
   /// Serializes this PetCategory to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -40,7 +41,7 @@ abstract class $PetCategoryCopyWith<$Res> {
           PetCategory value, $Res Function(PetCategory) then) =
       _$PetCategoryCopyWithImpl<$Res, PetCategory>;
   @useResult
-  $Res call({int id, String name, SizeCategory sizeCategory});
+  $Res call({int id, String name, SizeCategory sizeCategory, int slotAmount});
 
   $SizeCategoryCopyWith<$Res> get sizeCategory;
 }
@@ -63,6 +64,7 @@ class _$PetCategoryCopyWithImpl<$Res, $Val extends PetCategory>
     Object? id = null,
     Object? name = null,
     Object? sizeCategory = null,
+    Object? slotAmount = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -77,6 +79,10 @@ class _$PetCategoryCopyWithImpl<$Res, $Val extends PetCategory>
           ? _value.sizeCategory
           : sizeCategory // ignore: cast_nullable_to_non_nullable
               as SizeCategory,
+      slotAmount: null == slotAmount
+          ? _value.slotAmount
+          : slotAmount // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 
@@ -99,7 +105,7 @@ abstract class _$$PetCategoryImplCopyWith<$Res>
       __$$PetCategoryImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name, SizeCategory sizeCategory});
+  $Res call({int id, String name, SizeCategory sizeCategory, int slotAmount});
 
   @override
   $SizeCategoryCopyWith<$Res> get sizeCategory;
@@ -121,6 +127,7 @@ class __$$PetCategoryImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? sizeCategory = null,
+    Object? slotAmount = null,
   }) {
     return _then(_$PetCategoryImpl(
       id: null == id
@@ -135,6 +142,10 @@ class __$$PetCategoryImplCopyWithImpl<$Res>
           ? _value.sizeCategory
           : sizeCategory // ignore: cast_nullable_to_non_nullable
               as SizeCategory,
+      slotAmount: null == slotAmount
+          ? _value.slotAmount
+          : slotAmount // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -143,7 +154,10 @@ class __$$PetCategoryImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PetCategoryImpl implements _PetCategory {
   _$PetCategoryImpl(
-      {required this.id, required this.name, required this.sizeCategory});
+      {required this.id,
+      required this.name,
+      required this.sizeCategory,
+      required this.slotAmount});
 
   factory _$PetCategoryImpl.fromJson(Map<String, dynamic> json) =>
       _$$PetCategoryImplFromJson(json);
@@ -154,10 +168,12 @@ class _$PetCategoryImpl implements _PetCategory {
   final String name;
   @override
   final SizeCategory sizeCategory;
+  @override
+  final int slotAmount;
 
   @override
   String toString() {
-    return 'PetCategory(id: $id, name: $name, sizeCategory: $sizeCategory)';
+    return 'PetCategory(id: $id, name: $name, sizeCategory: $sizeCategory, slotAmount: $slotAmount)';
   }
 
   @override
@@ -168,12 +184,15 @@ class _$PetCategoryImpl implements _PetCategory {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.sizeCategory, sizeCategory) ||
-                other.sizeCategory == sizeCategory));
+                other.sizeCategory == sizeCategory) &&
+            (identical(other.slotAmount, slotAmount) ||
+                other.slotAmount == slotAmount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, sizeCategory);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, sizeCategory, slotAmount);
 
   /// Create a copy of PetCategory
   /// with the given fields replaced by the non-null parameter values.
@@ -195,7 +214,8 @@ abstract class _PetCategory implements PetCategory {
   factory _PetCategory(
       {required final int id,
       required final String name,
-      required final SizeCategory sizeCategory}) = _$PetCategoryImpl;
+      required final SizeCategory sizeCategory,
+      required final int slotAmount}) = _$PetCategoryImpl;
 
   factory _PetCategory.fromJson(Map<String, dynamic> json) =
       _$PetCategoryImpl.fromJson;
@@ -206,6 +226,8 @@ abstract class _PetCategory implements PetCategory {
   String get name;
   @override
   SizeCategory get sizeCategory;
+  @override
+  int get slotAmount;
 
   /// Create a copy of PetCategory
   /// with the given fields replaced by the non-null parameter values.

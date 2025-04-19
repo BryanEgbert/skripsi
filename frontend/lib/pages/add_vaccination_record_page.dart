@@ -1,34 +1,25 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/components/signup_guide_text.dart';
-import 'package:frontend/model/request/create_user_request.dart';
-import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
-import 'package:frontend/provider/auth_provider.dart';
+import 'package:frontend/provider/vaccination_record_provider.dart';
+import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/validator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-class CreateVaccinationRecordsPage extends ConsumerStatefulWidget {
-  final CreateUserRequest createUserReq;
-  final PetRequest createPetReq;
-
-  const CreateVaccinationRecordsPage({
-    super.key,
-    required this.createUserReq,
-    required this.createPetReq,
-  });
+class AddVaccinationRecordPage extends ConsumerStatefulWidget {
+  final int petId;
+  const AddVaccinationRecordPage(this.petId, {super.key});
 
   @override
-  ConsumerState<CreateVaccinationRecordsPage> createState() =>
-      _CreateVaccinationRecordsPageState();
+  ConsumerState<AddVaccinationRecordPage> createState() =>
+      _AddVaccinationRecordPageState();
 }
 
-class _CreateVaccinationRecordsPageState
-    extends ConsumerState<CreateVaccinationRecordsPage> {
+class _AddVaccinationRecordPageState
+    extends ConsumerState<AddVaccinationRecordPage> {
   final _formKey = GlobalKey<FormState>();
 
   final _dateAdministeredController = TextEditingController();
@@ -45,16 +36,45 @@ class _CreateVaccinationRecordsPageState
     if (photo != null) {
       setState(() {
         _vaccinationPhoto = File(photo.path);
-        log("profile: ${_vaccinationPhoto!.path}");
       });
     }
   }
 
+  void _submitForm() {
+    if (_vaccinationPhoto == null) {
+      setState(() {
+        _imageError = "Image must not be empty";
+      });
+      return;
+    }
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    VaccinationRecordRequest req = VaccinationRecordRequest(
+      vaccineRecordImage: _vaccinationPhoto,
+      dateAdministered: _dateAdministeredController.text,
+      nextDueDate: _nextDueDateController.text,
+    );
+
+    ref.read(vaccinationRecordStateProvider.notifier).create(widget.petId, req);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final token = ref.watch(authProvider);
+    final vaccinationRecordState = ref.watch(vaccinationRecordStateProvider);
 
-    log("create_user_req: ${widget.createUserReq}, create_pet_req: ${widget.createPetReq}");
+    handleError(vaccinationRecordState, context);
+
+    if (vaccinationRecordState.hasValue &&
+        !vaccinationRecordState.hasError &&
+        !vaccinationRecordState.isLoading) {
+      if (vaccinationRecordState.value == 201) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          Navigator.of(context).pop();
+        });
+      }
+    }
 
     if (_imageError != null) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -74,8 +94,13 @@ class _CreateVaccinationRecordsPageState
         leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: Icon(Icons.arrow_back_ios)),
+        title: Text(
+          "Add Vaccination Record",
+          style: TextStyle(color: Colors.orange),
+        ),
       ),
       body: SafeArea(
+          child: Center(
         child: SingleChildScrollView(
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: 16),
@@ -84,14 +109,6 @@ class _CreateVaccinationRecordsPageState
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SignupGuideText(
-                  title: "Let's Set Up Your Account",
-                  subtitle:
-                      "Add your pet's vaccination record (this step is optional)",
-                ),
-                SizedBox(
-                  height: 48,
-                ),
                 _vaccineRecordImagePicker(),
                 Form(
                   key: _formKey,
@@ -163,67 +180,19 @@ class _CreateVaccinationRecordsPageState
                     ],
                   ),
                 ),
-                SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        if (!token.isLoading) {
-                          if (_vaccinationPhoto == null) {
-                            setState(() {
-                              _imageError = "Image must not be empty";
-                            });
-                            return;
-                          }
-                          if (!_formKey.currentState!.validate()) {
-                            return;
-                          }
-                          VaccinationRecordRequest req =
-                              VaccinationRecordRequest(
-                            vaccineRecordImage: _vaccinationPhoto,
-                            dateAdministered: _dateAdministeredController.text,
-                            nextDueDate: _nextDueDateController.text,
-                          );
-
-                          ref.read(authProvider.notifier).createPetOwner(
-                                widget.createUserReq,
-                                widget.createPetReq,
-                                req,
-                              );
-                        }
-                      },
-                      child: const Text("Create My Account"),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        if (!token.isLoading) {
-                          await ref.read(authProvider.notifier).createPetOwner(
-                              widget.createUserReq,
-                              widget.createPetReq,
-                              VaccinationRecordRequest(
-                                vaccineRecordImage: null,
-                                dateAdministered: "",
-                                nextDueDate: "",
-                              ));
-                        }
-                      },
-                      style: TextButton.styleFrom(
-                        textStyle: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[700],
+                ElevatedButton(
+                  onPressed: _submitForm,
+                  child: (!vaccinationRecordState.isLoading)
+                      ? const Text("Add Vaccination Record")
+                      : CircularProgressIndicator(
+                          color: Colors.white,
                         ),
-                      ),
-                      child: const Text("Skip"),
-                    ),
-                  ],
                 ),
               ],
             ),
           ),
         ),
-      ),
+      )),
     );
   }
 
@@ -234,7 +203,8 @@ class _CreateVaccinationRecordsPageState
           ? Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
+                border: Border.all(
+                    color: (_imageError == null) ? Colors.grey : Colors.red),
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.white,
               ),

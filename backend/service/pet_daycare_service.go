@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
@@ -16,7 +17,7 @@ type PetDaycareService interface {
 	GetPetDaycares(req model.GetPetDaycaresRequest, startID uint, pageSize int) (model.ListData[model.GetPetDaycaresResponse], error)
 	GetPetDaycare(id uint, lat *float64, long *float64) (*model.GetPetDaycareDetailResponse, error)
 	DeletePetDaycare(id uint, ownerId uint) error
-	UpdatePetDaycare(id uint, userId uint, newData model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
+	UpdatePetDaycare(id uint, userId uint, newData model.UpdatePetDaycareRequest) (*model.PetDaycareDTO, error)
 }
 
 type PetDaycareServiceImpl struct {
@@ -42,6 +43,7 @@ func (s *PetDaycareServiceImpl) GetMyPetDaycare(userId uint) (*model.GetPetDayca
 		Preload("Slots").
 		Preload("Slots.PetCategory").
 		Preload("Slots.PetCategory.SizeCategory").
+		Where("owner_id = ?", userId).
 		First(&daycare).Error; err != nil {
 		return nil, err
 	}
@@ -91,7 +93,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat *float64, long *float
 	return &output, nil
 }
 
-func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error) {
+func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData model.UpdatePetDaycareRequest) (*model.PetDaycareDTO, error) {
 	tx := s.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -108,12 +110,26 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 		return nil, err
 	}
 
+	layout := "15:04"
+	openingHour, err := time.Parse(layout, newData.OpeningHour)
+	if err != nil {
+		return nil, err
+	}
+
+	closingHour, err := time.Parse(layout, newData.ClosingHour)
+	if err != nil {
+		return nil, err
+	}
+
 	// Update basic fields
 	daycare.Name = newData.PetDaycareName
 	daycare.Address = newData.Address
 	daycare.Description = newData.Description
 	daycare.HasPickupService = newData.HasPickupService
 	daycare.MustBeVaccinated = newData.MustBeVaccinated
+	daycare.OpeningHour = model.CustomTime{Time: openingHour}
+	daycare.ClosingHour = model.CustomTime{Time: closingHour}
+	daycare.Location = newData.Location
 	daycare.GroomingAvailable = newData.GroomingAvailable
 	daycare.FoodProvided = newData.FoodProvided
 	daycare.FoodBrand = newData.FoodBrand
@@ -130,15 +146,14 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 
 		// Save new thumbnails
 		var thumbnails []model.Thumbnail
-		for _, thumbnailURL := range newData.ThumbnailURLs {
-			// filePath, err := helper.UploadImage(file) // Implement this function to handle file uploads
-			// if err != nil {
-			// tx.Rollback()
-			// 	return nil, err
-			// }
-			thumbnails = append(thumbnails, model.Thumbnail{DaycareID: daycare.ID, ImageUrl: thumbnailURL})
+		if err := tx.Where("daycare_id = ?", id).Find(&thumbnails).Error; err != nil {
+			tx.Rollback()
+			return nil, err
 		}
-		if err := tx.Create(&thumbnails).Error; err != nil {
+		for _, index := range newData.ThumbnailIndex {
+			thumbnails[index-1] = model.Thumbnail{DaycareID: daycare.ID, ImageUrl: newData.ThumbnailURLs[index-1]}
+		}
+		if err := tx.Save(&thumbnails).Error; err != nil {
 			tx.Rollback()
 			return nil, err
 		}
@@ -324,12 +339,26 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 		return nil, err
 	}
 
+	layout := "15:04"
+	openingHour, err := time.Parse(layout, request.OpeningHour)
+	if err != nil {
+		return nil, err
+	}
+
+	closingHour, err := time.Parse(layout, request.ClosingHour)
+	if err != nil {
+		return nil, err
+	}
+
 	daycare := model.PetDaycare{
 		Name:              request.PetDaycareName,
 		Address:           request.Address,
 		Locality:          request.Locality,
+		Location:          request.Location,
 		Latitude:          request.Latitude,
 		Longitude:         request.Longitude,
+		OpeningHour:       model.CustomTime{Time: openingHour},
+		ClosingHour:       model.CustomTime{Time: closingHour},
 		Description:       request.Description,
 		OwnerID:           userId,
 		HasPickupService:  request.HasPickupService,

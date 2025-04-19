@@ -6,13 +6,20 @@ import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/paginated_vaccine_records_list_view.dart';
 import 'package:frontend/model/pet.dart';
+import 'package:frontend/pages/add_vaccination_record_page.dart';
 import 'package:frontend/pages/edit/edit_pet_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/pet_provider.dart';
 
 class PetDetailsPage extends ConsumerStatefulWidget {
   final int petId;
-  const PetDetailsPage({super.key, required this.petId});
+  final bool isOwner;
+
+  const PetDetailsPage({
+    super.key,
+    required this.petId,
+    required this.isOwner,
+  });
 
   @override
   ConsumerState<PetDetailsPage> createState() => _PetDetailsPageState();
@@ -56,18 +63,25 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
 
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Color(0xFFFFF1E1),
           leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: Icon(Icons.arrow_back_ios),
           ),
-          actions: [
-            IconButton(
-                onPressed: _deletePet,
-                icon: Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                ))
-          ],
+          title: Text(
+            "Pet Details",
+            style: TextStyle(color: Colors.orange),
+          ),
+          actions: (widget.isOwner)
+              ? [
+                  IconButton(
+                      onPressed: _deletePet,
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                      ))
+                ]
+              : null,
         ),
         body: switch (pet) {
           AsyncError(:final error) => ErrorText(
@@ -94,22 +108,33 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Vaccination Records",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange,
+                Container(
+                  padding: (!widget.isOwner)
+                      ? const EdgeInsets.only(top: 8.0)
+                      : null,
+                  child: Text(
+                    "Vaccination Records",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange,
+                    ),
                   ),
                 ),
                 // TODO: add vaccine record logic
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.add,
-                    color: Colors.orange,
-                  ),
-                )
+                if (widget.isOwner)
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            AddVaccinationRecordPage(widget.petId),
+                      ));
+                    },
+                    icon: Icon(
+                      Icons.add,
+                      color: Colors.orange,
+                    ),
+                  )
               ],
             ),
           ),
@@ -120,6 +145,7 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
             child: PaginatedVaccineRecordsListView(
               widget.petId,
               pageSize: 10,
+              isOwner: widget.isOwner,
             ),
           ),
         ),
@@ -128,7 +154,6 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
   }
 
   Widget _buildPetDetails(Pet petValue) {
-    log("[INFO] ${petValue.imageUrl}");
     return Container(
       padding: EdgeInsets.all(16),
       color: Color(0xFFFFF1E1),
@@ -156,12 +181,13 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
                   ),
                   Text("pet category: ${petValue.petCategory.name}"),
                   Text("status: ${petValue.status}"),
-                  // Text("owner: pet owner's name"),
+                  if (!widget.isOwner) Text("owner: ${petValue.owner.name}"),
                 ],
               ),
             ],
           ),
-          IconButton(
+          if (widget.isOwner)
+            IconButton(
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => EditPetDetailsPage(
@@ -172,7 +198,8 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
               icon: Icon(
                 Icons.edit,
                 color: Colors.orange,
-              ))
+              ),
+            ),
         ],
       ),
     );

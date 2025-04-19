@@ -12,6 +12,7 @@ class Reviews with _$Reviews {
     required String title,
     required String description,
     required User user,
+    required String createdAt,
   }) = _Reviews;
 
   factory Reviews.fromJson(Map<String, dynamic> json) =>

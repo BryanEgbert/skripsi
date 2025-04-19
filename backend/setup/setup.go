@@ -105,6 +105,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		&model.ReduceSlots{},
 		&model.BookedSlotsDaily{},
 		&model.VaccineRecord{},
+		&model.BookedSlotStatus{},
 	)
 
 	r := gin.Default()
@@ -130,6 +131,9 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	vaccineRecordController := controller.NewVaccineRecordController(vaccineRecordService)
 
+	transactionService := service.NewTransactionService(db)
+	transactionController := controller.NewTransactionController(transactionService)
+
 	r.Static("/image", "./image")
 	r = routes.RegisterUserRoute(r, userController)
 	r = routes.RegisterAuthRoute(r, authController)
@@ -137,6 +141,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	r = routes.RegisterPetDaycareRoutes(r, petDaycareController)
 	r = routes.RegisterCategoryRoutes(r, categoryController)
 	r = routes.RegisterVaccineRecordRoute(r, vaccineRecordController)
+	r = routes.RegisterTransactionRoute(r, transactionController)
 
 	return r
 }

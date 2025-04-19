@@ -1,12 +1,13 @@
 package service
 
 import (
+	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"gorm.io/gorm"
 )
 
 type TransactionService interface {
-	GetTransactions(userId uint, startId uint, pageSize int) (*[]model.TransactionDTO, error)
+	GetTransactions(userId uint, page int, pageSize int) (*[]model.TransactionDTO, error)
 }
 
 type TransactionServiceImpl struct {
@@ -17,18 +18,21 @@ func NewTransactionService(db *gorm.DB) *TransactionServiceImpl {
 	return &TransactionServiceImpl{db: db}
 }
 
-func (s *TransactionServiceImpl) GetTransactions(userId uint, startId uint, pageSize int) (*[]model.TransactionDTO, error) {
-	var transactions []model.TransactionDTO
+func (s *TransactionServiceImpl) GetTransactions(userId uint, page int, pageSize int) (*[]model.TransactionDTO, error) {
+	var transactions []model.Transaction
 
 	if err := s.db.
-		Model(&model.Transaction{}).
-		Joins("PetDaycare").
+		Model(&model.Transaction{UserID: userId}).
+		Preload("PetDaycare").
 		Joins("BookedSlot").
-		Where("user_id = ? AND id > ?", userId, startId).
+		Joins("BookedSlot.Status").
+		Offset((page - 1) * pageSize).
 		Limit(pageSize).
 		Find(&transactions).Error; err != nil {
 		return nil, err
 	}
 
-	return &transactions, nil
+	out := helper.ConvertTransactionsToTransactionDTO(transactions)
+
+	return &out, nil
 }

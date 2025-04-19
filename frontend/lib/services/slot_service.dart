@@ -10,8 +10,13 @@ import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/slot.dart';
 
 abstract interface class ISlotService {
-  Future<Result<ListData<Slot>>> getSlots(String token, int speciesId,
-      int petDaycareId, int year, int month, PaginationQueryParams pagination);
+  Future<Result<ListData<Slot>>> getSlots(
+      String token,
+      int speciesId,
+      int petDaycareId,
+      int year,
+      int month,
+      CursorBasedPaginationQueryParams pagination);
   Future<Result<void>> bookSlot(
       String token, int petDaycareId, BookSlotRequest reqBody);
   Future<Result<void>> editSlotCount(
@@ -76,8 +81,13 @@ class SlotService implements ISlotService {
   }
 
   @override
-  Future<Result<ListData<Slot>>> getSlots(String token, int petCategoryId,
-      int petDaycareId, int year, int month, PaginationQueryParams pagination) {
+  Future<Result<ListData<Slot>>> getSlots(
+      String token,
+      int petCategoryId,
+      int petDaycareId,
+      int year,
+      int month,
+      CursorBasedPaginationQueryParams pagination) {
     return makeRequest(200, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;

@@ -41,6 +41,11 @@ _$PetDaycareDetailsImpl _$$PetDaycareDetailsImplFromJson(
       name: json['name'] as String,
       address: json['address'] as String,
       locality: json['locality'] as String,
+      location: json['location'] as String,
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
+      openingHour: json['openingHour'] as String,
+      closingHour: json['closingHour'] as String,
       distance: (json['distance'] as num).toDouble(),
       pricings: (json['pricings'] as List<dynamic>)
           .map((e) => Price.fromJson(e as Map<String, dynamic>))
@@ -71,6 +76,11 @@ Map<String, dynamic> _$$PetDaycareDetailsImplToJson(
       'name': instance.name,
       'address': instance.address,
       'locality': instance.locality,
+      'location': instance.location,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+      'openingHour': instance.openingHour,
+      'closingHour': instance.closingHour,
       'distance': instance.distance,
       'pricings': instance.pricings,
       'description': instance.description,

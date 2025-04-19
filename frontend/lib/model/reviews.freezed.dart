@@ -25,6 +25,7 @@ mixin _$Reviews {
   String get title => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   User get user => throw _privateConstructorUsedError;
+  String get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this Reviews to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -40,7 +41,13 @@ abstract class $ReviewsCopyWith<$Res> {
   factory $ReviewsCopyWith(Reviews value, $Res Function(Reviews) then) =
       _$ReviewsCopyWithImpl<$Res, Reviews>;
   @useResult
-  $Res call({int id, int rating, String title, String description, User user});
+  $Res call(
+      {int id,
+      int rating,
+      String title,
+      String description,
+      User user,
+      String createdAt});
 
   $UserCopyWith<$Res> get user;
 }
@@ -65,6 +72,7 @@ class _$ReviewsCopyWithImpl<$Res, $Val extends Reviews>
     Object? title = null,
     Object? description = null,
     Object? user = null,
+    Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -87,6 +95,10 @@ class _$ReviewsCopyWithImpl<$Res, $Val extends Reviews>
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
               as User,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 
@@ -108,7 +120,13 @@ abstract class _$$ReviewsImplCopyWith<$Res> implements $ReviewsCopyWith<$Res> {
       __$$ReviewsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, int rating, String title, String description, User user});
+  $Res call(
+      {int id,
+      int rating,
+      String title,
+      String description,
+      User user,
+      String createdAt});
 
   @override
   $UserCopyWith<$Res> get user;
@@ -132,6 +150,7 @@ class __$$ReviewsImplCopyWithImpl<$Res>
     Object? title = null,
     Object? description = null,
     Object? user = null,
+    Object? createdAt = null,
   }) {
     return _then(_$ReviewsImpl(
       id: null == id
@@ -154,6 +173,10 @@ class __$$ReviewsImplCopyWithImpl<$Res>
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
               as User,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -166,7 +189,8 @@ class _$ReviewsImpl implements _Reviews {
       required this.rating,
       required this.title,
       required this.description,
-      required this.user});
+      required this.user,
+      required this.createdAt});
 
   factory _$ReviewsImpl.fromJson(Map<String, dynamic> json) =>
       _$$ReviewsImplFromJson(json);
@@ -181,10 +205,12 @@ class _$ReviewsImpl implements _Reviews {
   final String description;
   @override
   final User user;
+  @override
+  final String createdAt;
 
   @override
   String toString() {
-    return 'Reviews(id: $id, rating: $rating, title: $title, description: $description, user: $user)';
+    return 'Reviews(id: $id, rating: $rating, title: $title, description: $description, user: $user, createdAt: $createdAt)';
   }
 
   @override
@@ -197,13 +223,15 @@ class _$ReviewsImpl implements _Reviews {
             (identical(other.title, title) || other.title == title) &&
             (identical(other.description, description) ||
                 other.description == description) &&
-            (identical(other.user, user) || other.user == user));
+            (identical(other.user, user) || other.user == user) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, rating, title, description, user);
+      Object.hash(runtimeType, id, rating, title, description, user, createdAt);
 
   /// Create a copy of Reviews
   /// with the given fields replaced by the non-null parameter values.
@@ -227,7 +255,8 @@ abstract class _Reviews implements Reviews {
       required final int rating,
       required final String title,
       required final String description,
-      required final User user}) = _$ReviewsImpl;
+      required final User user,
+      required final String createdAt}) = _$ReviewsImpl;
 
   factory _Reviews.fromJson(Map<String, dynamic> json) = _$ReviewsImpl.fromJson;
 
@@ -241,6 +270,8 @@ abstract class _Reviews implements Reviews {
   String get description;
   @override
   User get user;
+  @override
+  String get createdAt;
 
   /// Create a copy of Reviews
   /// with the given fields replaced by the non-null parameter values.

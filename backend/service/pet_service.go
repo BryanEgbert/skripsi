@@ -29,6 +29,7 @@ func NewPetService(db *gorm.DB) *PetServiceImpl {
 func (s *PetServiceImpl) GetBookedPets(userId uint, startID uint, pageSize int) (*[]model.PetDTO, error) {
 	petDtos := []model.PetDTO{}
 
+	// TODO: add condition when status is confirmed
 	rows, err := s.db.
 		Model(&model.Pet{}).
 		Select("pets.id,pets.name,pets.image_url,pets.status,pet_categories.id, pet_categories.name, size_categories.*, users.id, users.name, users.email, users.image_url, roles.id, roles.name, users.created_at").
@@ -66,6 +67,8 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, startID uint, pageSize int) 
 			&petDto.Owner.Role.Name,
 			&petDto.Owner.CreatedAt,
 		)
+
+		petDto.Owner.VetSpecialty = []model.VetSpecialty{}
 
 		petDtos = append(petDtos, petDto)
 	}

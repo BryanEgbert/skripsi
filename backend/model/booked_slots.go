@@ -14,10 +14,12 @@ type BookedSlot struct {
 	StartDate        time.Time `gorm:"not null"`
 	EndDate          time.Time `gorm:"not null"`
 	UsePickupService bool      `gorm:"not null,default:0"`
+	StatusID         uint      `gorm:"not null,default:1"`
 
-	User    User       `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Pet     Pet        `gorm:"foreignKey:PetID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Daycare PetDaycare `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	User    User             `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Pet     Pet              `gorm:"foreignKey:PetID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Daycare PetDaycare       `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Status  BookedSlotStatus `gorm:"foreignKey:StatusID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type BookSlotRequest struct {

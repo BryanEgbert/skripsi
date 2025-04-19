@@ -160,7 +160,7 @@ func (vc *VaccineRecordController) CreateVaccineRecords(c *gin.Context) {
 
 	if req.VaccineRecordImage != nil {
 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.VaccineRecordImage.Filename)))
-		imageUrl := fmt.Sprintf("%s/%s", c.Request.Host, filename)
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
 		req.VaccineRecordImageUrl = imageUrl
 
 		if err := c.SaveUploadedFile(req.VaccineRecordImage, filename); err != nil {

@@ -6,7 +6,7 @@ part of 'list_data_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$petDaycaresHash() => r'246d7132497a548006ba665905daa2891092565d';
+String _$petDaycaresHash() => r'30b1dcfe3ee92e41cc5afa832fecc59a792c3706';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -335,7 +335,7 @@ class _PetProviderElement extends AutoDisposeFutureProviderElement<Pet>
   int get petId => (origin as PetProvider).petId;
 }
 
-String _$vaccineRecordsHash() => r'1781ba0724d46ddbc2644be8994f3b95b574761b';
+String _$vaccineRecordsHash() => r'ff3765e02161b848476fdad216a06c77897dc4b4';
 
 /// See also [vaccineRecords].
 @ProviderFor(vaccineRecords)
@@ -639,7 +639,7 @@ class _GetVaccinationRecordByIdProviderElement
       (origin as GetVaccinationRecordByIdProvider).vaccinationRecordId;
 }
 
-String _$petListHash() => r'cfff2dafdba3f9e8789e968aa6f62ad808454d81';
+String _$petListHash() => r'56289e788b65c7a183054041972b43691aa1334d';
 
 /// See also [petList].
 @ProviderFor(petList)
@@ -785,7 +785,7 @@ class _PetListProviderElement
   int get pageSize => (origin as PetListProvider).pageSize;
 }
 
-String _$bookedPetsHash() => r'2b69dde2bdbf3900222b46dd07ddfeae19799d08';
+String _$bookedPetsHash() => r'a5ef662fb9b10fd7180cd670dc460a4487551dae';
 
 /// See also [bookedPets].
 @ProviderFor(bookedPets)
@@ -932,7 +932,7 @@ class _BookedPetsProviderElement
   int get pageSize => (origin as BookedPetsProvider).pageSize;
 }
 
-String _$getPetByIdHash() => r'08687354051de5f79006bcc1f00fbf6b8814b317';
+String _$getPetByIdHash() => r'c66c990b58143c75e3fec67ace1a7874237e3d56';
 
 /// See also [getPetById].
 @ProviderFor(getPetById)
@@ -1062,7 +1062,7 @@ class _GetPetByIdProviderElement extends AutoDisposeFutureProviderElement<Pet?>
   int get petId => (origin as GetPetByIdProvider).petId;
 }
 
-String _$getUserByIdHash() => r'f1ff1f8e61091e0f539fc2bf5eb2d2c6b1cf66e2';
+String _$getUserByIdHash() => r'c7126e164b7cc2b5ae5ac7bfc57825e39b1f972c';
 
 /// See also [getUserById].
 @ProviderFor(getUserById)
@@ -1192,7 +1192,7 @@ class _GetUserByIdProviderElement extends AutoDisposeFutureProviderElement<User>
   int get userId => (origin as GetUserByIdProvider).userId;
 }
 
-String _$getMyUserHash() => r'8958ccb2ee29edacefde6b4c01211ae2b1a0a982';
+String _$getMyUserHash() => r'61ed52eea89f0f0d871eeab344a47711508ae9fc';
 
 /// See also [getMyUser].
 @ProviderFor(getMyUser)
@@ -1208,7 +1208,7 @@ final getMyUserProvider = AutoDisposeFutureProvider<User>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GetMyUserRef = AutoDisposeFutureProviderRef<User>;
-String _$getMyPetDaycareHash() => r'9e044aa370f0e8e70f30670bbea38df63e9c75ef';
+String _$getMyPetDaycareHash() => r'c35f53c843801732554fc581588ea1154513bd95';
 
 /// See also [getMyPetDaycare].
 @ProviderFor(getMyPetDaycare)
@@ -1226,7 +1226,7 @@ final getMyPetDaycareProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GetMyPetDaycareRef = AutoDisposeFutureProviderRef<PetDaycareDetails>;
-String _$getPetDaycareByIdHash() => r'3452a6ffd0a9b9bb8dfaef70e8867c8be1632d33';
+String _$getPetDaycareByIdHash() => r'b10f16a89dfcf94c4853f80471005bc0fca752bf';
 
 /// See also [getPetDaycareById].
 @ProviderFor(getPetDaycareById)
@@ -1389,6 +1389,321 @@ class _GetPetDaycareByIdProviderElement
   double? get lat => (origin as GetPetDaycareByIdProvider).lat;
   @override
   double? get long => (origin as GetPetDaycareByIdProvider).long;
+}
+
+String _$getTransactionsHash() => r'ee85aa24056cade231802008cfb7860591666a63';
+
+/// See also [getTransactions].
+@ProviderFor(getTransactions)
+const getTransactionsProvider = GetTransactionsFamily();
+
+/// See also [getTransactions].
+class GetTransactionsFamily extends Family<AsyncValue<ListData<Transaction>>> {
+  /// See also [getTransactions].
+  const GetTransactionsFamily();
+
+  /// See also [getTransactions].
+  GetTransactionsProvider call([
+    int page = 1,
+    int pageSize = 10,
+  ]) {
+    return GetTransactionsProvider(
+      page,
+      pageSize,
+    );
+  }
+
+  @override
+  GetTransactionsProvider getProviderOverride(
+    covariant GetTransactionsProvider provider,
+  ) {
+    return call(
+      provider.page,
+      provider.pageSize,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getTransactionsProvider';
+}
+
+/// See also [getTransactions].
+class GetTransactionsProvider
+    extends AutoDisposeFutureProvider<ListData<Transaction>> {
+  /// See also [getTransactions].
+  GetTransactionsProvider([
+    int page = 1,
+    int pageSize = 10,
+  ]) : this._internal(
+          (ref) => getTransactions(
+            ref as GetTransactionsRef,
+            page,
+            pageSize,
+          ),
+          from: getTransactionsProvider,
+          name: r'getTransactionsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getTransactionsHash,
+          dependencies: GetTransactionsFamily._dependencies,
+          allTransitiveDependencies:
+              GetTransactionsFamily._allTransitiveDependencies,
+          page: page,
+          pageSize: pageSize,
+        );
+
+  GetTransactionsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.page,
+    required this.pageSize,
+  }) : super.internal();
+
+  final int page;
+  final int pageSize;
+
+  @override
+  Override overrideWith(
+    FutureOr<ListData<Transaction>> Function(GetTransactionsRef provider)
+        create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetTransactionsProvider._internal(
+        (ref) => create(ref as GetTransactionsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        page: page,
+        pageSize: pageSize,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<ListData<Transaction>> createElement() {
+    return _GetTransactionsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetTransactionsProvider &&
+        other.page == page &&
+        other.pageSize == pageSize;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, page.hashCode);
+    hash = _SystemHash.combine(hash, pageSize.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetTransactionsRef
+    on AutoDisposeFutureProviderRef<ListData<Transaction>> {
+  /// The parameter `page` of this provider.
+  int get page;
+
+  /// The parameter `pageSize` of this provider.
+  int get pageSize;
+}
+
+class _GetTransactionsProviderElement
+    extends AutoDisposeFutureProviderElement<ListData<Transaction>>
+    with GetTransactionsRef {
+  _GetTransactionsProviderElement(super.provider);
+
+  @override
+  int get page => (origin as GetTransactionsProvider).page;
+  @override
+  int get pageSize => (origin as GetTransactionsProvider).pageSize;
+}
+
+String _$getReviewsHash() => r'f6d29a64904bd53c9f9a180228baad59a023828c';
+
+/// See also [getReviews].
+@ProviderFor(getReviews)
+const getReviewsProvider = GetReviewsFamily();
+
+/// See also [getReviews].
+class GetReviewsFamily extends Family<AsyncValue<ListData<Reviews>>> {
+  /// See also [getReviews].
+  const GetReviewsFamily();
+
+  /// See also [getReviews].
+  GetReviewsProvider call(
+    int petDaycareId, [
+    int page = 1,
+    int pageSize = 10,
+  ]) {
+    return GetReviewsProvider(
+      petDaycareId,
+      page,
+      pageSize,
+    );
+  }
+
+  @override
+  GetReviewsProvider getProviderOverride(
+    covariant GetReviewsProvider provider,
+  ) {
+    return call(
+      provider.petDaycareId,
+      provider.page,
+      provider.pageSize,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getReviewsProvider';
+}
+
+/// See also [getReviews].
+class GetReviewsProvider extends AutoDisposeFutureProvider<ListData<Reviews>> {
+  /// See also [getReviews].
+  GetReviewsProvider(
+    int petDaycareId, [
+    int page = 1,
+    int pageSize = 10,
+  ]) : this._internal(
+          (ref) => getReviews(
+            ref as GetReviewsRef,
+            petDaycareId,
+            page,
+            pageSize,
+          ),
+          from: getReviewsProvider,
+          name: r'getReviewsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getReviewsHash,
+          dependencies: GetReviewsFamily._dependencies,
+          allTransitiveDependencies:
+              GetReviewsFamily._allTransitiveDependencies,
+          petDaycareId: petDaycareId,
+          page: page,
+          pageSize: pageSize,
+        );
+
+  GetReviewsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.petDaycareId,
+    required this.page,
+    required this.pageSize,
+  }) : super.internal();
+
+  final int petDaycareId;
+  final int page;
+  final int pageSize;
+
+  @override
+  Override overrideWith(
+    FutureOr<ListData<Reviews>> Function(GetReviewsRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetReviewsProvider._internal(
+        (ref) => create(ref as GetReviewsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        petDaycareId: petDaycareId,
+        page: page,
+        pageSize: pageSize,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<ListData<Reviews>> createElement() {
+    return _GetReviewsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetReviewsProvider &&
+        other.petDaycareId == petDaycareId &&
+        other.page == page &&
+        other.pageSize == pageSize;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, petDaycareId.hashCode);
+    hash = _SystemHash.combine(hash, page.hashCode);
+    hash = _SystemHash.combine(hash, pageSize.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetReviewsRef on AutoDisposeFutureProviderRef<ListData<Reviews>> {
+  /// The parameter `petDaycareId` of this provider.
+  int get petDaycareId;
+
+  /// The parameter `page` of this provider.
+  int get page;
+
+  /// The parameter `pageSize` of this provider.
+  int get pageSize;
+}
+
+class _GetReviewsProviderElement
+    extends AutoDisposeFutureProviderElement<ListData<Reviews>>
+    with GetReviewsRef {
+  _GetReviewsProviderElement(super.provider);
+
+  @override
+  int get petDaycareId => (origin as GetReviewsProvider).petDaycareId;
+  @override
+  int get page => (origin as GetReviewsProvider).page;
+  @override
+  int get pageSize => (origin as GetReviewsProvider).pageSize;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

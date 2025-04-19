@@ -29,7 +29,7 @@ void main() {
       }
 
       final vetsRes = await userRepository.getVets(
-          token!.accessToken, PaginationQueryParams());
+          token!.accessToken, CursorBasedPaginationQueryParams());
 
       ListData<User>? vets;
 

@@ -11,7 +11,7 @@ import 'package:frontend/model/user.dart';
 abstract interface class IUserService {
   Future<Result<User>> getUser(String token, int id);
   Future<Result<ListData<User>>> getVets(
-      String token, PaginationQueryParams pagination,
+      String token, CursorBasedPaginationQueryParams pagination,
       [int specialtyId = 0]);
   Future<void> deleteUser(String token);
   Future<Result<void>> updateUser(String token, UpdateUserRequest reqBody);
@@ -63,7 +63,7 @@ class UserService implements IUserService {
 
   @override
   Future<Result<ListData<User>>> getVets(
-      String token, PaginationQueryParams pagination,
+      String token, CursorBasedPaginationQueryParams pagination,
       [int specialtyId = 0]) {
     return makeRequest(200, () async {
       await dotenv.load();

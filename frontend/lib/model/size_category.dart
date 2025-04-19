@@ -10,7 +10,7 @@ class SizeCategory with _$SizeCategory {
     required int id,
     required String name,
     required double minWeight,
-    required double maxWeight,
+    required double? maxWeight,
   }) = _SizeCategory;
 
   factory SizeCategory.fromJson(Map<String, dynamic> json) =>

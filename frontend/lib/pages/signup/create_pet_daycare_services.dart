@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/modals/select_lookup_modal.dart';
@@ -8,7 +6,6 @@ import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/pages/pet_daycare_home_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
-import 'package:frontend/provider/category_provider.dart';
 import 'package:frontend/utils/validator.dart';
 
 class CreatePetDaycareServices extends ConsumerStatefulWidget {
@@ -56,12 +53,6 @@ class _CreatePetDaycareServicesState
 
     ref.read(authProvider.notifier).createPetDaycareProvider(
         widget.createUserReq, widget.createPetDaycareReq);
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (context) => PetDaycareHomePage(),
-      ),
-      (route) => false,
-    );
   }
 
   @override
@@ -137,7 +128,7 @@ class _CreatePetDaycareServicesState
               ),
             ),
             CheckboxListTile(
-              title: Text("Grooming Required"),
+              title: Text("Grooming Provided"),
               value: _groomingServiceProvided,
               onChanged: (value) {
                 setState(() {
@@ -146,7 +137,7 @@ class _CreatePetDaycareServicesState
               },
             ),
             CheckboxListTile(
-              title: Text("Pickup Required"),
+              title: Text("Pickup Provided"),
               value: _pickupServiceProvided,
               onChanged: (value) {
                 setState(() {
@@ -155,7 +146,7 @@ class _CreatePetDaycareServicesState
               },
             ),
             CheckboxListTile(
-              title: Text("Food Required"),
+              title: Text("Food Provided"),
               value: _foodProvided,
               onChanged: (value) {
                 setState(() {
@@ -171,23 +162,6 @@ class _CreatePetDaycareServicesState
                 color: Colors.orange,
               ),
             ),
-            // TODO: update value on subtitle
-            // additionalServicesListTiles(
-            //   context,
-            //   dailyWalks,
-            //   dailyPlaytime,
-            //   (value) {
-            //     setState(() {
-            //       _dailyWalksId = value ?? 0;
-            //     });
-            //   },
-            //   (value) {
-            //     setState(() {
-            //       _dailyPlaytimeId = value ?? 0;
-            //     });
-            //   },
-            // ),
-
             Form(
               key: _formKey,
               child: Padding(
@@ -252,7 +226,7 @@ class _CreatePetDaycareServicesState
             ElevatedButton(
               onPressed: _submitForm,
               child: Text(
-                "Next",
+                "Create My Account",
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
             ),
@@ -260,119 +234,5 @@ class _CreatePetDaycareServicesState
         ),
       ),
     );
-  }
-
-  Widget additionalServicesListTiles(
-      BuildContext context,
-      AsyncValue<List<Lookup>> dailyWalksValue,
-      AsyncValue<List<Lookup>> dailyPlaytimeValue,
-      void Function(int?)? onDailyWalkChanged,
-      void Function(int?)? onDailyPlaytimeChanged) {
-    return Column(
-      children: [
-        ListTile(
-          title: Text("Daily Walks"),
-          subtitle: _dailyWalksId > 0
-              ? Text(dailyWalksValue.value![_dailyWalksId - 1].name)
-              : null,
-          trailing: Icon(Icons.navigate_next_rounded),
-          onTap: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (context) => selectDailyWalksCategoryModal(
-                  dailyWalksValue, onDailyWalkChanged),
-            );
-          },
-        ),
-        ListTile(
-          title: Text("Daily Playtime"),
-          subtitle: _dailyPlaytimeId > 0
-              ? Text(dailyPlaytimeValue.value![_dailyPlaytimeId - 1].name)
-              : null,
-          trailing: Icon(Icons.navigate_next_rounded),
-          onTap: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (context) => selectDailyPlaytimeCategoryModal(
-                  dailyPlaytimeValue, onDailyPlaytimeChanged),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget selectDailyWalksCategoryModal(
-      AsyncValue<List<Lookup>> category, void Function(int?)? func) {
-    return switch (category) {
-      AsyncData(:final value) => StatefulBuilder(builder: (context, setState) {
-          return ListView.builder(
-              itemCount: value.length,
-              itemBuilder: (context, index) {
-                return RadioListTile(
-                  title: Text(value[index].name),
-                  value: value[index].id,
-                  groupValue: _dailyWalksId,
-                  onChanged: (value) {
-                    setState(
-                      () {
-                        _dailyWalksId = value ?? 0;
-                        func!(value);
-                      },
-                    );
-                  },
-                );
-              });
-        }),
-      AsyncError() => SizedBox(
-          height: double.infinity,
-          width: double.infinity,
-          child: Center(child: const Text("Something's wrong")),
-        ),
-      _ => SizedBox(
-          height: double.infinity,
-          width: double.infinity,
-          child: Center(
-            child: const CircularProgressIndicator(),
-          ),
-        ),
-    };
-  }
-
-  Widget selectDailyPlaytimeCategoryModal(
-      AsyncValue<List<Lookup>> category, void Function(int?)? func) {
-    return switch (category) {
-      AsyncData(:final value) => StatefulBuilder(builder: (context, setState) {
-          return ListView.builder(
-              itemCount: value.length,
-              itemBuilder: (context, index) {
-                return RadioListTile(
-                  title: Text(value[index].name),
-                  value: value[index].id,
-                  groupValue: _dailyPlaytimeId,
-                  onChanged: (value) {
-                    setState(
-                      () {
-                        _dailyPlaytimeId = value ?? 0;
-                        func!(value);
-                      },
-                    );
-                  },
-                );
-              });
-        }),
-      AsyncError() => SizedBox(
-          height: double.infinity,
-          width: double.infinity,
-          child: Center(child: const Text("Something's wrong")),
-        ),
-      _ => SizedBox(
-          height: double.infinity,
-          width: double.infinity,
-          child: Center(
-            child: const CircularProgressIndicator(),
-          ),
-        ),
-    };
   }
 }

@@ -12,8 +12,14 @@ import 'package:frontend/utils/handle_error.dart';
 class PaginatedVaccineRecordsListView extends ConsumerStatefulWidget {
   final int petId;
   final int pageSize;
-  const PaginatedVaccineRecordsListView(this.petId,
-      {super.key, required this.pageSize});
+  final bool isOwner;
+
+  const PaginatedVaccineRecordsListView(
+    this.petId, {
+    super.key,
+    required this.pageSize,
+    required this.isOwner,
+  });
 
   @override
   ConsumerState<PaginatedVaccineRecordsListView> createState() =>
@@ -23,15 +29,17 @@ class PaginatedVaccineRecordsListView extends ConsumerStatefulWidget {
 class _PaginatedListViewState
     extends ConsumerState<PaginatedVaccineRecordsListView> {
   final ScrollController _scrollController = ScrollController();
-  final List<VaccineRecord> _records = [];
+  List<VaccineRecord> _records = [];
 
   int _lastId = 0;
   bool _isFetching = false;
   bool _hasMoreData = true;
 
+  Object? _error;
+
   void _onScroll() {
     if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 200 &&
+            _scrollController.position.maxScrollExtent &&
         !_isFetching) {
       _fetchMoreData();
     }
@@ -46,19 +54,21 @@ class _PaginatedListViewState
         .read(vaccineRecordsProvider(widget.petId, _lastId, widget.pageSize)
             .future)
         .then((newData) {
-          if (newData.data.isNotEmpty) {
-            setState(() {
-              _records.addAll(newData.data);
-              _lastId = newData.data.last!.id;
-            });
-          } else {
-            setState(() {
-              _hasMoreData = false;
-            });
-          }
-        })
-        .catchError((e) {})
-        .whenComplete(() => setState(() => _isFetching = false));
+      if (newData.data.isNotEmpty) {
+        setState(() {
+          _records.addAll(newData.data);
+          _lastId = newData.data.last.id;
+        });
+      } else {
+        setState(() {
+          _hasMoreData = false;
+        });
+      }
+    }).catchError((e) {
+      _error = e;
+    }).whenComplete(() => setState(() => _isFetching = false));
+
+    log("[INFO] _records: ${_records.length}");
   }
 
   @override
@@ -78,12 +88,18 @@ class _PaginatedListViewState
   Widget build(BuildContext context) {
     final vaccinationRecord = ref.watch(vaccinationRecordStateProvider);
 
+    if (_error != null) {
+      handleError(
+          AsyncValue.error(_error.toString(), StackTrace.current), context);
+    }
+
     handleError(vaccinationRecord, context);
 
     return RefreshIndicator(
-      onRefresh: () => ref.refresh(
-          vaccineRecordsProvider(widget.petId, _lastId, widget.pageSize)
-              .future),
+      onRefresh: () async {
+        _records = [];
+        _fetchMoreData();
+      },
       child: (_isFetching && _records.isEmpty)
           ? Center(
               child: CircularProgressIndicator(
@@ -167,37 +183,39 @@ class _PaginatedListViewState
                     },
                     icon: Icon(Icons.image, color: Colors.orange),
                   ),
-                  PopupMenuButton(
-                    iconColor: Colors.orange,
-                    itemBuilder: (context) => [
-                      // TODO: edit function
-                      PopupMenuItem(
-                        value: "edit",
-                        child: Text("Edit"),
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => EditVaccinationRecordPage(
-                                vaccineRecord.id, widget.petId),
-                          ));
-                        },
-                      ),
-                      PopupMenuItem(
-                        value: "delete",
-                        child: Text(
-                          "Delete",
-                          style: TextStyle(color: Colors.red),
+                  if (widget.isOwner)
+                    PopupMenuButton(
+                      iconColor: Colors.orange,
+                      itemBuilder: (context) => [
+                        // TODO: edit function
+                        PopupMenuItem(
+                          value: "edit",
+                          child: Text("Edit"),
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => EditVaccinationRecordPage(
+                                  vaccineRecord.id, widget.petId),
+                            ));
+                          },
                         ),
-                        onTap: () {
-                          ref
-                              .read(vaccinationRecordStateProvider.notifier)
-                              .delete(vaccineRecord.id);
-                          setState(() {
-                            _records.removeAt(index);
-                          });
-                        },
-                      )
-                    ],
-                  )
+                        PopupMenuItem(
+                          value: "delete",
+                          child: Text(
+                            "Delete",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          onTap: () {
+                            ref
+                                .read(vaccinationRecordStateProvider.notifier)
+                                .delete(vaccineRecord.id, widget.petId,
+                                    widget.pageSize);
+                            // setState(() {
+                            //   _records.removeAt(index);
+                            // });
+                          },
+                        )
+                      ],
+                    )
                 ],
               ),
             ],
