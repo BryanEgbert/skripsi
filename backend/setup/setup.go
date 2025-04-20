@@ -124,7 +124,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	slotService := service.NewSlotService(db)
 	reviewService := service.NewReviewService(db)
-	petDaycareController := controller.NewPetDaycareController(petDaycareService, petService, slotService, reviewService)
+	bookingRequestService := service.NewBookingRequestService(db)
+	petDaycareController := controller.NewPetDaycareController(petDaycareService, petService, slotService, reviewService, bookingRequestService)
 
 	categoryService := service.NewCategoryService(db)
 	categoryController := controller.NewCategoryController(categoryService)

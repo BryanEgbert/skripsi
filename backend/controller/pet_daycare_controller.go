@@ -17,14 +17,63 @@ import (
 )
 
 type PetDaycareController struct {
-	petDaycareService service.PetDaycareService
-	slotService       service.SlotService
-	petService        service.PetService
-	reviewService     service.ReviewService
+	petDaycareService     service.PetDaycareService
+	slotService           service.SlotService
+	petService            service.PetService
+	reviewService         service.ReviewService
+	bookingRequestService service.BookingRequestService
 }
 
-func NewPetDaycareController(petDaycareService service.PetDaycareService, petService service.PetService, slotService service.SlotService, reviewService service.ReviewService) *PetDaycareController {
-	return &PetDaycareController{petDaycareService, slotService, petService, reviewService}
+func NewPetDaycareController(petDaycareService service.PetDaycareService, petService service.PetService, slotService service.SlotService, reviewService service.ReviewService, bookingRequestService service.BookingRequestService) *PetDaycareController {
+	return &PetDaycareController{petDaycareService, slotService, petService, reviewService, bookingRequestService}
+}
+
+func (pdc *PetDaycareController) GetBookingRequests(ctx *gin.Context) {
+	userIDRaw, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	page, err := strconv.ParseInt(ctx.DefaultQuery("page", "1"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid last ID",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	pageSize, err := strconv.Atoi(ctx.DefaultQuery("size", "10"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid page size",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	out, err := pdc.bookingRequestService.GetBookingRequests(userID, int(page), pageSize)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to retrieve booking requests",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, out)
 }
 
 func (pdc *PetDaycareController) GetReviews(c *gin.Context) {

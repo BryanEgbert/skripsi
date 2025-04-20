@@ -2,7 +2,6 @@ package model
 
 import (
 	"database/sql/driver"
-	"errors"
 	"fmt"
 	"mime/multipart"
 	"time"
@@ -30,13 +29,13 @@ func (c CustomTime) Value() (driver.Value, error) {
 func (c *CustomTime) Scan(value interface{}) error {
 	valueStr, ok := value.(string)
 	if !ok {
-		return errors.New(fmt.Sprintf("Failed to parse value: %v", value))
+		return fmt.Errorf("failed to parse value: %v", value)
 	}
 
 	layout := "15:04:05"
 	parsedTime, err := time.Parse(layout, valueStr)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Error parsing time: %v", err))
+		return fmt.Errorf("error parsing time: %v", err)
 	}
 
 	c.Time = parsedTime

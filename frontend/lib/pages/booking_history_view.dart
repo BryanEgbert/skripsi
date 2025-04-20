@@ -95,7 +95,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
     );
   }
 
-  ListView _buildBookingHistoryList() {
+  Widget _buildBookingHistoryList() {
     return ListView.builder(
       controller: _scrollController,
       itemCount: _records.length,

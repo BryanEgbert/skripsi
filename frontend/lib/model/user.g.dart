@@ -13,8 +13,7 @@ _$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
       imageUrl: json['imageUrl'] as String,
       role: Lookup.fromJson(json['role'] as Map<String, dynamic>),
       vetSpecialties: (json['vetSpecialties'] as List<dynamic>)
-          .map((e) =>
-              e == null ? null : Lookup.fromJson(e as Map<String, dynamic>))
+          .map((e) => Lookup.fromJson(e as Map<String, dynamic>))
           .toList(),
       createdAt: json['createdAt'] as String,
     );

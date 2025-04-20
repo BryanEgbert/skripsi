@@ -23,7 +23,7 @@ class DefaultCircleAvatar extends StatelessWidget {
       onBackgroundImageError: (exception, stackTrace) {},
       child: imageUrl.isEmpty
           ? Icon(
-              Icons.hide_image,
+              Icons.person,
               size: iconSize,
             )
           : null,

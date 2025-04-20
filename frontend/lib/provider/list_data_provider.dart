@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/model/coordinate.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
@@ -180,6 +181,31 @@ Future<User> getUserById(Ref ref, int userId) async {
 }
 
 @riverpod
+Future<ListData<User>> getVets(Ref ref,
+    [int lastId = 0, int pageSize = 10, int vetSpecialtyId = 0]) async {
+  TokenResponse? token;
+  try {
+    token = await refreshToken();
+  } catch (e) {
+    return Future.error(e.toString());
+  }
+
+  final userService = UserService();
+  final res = await userService.getVets(
+    token.accessToken,
+    CursorBasedPaginationQueryParams(lastId: lastId, pageSize: pageSize),
+    vetSpecialtyId,
+  );
+
+  switch (res) {
+    case Ok():
+      return res.value!;
+    case Error():
+      return Future.error(res.error);
+  }
+}
+
+@riverpod
 Future<User> getMyUser(Ref ref) async {
   TokenResponse? token;
   try {
@@ -232,6 +258,30 @@ Future<PetDaycareDetails> getPetDaycareById(
   final petDaycareService = PetDaycareService();
   final res = await petDaycareService.getById(token.accessToken, petDaycareId,
       Coordinate(latitude: lat, longitude: long));
+
+  switch (res) {
+    case Ok():
+      return res.value!;
+    case Error():
+      return Future.error(res.error);
+  }
+}
+
+@riverpod
+Future<ListData<BookingRequest>> getBookingRequests(Ref ref,
+    [int page = 1, int pageSize = 10]) async {
+  TokenResponse? token;
+  try {
+    token = await refreshToken();
+  } catch (e) {
+    return Future.error(e.toString());
+  }
+
+  final service = PetDaycareService();
+  final res = await service.getBookingRequests(
+    token.accessToken,
+    OffsetPaginationQueryParams(page: page, pageSize: pageSize),
+  );
 
   switch (res) {
     case Ok():

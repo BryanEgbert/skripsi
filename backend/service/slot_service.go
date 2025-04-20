@@ -155,7 +155,6 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 
 	if err := s.db.
 		Model(&model.BookedSlot{
-			PetID:            req.PetID,
 			DaycareID:        req.DaycareID,
 			StartDate:        req.StartDate,
 			EndDate:          req.EndDate,
@@ -180,7 +179,6 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 	newBookSlot := model.BookedSlot{
 		UserID:    userId,
 		DaycareID: req.DaycareID,
-		PetID:     req.PetID,
 		StartDate: req.StartDate,
 		EndDate:   req.EndDate,
 	}
@@ -201,6 +199,8 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 	if err := tx.Create(&newTransaction).Error; err != nil {
 		return err
 	}
+
+	tx.Model(&newBookSlot).Association("Pet").Append(&model.Pet{Model: gorm.Model{ID: req.PetID}})
 
 	for d := req.StartDate; d.After(req.EndDate) == false; d = d.AddDate(0, 0, 1) {
 		if err := tx.Create(&model.BookedSlotsDaily{

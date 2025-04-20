@@ -91,6 +91,7 @@ class _PaginatedPetDaycareGridViewState
     return RefreshIndicator(
       onRefresh: () async {
         _records = [];
+        _lastId = 0;
         _fetchMoreData();
       },
       child: (_isFetching && _records.isEmpty)

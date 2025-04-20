@@ -1192,6 +1192,168 @@ class _GetUserByIdProviderElement extends AutoDisposeFutureProviderElement<User>
   int get userId => (origin as GetUserByIdProvider).userId;
 }
 
+String _$getVetsHash() => r'58e957b0d8d95f6ee404623181fd4dfadd2b485c';
+
+/// See also [getVets].
+@ProviderFor(getVets)
+const getVetsProvider = GetVetsFamily();
+
+/// See also [getVets].
+class GetVetsFamily extends Family<AsyncValue<ListData<User>>> {
+  /// See also [getVets].
+  const GetVetsFamily();
+
+  /// See also [getVets].
+  GetVetsProvider call([
+    int lastId = 0,
+    int pageSize = 10,
+    int vetSpecialtyId = 0,
+  ]) {
+    return GetVetsProvider(
+      lastId,
+      pageSize,
+      vetSpecialtyId,
+    );
+  }
+
+  @override
+  GetVetsProvider getProviderOverride(
+    covariant GetVetsProvider provider,
+  ) {
+    return call(
+      provider.lastId,
+      provider.pageSize,
+      provider.vetSpecialtyId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getVetsProvider';
+}
+
+/// See also [getVets].
+class GetVetsProvider extends AutoDisposeFutureProvider<ListData<User>> {
+  /// See also [getVets].
+  GetVetsProvider([
+    int lastId = 0,
+    int pageSize = 10,
+    int vetSpecialtyId = 0,
+  ]) : this._internal(
+          (ref) => getVets(
+            ref as GetVetsRef,
+            lastId,
+            pageSize,
+            vetSpecialtyId,
+          ),
+          from: getVetsProvider,
+          name: r'getVetsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getVetsHash,
+          dependencies: GetVetsFamily._dependencies,
+          allTransitiveDependencies: GetVetsFamily._allTransitiveDependencies,
+          lastId: lastId,
+          pageSize: pageSize,
+          vetSpecialtyId: vetSpecialtyId,
+        );
+
+  GetVetsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.lastId,
+    required this.pageSize,
+    required this.vetSpecialtyId,
+  }) : super.internal();
+
+  final int lastId;
+  final int pageSize;
+  final int vetSpecialtyId;
+
+  @override
+  Override overrideWith(
+    FutureOr<ListData<User>> Function(GetVetsRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetVetsProvider._internal(
+        (ref) => create(ref as GetVetsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        lastId: lastId,
+        pageSize: pageSize,
+        vetSpecialtyId: vetSpecialtyId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<ListData<User>> createElement() {
+    return _GetVetsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetVetsProvider &&
+        other.lastId == lastId &&
+        other.pageSize == pageSize &&
+        other.vetSpecialtyId == vetSpecialtyId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, lastId.hashCode);
+    hash = _SystemHash.combine(hash, pageSize.hashCode);
+    hash = _SystemHash.combine(hash, vetSpecialtyId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetVetsRef on AutoDisposeFutureProviderRef<ListData<User>> {
+  /// The parameter `lastId` of this provider.
+  int get lastId;
+
+  /// The parameter `pageSize` of this provider.
+  int get pageSize;
+
+  /// The parameter `vetSpecialtyId` of this provider.
+  int get vetSpecialtyId;
+}
+
+class _GetVetsProviderElement
+    extends AutoDisposeFutureProviderElement<ListData<User>> with GetVetsRef {
+  _GetVetsProviderElement(super.provider);
+
+  @override
+  int get lastId => (origin as GetVetsProvider).lastId;
+  @override
+  int get pageSize => (origin as GetVetsProvider).pageSize;
+  @override
+  int get vetSpecialtyId => (origin as GetVetsProvider).vetSpecialtyId;
+}
+
 String _$getMyUserHash() => r'61ed52eea89f0f0d871eeab344a47711508ae9fc';
 
 /// See also [getMyUser].
@@ -1389,6 +1551,159 @@ class _GetPetDaycareByIdProviderElement
   double? get lat => (origin as GetPetDaycareByIdProvider).lat;
   @override
   double? get long => (origin as GetPetDaycareByIdProvider).long;
+}
+
+String _$getBookingRequestsHash() =>
+    r'f35d96cc499a4b716edebc0953d8a57d173d6052';
+
+/// See also [getBookingRequests].
+@ProviderFor(getBookingRequests)
+const getBookingRequestsProvider = GetBookingRequestsFamily();
+
+/// See also [getBookingRequests].
+class GetBookingRequestsFamily
+    extends Family<AsyncValue<ListData<BookingRequest>>> {
+  /// See also [getBookingRequests].
+  const GetBookingRequestsFamily();
+
+  /// See also [getBookingRequests].
+  GetBookingRequestsProvider call([
+    int page = 1,
+    int pageSize = 10,
+  ]) {
+    return GetBookingRequestsProvider(
+      page,
+      pageSize,
+    );
+  }
+
+  @override
+  GetBookingRequestsProvider getProviderOverride(
+    covariant GetBookingRequestsProvider provider,
+  ) {
+    return call(
+      provider.page,
+      provider.pageSize,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getBookingRequestsProvider';
+}
+
+/// See also [getBookingRequests].
+class GetBookingRequestsProvider
+    extends AutoDisposeFutureProvider<ListData<BookingRequest>> {
+  /// See also [getBookingRequests].
+  GetBookingRequestsProvider([
+    int page = 1,
+    int pageSize = 10,
+  ]) : this._internal(
+          (ref) => getBookingRequests(
+            ref as GetBookingRequestsRef,
+            page,
+            pageSize,
+          ),
+          from: getBookingRequestsProvider,
+          name: r'getBookingRequestsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getBookingRequestsHash,
+          dependencies: GetBookingRequestsFamily._dependencies,
+          allTransitiveDependencies:
+              GetBookingRequestsFamily._allTransitiveDependencies,
+          page: page,
+          pageSize: pageSize,
+        );
+
+  GetBookingRequestsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.page,
+    required this.pageSize,
+  }) : super.internal();
+
+  final int page;
+  final int pageSize;
+
+  @override
+  Override overrideWith(
+    FutureOr<ListData<BookingRequest>> Function(GetBookingRequestsRef provider)
+        create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetBookingRequestsProvider._internal(
+        (ref) => create(ref as GetBookingRequestsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        page: page,
+        pageSize: pageSize,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<ListData<BookingRequest>> createElement() {
+    return _GetBookingRequestsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetBookingRequestsProvider &&
+        other.page == page &&
+        other.pageSize == pageSize;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, page.hashCode);
+    hash = _SystemHash.combine(hash, pageSize.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetBookingRequestsRef
+    on AutoDisposeFutureProviderRef<ListData<BookingRequest>> {
+  /// The parameter `page` of this provider.
+  int get page;
+
+  /// The parameter `pageSize` of this provider.
+  int get pageSize;
+}
+
+class _GetBookingRequestsProviderElement
+    extends AutoDisposeFutureProviderElement<ListData<BookingRequest>>
+    with GetBookingRequestsRef {
+  _GetBookingRequestsProviderElement(super.provider);
+
+  @override
+  int get page => (origin as GetBookingRequestsProvider).page;
+  @override
+  int get pageSize => (origin as GetBookingRequestsProvider).pageSize;
 }
 
 String _$getTransactionsHash() => r'ee85aa24056cade231802008cfb7860591666a63';

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/model/coordinate.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
@@ -26,6 +27,8 @@ abstract interface class IPetDaycareService {
   Future<Result<void>> deletePetDaycare(String token, int petDaycareId);
   Future<Result<ListData<Reviews>>> getReviews(
       String token, int petDaycareId, OffsetPaginationQueryParams pagination);
+  Future<Result<ListData<BookingRequest>>> getBookingRequests(
+      String token, OffsetPaginationQueryParams pagination);
 }
 
 class PetDaycareService implements IPetDaycareService {
@@ -169,5 +172,29 @@ class PetDaycareService implements IPetDaycareService {
 
       return res;
     });
+  }
+
+  @override
+  Future<Result<ListData<BookingRequest>>> getBookingRequests(
+      String token, OffsetPaginationQueryParams pagination) {
+    return makeRequest(200, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      var dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
+        "$host/daycare/booking-requests",
+        options: Options(headers: {
+          HttpHeaders.authorizationHeader: "Bearer $token",
+        }),
+      );
+
+      return res;
+    }, (res) => ListData.fromJson(res, BookingRequest.fromJson));
   }
 }

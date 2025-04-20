@@ -155,6 +155,41 @@ func ConvertTransactionsToTransactionDTO(transactions []model.Transaction) []mod
 	return out
 }
 
+func ConvertBookedSlotToBookingRequest(bookedSlots []model.BookedSlot) []model.BookingRequest {
+	var out []model.BookingRequest
+
+	for _, val := range bookedSlots {
+		bookingRequest := model.BookingRequest{
+			ID:             val.ID,
+			User:           ConvertUserToDTO(val.User),
+			StartDate:      val.StartDate.Format(time.RFC3339),
+			EndDate:        val.EndDate.Format(time.RFC3339),
+			PickupRequired: &val.UsePickupService,
+			PetCount:       []model.PetCategoryCount{},
+		}
+
+		petCategory := make(map[uint]uint)
+
+		for _, petC := range val.Pet {
+			petCategory[petC.PetCategory.ID] = petCategory[petC.PetCategory.ID] + 1
+		}
+
+		for key, count := range petCategory {
+			var name string
+			for _, petC := range val.Pet {
+				if petC.PetCategory.ID == key {
+					name = petC.PetCategory.Name
+				}
+			}
+			bookingRequest.PetCount = append(bookingRequest.PetCount, model.PetCategoryCount{PetCategory: model.PetCategoryDTO{ID: key, Name: name}, Total: count})
+		}
+
+		out = append(out, bookingRequest)
+	}
+
+	return out
+}
+
 func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float64) model.GetPetDaycareDetailResponse {
 	// Extract thumbnail URLs
 	thumbnailURLs := []string{}

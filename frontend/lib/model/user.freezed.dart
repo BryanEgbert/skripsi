@@ -25,7 +25,7 @@ mixin _$User {
   String get email => throw _privateConstructorUsedError;
   String get imageUrl => throw _privateConstructorUsedError;
   Lookup get role => throw _privateConstructorUsedError;
-  List<Lookup?> get vetSpecialties => throw _privateConstructorUsedError;
+  List<Lookup> get vetSpecialties => throw _privateConstructorUsedError;
   String get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this User to a JSON map.
@@ -48,7 +48,7 @@ abstract class $UserCopyWith<$Res> {
       String email,
       String imageUrl,
       Lookup role,
-      List<Lookup?> vetSpecialties,
+      List<Lookup> vetSpecialties,
       String createdAt});
 
   $LookupCopyWith<$Res> get role;
@@ -101,7 +101,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
       vetSpecialties: null == vetSpecialties
           ? _value.vetSpecialties
           : vetSpecialties // ignore: cast_nullable_to_non_nullable
-              as List<Lookup?>,
+              as List<Lookup>,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -133,7 +133,7 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       String email,
       String imageUrl,
       Lookup role,
-      List<Lookup?> vetSpecialties,
+      List<Lookup> vetSpecialties,
       String createdAt});
 
   @override
@@ -184,7 +184,7 @@ class __$$UserImplCopyWithImpl<$Res>
       vetSpecialties: null == vetSpecialties
           ? _value._vetSpecialties
           : vetSpecialties // ignore: cast_nullable_to_non_nullable
-              as List<Lookup?>,
+              as List<Lookup>,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -202,7 +202,7 @@ class _$UserImpl implements _User {
       required this.email,
       required this.imageUrl,
       required this.role,
-      required final List<Lookup?> vetSpecialties,
+      required final List<Lookup> vetSpecialties,
       required this.createdAt})
       : _vetSpecialties = vetSpecialties;
 
@@ -219,9 +219,9 @@ class _$UserImpl implements _User {
   final String imageUrl;
   @override
   final Lookup role;
-  final List<Lookup?> _vetSpecialties;
+  final List<Lookup> _vetSpecialties;
   @override
-  List<Lookup?> get vetSpecialties {
+  List<Lookup> get vetSpecialties {
     if (_vetSpecialties is EqualUnmodifiableListView) return _vetSpecialties;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_vetSpecialties);
@@ -280,7 +280,7 @@ abstract class _User implements User {
       required final String email,
       required final String imageUrl,
       required final Lookup role,
-      required final List<Lookup?> vetSpecialties,
+      required final List<Lookup> vetSpecialties,
       required final String createdAt}) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
@@ -296,7 +296,7 @@ abstract class _User implements User {
   @override
   Lookup get role;
   @override
-  List<Lookup?> get vetSpecialties;
+  List<Lookup> get vetSpecialties;
   @override
   String get createdAt;
 

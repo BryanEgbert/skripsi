@@ -13,7 +13,7 @@ class User with _$User {
     required String email,
     required String imageUrl,
     required Lookup role,
-    required List<Lookup?> vetSpecialties,
+    required List<Lookup> vetSpecialties,
     required String createdAt,
   }) = _User;
 

@@ -353,7 +353,7 @@ func SeedTable(db *gorm.DB) error {
 		{
 			UserID:    users[0].ID,
 			DaycareID: daycare[0].ID,
-			PetID:     pet[0].ID,
+			Pet:       []model.Pet{pet[0]},
 			StartDate: time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
 			EndDate:   time.Date(2025, time.February, 15, 0, 0, 0, 0, time.Local),
 			StatusID:  1,
@@ -361,7 +361,7 @@ func SeedTable(db *gorm.DB) error {
 		{
 			UserID:    users[0].ID,
 			DaycareID: daycare[1].ID,
-			PetID:     pet[1].ID, StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 3),
+			Pet:       []model.Pet{pet[1]}, StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 3),
 			StatusID: 1,
 		},
 	}
