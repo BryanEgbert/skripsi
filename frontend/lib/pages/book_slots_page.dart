@@ -16,6 +16,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
   Map<int, bool> _petIdValue = {};
 
   @override
+  // TODO: add bottom sheet for confirm button
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -81,7 +82,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                       pageSize: Constants.pageSize,
                       buildBody: (pet) {
                         return CheckboxListTile(
-                          value: _petIdValue[pet.id],
+                          value: _petIdValue[pet.id] ?? false,
                           onChanged: (value) {
                             setState(() {
                               if (value != null) {
