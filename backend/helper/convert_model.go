@@ -116,6 +116,29 @@ func ConvertVaccineRecordToDTO(vaccineRecord model.VaccineRecord) model.VaccineR
 	return out
 }
 
+func ConvertPetsToDto(pets []model.Pet) []model.PetDTO {
+	out := []model.PetDTO{}
+
+	for _, val := range pets {
+		pet := model.PetDTO{
+			ID:          val.ID,
+			Name:        val.Name,
+			Status:      val.Status,
+			Neutered:    val.Neutered,
+			Owner:       ConvertUserToDTO(val.Owner),
+			PetCategory: ConvertPetCategoryToDTO(val.PetCategory),
+		}
+
+		if val.ImageUrl != nil {
+			pet.ImageUrl = *val.ImageUrl
+		}
+
+		out = append(out, pet)
+	}
+
+	return out
+}
+
 func ConvertReviewsToDto(reviews []model.Reviews) []model.ReviewsDTO {
 	out := []model.ReviewsDTO{}
 
@@ -148,6 +171,8 @@ func ConvertTransactionsToTransactionDTO(transactions []model.Transaction) []mod
 			PetDaycare: ConvertPetDaycareToDetailResponse(val.PetDaycare, 0),
 			StartDate:  val.BookedSlot.StartDate.Format(time.RFC3339),
 			EndDate:    val.BookedSlot.EndDate.Format(time.RFC3339),
+			BookedPet:  ConvertPetsToDto(val.BookedSlot.Pet),
+			BookedSlot: ConvertBookedSlotToBookingRequest(val.BookedSlot),
 		})
 
 	}
@@ -155,7 +180,36 @@ func ConvertTransactionsToTransactionDTO(transactions []model.Transaction) []mod
 	return out
 }
 
-func ConvertBookedSlotToBookingRequest(bookedSlots []model.BookedSlot) []model.BookingRequest {
+func ConvertBookedSlotToBookingRequest(bookedSlot model.BookedSlot) model.BookingRequest {
+	out := model.BookingRequest{
+		ID:             bookedSlot.ID,
+		User:           ConvertUserToDTO(bookedSlot.User),
+		StartDate:      bookedSlot.StartDate.Format(time.RFC3339),
+		EndDate:        bookedSlot.EndDate.Format(time.RFC3339),
+		PickupRequired: &bookedSlot.UsePickupService,
+		PetCount:       []model.PetCategoryCount{},
+	}
+
+	petCategory := make(map[uint]uint)
+
+	for _, petC := range bookedSlot.Pet {
+		petCategory[petC.PetCategory.ID] = petCategory[petC.PetCategory.ID] + 1
+	}
+
+	for key, count := range petCategory {
+		var name string
+		for _, petC := range bookedSlot.Pet {
+			if petC.PetCategory.ID == key {
+				name = petC.PetCategory.Name
+			}
+		}
+		out.PetCount = append(out.PetCount, model.PetCategoryCount{PetCategory: model.PetCategoryDTO{ID: key, Name: name}, Total: count})
+	}
+
+	return out
+}
+
+func ConvertBookedSlotsToBookingRequests(bookedSlots []model.BookedSlot) []model.BookingRequest {
 	var out []model.BookingRequest
 
 	for _, val := range bookedSlots {

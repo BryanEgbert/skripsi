@@ -24,8 +24,13 @@ func (s *TransactionServiceImpl) GetTransactions(userId uint, page int, pageSize
 	if err := s.db.
 		Model(&model.Transaction{UserID: userId}).
 		Preload("PetDaycare").
-		Joins("BookedSlot").
-		Joins("BookedSlot.Status").
+		Preload("PetDaycare.Slots").
+		Preload("PetDaycare.Slots.PetCategory").
+		Preload("PetDaycare.Slots.PetCategory.SizeCategory").
+		Preload("BookedSlot").
+		Preload("BookedSlot.Status").
+		Preload("BookedSlot.Pet").
+		Preload("BookedSlot.Pet.PetCategory").
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
 		Find(&transactions).Error; err != nil {

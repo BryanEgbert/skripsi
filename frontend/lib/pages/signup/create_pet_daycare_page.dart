@@ -250,7 +250,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
           validator: (value) => validateNotEmpty("Location", value),
         );
       },
-      displayStringForOption: (option) => option.name,
+      displayStringForOption: (option) => "${option.name}\n${option.address}",
       optionsBuilder: (textEditingValue) async {
         final res = await _locationService.getSuggestedLocation(
             _sessionId, textEditingValue.text);

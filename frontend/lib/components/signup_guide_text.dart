@@ -13,7 +13,7 @@ class SignupGuideText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 64),
+      margin: EdgeInsets.only(top: 52),
       child: RichText(
         textAlign: TextAlign.start,
         text: TextSpan(
@@ -21,7 +21,7 @@ class SignupGuideText extends StatelessWidget {
             style: TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.bold,
-              color: Colors.orange,
+              color: Colors.orange[700],
             ),
             children: [
               TextSpan(

@@ -5,6 +5,17 @@ String? validatePassword(String? value) {
   return null;
 }
 
+String? validateRegisterassword(String? value) {
+  if (value == null || value.isEmpty) {
+    return "Password cannot be empty";
+  }
+
+  if (value.length < 8) {
+    return "Password must contain at least 8 characters";
+  }
+  return null;
+}
+
 String? validateNotEmpty(String inputFieldName, String? value) {
   if (value == null || value.isEmpty) {
     return "$inputFieldName cannot be empty";

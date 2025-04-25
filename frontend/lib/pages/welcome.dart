@@ -11,22 +11,26 @@ class WelcomeWidget extends StatelessWidget {
     return Scaffold(
       body: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AppWelcomeText(),
-            SizedBox(
-              height: 64,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                LoginForm(),
-                separator(),
-                createAccountButton(context),
+                AppWelcomeText(),
+                SizedBox(
+                  height: 64,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    LoginForm(),
+                    separator(),
+                    createAccountButton(context),
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

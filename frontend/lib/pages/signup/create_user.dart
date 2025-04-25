@@ -116,6 +116,10 @@ class _CreateUserPageState extends State<CreateUserPage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           labelText: "Email",
+                          helper: Text(
+                            "e.g. test@gmail.com",
+                            style: TextStyle(fontSize: 12),
+                          ),
                         ),
                         validator: (value) {
                           return validateEmail(value);
@@ -129,6 +133,10 @@ class _CreateUserPageState extends State<CreateUserPage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           labelText: "Password",
+                          helper: Text(
+                            "Must contain at least 8 characters",
+                            style: TextStyle(fontSize: 12),
+                          ),
                         ),
                         obscureText: true,
                         enableSuggestions: false,
@@ -156,40 +164,48 @@ class _CreateUserPageState extends State<CreateUserPage> {
   Widget profilePicturePicker() {
     return GestureDetector(
       onTap: _pickImage,
-      child: Stack(
-        alignment: Alignment.center,
+      child: Column(
         children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: _userProfilePicture != null
-                  ? DecorationImage(
-                      image: FileImage(_userProfilePicture!),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
-              color: Colors.grey[300],
-            ),
-            child: _userProfilePicture == null
-                ? Icon(Icons.edit, size: 40, color: Colors.grey[700])
-                : null,
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: _userProfilePicture != null
+                      ? DecorationImage(
+                          image: FileImage(_userProfilePicture!),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                  color: Colors.grey[300],
+                ),
+                child: _userProfilePicture == null
+                    ? Icon(Icons.person, size: 40, color: Colors.grey[700])
+                    : null,
+              ),
+              if (_userProfilePicture != null)
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black54,
+                  ),
+                  child: Icon(
+                    Icons.edit,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+            ],
           ),
-          if (_userProfilePicture != null)
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.black54,
-              ),
-              child: Icon(
-                Icons.edit,
-                color: Colors.white,
-                size: 24,
-              ),
-            ),
+          Text(
+            "Change Photo",
+            style: TextStyle(color: Colors.orange[800]),
+          ),
         ],
       ),
     );

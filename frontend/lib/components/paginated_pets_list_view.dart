@@ -1,18 +1,15 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/model/pet.dart';
-import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
-import 'package:frontend/provider/pet_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
 
 class PaginatedPetsListView extends ConsumerStatefulWidget {
   final int pageSize;
-  const PaginatedPetsListView({super.key, required this.pageSize});
+  final Widget Function(Pet pet) buildBody;
+  const PaginatedPetsListView(
+      {super.key, required this.pageSize, required this.buildBody});
 
   @override
   ConsumerState<PaginatedPetsListView> createState() =>
@@ -60,37 +57,6 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
     }).whenComplete(() => setState(() => _isFetching = false));
   }
 
-  void _deletePet(int petId) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Confirm Delete"),
-          content: Text(
-              "Are you sure you want to delete this pet? This action cannot be undone."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                ref.read(petStateProvider.notifier).deletePet(petId);
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                "Delete",
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -129,7 +95,7 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
                   itemCount: _records.length + 1,
                   itemBuilder: (context, index) {
                     if (index < _records.length) {
-                      return _buildListTile(context, _records[index]);
+                      return widget.buildBody(_records[index]);
                     } else {
                       if (_isFetching) {
                         return Center(
@@ -146,51 +112,6 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
                   errorText: _error!.toString(),
                   onRefresh: () => _fetchMoreData(),
                 ),
-    );
-  }
-
-  Widget _buildListTile(BuildContext context, Pet item) {
-    return ListTile(
-      leading: DefaultCircleAvatar(imageUrl: item.imageUrl ?? ""),
-      title: Text(item.name),
-      subtitle: Text(
-          "Pet category: ${item.petCategory.name}\nStatus: ${item.status}"),
-      titleTextStyle: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.orange,
-      ),
-      subtitleTextStyle: TextStyle(fontSize: 14, color: Colors.black),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // TODO: edit pet
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.edit,
-              color: Colors.orange[600],
-            ),
-          ),
-          IconButton(
-            onPressed: () => _deletePet(item.id),
-            icon: Icon(
-              Icons.delete,
-              color: Colors.red,
-            ),
-          ),
-        ],
-      ),
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PetDetailsPage(
-              petId: item.id,
-              isOwner: true,
-            ),
-          ),
-        );
-      },
     );
   }
 }

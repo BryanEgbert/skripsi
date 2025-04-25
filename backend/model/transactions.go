@@ -17,6 +17,8 @@ type TransactionDTO struct {
 	ID         uint                        `json:"id"`
 	Status     BookedSlotStatus            `json:"status"`
 	PetDaycare GetPetDaycareDetailResponse `json:"petDaycare"`
+	BookedSlot BookingRequest              `json:"bookedSlot"`
+	BookedPet  []PetDTO                    `json:"bookedPet"`
 	StartDate  string                      `json:"startDate"`
 	EndDate    string                      `json:"endDate"`
 }

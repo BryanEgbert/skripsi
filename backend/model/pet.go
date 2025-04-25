@@ -8,15 +8,15 @@ import (
 
 type Pet struct {
 	gorm.Model
-	Name          string `gorm:"not null"`
-	ImageUrl      *string
-	Status        string      `gorm:"default:'idle'"`
-	Neutered      bool        `gorm:"not null"`
-	OwnerID       uint        `gorm:"not null"`
-	Owner         User        `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	PetCategoryID uint        `gorm:"not null"`
-	PetCategory   PetCategory `gorm:"foreignKey:PetCategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	// BookedSlots    []BookedSlot    `gorm:"foreignKey:PetID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-Many with BookedSlot
+	Name           string `gorm:"not null"`
+	ImageUrl       *string
+	Status         string          `gorm:"default:'idle'"`
+	Neutered       bool            `gorm:"not null"`
+	OwnerID        uint            `gorm:"not null"`
+	Owner          User            `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	PetCategoryID  uint            `gorm:"not null"`
+	PetCategory    PetCategory     `gorm:"foreignKey:PetCategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	BookedSlots    []BookedSlot    `gorm:"many2many:pet_booked_slots;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-Many with BookedSlot
 	VaccineRecords []VaccineRecord `gorm:"foreignKey:PetID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 

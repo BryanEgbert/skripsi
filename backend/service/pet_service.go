@@ -79,7 +79,7 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, startID uint, pageSize int) 
 func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 	var pet model.Pet
 	if err := s.db.
-		Preload("BookedSlots").
+		// Preload("BookedSlots").
 		Preload("VaccineRecords").
 		Joins("PetCategory").
 		Joins("PetCategory.SizeCategory").

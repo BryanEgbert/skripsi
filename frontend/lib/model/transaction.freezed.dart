@@ -23,8 +23,10 @@ mixin _$Transaction {
   int get id => throw _privateConstructorUsedError;
   Lookup get status => throw _privateConstructorUsedError;
   PetDaycareDetails get petDaycare => throw _privateConstructorUsedError;
+  List<Pet> get bookedPet => throw _privateConstructorUsedError;
   String get startDate => throw _privateConstructorUsedError;
   String get endDate => throw _privateConstructorUsedError;
+  BookingRequest get bookedSlot => throw _privateConstructorUsedError;
 
   /// Serializes this Transaction to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -46,11 +48,14 @@ abstract class $TransactionCopyWith<$Res> {
       {int id,
       Lookup status,
       PetDaycareDetails petDaycare,
+      List<Pet> bookedPet,
       String startDate,
-      String endDate});
+      String endDate,
+      BookingRequest bookedSlot});
 
   $LookupCopyWith<$Res> get status;
   $PetDaycareDetailsCopyWith<$Res> get petDaycare;
+  $BookingRequestCopyWith<$Res> get bookedSlot;
 }
 
 /// @nodoc
@@ -71,8 +76,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? id = null,
     Object? status = null,
     Object? petDaycare = null,
+    Object? bookedPet = null,
     Object? startDate = null,
     Object? endDate = null,
+    Object? bookedSlot = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -87,6 +94,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.petDaycare
           : petDaycare // ignore: cast_nullable_to_non_nullable
               as PetDaycareDetails,
+      bookedPet: null == bookedPet
+          ? _value.bookedPet
+          : bookedPet // ignore: cast_nullable_to_non_nullable
+              as List<Pet>,
       startDate: null == startDate
           ? _value.startDate
           : startDate // ignore: cast_nullable_to_non_nullable
@@ -95,6 +106,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.endDate
           : endDate // ignore: cast_nullable_to_non_nullable
               as String,
+      bookedSlot: null == bookedSlot
+          ? _value.bookedSlot
+          : bookedSlot // ignore: cast_nullable_to_non_nullable
+              as BookingRequest,
     ) as $Val);
   }
 
@@ -117,6 +132,16 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
       return _then(_value.copyWith(petDaycare: value) as $Val);
     });
   }
+
+  /// Create a copy of Transaction
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $BookingRequestCopyWith<$Res> get bookedSlot {
+    return $BookingRequestCopyWith<$Res>(_value.bookedSlot, (value) {
+      return _then(_value.copyWith(bookedSlot: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -131,13 +156,17 @@ abstract class _$$TransactionImplCopyWith<$Res>
       {int id,
       Lookup status,
       PetDaycareDetails petDaycare,
+      List<Pet> bookedPet,
       String startDate,
-      String endDate});
+      String endDate,
+      BookingRequest bookedSlot});
 
   @override
   $LookupCopyWith<$Res> get status;
   @override
   $PetDaycareDetailsCopyWith<$Res> get petDaycare;
+  @override
+  $BookingRequestCopyWith<$Res> get bookedSlot;
 }
 
 /// @nodoc
@@ -156,8 +185,10 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? id = null,
     Object? status = null,
     Object? petDaycare = null,
+    Object? bookedPet = null,
     Object? startDate = null,
     Object? endDate = null,
+    Object? bookedSlot = null,
   }) {
     return _then(_$TransactionImpl(
       id: null == id
@@ -172,6 +203,10 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value.petDaycare
           : petDaycare // ignore: cast_nullable_to_non_nullable
               as PetDaycareDetails,
+      bookedPet: null == bookedPet
+          ? _value._bookedPet
+          : bookedPet // ignore: cast_nullable_to_non_nullable
+              as List<Pet>,
       startDate: null == startDate
           ? _value.startDate
           : startDate // ignore: cast_nullable_to_non_nullable
@@ -180,6 +215,10 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value.endDate
           : endDate // ignore: cast_nullable_to_non_nullable
               as String,
+      bookedSlot: null == bookedSlot
+          ? _value.bookedSlot
+          : bookedSlot // ignore: cast_nullable_to_non_nullable
+              as BookingRequest,
     ));
   }
 }
@@ -191,8 +230,11 @@ class _$TransactionImpl implements _Transaction {
       {required this.id,
       required this.status,
       required this.petDaycare,
+      required final List<Pet> bookedPet,
       required this.startDate,
-      required this.endDate});
+      required this.endDate,
+      required this.bookedSlot})
+      : _bookedPet = bookedPet;
 
   factory _$TransactionImpl.fromJson(Map<String, dynamic> json) =>
       _$$TransactionImplFromJson(json);
@@ -203,14 +245,24 @@ class _$TransactionImpl implements _Transaction {
   final Lookup status;
   @override
   final PetDaycareDetails petDaycare;
+  final List<Pet> _bookedPet;
+  @override
+  List<Pet> get bookedPet {
+    if (_bookedPet is EqualUnmodifiableListView) return _bookedPet;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_bookedPet);
+  }
+
   @override
   final String startDate;
   @override
   final String endDate;
+  @override
+  final BookingRequest bookedSlot;
 
   @override
   String toString() {
-    return 'Transaction(id: $id, status: $status, petDaycare: $petDaycare, startDate: $startDate, endDate: $endDate)';
+    return 'Transaction(id: $id, status: $status, petDaycare: $petDaycare, bookedPet: $bookedPet, startDate: $startDate, endDate: $endDate, bookedSlot: $bookedSlot)';
   }
 
   @override
@@ -222,15 +274,26 @@ class _$TransactionImpl implements _Transaction {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.petDaycare, petDaycare) ||
                 other.petDaycare == petDaycare) &&
+            const DeepCollectionEquality()
+                .equals(other._bookedPet, _bookedPet) &&
             (identical(other.startDate, startDate) ||
                 other.startDate == startDate) &&
-            (identical(other.endDate, endDate) || other.endDate == endDate));
+            (identical(other.endDate, endDate) || other.endDate == endDate) &&
+            (identical(other.bookedSlot, bookedSlot) ||
+                other.bookedSlot == bookedSlot));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, status, petDaycare, startDate, endDate);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      status,
+      petDaycare,
+      const DeepCollectionEquality().hash(_bookedPet),
+      startDate,
+      endDate,
+      bookedSlot);
 
   /// Create a copy of Transaction
   /// with the given fields replaced by the non-null parameter values.
@@ -253,8 +316,10 @@ abstract class _Transaction implements Transaction {
       {required final int id,
       required final Lookup status,
       required final PetDaycareDetails petDaycare,
+      required final List<Pet> bookedPet,
       required final String startDate,
-      required final String endDate}) = _$TransactionImpl;
+      required final String endDate,
+      required final BookingRequest bookedSlot}) = _$TransactionImpl;
 
   factory _Transaction.fromJson(Map<String, dynamic> json) =
       _$TransactionImpl.fromJson;
@@ -266,9 +331,13 @@ abstract class _Transaction implements Transaction {
   @override
   PetDaycareDetails get petDaycare;
   @override
+  List<Pet> get bookedPet;
+  @override
   String get startDate;
   @override
   String get endDate;
+  @override
+  BookingRequest get bookedSlot;
 
   /// Create a copy of Transaction
   /// with the given fields replaced by the non-null parameter values.

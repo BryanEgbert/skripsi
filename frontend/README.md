@@ -25,12 +25,10 @@ samples, guidance on mobile development, and a full API reference.
   - [x] Create pet page
   - [x] Choose vet specialty page
   - **Create pet daycare pages**
-    - [ ] Create pet daycare details page
-      - add validation for operating hours
+    - [x] Create pet daycare details page
     - [x] Add pet daycare pictures page
     - [x] Edit pet daycare slot
-    - [ ] Edit pet daycare provided services page
-      - add validation
+    - [x] Edit pet daycare provided services page
   - **View pages for pet owners**
     - [ ] View pet daycares page
     - [x] View pets page
@@ -38,20 +36,45 @@ samples, guidance on mobile development, and a full API reference.
     - [ ] View pet details page
       - [x] view vaccination records
       - [x] view pet information
-      - [ ] delete pet
+      - [x] delete pet
       - [ ] update pet info
-      - [ ] add vaccine record
-      - [ ] delete vaccine record
+      - [x] add vaccine record
+      - [x] delete vaccine record
       - [ ] edit vaccine record
-    - [ ] View vets page
+    - [x] View vets page
     - [ ] View booking history page
     - [ ] View booking detail
     - [ ] edit profile
-    - [ ] logout
+    - [x] logout
   - **View pages for pet daycares**
-    - [ ] View booked pets
-    - [ ] Get own pet daycare details
-    - [ ] Edit pet daycare
+    - [x] View booked pets
+    - [x] Get own pet daycare details
+    - [x] Edit pet daycare
     - [ ] Chat features
-    - [ ] Booking requests page
+    - [-] Booking requests page
     - [ ] Edit slot for the day
+
+# 8 Golden Rules
+## Strive for Consistency
+  - Consistent color
+  - Consistent input design
+  - Consistent button design
+  - consistent usage of font family
+## Cater to universal usability
+  - User-friendly error message
+  - Use of popular icons, custom or less-used icons have labels.
+## Offer informative feedback
+  - Add success and error message on create, edit, and delete operation
+  - Change buttons content from text to loading progress on press during operation
+## Design Dialog to yield closure
+  - Pop-up confirmation dialog when user do a delete operation that cannot be undone
+## Prevent errors
+  - Add minimum and maximum number constraints to number inputs
+  - Add helper text on email and password on register
+  - Add required & optional text on input
+## Permit easy reversal of actions
+  - Delete button on view pages
+## Keep users in control
+  - Add language support
+## Reduce short-term memory loss
+  - Default values on edit forms

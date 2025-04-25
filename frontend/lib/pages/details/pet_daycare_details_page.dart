@@ -6,6 +6,7 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/image_slider.dart';
 import 'package:frontend/model/pet_daycare.dart';
+import 'package:frontend/pages/book_slots_page.dart';
 import 'package:frontend/pages/edit/edit_pet_daycare_page.dart';
 import 'package:frontend/pages/ratings_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
@@ -322,6 +323,14 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
             if (widget.petDaycareId != 0) ...[
               const SizedBox(height: 16),
               CheckboxListTile(
+                  title: Text(
+                    "Use Pick-Up Service",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange,
+                      fontSize: 14,
+                    ),
+                  ),
                   checkColor: Colors.orange,
                   tileColor: Color(0xFFFFF1E1),
                   value: _usePickupService,
@@ -335,7 +344,11 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
               Container(
                 margin: EdgeInsets.only(right: 12),
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => BookSlotsPage(),
+                    ));
+                  },
                   child: Text("Book A Slot"),
                 ),
               ),

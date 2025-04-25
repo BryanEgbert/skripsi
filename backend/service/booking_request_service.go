@@ -34,7 +34,7 @@ func (s *BookingRequestServiceImpl) GetBookingRequests(userID uint, page int, pa
 		return model.ListData[model.BookingRequest]{}, err
 	}
 
-	out := helper.ConvertBookedSlotToBookingRequest(bookedSlots)
+	out := helper.ConvertBookedSlotsToBookingRequests(bookedSlots)
 
 	return model.ListData[model.BookingRequest]{Data: out}, nil
 
