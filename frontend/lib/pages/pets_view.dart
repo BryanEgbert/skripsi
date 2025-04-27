@@ -4,6 +4,7 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/paginated_pets_list_view.dart';
 import 'package:frontend/model/pet.dart';
+import 'package:frontend/pages/add_pet_page.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/pet_provider.dart';
@@ -59,7 +60,11 @@ class _PetsViewState extends ConsumerState<PetsView> {
       ),
       // TODO: add create pet
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => AddPetPage(),
+          ));
+        },
         backgroundColor: Colors.orange,
         child: Icon(
           Icons.add,

@@ -11,7 +11,7 @@ void handleError(AsyncValue providerValue, BuildContext context) {
       var snackbar = SnackBar(
         key: Key("error-message"),
         content: Text(providerValue.error.toString()),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.red[800],
       );
 
       ScaffoldMessenger.of(context).showSnackBar(snackbar);

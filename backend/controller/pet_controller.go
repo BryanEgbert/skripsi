@@ -16,11 +16,12 @@ import (
 )
 
 type PetController struct {
-	petService service.PetService
+	petService           service.PetService
+	vaccineRecordService service.VaccineService
 }
 
-func NewPetController(petService service.PetService) *PetController {
-	return &PetController{petService}
+func NewPetController(petService service.PetService, vaccineRecordService service.VaccineService) *PetController {
+	return &PetController{petService, vaccineRecordService}
 }
 
 // GetPet retrieves a single pet by ID
@@ -123,7 +124,7 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 		return
 	}
 
-	var req model.PetRequest
+	var req model.PetAndVaccinationRecordRequest
 	if err := c.Bind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid request data",
@@ -146,12 +147,42 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 		}
 	}
 
-	if _, err := pc.petService.CreatePet(userID, req); err != nil {
+	if req.VaccineRecordImage != nil {
+		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.VaccineRecordImage.Filename)))
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
+		req.VaccineRecordImageUrl = imageUrl
+
+		if err := c.SaveUploadedFile(req.VaccineRecordImage, filename); err != nil {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "Failed to save image",
+				Error:   err.Error(),
+			})
+			return
+		}
+	}
+
+	petID, err := pc.petService.CreatePet(userID, req.PetRequest)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to create pet",
 			Error:   err.Error(),
 		})
 		return
+	}
+
+	if req.DateAdministered != nil && req.NextDueDate != nil && req.VaccineRecordImage != nil {
+		if _, err = pc.vaccineRecordService.CreateVaccineRecords(petID, model.VaccineRecordRequest{
+			DateAdministered:      *req.DateAdministered,
+			NextDueDate:           *req.NextDueDate,
+			VaccineRecordImage:    req.VaccineRecordImage,
+			VaccineRecordImageUrl: req.VaccineRecordImageUrl,
+		}); err != nil {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "Failed to create vaccination record",
+				Error:   err.Error(),
+			})
+			return
+		}
 	}
 
 	c.JSON(http.StatusCreated, nil)

@@ -4,6 +4,7 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/model/transaction.dart';
+import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 
@@ -214,7 +215,12 @@ class _TransactionDetailsPageState
                       itemBuilder: (context, index) {
                         var item = widget.transaction.bookedPet[index];
                         return ListTile(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  PetDetailsPage(petId: item.id, isOwner: true),
+                            ));
+                          },
                           leading: DefaultCircleAvatar(
                               imageUrl: item.imageUrl ?? ""),
                           title: Text(item.name),

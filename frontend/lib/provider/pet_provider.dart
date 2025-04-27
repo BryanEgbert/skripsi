@@ -1,5 +1,6 @@
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/pet_request.dart';
+import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/services/pet_service.dart';
@@ -55,17 +56,19 @@ class PetState extends _$PetState {
     }
   }
 
-  Future<void> addPet(PetRequest req) async {
+  Future<void> addPet(
+      PetRequest petReq, VaccinationRecordRequest? vaccineReq) async {
     state = AsyncLoading();
 
     TokenResponse token = await refreshToken();
 
     final petService = PetService();
-    final res = await petService.createPet(token.accessToken, req);
+    final res =
+        await petService.createPet(token.accessToken, petReq, vaccineReq);
 
     switch (res) {
       case Ok<void>():
-        state = AsyncData(null);
+        state = AsyncData(201);
         ref.invalidate(petListProvider);
       case Error<void>():
         state = AsyncError(res.error, StackTrace.current);

@@ -118,7 +118,7 @@ class AuthService implements IAuthService {
 
       Map<String, dynamic> req = {
         ...userReq.toMap(),
-        ...await petReq.toMap(),
+        ...petReq.toMap(),
         ...vaccineReq.toMap(),
       };
 

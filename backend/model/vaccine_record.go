@@ -29,3 +29,10 @@ type VaccineRecordRequest struct {
 	VaccineRecordImage    *multipart.FileHeader `form:"vaccineRecordImage" binding:"required"`
 	VaccineRecordImageUrl string
 }
+
+type CreateVaccineRecordRequest struct {
+	DateAdministered      *string               `form:"dateAdministered"`
+	NextDueDate           *string               `form:"nextDueDate"`
+	VaccineRecordImage    *multipart.FileHeader `form:"vaccineRecordImage"`
+	VaccineRecordImageUrl string
+}

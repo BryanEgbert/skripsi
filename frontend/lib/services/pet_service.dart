@@ -6,6 +6,7 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/request/pet_request.dart';
+import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/vaccine_record.dart';
 
@@ -18,14 +19,16 @@ abstract interface class IPetService {
   Future<Result<ListData<VaccineRecord>>> getVaccineRecords(
       String token, int petId, CursorBasedPaginationQueryParams pagination);
 
-  Future<Result<void>> createPet(String token, PetRequest reqBody);
+  Future<Result<void>> createPet(String token, PetRequest petReqBody,
+      VaccinationRecordRequest? vaccineReqBody);
   Future<Result<void>> updatePet(String token, int id, PetRequest reqBody);
   Future<Result<void>> deletePet(String token, int id);
 }
 
 class PetService implements IPetService {
   @override
-  Future<Result<void>> createPet(String token, PetRequest reqBody) {
+  Future<Result<void>> createPet(String token, PetRequest petReqBody,
+      VaccinationRecordRequest? vaccineReqBody) {
     return makeRequest(201, () async {
       await dotenv.load();
       final String host = dotenv.env["HOST"]!;
@@ -36,13 +39,25 @@ class PetService implements IPetService {
         },
       ));
 
-      FormData formData = FormData.fromMap({
-        ...reqBody.toMap(),
-        "petProfilePicture": reqBody.petImage != null
-            ? await MultipartFile.fromFile(reqBody.petImage!.path,
-                filename: reqBody.petImage!.path.split('/').last)
-            : null,
-      });
+      Map<String, dynamic> reqMap = petReqBody.toMap();
+
+      if (petReqBody.petImage != null) {
+        reqMap["petProfilePicture"] = await MultipartFile.fromFile(
+            petReqBody.petImage!.path,
+            filename: petReqBody.petImage!.path.split('/').last);
+      }
+
+      if (vaccineReqBody != null) {
+        if (vaccineReqBody.vaccineRecordImage != null) {
+          reqMap["vaccineRecordImage"] = await MultipartFile.fromFile(
+              petReqBody.petImage!.path,
+              filename: petReqBody.petImage!.path.split('/').last);
+        }
+
+        reqMap = {...reqMap, ...vaccineReqBody.toMap()};
+      }
+
+      FormData formData = FormData.fromMap(reqMap);
 
       final response = await dio.post(
         "$host/pets",

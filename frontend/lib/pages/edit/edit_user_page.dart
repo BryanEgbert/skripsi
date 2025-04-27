@@ -43,7 +43,7 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
       email: value.email,
       roleId: value.role.id,
       vetSpecialtyId: value.vetSpecialties.isNotEmpty
-          ? value.vetSpecialties.map((e) => e!.id).toList()
+          ? value.vetSpecialties.map((e) => e.id).toList()
           : [],
     );
 

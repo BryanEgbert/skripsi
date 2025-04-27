@@ -45,5 +45,5 @@ type PetRequest struct {
 
 type PetAndVaccinationRecordRequest struct {
 	PetRequest
-	VaccineRecordRequest
+	CreateVaccineRecordRequest
 }
