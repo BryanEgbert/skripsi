@@ -159,10 +159,10 @@ func ConvertReviewsToDto(reviews []model.Reviews) []model.ReviewsDTO {
 }
 
 func ConvertTransactionsToTransactionDTO(transactions []model.Transaction) []model.TransactionDTO {
-	var out []model.TransactionDTO
+	out := []model.TransactionDTO{}
 
 	for _, val := range transactions {
-		out = append(out, model.TransactionDTO{
+		transactionDTO := model.TransactionDTO{
 			ID: val.ID,
 			Status: model.BookedSlotStatus{
 				ID:   val.BookedSlot.Status.ID,
@@ -173,6 +173,33 @@ func ConvertTransactionsToTransactionDTO(transactions []model.Transaction) []mod
 			EndDate:    val.BookedSlot.EndDate.Format(time.RFC3339),
 			BookedPet:  ConvertPetsToDto(val.BookedSlot.Pet),
 			BookedSlot: ConvertBookedSlotToBookingRequest(val.BookedSlot),
+		}
+
+		if val.BookedSlot.Address.Address != "" {
+			transactionDTO.AddressInfo = &model.BookedSlotAddressDTO{
+				ID:        val.BookedSlot.Address.ID,
+				Name:      val.BookedSlot.Address.Name,
+				Address:   val.BookedSlot.Address.Address,
+				Latitude:  val.BookedSlot.Address.Latitude,
+				Longitude: val.BookedSlot.Daycare.Longitude,
+				Notes:     val.BookedSlot.Address.Notes,
+			}
+		}
+
+		out = append(out, transactionDTO)
+	}
+
+	return out
+}
+
+func ConvertSavedAddressesToDTO(savedAddresses []model.SavedAddress) []model.SavedAddressDTO {
+	var out []model.SavedAddressDTO
+
+	for _, val := range savedAddresses {
+		out = append(out, model.SavedAddressDTO{
+			ID:      val.ID,
+			Name:    val.Name,
+			Address: val.Address,
 		})
 
 	}
@@ -206,6 +233,17 @@ func ConvertBookedSlotToBookingRequest(bookedSlot model.BookedSlot) model.Bookin
 		out.PetCount = append(out.PetCount, model.PetCategoryCount{PetCategory: model.PetCategoryDTO{ID: key, Name: name}, Total: count})
 	}
 
+	if bookedSlot.Address.Address != "" {
+		out.AddressInfo = &model.BookedSlotAddressDTO{
+			ID:        bookedSlot.Address.ID,
+			Name:      bookedSlot.Address.Name,
+			Address:   bookedSlot.Address.Address,
+			Latitude:  bookedSlot.Address.Latitude,
+			Longitude: bookedSlot.Daycare.Longitude,
+			Notes:     bookedSlot.Address.Notes,
+		}
+	}
+
 	return out
 }
 
@@ -220,6 +258,7 @@ func ConvertBookedSlotsToBookingRequests(bookedSlots []model.BookedSlot) []model
 			EndDate:        val.EndDate.Format(time.RFC3339),
 			PickupRequired: &val.UsePickupService,
 			PetCount:       []model.PetCategoryCount{},
+			BookedPet:      ConvertPetsToDto(val.Pet),
 		}
 
 		petCategory := make(map[uint]uint)

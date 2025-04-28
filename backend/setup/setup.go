@@ -106,6 +106,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 		&model.BookedSlotsDaily{},
 		&model.VaccineRecord{},
 		&model.BookedSlotStatus{},
+		&model.SavedAddress{},
+		&model.BookedSlotAddress{},
 	)
 
 	r := gin.Default()

@@ -5,6 +5,7 @@ import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/model/user.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/utils/handle_error.dart';
 
 class VetsView extends ConsumerStatefulWidget {
   const VetsView({super.key});
@@ -37,7 +38,10 @@ class _VetsViewState extends ConsumerState<VetsView> {
   void _fetchMoreData() {
     if (!_hasMoreData) return; // Stop fetching if no more data
 
-    setState(() => _isFetching = true);
+    setState(() {
+      _isFetching = true;
+      _error = null;
+    });
 
     ref
         .read(getVetsProvider(_lastId, 10, _vetSpecialtyId).future)
@@ -72,6 +76,13 @@ class _VetsViewState extends ConsumerState<VetsView> {
 
   @override
   Widget build(BuildContext context) {
+    if (_error != null) {
+      handleError(
+        AsyncValue.error(_error.toString(), StackTrace.current),
+        context,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: TextField(

@@ -37,7 +37,7 @@ samples, guidance on mobile development, and a full API reference.
       - [x] view vaccination records
       - [x] view pet information
       - [x] delete pet
-      - [ ] update pet info
+      - [x] update pet info
       - [x] add vaccine record
       - [x] delete vaccine record
       - [ ] edit vaccine record

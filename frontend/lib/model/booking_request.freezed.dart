@@ -210,6 +210,8 @@ mixin _$BookingRequest {
   String get endDate => throw _privateConstructorUsedError;
   bool get pickupRequired => throw _privateConstructorUsedError;
   List<PetCategoryCount> get petCount => throw _privateConstructorUsedError;
+  BookedSlotAddress get addressInfo => throw _privateConstructorUsedError;
+  List<Pet> get bookedPet => throw _privateConstructorUsedError;
 
   /// Serializes this BookingRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -233,9 +235,12 @@ abstract class $BookingRequestCopyWith<$Res> {
       String startDate,
       String endDate,
       bool pickupRequired,
-      List<PetCategoryCount> petCount});
+      List<PetCategoryCount> petCount,
+      BookedSlotAddress addressInfo,
+      List<Pet> bookedPet});
 
   $UserCopyWith<$Res> get user;
+  $BookedSlotAddressCopyWith<$Res> get addressInfo;
 }
 
 /// @nodoc
@@ -259,6 +264,8 @@ class _$BookingRequestCopyWithImpl<$Res, $Val extends BookingRequest>
     Object? endDate = null,
     Object? pickupRequired = null,
     Object? petCount = null,
+    Object? addressInfo = null,
+    Object? bookedPet = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -285,6 +292,14 @@ class _$BookingRequestCopyWithImpl<$Res, $Val extends BookingRequest>
           ? _value.petCount
           : petCount // ignore: cast_nullable_to_non_nullable
               as List<PetCategoryCount>,
+      addressInfo: null == addressInfo
+          ? _value.addressInfo
+          : addressInfo // ignore: cast_nullable_to_non_nullable
+              as BookedSlotAddress,
+      bookedPet: null == bookedPet
+          ? _value.bookedPet
+          : bookedPet // ignore: cast_nullable_to_non_nullable
+              as List<Pet>,
     ) as $Val);
   }
 
@@ -295,6 +310,16 @@ class _$BookingRequestCopyWithImpl<$Res, $Val extends BookingRequest>
   $UserCopyWith<$Res> get user {
     return $UserCopyWith<$Res>(_value.user, (value) {
       return _then(_value.copyWith(user: value) as $Val);
+    });
+  }
+
+  /// Create a copy of BookingRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $BookedSlotAddressCopyWith<$Res> get addressInfo {
+    return $BookedSlotAddressCopyWith<$Res>(_value.addressInfo, (value) {
+      return _then(_value.copyWith(addressInfo: value) as $Val);
     });
   }
 }
@@ -313,10 +338,14 @@ abstract class _$$BookingRequestImplCopyWith<$Res>
       String startDate,
       String endDate,
       bool pickupRequired,
-      List<PetCategoryCount> petCount});
+      List<PetCategoryCount> petCount,
+      BookedSlotAddress addressInfo,
+      List<Pet> bookedPet});
 
   @override
   $UserCopyWith<$Res> get user;
+  @override
+  $BookedSlotAddressCopyWith<$Res> get addressInfo;
 }
 
 /// @nodoc
@@ -338,6 +367,8 @@ class __$$BookingRequestImplCopyWithImpl<$Res>
     Object? endDate = null,
     Object? pickupRequired = null,
     Object? petCount = null,
+    Object? addressInfo = null,
+    Object? bookedPet = null,
   }) {
     return _then(_$BookingRequestImpl(
       id: null == id
@@ -364,6 +395,14 @@ class __$$BookingRequestImplCopyWithImpl<$Res>
           ? _value._petCount
           : petCount // ignore: cast_nullable_to_non_nullable
               as List<PetCategoryCount>,
+      addressInfo: null == addressInfo
+          ? _value.addressInfo
+          : addressInfo // ignore: cast_nullable_to_non_nullable
+              as BookedSlotAddress,
+      bookedPet: null == bookedPet
+          ? _value._bookedPet
+          : bookedPet // ignore: cast_nullable_to_non_nullable
+              as List<Pet>,
     ));
   }
 }
@@ -377,8 +416,11 @@ class _$BookingRequestImpl implements _BookingRequest {
       required this.startDate,
       required this.endDate,
       required this.pickupRequired,
-      required final List<PetCategoryCount> petCount})
-      : _petCount = petCount;
+      required final List<PetCategoryCount> petCount,
+      required this.addressInfo,
+      required final List<Pet> bookedPet})
+      : _petCount = petCount,
+        _bookedPet = bookedPet;
 
   factory _$BookingRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$BookingRequestImplFromJson(json);
@@ -402,8 +444,18 @@ class _$BookingRequestImpl implements _BookingRequest {
   }
 
   @override
+  final BookedSlotAddress addressInfo;
+  final List<Pet> _bookedPet;
+  @override
+  List<Pet> get bookedPet {
+    if (_bookedPet is EqualUnmodifiableListView) return _bookedPet;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_bookedPet);
+  }
+
+  @override
   String toString() {
-    return 'BookingRequest(id: $id, user: $user, startDate: $startDate, endDate: $endDate, pickupRequired: $pickupRequired, petCount: $petCount)';
+    return 'BookingRequest(id: $id, user: $user, startDate: $startDate, endDate: $endDate, pickupRequired: $pickupRequired, petCount: $petCount, addressInfo: $addressInfo, bookedPet: $bookedPet)';
   }
 
   @override
@@ -418,13 +470,25 @@ class _$BookingRequestImpl implements _BookingRequest {
             (identical(other.endDate, endDate) || other.endDate == endDate) &&
             (identical(other.pickupRequired, pickupRequired) ||
                 other.pickupRequired == pickupRequired) &&
-            const DeepCollectionEquality().equals(other._petCount, _petCount));
+            const DeepCollectionEquality().equals(other._petCount, _petCount) &&
+            (identical(other.addressInfo, addressInfo) ||
+                other.addressInfo == addressInfo) &&
+            const DeepCollectionEquality()
+                .equals(other._bookedPet, _bookedPet));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, user, startDate, endDate,
-      pickupRequired, const DeepCollectionEquality().hash(_petCount));
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      user,
+      startDate,
+      endDate,
+      pickupRequired,
+      const DeepCollectionEquality().hash(_petCount),
+      addressInfo,
+      const DeepCollectionEquality().hash(_bookedPet));
 
   /// Create a copy of BookingRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -450,7 +514,9 @@ abstract class _BookingRequest implements BookingRequest {
       required final String startDate,
       required final String endDate,
       required final bool pickupRequired,
-      required final List<PetCategoryCount> petCount}) = _$BookingRequestImpl;
+      required final List<PetCategoryCount> petCount,
+      required final BookedSlotAddress addressInfo,
+      required final List<Pet> bookedPet}) = _$BookingRequestImpl;
 
   factory _BookingRequest.fromJson(Map<String, dynamic> json) =
       _$BookingRequestImpl.fromJson;
@@ -467,6 +533,10 @@ abstract class _BookingRequest implements BookingRequest {
   bool get pickupRequired;
   @override
   List<PetCategoryCount> get petCount;
+  @override
+  BookedSlotAddress get addressInfo;
+  @override
+  List<Pet> get bookedPet;
 
   /// Create a copy of BookingRequest
   /// with the given fields replaced by the non-null parameter values.

@@ -173,7 +173,7 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 	}
 
 	if pricingType == "night" && int(req.EndDate.Sub(req.StartDate)/(24*time.Hour)) < 2 {
-		return errors.New("Invalid booking: This pet daycare charges per night. A minimum of one night stay is required. Please adjust your booking dates.")
+		return errors.New("invalid booking: this pet daycare charges per night. a minimum of one night stay is required. please adjust your booking dates.")
 	}
 
 	newBookSlot := model.BookedSlot{
@@ -181,6 +181,16 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 		DaycareID: req.DaycareID,
 		StartDate: req.StartDate,
 		EndDate:   req.EndDate,
+	}
+
+	if req.Location != nil && req.Address != nil && req.Latitude != nil && req.Longitude != nil {
+		newBookSlot.Address = model.BookedSlotAddress{
+			Name:      *req.Location,
+			Address:   *req.Address,
+			Latitude:  *req.Latitude,
+			Longitude: *req.Latitude,
+			Notes:     req.Notes,
+		}
 	}
 
 	newTransaction := model.Transaction{
@@ -200,7 +210,9 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 		return err
 	}
 
-	tx.Model(&newBookSlot).Association("Pet").Append(&model.Pet{Model: gorm.Model{ID: req.PetID}})
+	for _, petID := range req.PetID {
+		tx.Model(&newBookSlot).Association("Pet").Append(&model.Pet{Model: gorm.Model{ID: petID}})
+	}
 
 	for d := req.StartDate; d.After(req.EndDate) == false; d = d.AddDate(0, 0, 1) {
 		if err := tx.Create(&model.BookedSlotsDaily{

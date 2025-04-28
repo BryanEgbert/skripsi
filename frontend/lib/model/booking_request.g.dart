@@ -31,6 +31,11 @@ _$BookingRequestImpl _$$BookingRequestImplFromJson(Map<String, dynamic> json) =>
       petCount: (json['petCount'] as List<dynamic>)
           .map((e) => PetCategoryCount.fromJson(e as Map<String, dynamic>))
           .toList(),
+      addressInfo: BookedSlotAddress.fromJson(
+          json['addressInfo'] as Map<String, dynamic>),
+      bookedPet: (json['bookedPet'] as List<dynamic>)
+          .map((e) => Pet.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$$BookingRequestImplToJson(
@@ -42,4 +47,6 @@ Map<String, dynamic> _$$BookingRequestImplToJson(
       'endDate': instance.endDate,
       'pickupRequired': instance.pickupRequired,
       'petCount': instance.petCount,
+      'addressInfo': instance.addressInfo,
+      'bookedPet': instance.bookedPet,
     };

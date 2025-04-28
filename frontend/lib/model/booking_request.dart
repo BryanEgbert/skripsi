@@ -1,4 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:frontend/model/booked_slot_address.dart';
+import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/pet_category.dart';
 import 'package:frontend/model/user.dart';
 
@@ -26,6 +28,8 @@ class BookingRequest with _$BookingRequest {
     required String endDate,
     required bool pickupRequired,
     required List<PetCategoryCount> petCount,
+    required BookedSlotAddress addressInfo,
+    required List<Pet> bookedPet,
   }) = _BookingRequest;
 
   factory BookingRequest.fromJson(Map<String, dynamic> json) =>

@@ -114,6 +114,74 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 	})
 }
 
+func (uc *UserController) GetSavedAddress(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "User ID not found in token",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	out, err := uc.UserService.GetSavedAddress(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Something's wrong, please try again later",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, model.ListData[model.SavedAddressDTO]{Data: out})
+}
+
+func (uc *UserController) AddSavedAddress(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "User ID not found in token",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	var req model.CreateSavedAddress
+	if err := c.ShouldBind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request body",
+			Error:   err.Error(),
+		})
+		log.Printf("JSON bind err: %v", err)
+		return
+	}
+
+	if err := uc.UserService.AddSavedAddress(userID, req); err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Something's wrong when adding address",
+			Error:   err.Error(),
+		})
+		log.Printf("AddSavedAddress err: %v", err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, nil)
+}
+
 func (uc *UserController) CreatePetOwner(c *gin.Context) {
 	var req model.CreatePetOwnerRequest
 

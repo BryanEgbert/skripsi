@@ -31,6 +31,7 @@ func (s *TransactionServiceImpl) GetTransactions(userId uint, page int, pageSize
 		Preload("BookedSlot.Status").
 		Preload("BookedSlot.Pet").
 		Preload("BookedSlot.Pet.PetCategory").
+		Preload("BookedSlot.Address").
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
 		Find(&transactions).Error; err != nil {

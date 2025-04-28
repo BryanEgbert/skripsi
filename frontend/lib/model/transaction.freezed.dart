@@ -27,6 +27,7 @@ mixin _$Transaction {
   String get startDate => throw _privateConstructorUsedError;
   String get endDate => throw _privateConstructorUsedError;
   BookingRequest get bookedSlot => throw _privateConstructorUsedError;
+  BookedSlotAddress? get addressInfo => throw _privateConstructorUsedError;
 
   /// Serializes this Transaction to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -51,11 +52,13 @@ abstract class $TransactionCopyWith<$Res> {
       List<Pet> bookedPet,
       String startDate,
       String endDate,
-      BookingRequest bookedSlot});
+      BookingRequest bookedSlot,
+      BookedSlotAddress? addressInfo});
 
   $LookupCopyWith<$Res> get status;
   $PetDaycareDetailsCopyWith<$Res> get petDaycare;
   $BookingRequestCopyWith<$Res> get bookedSlot;
+  $BookedSlotAddressCopyWith<$Res>? get addressInfo;
 }
 
 /// @nodoc
@@ -80,6 +83,7 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? startDate = null,
     Object? endDate = null,
     Object? bookedSlot = null,
+    Object? addressInfo = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -110,6 +114,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.bookedSlot
           : bookedSlot // ignore: cast_nullable_to_non_nullable
               as BookingRequest,
+      addressInfo: freezed == addressInfo
+          ? _value.addressInfo
+          : addressInfo // ignore: cast_nullable_to_non_nullable
+              as BookedSlotAddress?,
     ) as $Val);
   }
 
@@ -142,6 +150,20 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
       return _then(_value.copyWith(bookedSlot: value) as $Val);
     });
   }
+
+  /// Create a copy of Transaction
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $BookedSlotAddressCopyWith<$Res>? get addressInfo {
+    if (_value.addressInfo == null) {
+      return null;
+    }
+
+    return $BookedSlotAddressCopyWith<$Res>(_value.addressInfo!, (value) {
+      return _then(_value.copyWith(addressInfo: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -159,7 +181,8 @@ abstract class _$$TransactionImplCopyWith<$Res>
       List<Pet> bookedPet,
       String startDate,
       String endDate,
-      BookingRequest bookedSlot});
+      BookingRequest bookedSlot,
+      BookedSlotAddress? addressInfo});
 
   @override
   $LookupCopyWith<$Res> get status;
@@ -167,6 +190,8 @@ abstract class _$$TransactionImplCopyWith<$Res>
   $PetDaycareDetailsCopyWith<$Res> get petDaycare;
   @override
   $BookingRequestCopyWith<$Res> get bookedSlot;
+  @override
+  $BookedSlotAddressCopyWith<$Res>? get addressInfo;
 }
 
 /// @nodoc
@@ -189,6 +214,7 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? startDate = null,
     Object? endDate = null,
     Object? bookedSlot = null,
+    Object? addressInfo = freezed,
   }) {
     return _then(_$TransactionImpl(
       id: null == id
@@ -219,6 +245,10 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value.bookedSlot
           : bookedSlot // ignore: cast_nullable_to_non_nullable
               as BookingRequest,
+      addressInfo: freezed == addressInfo
+          ? _value.addressInfo
+          : addressInfo // ignore: cast_nullable_to_non_nullable
+              as BookedSlotAddress?,
     ));
   }
 }
@@ -233,7 +263,8 @@ class _$TransactionImpl implements _Transaction {
       required final List<Pet> bookedPet,
       required this.startDate,
       required this.endDate,
-      required this.bookedSlot})
+      required this.bookedSlot,
+      required this.addressInfo})
       : _bookedPet = bookedPet;
 
   factory _$TransactionImpl.fromJson(Map<String, dynamic> json) =>
@@ -259,10 +290,12 @@ class _$TransactionImpl implements _Transaction {
   final String endDate;
   @override
   final BookingRequest bookedSlot;
+  @override
+  final BookedSlotAddress? addressInfo;
 
   @override
   String toString() {
-    return 'Transaction(id: $id, status: $status, petDaycare: $petDaycare, bookedPet: $bookedPet, startDate: $startDate, endDate: $endDate, bookedSlot: $bookedSlot)';
+    return 'Transaction(id: $id, status: $status, petDaycare: $petDaycare, bookedPet: $bookedPet, startDate: $startDate, endDate: $endDate, bookedSlot: $bookedSlot, addressInfo: $addressInfo)';
   }
 
   @override
@@ -280,7 +313,9 @@ class _$TransactionImpl implements _Transaction {
                 other.startDate == startDate) &&
             (identical(other.endDate, endDate) || other.endDate == endDate) &&
             (identical(other.bookedSlot, bookedSlot) ||
-                other.bookedSlot == bookedSlot));
+                other.bookedSlot == bookedSlot) &&
+            (identical(other.addressInfo, addressInfo) ||
+                other.addressInfo == addressInfo));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -293,7 +328,8 @@ class _$TransactionImpl implements _Transaction {
       const DeepCollectionEquality().hash(_bookedPet),
       startDate,
       endDate,
-      bookedSlot);
+      bookedSlot,
+      addressInfo);
 
   /// Create a copy of Transaction
   /// with the given fields replaced by the non-null parameter values.
@@ -319,7 +355,8 @@ abstract class _Transaction implements Transaction {
       required final List<Pet> bookedPet,
       required final String startDate,
       required final String endDate,
-      required final BookingRequest bookedSlot}) = _$TransactionImpl;
+      required final BookingRequest bookedSlot,
+      required final BookedSlotAddress? addressInfo}) = _$TransactionImpl;
 
   factory _Transaction.fromJson(Map<String, dynamic> json) =
       _$TransactionImpl.fromJson;
@@ -338,6 +375,8 @@ abstract class _Transaction implements Transaction {
   String get endDate;
   @override
   BookingRequest get bookedSlot;
+  @override
+  BookedSlotAddress? get addressInfo;
 
   /// Create a copy of Transaction
   /// with the given fields replaced by the non-null parameter values.

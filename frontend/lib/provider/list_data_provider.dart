@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/model/coordinate.dart';
@@ -107,7 +105,7 @@ Future<ListData<Pet>> petList(Ref ref,
   final petService = PetService();
 
   final res = await petService.getPets(
-      token!.accessToken, CursorBasedPaginationQueryParams());
+      token.accessToken, CursorBasedPaginationQueryParams());
 
   switch (res) {
     case Ok():

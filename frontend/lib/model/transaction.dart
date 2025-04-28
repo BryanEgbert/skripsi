@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:frontend/model/booked_slot_address.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/pet.dart';
@@ -17,6 +18,7 @@ class Transaction with _$Transaction {
     required String startDate,
     required String endDate,
     required BookingRequest bookedSlot,
+    required BookedSlotAddress? addressInfo,
   }) = _Transaction;
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/model/vaccine_record.dart';
 import 'package:frontend/provider/list_data_provider.dart';
@@ -62,6 +63,22 @@ class _EditVaccinationRecordPageState
     final recordState = ref.watch(vaccinationRecordStateProvider);
 
     handleError(recordState, context);
+
+    if (recordState.hasValue && !recordState.isLoading) {
+      if (recordState.value == 204) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          var snackbar = SnackBar(
+            key: Key("error-message"),
+            content: Text("Vaccination record added successfully"),
+            backgroundColor: Constants.successSnackbarColor,
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+          Navigator.of(context).pop();
+        });
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(

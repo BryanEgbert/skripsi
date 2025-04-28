@@ -19,6 +19,10 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
       endDate: json['endDate'] as String,
       bookedSlot:
           BookingRequest.fromJson(json['bookedSlot'] as Map<String, dynamic>),
+      addressInfo: json['addressInfo'] == null
+          ? null
+          : BookedSlotAddress.fromJson(
+              json['addressInfo'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
@@ -30,4 +34,5 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'startDate': instance.startDate,
       'endDate': instance.endDate,
       'bookedSlot': instance.bookedSlot,
+      'addressInfo': instance.addressInfo,
     };

@@ -120,7 +120,6 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
                     ),
                   ),
                 ),
-                // TODO: add vaccine record logic
                 if (widget.isOwner)
                   IconButton(
                     onPressed: () {

@@ -357,6 +357,12 @@ func SeedTable(db *gorm.DB) error {
 			StartDate: time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
 			EndDate:   time.Date(2025, time.February, 15, 0, 0, 0, 0, time.Local),
 			StatusID:  1,
+			Address: model.BookedSlotAddress{
+				Name:      "Central Park",
+				Address:   "Jln. Tanjung Duren",
+				Latitude:  0.0,
+				Longitude: 0.0,
+			},
 		},
 		{
 			UserID:    users[0].ID,

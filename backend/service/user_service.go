@@ -11,7 +11,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// UserService interface defining the required methods
 type UserService interface {
 	GetUser(id int64) (*model.UserDTO, error)
 	GetVets(vetSpecialtyId uint, startId uint, pageSize int) ([]model.UserDTO, error)
@@ -19,16 +18,43 @@ type UserService interface {
 	DeleteUser(id uint) error
 	UpdateUserProfile(user *model.UpdateUserRequest) error
 	UpdateUserPassword(id uint, newPassword string) error
+	GetSavedAddress(id uint) ([]model.SavedAddressDTO, error)
+	AddSavedAddress(userID uint, req model.CreateSavedAddress) error
 }
 
-// UserServiceImpl struct implementing UserService
 type UserServiceImpl struct {
 	db *gorm.DB
 }
 
-// NewUserService initializes UserServiceImpl with a GORM database connection
 func NewUserService(db *gorm.DB) *UserServiceImpl {
 	return &UserServiceImpl{db: db}
+}
+
+func (s *UserServiceImpl) AddSavedAddress(userID uint, req model.CreateSavedAddress) error {
+	savedAddress := model.SavedAddress{
+		Name:      req.Name,
+		UserID:    req.UserID,
+		Address:   req.Address,
+		Latitude:  req.Latitude,
+		Longitude: req.Longitude,
+	}
+
+	if err := s.db.Create(&savedAddress).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserServiceImpl) GetSavedAddress(id uint) ([]model.SavedAddressDTO, error) {
+	var savedAddresses []model.SavedAddress
+	if err := s.db.Model(&model.SavedAddress{UserID: id}).Find(&savedAddresses).Error; err != nil {
+		return nil, err
+	}
+
+	out := helper.ConvertSavedAddressesToDTO(savedAddresses)
+
+	return out, nil
 }
 
 func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize int) ([]model.UserDTO, error) {
@@ -45,12 +71,12 @@ func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize in
 			return nil, err
 		}
 		defer rows.Close()
-	
+
 		for rows.Next() {
 			var user model.UserDTO
 			var vetSpecialties []model.VetSpecialty
 
-			rows.Scan(&user.ID, &user.Name, &user.Email, &user.ImageUrl, &user.Role.ID, &user.Role.Name,&user.CreatedAt)	
+			rows.Scan(&user.ID, &user.Name, &user.Email, &user.ImageUrl, &user.Role.ID, &user.Role.Name, &user.CreatedAt)
 
 			if err := s.db.
 				Table("vet_specialties").
@@ -60,9 +86,9 @@ func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize in
 				Find(&vetSpecialties).Error; err != nil {
 				return nil, err
 			}
-			
+
 			user.VetSpecialty = vetSpecialties
-			out = append(out, user)			
+			out = append(out, user)
 		}
 	} else {
 		rows, err := s.db.
@@ -76,12 +102,12 @@ func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize in
 			return nil, err
 		}
 		defer rows.Close()
-	
+
 		for rows.Next() {
 			var user model.UserDTO
 			var vetSpecialties []model.VetSpecialty
 
-			rows.Scan(&user.ID, &user.Name, &user.Email, &user.ImageUrl, &user.Role.ID, &user.Role.Name,&user.CreatedAt)
+			rows.Scan(&user.ID, &user.Name, &user.Email, &user.ImageUrl, &user.Role.ID, &user.Role.Name, &user.CreatedAt)
 
 			if err := s.db.
 				Table("vet_specialties").
@@ -91,7 +117,7 @@ func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize in
 				Find(&vetSpecialties).Error; err != nil {
 				return nil, err
 			}
-			
+
 			user.VetSpecialty = vetSpecialties
 			out = append(out, user)
 		}
@@ -100,7 +126,6 @@ func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize in
 	return out, nil
 }
 
-// GetUser retrieves a user by ID and returns a UserDTO
 func (s *UserServiceImpl) GetUser(id int64) (*model.UserDTO, error) {
 	var user model.User
 	if err := s.db.Preload("VetSpecialty").Joins("Role").First(&user, id).Error; err != nil {
@@ -112,7 +137,6 @@ func (s *UserServiceImpl) GetUser(id int64) (*model.UserDTO, error) {
 	return &userDTO, nil
 }
 
-// CreateUser creates a new user with proper VetSpecialty assignments
 func (s *UserServiceImpl) CreateUser(request model.CreateUserRequest) (*model.TokenResponse, error) {
 	hashedPassword, err := helper.HashPassword(request.Password)
 	if err != nil {
@@ -182,7 +206,7 @@ func (s *UserServiceImpl) CreateUser(request model.CreateUserRequest) (*model.To
 	}
 
 	return &model.TokenResponse{
-		UserID: user.ID,
+		UserID:       user.ID,
 		AccessToken:  jwtToken,
 		RefreshToken: refreshToken,
 		ExpiryDate:   expiry.Unix(),

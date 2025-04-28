@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';

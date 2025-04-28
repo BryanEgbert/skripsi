@@ -138,6 +138,24 @@ class _TransactionDetailsPageState
                       )
                   ],
                 ),
+                if (widget.transaction.bookedSlot.pickupRequired)
+                  Container(
+                    padding: EdgeInsets.all(4.0),
+                    color: Colors.orangeAccent,
+                    child: Column(
+                      children: [
+                        Text(
+                          widget.transaction.addressInfo!.name,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        Text(
+                          widget.transaction.addressInfo!.address,
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
@@ -246,7 +264,10 @@ class _TransactionDetailsPageState
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
-                    child: Text("Cancel Booking"),
+                    child: Text(
+                      "Cancel Booking",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],

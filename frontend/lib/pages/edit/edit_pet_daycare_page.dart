@@ -10,7 +10,6 @@ import 'package:frontend/components/modals/select_lookup_modal.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/pet_daycare.dart';
-import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/update_pet_daycare_request.dart';
 import 'package:frontend/model/response/mapbox/retrieve_response.dart';
 import 'package:frontend/model/response/mapbox/suggest_response.dart';
@@ -225,7 +224,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                   style: TextStyle(color: Colors.orange),
                 ),
                 centerTitle: false,
-                // TODO: update pet daycare info
                 actions: [
                   TextButton(
                     onPressed: () {

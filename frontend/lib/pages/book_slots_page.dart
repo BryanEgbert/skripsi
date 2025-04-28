@@ -13,7 +13,7 @@ class BookSlotsPage extends ConsumerStatefulWidget {
 
 class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
   bool _usePickupService = false;
-  Map<int, bool> _petIdValue = {};
+  final Map<int, bool> _petIdValue = {};
 
   @override
   // TODO: add bottom sheet for confirm button

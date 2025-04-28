@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/model/booking_request.dart';
+import 'package:frontend/pages/details/booking_request_details_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/utils/formatter.dart';
@@ -131,7 +132,9 @@ class _ViewBookingRequestsPageState
         itemBuilder: (context, index) {
           return InkWell(
             // TODO: Navigate to booking details
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => BookingRequestDetailsPage(_records[index]),))
+            },
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 4.0),

@@ -24,6 +24,7 @@ func (s *BookingRequestServiceImpl) GetBookingRequests(userID uint, page int, pa
 	if err := s.db.Model(&model.BookedSlot{Daycare: model.PetDaycare{OwnerID: userID}}).
 		Preload("Pet").
 		Preload("Pet.PetCategory").
+		Preload("Address").
 		Joins("Status").
 		Joins("Daycare", s.db.Omit("Distance")).
 		Joins("User").
