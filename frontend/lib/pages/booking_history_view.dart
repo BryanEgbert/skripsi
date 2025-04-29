@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/components/modals/add_review_modal.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/model/transaction.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/pages/details/transaction_details_page.dart';
+import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
+import 'package:frontend/utils/handle_error.dart';
 
 class BookingHistoryView extends ConsumerStatefulWidget {
   const BookingHistoryView({super.key});
@@ -87,16 +90,25 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
               child: CircularProgressIndicator(
               color: Colors.orange,
             ))
-          : (_error != null)
+          : (_error != null || _records.isEmpty)
               ? ErrorText(
-                  errorText: _error!.toString(),
-                  onRefresh: () => _fetchMoreData(),
-                )
+                  errorText: _error != null
+                      ? _error.toString()
+                      : "Your booking history shows here",
+                  onRefresh: () async {
+                    _records = [];
+                    _page = 1;
+                    _fetchMoreData();
+                  })
               : _buildBookingHistoryList(),
     );
   }
 
   Widget _buildBookingHistoryList() {
+    final slotState = ref.watch(slotStateProvider);
+
+    handleError(slotState, context);
+
     return RefreshIndicator(
       onRefresh: () async {
         _records = [];
@@ -135,6 +147,16 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                       _records[index].status.id == 5) {
                     statusColor = Colors.red;
                     chipColor = Color(0XFFFFD7D7);
+                  }
+
+                  if (slotState.hasValue && !slotState.isLoading) {
+                    if (slotState.value == 204) {
+                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                        setState(() {});
+
+                        ref.read(slotStateProvider.notifier).reset();
+                      });
+                    }
                   }
 
                   return InkWell(
@@ -196,9 +218,13 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                 /// - 1: waiting for confirmation
                                 /// - 4: done
                                 if (_records[index].status.id == 1)
-                                  // TODO: add cancel booking logic
                                   FilledButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      ref
+                                          .read(slotStateProvider.notifier)
+                                          .cancelSlot(
+                                              _records[index].bookedSlot.id);
+                                    },
                                     style: FilledButton.styleFrom(
                                       backgroundColor: Colors.red,
                                       padding: EdgeInsets.symmetric(
@@ -213,7 +239,13 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                 else if (_records[index].status.id == 4)
                                   // TODO: add give review logic
                                   FilledButton(
-                                    onPressed: () {},
+                                    onPressed: () async {
+                                      await showModalBottomSheet(
+                                        context: context,
+                                        builder: (context) => AddReviewModal(
+                                            _records[index].petDaycare.id),
+                                      );
+                                    },
                                     style: FilledButton.styleFrom(
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 12),

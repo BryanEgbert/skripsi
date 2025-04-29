@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
@@ -6,7 +8,9 @@ import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/pages/details/booking_request_details_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
+import 'package:frontend/utils/handle_error.dart';
 
 class ViewBookingRequestsPage extends ConsumerStatefulWidget {
   const ViewBookingRequestsPage({super.key});
@@ -89,9 +93,11 @@ class _ViewBookingRequestsPageState
               child: CircularProgressIndicator(
               color: Colors.orange,
             ))
-          : (_error != null)
+          : (_error != null || _records.isEmpty)
               ? ErrorText(
-                  errorText: _error!.toString(),
+                  errorText: _error != null
+                      ? _error.toString()
+                      : "No pet owners are booking your service",
                   onRefresh: () => _fetchMoreData(),
                 )
               : Padding(
@@ -120,6 +126,11 @@ class _ViewBookingRequestsPageState
   }
 
   Widget _buildBookingRequestListView() {
+    final slotState = ref.watch(slotStateProvider);
+    log("slotState: $slotState");
+
+    handleError(slotState, context);
+
     return RefreshIndicator(
       onRefresh: () async {
         _records = [];
@@ -127,13 +138,26 @@ class _ViewBookingRequestsPageState
         _fetchMoreData();
       },
       child: ListView.builder(
+        physics: AlwaysScrollableScrollPhysics(),
         controller: _scrollController,
         itemCount: _records.length,
         itemBuilder: (context, index) {
+          if (slotState.hasValue && !slotState.isLoading) {
+            if (slotState.value == 204) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                setState(() {
+                  _records.removeAt(index);
+                });
+                ref.read(slotStateProvider.notifier).reset();
+              });
+            }
+          }
           return InkWell(
-            // TODO: Navigate to booking details
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => BookingRequestDetailsPage(_records[index]),))
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) =>
+                    BookingRequestDetailsPage(_records[index]),
+              ));
             },
             child: Card(
               child: Padding(
@@ -191,7 +215,11 @@ class _ViewBookingRequestsPageState
                           children: [
                             // TODO: add accept and reject logic
                             FilledButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                ref
+                                    .read(slotStateProvider.notifier)
+                                    .acceptSlot(_records[index].id);
+                              },
                               style: FilledButton.styleFrom(
                                 backgroundColor: Colors.green,
                                 padding: EdgeInsets.symmetric(
@@ -204,7 +232,11 @@ class _ViewBookingRequestsPageState
                               ),
                             ),
                             FilledButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                ref
+                                    .read(slotStateProvider.notifier)
+                                    .rejectSlot(_records[index].id);
+                              },
                               style: FilledButton.styleFrom(
                                 backgroundColor: Colors.red,
                                 padding: EdgeInsets.symmetric(

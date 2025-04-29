@@ -58,7 +58,6 @@ class _PetsViewState extends ConsumerState<PetsView> {
         ),
         actions: appBarActions(ref.read(authProvider.notifier)),
       ),
-      // TODO: add create pet
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(

@@ -6,7 +6,9 @@ import 'package:frontend/constants.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
+import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
+import 'package:frontend/utils/handle_error.dart';
 
 class BookingRequestDetailsPage extends ConsumerStatefulWidget {
   final BookingRequest bookingReq;
@@ -21,6 +23,10 @@ class _BookingRequestDetailsPageState
     extends ConsumerState<BookingRequestDetailsPage> {
   @override
   Widget build(BuildContext context) {
+    final slotState = ref.watch(slotStateProvider);
+
+    handleError(slotState, context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Constants.secondaryBackgroundColor,
@@ -85,12 +91,12 @@ class _BookingRequestDetailsPageState
                     child: Column(
                       children: [
                         Text(
-                          widget.bookingReq.addressInfo.name,
+                          widget.bookingReq.addressInfo!.name,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         Text(
-                          widget.bookingReq.addressInfo.address,
+                          widget.bookingReq.addressInfo!.address,
                           style: TextStyle(fontSize: 14),
                         ),
                       ],
@@ -175,8 +181,8 @@ class _BookingRequestDetailsPageState
                         return ListTile(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) =>
-                                  PetDetailsPage(petId: item.id, isOwner: true),
+                              builder: (context) => PetDetailsPage(
+                                  petId: item.id, isOwner: false),
                             ));
                           },
                           leading: DefaultCircleAvatar(
@@ -197,8 +203,11 @@ class _BookingRequestDetailsPageState
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               ElevatedButton(
-                // TODO: accept booking
-                onPressed: () {},
+                onPressed: () {
+                  ref
+                      .read(slotStateProvider.notifier)
+                      .acceptSlot(widget.bookingReq.id);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[800],
                 ),
@@ -210,8 +219,11 @@ class _BookingRequestDetailsPageState
               Padding(
                 padding: const EdgeInsets.only(right: 16),
                 child: ElevatedButton(
-                  // TODO: reject booking
-                  onPressed: () {},
+                  onPressed: () {
+                    ref
+                        .read(slotStateProvider.notifier)
+                        .cancelSlot(widget.bookingReq.id);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red[800],
                   ),

@@ -19,7 +19,7 @@ class ViewBookedPetsPage extends ConsumerStatefulWidget {
 
 class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
   final ScrollController _scrollController = ScrollController();
-  final List<Pet> _records = [];
+  List<Pet> _records = [];
   final int _pageSize = 10;
 
   int _lastId = 0;
@@ -85,8 +85,11 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
         actions: appBarActions(ref.read(authProvider.notifier)),
       ),
       body: RefreshIndicator(
-        onRefresh: () =>
-            ref.refresh(petListProvider(_lastId, _pageSize).future),
+        onRefresh: () async {
+          _records = [];
+          _lastId = 0;
+          _fetchMoreData();
+        },
         child: (_isFetching && _records.isEmpty)
             ? Center(
                 child: CircularProgressIndicator(

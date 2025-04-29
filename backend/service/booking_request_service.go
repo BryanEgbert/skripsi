@@ -21,14 +21,15 @@ func NewBookingRequestService(db *gorm.DB) *BookingRequestServiceImpl {
 func (s *BookingRequestServiceImpl) GetBookingRequests(userID uint, page int, pageSize int) (model.ListData[model.BookingRequest], error) {
 	var bookedSlots []model.BookedSlot
 
-	if err := s.db.Model(&model.BookedSlot{Daycare: model.PetDaycare{OwnerID: userID}}).
+	if err := s.db.
+		Model(&model.BookedSlot{}).
 		Preload("Pet").
 		Preload("Pet.PetCategory").
 		Preload("Address").
 		Joins("Status").
 		Joins("Daycare", s.db.Omit("Distance")).
 		Joins("User").
-		Where("status_id = 1").
+		Where("status_id = ? AND \"Daycare\".owner_id = ?", 1, userID).
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
 		Find(&bookedSlots).Error; err != nil {

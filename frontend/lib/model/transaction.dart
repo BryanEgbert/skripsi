@@ -14,7 +14,7 @@ class Transaction with _$Transaction {
     required int id,
     required Lookup status,
     required PetDaycareDetails petDaycare,
-    required List<Pet> bookedPet,
+    // required List<Pet> bookedPet,
     required String startDate,
     required String endDate,
     required BookingRequest bookedSlot,

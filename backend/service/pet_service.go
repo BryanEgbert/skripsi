@@ -33,13 +33,14 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, startID uint, pageSize int) 
 	rows, err := s.db.
 		Model(&model.Pet{}).
 		Select("pets.id,pets.name,pets.image_url,pets.status,pet_categories.id, pet_categories.name, size_categories.*, users.id, users.name, users.email, users.image_url, roles.id, roles.name, users.created_at").
-		Joins("JOIN booked_slots on booked_slots.pet_id = pets.id").
+		Joins("JOIN pet_booked_slots on pet_booked_slots.pet_id = pets.id").
+		Joins("JOIN booked_slots on pet_booked_slots.booked_slot_id = booked_slots.id").
 		Joins("JOIN pet_categories ON pet_categories.id = pets.pet_category_id").
 		Joins("JOIN size_categories ON size_categories.id = pet_categories.size_category_id").
 		Joins("JOIN pet_daycares ON pet_daycares.id = booked_slots.daycare_id").
 		Joins("JOIN users ON users.id = pets.owner_id").
 		Joins("JOIN roles ON roles.id = users.role_id").
-		Where("pets.id > ? AND pet_daycares.owner_id = ?", startID, userId).
+		Where("pets.id > ? AND pet_daycares.owner_id = ? AND booked_slots.status_id = 2", startID, userId).
 		Limit(pageSize).Rows()
 	if err != nil {
 		return nil, err

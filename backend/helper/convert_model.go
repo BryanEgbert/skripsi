@@ -171,7 +171,7 @@ func ConvertTransactionsToTransactionDTO(transactions []model.Transaction) []mod
 			PetDaycare: ConvertPetDaycareToDetailResponse(val.PetDaycare, 0),
 			StartDate:  val.BookedSlot.StartDate.Format(time.RFC3339),
 			EndDate:    val.BookedSlot.EndDate.Format(time.RFC3339),
-			BookedPet:  ConvertPetsToDto(val.BookedSlot.Pet),
+			// BookedPet:  ConvertPetsToDto(val.BookedSlot.Pet),
 			BookedSlot: ConvertBookedSlotToBookingRequest(val.BookedSlot),
 		}
 
@@ -215,6 +215,7 @@ func ConvertBookedSlotToBookingRequest(bookedSlot model.BookedSlot) model.Bookin
 		EndDate:        bookedSlot.EndDate.Format(time.RFC3339),
 		PickupRequired: &bookedSlot.UsePickupService,
 		PetCount:       []model.PetCategoryCount{},
+		BookedPet:      ConvertPetsToDto(bookedSlot.Pet),
 	}
 
 	petCategory := make(map[uint]uint)
@@ -248,7 +249,7 @@ func ConvertBookedSlotToBookingRequest(bookedSlot model.BookedSlot) model.Bookin
 }
 
 func ConvertBookedSlotsToBookingRequests(bookedSlots []model.BookedSlot) []model.BookingRequest {
-	var out []model.BookingRequest
+	out := []model.BookingRequest{}
 
 	for _, val := range bookedSlots {
 		bookingRequest := model.BookingRequest{

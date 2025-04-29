@@ -9,14 +9,14 @@ import 'package:frontend/model/reviews.dart';
 abstract interface class IReviewService {
   Future<Result<ListData<Reviews>>> getReviews(String token, int petDaycareId,
       CursorBasedPaginationQueryParams pagination);
-  Future<void> createReview(
+  Future<Result<void>> createReview(
       String token, int petDaycareId, CreateReviewRequest reqBody);
   Future<void> deleteReview(String token, int petDaycareId);
 }
 
 class ReviewService implements IReviewService {
   @override
-  Future<void> createReview(
+  Future<Result<void>> createReview(
       String token, int petDaycareId, CreateReviewRequest reqBody) {
     return makeRequest(201, () async {
       await dotenv.load();

@@ -6,7 +6,9 @@ import 'package:frontend/constants.dart';
 import 'package:frontend/model/transaction.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
+import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
+import 'package:frontend/utils/handle_error.dart';
 
 class TransactionDetailsPage extends ConsumerStatefulWidget {
   final Transaction transaction;
@@ -21,6 +23,10 @@ class _TransactionDetailsPageState
     extends ConsumerState<TransactionDetailsPage> {
   @override
   Widget build(BuildContext context) {
+    final slotState = ref.watch(slotStateProvider);
+
+    handleError(slotState, context);
+
     double totalPrice = 0;
     Color statusColor = Colors.black;
     Color chipColor = Colors.transparent;
@@ -229,9 +235,10 @@ class _TransactionDetailsPageState
                   SingleChildScrollView(
                     child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: widget.transaction.bookedPet.length,
+                      itemCount: widget.transaction.bookedSlot.bookedPet.length,
                       itemBuilder: (context, index) {
-                        var item = widget.transaction.bookedPet[index];
+                        var item =
+                            widget.transaction.bookedSlot.bookedPet[index];
                         return ListTile(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
@@ -259,8 +266,12 @@ class _TransactionDetailsPageState
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: ElevatedButton(
-                    // TODO: cancel booking
-                    onPressed: () {},
+                    // TODO: test cancel booking
+                    onPressed: () {
+                      ref
+                          .read(slotStateProvider.notifier)
+                          .cancelSlot(widget.transaction.bookedSlot.id);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),

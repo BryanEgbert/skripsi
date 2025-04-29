@@ -25,6 +25,7 @@ class _VetsViewState extends ConsumerState<VetsView> {
 
   Object? _error;
 
+  // ignore: prefer_final_fields
   int _vetSpecialtyId = 0;
 
   void _onScroll() {

@@ -21,6 +21,9 @@ abstract interface class ISlotService {
       String token, int petDaycareId, BookSlotRequest reqBody);
   Future<Result<void>> editSlotCount(
       String token, int slotId, ReduceSlotRequest reqBody);
+  Future<Result<void>> acceptSlot(String token, int slotId);
+  Future<Result<void>> rejectSlot(String token, int slotId);
+  Future<Result<void>> cancelSlot(String token, int slotId);
 }
 
 class SlotService implements ISlotService {
@@ -115,5 +118,80 @@ class SlotService implements ISlotService {
 
       return res;
     }, (res) => ListData.fromJson(res, Slot.fromJson));
+  }
+
+  @override
+  Future<Result<void>> acceptSlot(String token, int slotId) {
+    return makeRequest(204, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.patch(
+        "$host/slots/$slotId/accept",
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
+      );
+
+      return res;
+    });
+  }
+
+  @override
+  Future<Result<void>> cancelSlot(String token, int slotId) {
+    return makeRequest(204, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.patch(
+        "$host/slots/$slotId/cancel",
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
+      );
+
+      return res;
+    });
+  }
+
+  @override
+  Future<Result<void>> rejectSlot(String token, int slotId) {
+    return makeRequest(204, () async {
+      await dotenv.load();
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.patch(
+        "$host/slots/$slotId/reject",
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
+      );
+
+      return res;
+    });
   }
 }

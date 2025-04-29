@@ -28,7 +28,7 @@ class BookingRequest with _$BookingRequest {
     required String endDate,
     required bool pickupRequired,
     required List<PetCategoryCount> petCount,
-    required BookedSlotAddress addressInfo,
+    required BookedSlotAddress? addressInfo,
     required List<Pet> bookedPet,
   }) = _BookingRequest;
 

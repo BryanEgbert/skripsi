@@ -13,6 +13,9 @@ type SlotService interface {
 	GetSlots(petDaycareId uint, req model.GetSlotRequest) (*[]model.SlotsResponse, error)
 	BookSlots(userId uint, req model.BookSlotRequest) error
 	EditSlotCount(slotId uint, req model.ReduceSlotsRequest) error
+	AcceptBookedSlot(slotId uint) error
+	RejectBookedSlot(slotId uint) error
+	CancelBookedSlot(slotId uint) error
 }
 
 type SlotServiceImpl struct {
@@ -21,6 +24,38 @@ type SlotServiceImpl struct {
 
 func NewSlotService(db *gorm.DB) *SlotServiceImpl {
 	return &SlotServiceImpl{db: db}
+}
+
+func (s *SlotServiceImpl) AcceptBookedSlot(slotId uint) error {
+	// bookedSlot := model.BookedSlot{Model: gorm.Model{ID: slotId}}
+	if err := s.db.
+		Model(&model.BookedSlot{}).
+		Where("id = ?", slotId).
+		Update("status_id", 2).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+func (s *SlotServiceImpl) RejectBookedSlot(slotId uint) error {
+	if err := s.db.
+		Model(&model.BookedSlot{}).
+		Where("id = ?", slotId).
+		Update("status_id", 3).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+func (s *SlotServiceImpl) CancelBookedSlot(slotId uint) error {
+	if err := s.db.
+		Model(&model.BookedSlot{}).
+		Where("id = ?", slotId).
+		Update("status_id", 5).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) (*[]model.SlotsResponse, error) {

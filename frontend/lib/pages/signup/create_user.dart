@@ -142,8 +142,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                         enableSuggestions: false,
                         autocorrect: false,
                         validator: (value) {
-                          // TODO: change password validation to make it stronger
-                          return validatePassword(value);
+                          return validateRegisterassword(value);
                         },
                       ),
                       ElevatedButton(

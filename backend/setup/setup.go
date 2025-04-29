@@ -137,6 +137,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 	transactionService := service.NewTransactionService(db)
 	transactionController := controller.NewTransactionController(transactionService)
 
+	slotController := controller.NewSlotController(slotService)
+
 	r.Static("/image", "./image")
 	r = routes.RegisterUserRoute(r, userController)
 	r = routes.RegisterAuthRoute(r, authController)
@@ -145,6 +147,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	r = routes.RegisterCategoryRoutes(r, categoryController)
 	r = routes.RegisterVaccineRecordRoute(r, vaccineRecordController)
 	r = routes.RegisterTransactionRoute(r, transactionController)
+	r = routes.RegisterSlotRoute(r, slotController)
 
 	return r
 }

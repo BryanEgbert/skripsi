@@ -433,7 +433,8 @@ func SeedTable(db *gorm.DB) error {
 
 	transaction := model.Transaction{
 		UserID:       users[0].ID,
-		PetDaycareID: daycare[0].ID, BookedSlotID: bookedSlot[0].ID,
+		PetDaycareID: daycare[0].ID,
+		BookedSlot:   bookedSlot[0],
 	}
 
 	if err := db.Create(&transaction).Error; err != nil {

@@ -12,9 +12,6 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
       status: Lookup.fromJson(json['status'] as Map<String, dynamic>),
       petDaycare: PetDaycareDetails.fromJson(
           json['petDaycare'] as Map<String, dynamic>),
-      bookedPet: (json['bookedPet'] as List<dynamic>)
-          .map((e) => Pet.fromJson(e as Map<String, dynamic>))
-          .toList(),
       startDate: json['startDate'] as String,
       endDate: json['endDate'] as String,
       bookedSlot:
@@ -30,7 +27,6 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'id': instance.id,
       'status': instance.status,
       'petDaycare': instance.petDaycare,
-      'bookedPet': instance.bookedPet,
       'startDate': instance.startDate,
       'endDate': instance.endDate,
       'bookedSlot': instance.bookedSlot,
