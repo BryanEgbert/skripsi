@@ -17,7 +17,7 @@ abstract interface class IPetService {
   Future<Result<ListData<Pet>>> getBookedPets(
       String token, CursorBasedPaginationQueryParams pagination);
   Future<Result<ListData<VaccineRecord>>> getVaccineRecords(
-      String token, int petId, CursorBasedPaginationQueryParams pagination);
+      String token, int petId, OffsetPaginationQueryParams pagination);
 
   Future<Result<void>> createPet(String token, PetRequest petReqBody,
       VaccinationRecordRequest? vaccineReqBody);
@@ -30,7 +30,6 @@ class PetService implements IPetService {
   Future<Result<void>> createPet(String token, PetRequest petReqBody,
       VaccinationRecordRequest? vaccineReqBody) {
     return makeRequest(201, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -76,7 +75,6 @@ class PetService implements IPetService {
   @override
   Future<Result<void>> deletePet(String token, int id) {
     return makeRequest(204, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -99,7 +97,6 @@ class PetService implements IPetService {
   @override
   Future<Result<Pet>> getById(String token, int id) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -123,7 +120,6 @@ class PetService implements IPetService {
   Future<Result<ListData<Pet>>> getPets(
       String token, CursorBasedPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -149,7 +145,6 @@ class PetService implements IPetService {
   @override
   Future<Result<void>> updatePet(String token, int id, PetRequest reqBody) {
     return makeRequest(204, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -187,7 +182,6 @@ class PetService implements IPetService {
   Future<Result<ListData<Pet>>> getBookedPets(
       String token, CursorBasedPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -210,9 +204,8 @@ class PetService implements IPetService {
 
   @override
   Future<Result<ListData<VaccineRecord>>> getVaccineRecords(
-      String token, int petId, CursorBasedPaginationQueryParams pagination) {
+      String token, int petId, OffsetPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(

@@ -6,7 +6,7 @@ part of 'list_data_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$petDaycaresHash() => r'30b1dcfe3ee92e41cc5afa832fecc59a792c3706';
+String _$petDaycaresHash() => r'ecc86ffd082e164de892873d21fd564b3908c148';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -42,14 +42,32 @@ class PetDaycaresFamily extends Family<AsyncValue<ListData<PetDaycare>>> {
   PetDaycaresProvider call(
     double? lat,
     double? long, [
-    int lastId = 0,
+    int page = 1,
     int pageSize = 10,
+    double minDistance = 0.0,
+    double maxDistance = 0.0,
+    List<String> facilities = const [],
+    bool? mustBeVaccinated,
+    int dailyWalks = 0,
+    int dailyPlaytime = 0,
+    double minPrice = 0.0,
+    double maxPrice = 0.0,
+    String? pricingType,
   ]) {
     return PetDaycaresProvider(
       lat,
       long,
-      lastId,
+      page,
       pageSize,
+      minDistance,
+      maxDistance,
+      facilities,
+      mustBeVaccinated,
+      dailyWalks,
+      dailyPlaytime,
+      minPrice,
+      maxPrice,
+      pricingType,
     );
   }
 
@@ -60,8 +78,17 @@ class PetDaycaresFamily extends Family<AsyncValue<ListData<PetDaycare>>> {
     return call(
       provider.lat,
       provider.long,
-      provider.lastId,
+      provider.page,
       provider.pageSize,
+      provider.minDistance,
+      provider.maxDistance,
+      provider.facilities,
+      provider.mustBeVaccinated,
+      provider.dailyWalks,
+      provider.dailyPlaytime,
+      provider.minPrice,
+      provider.maxPrice,
+      provider.pricingType,
     );
   }
 
@@ -87,15 +114,33 @@ class PetDaycaresProvider
   PetDaycaresProvider(
     double? lat,
     double? long, [
-    int lastId = 0,
+    int page = 1,
     int pageSize = 10,
+    double minDistance = 0.0,
+    double maxDistance = 0.0,
+    List<String> facilities = const [],
+    bool? mustBeVaccinated,
+    int dailyWalks = 0,
+    int dailyPlaytime = 0,
+    double minPrice = 0.0,
+    double maxPrice = 0.0,
+    String? pricingType,
   ]) : this._internal(
           (ref) => petDaycares(
             ref as PetDaycaresRef,
             lat,
             long,
-            lastId,
+            page,
             pageSize,
+            minDistance,
+            maxDistance,
+            facilities,
+            mustBeVaccinated,
+            dailyWalks,
+            dailyPlaytime,
+            minPrice,
+            maxPrice,
+            pricingType,
           ),
           from: petDaycaresProvider,
           name: r'petDaycaresProvider',
@@ -108,8 +153,17 @@ class PetDaycaresProvider
               PetDaycaresFamily._allTransitiveDependencies,
           lat: lat,
           long: long,
-          lastId: lastId,
+          page: page,
           pageSize: pageSize,
+          minDistance: minDistance,
+          maxDistance: maxDistance,
+          facilities: facilities,
+          mustBeVaccinated: mustBeVaccinated,
+          dailyWalks: dailyWalks,
+          dailyPlaytime: dailyPlaytime,
+          minPrice: minPrice,
+          maxPrice: maxPrice,
+          pricingType: pricingType,
         );
 
   PetDaycaresProvider._internal(
@@ -121,14 +175,32 @@ class PetDaycaresProvider
     required super.from,
     required this.lat,
     required this.long,
-    required this.lastId,
+    required this.page,
     required this.pageSize,
+    required this.minDistance,
+    required this.maxDistance,
+    required this.facilities,
+    required this.mustBeVaccinated,
+    required this.dailyWalks,
+    required this.dailyPlaytime,
+    required this.minPrice,
+    required this.maxPrice,
+    required this.pricingType,
   }) : super.internal();
 
   final double? lat;
   final double? long;
-  final int lastId;
+  final int page;
   final int pageSize;
+  final double minDistance;
+  final double maxDistance;
+  final List<String> facilities;
+  final bool? mustBeVaccinated;
+  final int dailyWalks;
+  final int dailyPlaytime;
+  final double minPrice;
+  final double maxPrice;
+  final String? pricingType;
 
   @override
   Override overrideWith(
@@ -145,8 +217,17 @@ class PetDaycaresProvider
         debugGetCreateSourceHash: null,
         lat: lat,
         long: long,
-        lastId: lastId,
+        page: page,
         pageSize: pageSize,
+        minDistance: minDistance,
+        maxDistance: maxDistance,
+        facilities: facilities,
+        mustBeVaccinated: mustBeVaccinated,
+        dailyWalks: dailyWalks,
+        dailyPlaytime: dailyPlaytime,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        pricingType: pricingType,
       ),
     );
   }
@@ -161,8 +242,17 @@ class PetDaycaresProvider
     return other is PetDaycaresProvider &&
         other.lat == lat &&
         other.long == long &&
-        other.lastId == lastId &&
-        other.pageSize == pageSize;
+        other.page == page &&
+        other.pageSize == pageSize &&
+        other.minDistance == minDistance &&
+        other.maxDistance == maxDistance &&
+        other.facilities == facilities &&
+        other.mustBeVaccinated == mustBeVaccinated &&
+        other.dailyWalks == dailyWalks &&
+        other.dailyPlaytime == dailyPlaytime &&
+        other.minPrice == minPrice &&
+        other.maxPrice == maxPrice &&
+        other.pricingType == pricingType;
   }
 
   @override
@@ -170,8 +260,17 @@ class PetDaycaresProvider
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, lat.hashCode);
     hash = _SystemHash.combine(hash, long.hashCode);
-    hash = _SystemHash.combine(hash, lastId.hashCode);
+    hash = _SystemHash.combine(hash, page.hashCode);
     hash = _SystemHash.combine(hash, pageSize.hashCode);
+    hash = _SystemHash.combine(hash, minDistance.hashCode);
+    hash = _SystemHash.combine(hash, maxDistance.hashCode);
+    hash = _SystemHash.combine(hash, facilities.hashCode);
+    hash = _SystemHash.combine(hash, mustBeVaccinated.hashCode);
+    hash = _SystemHash.combine(hash, dailyWalks.hashCode);
+    hash = _SystemHash.combine(hash, dailyPlaytime.hashCode);
+    hash = _SystemHash.combine(hash, minPrice.hashCode);
+    hash = _SystemHash.combine(hash, maxPrice.hashCode);
+    hash = _SystemHash.combine(hash, pricingType.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -186,11 +285,38 @@ mixin PetDaycaresRef on AutoDisposeFutureProviderRef<ListData<PetDaycare>> {
   /// The parameter `long` of this provider.
   double? get long;
 
-  /// The parameter `lastId` of this provider.
-  int get lastId;
+  /// The parameter `page` of this provider.
+  int get page;
 
   /// The parameter `pageSize` of this provider.
   int get pageSize;
+
+  /// The parameter `minDistance` of this provider.
+  double get minDistance;
+
+  /// The parameter `maxDistance` of this provider.
+  double get maxDistance;
+
+  /// The parameter `facilities` of this provider.
+  List<String> get facilities;
+
+  /// The parameter `mustBeVaccinated` of this provider.
+  bool? get mustBeVaccinated;
+
+  /// The parameter `dailyWalks` of this provider.
+  int get dailyWalks;
+
+  /// The parameter `dailyPlaytime` of this provider.
+  int get dailyPlaytime;
+
+  /// The parameter `minPrice` of this provider.
+  double get minPrice;
+
+  /// The parameter `maxPrice` of this provider.
+  double get maxPrice;
+
+  /// The parameter `pricingType` of this provider.
+  String? get pricingType;
 }
 
 class _PetDaycaresProviderElement
@@ -203,12 +329,196 @@ class _PetDaycaresProviderElement
   @override
   double? get long => (origin as PetDaycaresProvider).long;
   @override
-  int get lastId => (origin as PetDaycaresProvider).lastId;
+  int get page => (origin as PetDaycaresProvider).page;
   @override
   int get pageSize => (origin as PetDaycaresProvider).pageSize;
+  @override
+  double get minDistance => (origin as PetDaycaresProvider).minDistance;
+  @override
+  double get maxDistance => (origin as PetDaycaresProvider).maxDistance;
+  @override
+  List<String> get facilities => (origin as PetDaycaresProvider).facilities;
+  @override
+  bool? get mustBeVaccinated =>
+      (origin as PetDaycaresProvider).mustBeVaccinated;
+  @override
+  int get dailyWalks => (origin as PetDaycaresProvider).dailyWalks;
+  @override
+  int get dailyPlaytime => (origin as PetDaycaresProvider).dailyPlaytime;
+  @override
+  double get minPrice => (origin as PetDaycaresProvider).minPrice;
+  @override
+  double get maxPrice => (origin as PetDaycaresProvider).maxPrice;
+  @override
+  String? get pricingType => (origin as PetDaycaresProvider).pricingType;
 }
 
-String _$petHash() => r'22b5b29c565c6573a7e66d793447120ae3a3e1a7';
+String _$connectChatHash() => r'a87b6d04727f73daeb2365e147cb3fdea7a954e8';
+
+/// See also [connectChat].
+@ProviderFor(connectChat)
+final connectChatProvider = AutoDisposeStreamProvider<ChatMessage>.internal(
+  connectChat,
+  name: r'connectChatProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$connectChatHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ConnectChatRef = AutoDisposeStreamProviderRef<ChatMessage>;
+String _$reducedSlotsHash() => r'7a7321901eb4ad089bb4adafb9dfc4f893b8e9d6';
+
+/// See also [reducedSlots].
+@ProviderFor(reducedSlots)
+const reducedSlotsProvider = ReducedSlotsFamily();
+
+/// See also [reducedSlots].
+class ReducedSlotsFamily extends Family<AsyncValue<ListData<ReducedSlot>>> {
+  /// See also [reducedSlots].
+  const ReducedSlotsFamily();
+
+  /// See also [reducedSlots].
+  ReducedSlotsProvider call([
+    int page = 1,
+    int pageSize = 10,
+  ]) {
+    return ReducedSlotsProvider(
+      page,
+      pageSize,
+    );
+  }
+
+  @override
+  ReducedSlotsProvider getProviderOverride(
+    covariant ReducedSlotsProvider provider,
+  ) {
+    return call(
+      provider.page,
+      provider.pageSize,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'reducedSlotsProvider';
+}
+
+/// See also [reducedSlots].
+class ReducedSlotsProvider
+    extends AutoDisposeFutureProvider<ListData<ReducedSlot>> {
+  /// See also [reducedSlots].
+  ReducedSlotsProvider([
+    int page = 1,
+    int pageSize = 10,
+  ]) : this._internal(
+          (ref) => reducedSlots(
+            ref as ReducedSlotsRef,
+            page,
+            pageSize,
+          ),
+          from: reducedSlotsProvider,
+          name: r'reducedSlotsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$reducedSlotsHash,
+          dependencies: ReducedSlotsFamily._dependencies,
+          allTransitiveDependencies:
+              ReducedSlotsFamily._allTransitiveDependencies,
+          page: page,
+          pageSize: pageSize,
+        );
+
+  ReducedSlotsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.page,
+    required this.pageSize,
+  }) : super.internal();
+
+  final int page;
+  final int pageSize;
+
+  @override
+  Override overrideWith(
+    FutureOr<ListData<ReducedSlot>> Function(ReducedSlotsRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: ReducedSlotsProvider._internal(
+        (ref) => create(ref as ReducedSlotsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        page: page,
+        pageSize: pageSize,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<ListData<ReducedSlot>> createElement() {
+    return _ReducedSlotsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ReducedSlotsProvider &&
+        other.page == page &&
+        other.pageSize == pageSize;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, page.hashCode);
+    hash = _SystemHash.combine(hash, pageSize.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin ReducedSlotsRef on AutoDisposeFutureProviderRef<ListData<ReducedSlot>> {
+  /// The parameter `page` of this provider.
+  int get page;
+
+  /// The parameter `pageSize` of this provider.
+  int get pageSize;
+}
+
+class _ReducedSlotsProviderElement
+    extends AutoDisposeFutureProviderElement<ListData<ReducedSlot>>
+    with ReducedSlotsRef {
+  _ReducedSlotsProviderElement(super.provider);
+
+  @override
+  int get page => (origin as ReducedSlotsProvider).page;
+  @override
+  int get pageSize => (origin as ReducedSlotsProvider).pageSize;
+}
+
+String _$petHash() => r'bc89e0fff1d2594ebf58cb63ae4bcd25c6aa658b';
 
 /// See also [pet].
 @ProviderFor(pet)
@@ -335,7 +645,7 @@ class _PetProviderElement extends AutoDisposeFutureProviderElement<Pet>
   int get petId => (origin as PetProvider).petId;
 }
 
-String _$vaccineRecordsHash() => r'ff3765e02161b848476fdad216a06c77897dc4b4';
+String _$vaccineRecordsHash() => r'2024613e7414b89645e35a04c5ba474ea3817dde';
 
 /// See also [vaccineRecords].
 @ProviderFor(vaccineRecords)
@@ -349,12 +659,12 @@ class VaccineRecordsFamily extends Family<AsyncValue<ListData<VaccineRecord>>> {
   /// See also [vaccineRecords].
   VaccineRecordsProvider call(
     int petId, [
-    int lastId = 0,
+    int page = 1,
     int pageSize = 10,
   ]) {
     return VaccineRecordsProvider(
       petId,
-      lastId,
+      page,
       pageSize,
     );
   }
@@ -365,7 +675,7 @@ class VaccineRecordsFamily extends Family<AsyncValue<ListData<VaccineRecord>>> {
   ) {
     return call(
       provider.petId,
-      provider.lastId,
+      provider.page,
       provider.pageSize,
     );
   }
@@ -391,13 +701,13 @@ class VaccineRecordsProvider
   /// See also [vaccineRecords].
   VaccineRecordsProvider(
     int petId, [
-    int lastId = 0,
+    int page = 1,
     int pageSize = 10,
   ]) : this._internal(
           (ref) => vaccineRecords(
             ref as VaccineRecordsRef,
             petId,
-            lastId,
+            page,
             pageSize,
           ),
           from: vaccineRecordsProvider,
@@ -410,7 +720,7 @@ class VaccineRecordsProvider
           allTransitiveDependencies:
               VaccineRecordsFamily._allTransitiveDependencies,
           petId: petId,
-          lastId: lastId,
+          page: page,
           pageSize: pageSize,
         );
 
@@ -422,12 +732,12 @@ class VaccineRecordsProvider
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.petId,
-    required this.lastId,
+    required this.page,
     required this.pageSize,
   }) : super.internal();
 
   final int petId;
-  final int lastId;
+  final int page;
   final int pageSize;
 
   @override
@@ -445,7 +755,7 @@ class VaccineRecordsProvider
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         petId: petId,
-        lastId: lastId,
+        page: page,
         pageSize: pageSize,
       ),
     );
@@ -460,7 +770,7 @@ class VaccineRecordsProvider
   bool operator ==(Object other) {
     return other is VaccineRecordsProvider &&
         other.petId == petId &&
-        other.lastId == lastId &&
+        other.page == page &&
         other.pageSize == pageSize;
   }
 
@@ -468,7 +778,7 @@ class VaccineRecordsProvider
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, petId.hashCode);
-    hash = _SystemHash.combine(hash, lastId.hashCode);
+    hash = _SystemHash.combine(hash, page.hashCode);
     hash = _SystemHash.combine(hash, pageSize.hashCode);
 
     return _SystemHash.finish(hash);
@@ -482,8 +792,8 @@ mixin VaccineRecordsRef
   /// The parameter `petId` of this provider.
   int get petId;
 
-  /// The parameter `lastId` of this provider.
-  int get lastId;
+  /// The parameter `page` of this provider.
+  int get page;
 
   /// The parameter `pageSize` of this provider.
   int get pageSize;
@@ -497,13 +807,162 @@ class _VaccineRecordsProviderElement
   @override
   int get petId => (origin as VaccineRecordsProvider).petId;
   @override
-  int get lastId => (origin as VaccineRecordsProvider).lastId;
+  int get page => (origin as VaccineRecordsProvider).page;
   @override
   int get pageSize => (origin as VaccineRecordsProvider).pageSize;
 }
 
+String _$savedAddressHash() => r'573a5fa950c23a824ed323bec23b61ef0d44b850';
+
+/// See also [savedAddress].
+@ProviderFor(savedAddress)
+const savedAddressProvider = SavedAddressFamily();
+
+/// See also [savedAddress].
+class SavedAddressFamily extends Family<AsyncValue<ListData<SavedAddress>>> {
+  /// See also [savedAddress].
+  const SavedAddressFamily();
+
+  /// See also [savedAddress].
+  SavedAddressProvider call([
+    int page = 1,
+    int pageSize = 10,
+  ]) {
+    return SavedAddressProvider(
+      page,
+      pageSize,
+    );
+  }
+
+  @override
+  SavedAddressProvider getProviderOverride(
+    covariant SavedAddressProvider provider,
+  ) {
+    return call(
+      provider.page,
+      provider.pageSize,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'savedAddressProvider';
+}
+
+/// See also [savedAddress].
+class SavedAddressProvider
+    extends AutoDisposeFutureProvider<ListData<SavedAddress>> {
+  /// See also [savedAddress].
+  SavedAddressProvider([
+    int page = 1,
+    int pageSize = 10,
+  ]) : this._internal(
+          (ref) => savedAddress(
+            ref as SavedAddressRef,
+            page,
+            pageSize,
+          ),
+          from: savedAddressProvider,
+          name: r'savedAddressProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$savedAddressHash,
+          dependencies: SavedAddressFamily._dependencies,
+          allTransitiveDependencies:
+              SavedAddressFamily._allTransitiveDependencies,
+          page: page,
+          pageSize: pageSize,
+        );
+
+  SavedAddressProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.page,
+    required this.pageSize,
+  }) : super.internal();
+
+  final int page;
+  final int pageSize;
+
+  @override
+  Override overrideWith(
+    FutureOr<ListData<SavedAddress>> Function(SavedAddressRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: SavedAddressProvider._internal(
+        (ref) => create(ref as SavedAddressRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        page: page,
+        pageSize: pageSize,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<ListData<SavedAddress>> createElement() {
+    return _SavedAddressProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SavedAddressProvider &&
+        other.page == page &&
+        other.pageSize == pageSize;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, page.hashCode);
+    hash = _SystemHash.combine(hash, pageSize.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin SavedAddressRef on AutoDisposeFutureProviderRef<ListData<SavedAddress>> {
+  /// The parameter `page` of this provider.
+  int get page;
+
+  /// The parameter `pageSize` of this provider.
+  int get pageSize;
+}
+
+class _SavedAddressProviderElement
+    extends AutoDisposeFutureProviderElement<ListData<SavedAddress>>
+    with SavedAddressRef {
+  _SavedAddressProviderElement(super.provider);
+
+  @override
+  int get page => (origin as SavedAddressProvider).page;
+  @override
+  int get pageSize => (origin as SavedAddressProvider).pageSize;
+}
+
 String _$getVaccinationRecordByIdHash() =>
-    r'9a64e1b44a30b7f9488f527ed936cbb40a596d21';
+    r'1bfe653f122acc77e386e60ec08390d2e8d346e4';
 
 /// See also [getVaccinationRecordById].
 @ProviderFor(getVaccinationRecordById)
@@ -783,6 +1242,154 @@ class _PetListProviderElement
   int get lastId => (origin as PetListProvider).lastId;
   @override
   int get pageSize => (origin as PetListProvider).pageSize;
+}
+
+String _$bookedPetOwnerHash() => r'881ae317f3ffc940d8a7e508b5d1cbefeddd6bfb';
+
+/// See also [bookedPetOwner].
+@ProviderFor(bookedPetOwner)
+const bookedPetOwnerProvider = BookedPetOwnerFamily();
+
+/// See also [bookedPetOwner].
+class BookedPetOwnerFamily extends Family<AsyncValue<ListData<User>>> {
+  /// See also [bookedPetOwner].
+  const BookedPetOwnerFamily();
+
+  /// See also [bookedPetOwner].
+  BookedPetOwnerProvider call([
+    int page = 1,
+    int pageSize = 10,
+  ]) {
+    return BookedPetOwnerProvider(
+      page,
+      pageSize,
+    );
+  }
+
+  @override
+  BookedPetOwnerProvider getProviderOverride(
+    covariant BookedPetOwnerProvider provider,
+  ) {
+    return call(
+      provider.page,
+      provider.pageSize,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'bookedPetOwnerProvider';
+}
+
+/// See also [bookedPetOwner].
+class BookedPetOwnerProvider extends AutoDisposeFutureProvider<ListData<User>> {
+  /// See also [bookedPetOwner].
+  BookedPetOwnerProvider([
+    int page = 1,
+    int pageSize = 10,
+  ]) : this._internal(
+          (ref) => bookedPetOwner(
+            ref as BookedPetOwnerRef,
+            page,
+            pageSize,
+          ),
+          from: bookedPetOwnerProvider,
+          name: r'bookedPetOwnerProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$bookedPetOwnerHash,
+          dependencies: BookedPetOwnerFamily._dependencies,
+          allTransitiveDependencies:
+              BookedPetOwnerFamily._allTransitiveDependencies,
+          page: page,
+          pageSize: pageSize,
+        );
+
+  BookedPetOwnerProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.page,
+    required this.pageSize,
+  }) : super.internal();
+
+  final int page;
+  final int pageSize;
+
+  @override
+  Override overrideWith(
+    FutureOr<ListData<User>> Function(BookedPetOwnerRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: BookedPetOwnerProvider._internal(
+        (ref) => create(ref as BookedPetOwnerRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        page: page,
+        pageSize: pageSize,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<ListData<User>> createElement() {
+    return _BookedPetOwnerProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is BookedPetOwnerProvider &&
+        other.page == page &&
+        other.pageSize == pageSize;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, page.hashCode);
+    hash = _SystemHash.combine(hash, pageSize.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin BookedPetOwnerRef on AutoDisposeFutureProviderRef<ListData<User>> {
+  /// The parameter `page` of this provider.
+  int get page;
+
+  /// The parameter `pageSize` of this provider.
+  int get pageSize;
+}
+
+class _BookedPetOwnerProviderElement
+    extends AutoDisposeFutureProviderElement<ListData<User>>
+    with BookedPetOwnerRef {
+  _BookedPetOwnerProviderElement(super.provider);
+
+  @override
+  int get page => (origin as BookedPetOwnerProvider).page;
+  @override
+  int get pageSize => (origin as BookedPetOwnerProvider).pageSize;
 }
 
 String _$bookedPetsHash() => r'a5ef662fb9b10fd7180cd670dc460a4487551dae';

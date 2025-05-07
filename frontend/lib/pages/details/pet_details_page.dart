@@ -9,6 +9,7 @@ import 'package:frontend/pages/add_vaccination_record_page.dart';
 import 'package:frontend/pages/edit/edit_pet_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/pet_provider.dart';
+import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class PetDetailsPage extends ConsumerStatefulWidget {
   final int petId;
@@ -26,33 +27,10 @@ class PetDetailsPage extends ConsumerStatefulWidget {
 
 class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
   void _deletePet() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Confirm Delete"),
-          content: Text(
-              "Are you sure you want to delete this pet? This action cannot be undone."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                ref.read(petStateProvider.notifier).deletePet(widget.petId);
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                "Delete",
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-          ],
-        );
-      },
+    showDeleteConfirmationDialog(
+      context,
+      "Are you sure you want to delete this pet? This action cannot be undone.",
+      () => ref.read(petStateProvider.notifier).deletePet(widget.petId),
     );
   }
 

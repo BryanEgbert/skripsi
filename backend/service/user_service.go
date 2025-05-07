@@ -18,8 +18,10 @@ type UserService interface {
 	DeleteUser(id uint) error
 	UpdateUserProfile(user *model.UpdateUserRequest) error
 	UpdateUserPassword(id uint, newPassword string) error
-	GetSavedAddress(id uint) ([]model.SavedAddressDTO, error)
+	GetSavedAddress(id uint, page int, pageSize int) ([]model.SavedAddressDTO, error)
 	AddSavedAddress(userID uint, req model.CreateSavedAddress) error
+	DeleteSavedAddress(addressID uint) error
+	EditSavedAddress(addressID uint, req model.CreateSavedAddress) error
 }
 
 type UserServiceImpl struct {
@@ -30,13 +32,42 @@ func NewUserService(db *gorm.DB) *UserServiceImpl {
 	return &UserServiceImpl{db: db}
 }
 
+func (s *UserServiceImpl) EditSavedAddress(addressID uint, req model.CreateSavedAddress) error {
+	var savedAddress model.SavedAddress
+
+	if err := s.db.First(&savedAddress, addressID).Error; err != nil {
+		return err
+	}
+
+	savedAddress.Address = req.Address
+	savedAddress.Name = req.Name
+	savedAddress.Latitude = req.Latitude
+	savedAddress.Longitude = req.Longitude
+	savedAddress.Notes = req.Notes
+
+	if err := s.db.Save(&savedAddress).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserServiceImpl) DeleteSavedAddress(addressID uint) error {
+	if err := s.db.Delete(&model.SavedAddress{}, addressID).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *UserServiceImpl) AddSavedAddress(userID uint, req model.CreateSavedAddress) error {
 	savedAddress := model.SavedAddress{
 		Name:      req.Name,
-		UserID:    req.UserID,
+		UserID:    userID,
 		Address:   req.Address,
 		Latitude:  req.Latitude,
 		Longitude: req.Longitude,
+		Notes:     req.Notes,
 	}
 
 	if err := s.db.Create(&savedAddress).Error; err != nil {
@@ -46,9 +77,13 @@ func (s *UserServiceImpl) AddSavedAddress(userID uint, req model.CreateSavedAddr
 	return nil
 }
 
-func (s *UserServiceImpl) GetSavedAddress(id uint) ([]model.SavedAddressDTO, error) {
+func (s *UserServiceImpl) GetSavedAddress(id uint, page int, pageSize int) ([]model.SavedAddressDTO, error) {
 	var savedAddresses []model.SavedAddress
-	if err := s.db.Model(&model.SavedAddress{UserID: id}).Find(&savedAddresses).Error; err != nil {
+	if err := s.db.
+		Model(&model.SavedAddress{UserID: id}).
+		Offset(pageSize * (page - 1)).
+		Limit(pageSize).
+		Find(&savedAddresses).Error; err != nil {
 		return nil, err
 	}
 

@@ -19,7 +19,6 @@ class ReviewService implements IReviewService {
   Future<Result<void>> createReview(
       String token, int petDaycareId, CreateReviewRequest reqBody) {
     return makeRequest(201, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -46,7 +45,6 @@ class ReviewService implements IReviewService {
   @override
   Future<void> deleteReview(String token, int petDaycareId) {
     return makeRequest(204, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -70,7 +68,6 @@ class ReviewService implements IReviewService {
   Future<Result<ListData<Reviews>>> getReviews(String token, int petDaycareId,
       CursorBasedPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(

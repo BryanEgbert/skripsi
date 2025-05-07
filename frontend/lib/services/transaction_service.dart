@@ -17,7 +17,6 @@ class TransactionService implements ITransactionService {
   Future<Result<ListData<Transaction>>> getTransactions(
       String token, OffsetPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(

@@ -96,7 +96,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => EditPetDaycarePage(),
+                        builder: (context) => EditPetDaycarePage(value.id),
                       ),
                     );
                   },
@@ -346,7 +346,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => BookSlotsPage(),
+                      builder: (context) => BookSlotsPage(value.id),
                     ));
                   },
                   child: Text("Book A Slot"),

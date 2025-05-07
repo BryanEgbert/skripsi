@@ -11,6 +11,7 @@ import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
+import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class ViewBookingRequestsPage extends ConsumerStatefulWidget {
   const ViewBookingRequestsPage({super.key});
@@ -213,7 +214,6 @@ class _ViewBookingRequestsPageState
                         Row(
                           spacing: 8.0,
                           children: [
-                            // TODO: add accept and reject logic
                             FilledButton(
                               onPressed: () {
                                 ref
@@ -233,9 +233,14 @@ class _ViewBookingRequestsPageState
                             ),
                             FilledButton(
                               onPressed: () {
-                                ref
-                                    .read(slotStateProvider.notifier)
-                                    .rejectSlot(_records[index].id);
+                                showConfirmationDialog(
+                                  context,
+                                  "Reject Request",
+                                  "Are you sure you want to reject this booking request? This action cannot be undone.",
+                                  () => ref
+                                      .read(slotStateProvider.notifier)
+                                      .rejectSlot(_records[index].id),
+                                );
                               },
                               style: FilledButton.styleFrom(
                                 backgroundColor: Colors.red,

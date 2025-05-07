@@ -415,7 +415,7 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	reduceSlots := model.ReduceSlots{
-		SlotID: slots[0].ID, ReducedCount: 2, TargetDate: time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
+		SlotID: slots[0].ID, DaycareID: slots[0].DaycareID, ReducedCount: 2, TargetDate: time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
 	}
 
 	if err := db.Create(&reduceSlots).Error; err != nil {

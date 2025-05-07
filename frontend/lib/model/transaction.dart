@@ -2,7 +2,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/model/booked_slot_address.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/model/lookup.dart';
-import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/pet_daycare.dart';
 
 part 'transaction.freezed.dart';

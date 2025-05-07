@@ -67,7 +67,7 @@ samples, guidance on mobile development, and a full API reference.
   - Add success and error message on create, edit, and delete operation
   - Change buttons content from text to loading progress on press during operation
 ## Design Dialog to yield closure
-  - Pop-up confirmation dialog when user do a delete operation that cannot be undone
+  - Pop-up confirmation dialog when user do a CRUD operation that cannot be undone and during booking confirmation
 ## Prevent errors
   - Add minimum and maximum number constraints to number inputs
   - Add helper text on email and password on register
@@ -75,6 +75,7 @@ samples, guidance on mobile development, and a full API reference.
 ## Permit easy reversal of actions
   - Delete button on view pages
 ## Keep users in control
-  - Add language support
+  - User can choose preferred language
 ## Reduce short-term memory loss
   - Default values on edit forms
+  - Saved address information during booking

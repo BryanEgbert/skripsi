@@ -23,7 +23,6 @@ class AuthService implements IAuthService {
   @override
   Future<Result<TokenResponse>> login(String email, String password) async {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -48,7 +47,6 @@ class AuthService implements IAuthService {
   @override
   Future<Result<TokenResponse>> refreshToken(String refreshToken) async {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -72,7 +70,6 @@ class AuthService implements IAuthService {
   @override
   Future<Result<TokenResponse>> register(CreateUserRequest reqBody) async {
     return makeRequest(201, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -107,7 +104,6 @@ class AuthService implements IAuthService {
   Future<Result<TokenResponse>> createPetOwner(CreateUserRequest userReq,
       PetRequest petReq, VaccinationRecordRequest vaccineReq) {
     return makeRequest(201, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -160,7 +156,6 @@ class AuthService implements IAuthService {
   Future<Result<TokenResponse>> createPetDaycareProvider(
       CreateUserRequest userReq, CreatePetDaycareRequest petDaycareReq) {
     return makeRequest(201, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(

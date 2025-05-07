@@ -11,6 +11,7 @@ import 'package:frontend/pages/details/transaction_details_page.dart';
 import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
+import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class BookingHistoryView extends ConsumerStatefulWidget {
   const BookingHistoryView({super.key});
@@ -220,10 +221,14 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                 if (_records[index].status.id == 1)
                                   FilledButton(
                                     onPressed: () {
-                                      ref
-                                          .read(slotStateProvider.notifier)
-                                          .cancelSlot(
-                                              _records[index].bookedSlot.id);
+                                      showCancelBookingConfirmationDialog(
+                                        context,
+                                        "Are you sure you want to cancel this booking? This action cannot be undone.",
+                                        () => ref
+                                            .read(slotStateProvider.notifier)
+                                            .cancelSlot(
+                                                _records[index].bookedSlot.id),
+                                      );
                                     },
                                     style: FilledButton.styleFrom(
                                       backgroundColor: Colors.red,
@@ -237,7 +242,6 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                     ),
                                   )
                                 else if (_records[index].status.id == 4)
-                                  // TODO: add give review logic
                                   FilledButton(
                                     onPressed: () async {
                                       await showModalBottomSheet(

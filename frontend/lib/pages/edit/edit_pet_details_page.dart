@@ -52,6 +52,13 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
     if (petState.hasValue && !petState.isLoading) {
       if (petState.value == 204) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          var snackbar = SnackBar(
+            key: Key("success-message"),
+            content: Text("Pet edited successfully"),
+            backgroundColor: Colors.green[800],
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(snackbar);
           Navigator.of(context).pop();
         });
       }

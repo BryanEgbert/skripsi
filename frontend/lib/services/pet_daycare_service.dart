@@ -8,9 +8,11 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
 import 'package:frontend/model/pet_daycare.dart';
 import 'package:frontend/model/request/pet_daycare_filters.dart';
+import 'package:frontend/model/request/reduce_slot_request.dart';
 import 'package:frontend/model/request/update_pet_daycare_request.dart';
 import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/reviews.dart';
+import 'package:frontend/model/user.dart';
 
 abstract interface class IPetDaycareService {
   Future<Result<PetDaycareDetails>> getMy(String token);
@@ -20,7 +22,7 @@ abstract interface class IPetDaycareService {
       String token,
       Coordinate coord,
       PetDaycareFilters filters,
-      CursorBasedPaginationQueryParams pagination);
+      OffsetPaginationQueryParams pagination);
   // Future<Result<void>> createPetDaycare(String token, )
   Future<Result<void>> updatePetDaycare(
       String token, int petDaycareId, UpdatePetDaycareRequest req);
@@ -28,6 +30,10 @@ abstract interface class IPetDaycareService {
   Future<Result<ListData<Reviews>>> getReviews(
       String token, int petDaycareId, OffsetPaginationQueryParams pagination);
   Future<Result<ListData<BookingRequest>>> getBookingRequests(
+      String token, OffsetPaginationQueryParams pagination);
+  Future<Result<void>> editSlotCount(
+      String token, int slotId, ReduceSlotRequest req);
+  Future<Result<ListData<User>>> getBookedPetOwners(
       String token, OffsetPaginationQueryParams pagination);
 }
 
@@ -42,7 +48,6 @@ class PetDaycareService implements IPetDaycareService {
   Future<Result<PetDaycareDetails>> getById(
       String token, int petDaycareId, Coordinate coord) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       var dio = Dio(BaseOptions(
@@ -67,19 +72,17 @@ class PetDaycareService implements IPetDaycareService {
       String token,
       Coordinate coord,
       PetDaycareFilters filters,
-      CursorBasedPaginationQueryParams pagination) {
+      OffsetPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
-      // TODO: add query params for filters and coords
       var res = await Dio(BaseOptions(
         validateStatus: (status) {
           return status != null; // Accept all HTTP status codes
         },
       )).get("$host/daycare", queryParameters: {
         ...pagination.toMap(),
-        // ...filters.toMap(),
+        ...filters.toMap(),
         ...coord.toMap(),
       });
 
@@ -90,7 +93,6 @@ class PetDaycareService implements IPetDaycareService {
   @override
   Future<Result<PetDaycareDetails>> getMy(String token) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       var dio = Dio(BaseOptions(
@@ -114,7 +116,6 @@ class PetDaycareService implements IPetDaycareService {
   Future<Result<ListData<Reviews>>> getReviews(
       String token, int petDaycareId, OffsetPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       var dio = Dio(BaseOptions(
@@ -140,7 +141,6 @@ class PetDaycareService implements IPetDaycareService {
   Future<Result<void>> updatePetDaycare(
       String token, int petDaycareId, UpdatePetDaycareRequest req) {
     return makeRequest(204, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       var dio = Dio(BaseOptions(
@@ -178,7 +178,6 @@ class PetDaycareService implements IPetDaycareService {
   Future<Result<ListData<BookingRequest>>> getBookingRequests(
       String token, OffsetPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       var dio = Dio(BaseOptions(
@@ -196,5 +195,52 @@ class PetDaycareService implements IPetDaycareService {
 
       return res;
     }, (res) => ListData.fromJson(res, BookingRequest.fromJson));
+  }
+
+  @override
+  Future<Result<void>> editSlotCount(
+      String token, int slotId, ReduceSlotRequest req) {
+    return makeRequest(201, () async {
+      final String host = dotenv.env["HOST"]!;
+
+      var dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.post("$host/daycare/slot/$slotId",
+          options: Options(headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+            HttpHeaders.contentTypeHeader: "application/json",
+          }),
+          data: req.toJson());
+
+      return res;
+    });
+  }
+
+  @override
+  Future<Result<ListData<User>>> getBookedPetOwners(
+      String token, OffsetPaginationQueryParams pagination) {
+    return makeRequest(200, () async {
+      final String host = dotenv.env["HOST"]!;
+
+      var dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
+        "$host/daycare/booked-pet-owners",
+        queryParameters: pagination.toMap(),
+        options: Options(headers: {
+          HttpHeaders.authorizationHeader: "Bearer $token",
+        }),
+      );
+
+      return res;
+    }, (res) => ListData.fromJson(res, User.fromJson));
   }
 }

@@ -114,6 +114,59 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 	})
 }
 
+func (uc *UserController) DeleteSavedAddress(c *gin.Context) {
+	addressID, err := strconv.ParseUint(c.Param("addressId"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid address ID",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	if err := uc.UserService.DeleteSavedAddress(uint(addressID)); err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Something's wrong, please try again later",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
+func (uc *UserController) EditSavedAddress(c *gin.Context) {
+	addressID, err := strconv.ParseUint(c.Param("addressId"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid address ID",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	var req model.CreateSavedAddress
+	if err := c.ShouldBind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request body",
+			Error:   err.Error(),
+		})
+		log.Printf("JSON bind err: %v", err)
+		return
+	}
+
+	if err := uc.UserService.EditSavedAddress(uint(addressID), req); err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Something's wrong when adding address",
+			Error:   err.Error(),
+		})
+		log.Printf("AddSavedAddress err: %v", err)
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
 func (uc *UserController) GetSavedAddress(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
@@ -131,7 +184,25 @@ func (uc *UserController) GetSavedAddress(c *gin.Context) {
 		return
 	}
 
-	out, err := uc.UserService.GetSavedAddress(userID)
+	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid last ID",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid page size",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	out, err := uc.UserService.GetSavedAddress(userID, int(page), pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",

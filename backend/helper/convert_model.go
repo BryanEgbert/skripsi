@@ -200,6 +200,7 @@ func ConvertSavedAddressesToDTO(savedAddresses []model.SavedAddress) []model.Sav
 			ID:      val.ID,
 			Name:    val.Name,
 			Address: val.Address,
+			Notes:   val.Notes,
 		})
 
 	}
@@ -243,6 +244,24 @@ func ConvertBookedSlotToBookingRequest(bookedSlot model.BookedSlot) model.Bookin
 			Longitude: bookedSlot.Daycare.Longitude,
 			Notes:     bookedSlot.Address.Notes,
 		}
+	}
+
+	return out
+}
+
+func ConvertReducedSlotsToDTO(reducedSlots []model.ReduceSlots) []model.ReduceSlotsDTO {
+	out := []model.ReduceSlotsDTO{}
+
+	for _, val := range reducedSlots {
+		dto := model.ReduceSlotsDTO{
+			ID:           val.ID,
+			SlotID:       val.SlotID,
+			DaycareID:    val.DaycareID,
+			ReducedCount: val.ReducedCount,
+			TargetDate:   val.TargetDate.Format(time.RFC3339),
+		}
+
+		out = append(out, dto)
 	}
 
 	return out

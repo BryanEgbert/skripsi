@@ -28,6 +28,34 @@ func NewPetDaycareController(petDaycareService service.PetDaycareService, petSer
 	return &PetDaycareController{petDaycareService, slotService, petService, reviewService, bookingRequestService}
 }
 
+func (pdc *PetDaycareController) DeleteReducedSlot(ctx *gin.Context) {
+	slotIDRaw := ctx.Query("slotId")
+	if slotIDRaw == "" {
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "slot ID missing",
+		})
+		return
+	}
+
+	slotID, err := strconv.ParseUint(slotIDRaw, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid last ID",
+			Error:   err.Error(),
+		})
+		return
+	}
+	if err := pdc.slotService.DeleteReducedSlot(uint(slotID)); err != nil {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to reduce slot",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
+}
+
 func (pdc *PetDaycareController) GetBookingRequests(ctx *gin.Context) {
 	userIDRaw, exists := ctx.Get("userID")
 	if !exists {
@@ -127,6 +155,61 @@ func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
 	c.JSON(http.StatusOK, model.ListData[model.ReviewsDTO]{Data: *reviews})
 }
 
+func (pdc *PetDaycareController) GetBookedPetOwners(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid last ID",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid page size",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	out, err := pdc.petDaycareService.GetBookedPetOwners(userID, int(page), pageSize)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, model.ErrorResponse{
+				Message: "Pet Daycare does not exists",
+				Error:   err.Error(),
+			})
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "Something's wrong, please try again later",
+				Error:   err.Error(),
+			})
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, out)
+}
+
 func (pdc *PetDaycareController) CreateReview(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
@@ -212,7 +295,70 @@ func (pdc *PetDaycareController) DeleteReview(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
+func (pdc *PetDaycareController) GetReducedSlots(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid last ID",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid page size",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	out, err := pdc.slotService.GetReducedSlot(userID, int(page), pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "something's wrong, please try again later",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, model.ListData[model.ReduceSlotsDTO]{Data: out})
+}
+
 func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
 	slotID, err := strconv.ParseUint(c.Param("slotId"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
@@ -230,7 +376,7 @@ func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
 		return
 	}
 
-	if err := pdc.slotService.EditSlotCount(uint(slotID), req); err != nil {
+	if err := pdc.slotService.EditSlotCount(userID, uint(slotID), req); err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Cannot edit slot count",
 			Error:   err.Error(),
@@ -238,7 +384,7 @@ func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusCreated, nil)
 }
 
 func (pdc *PetDaycareController) GetPetDaycareSlots(c *gin.Context) {
@@ -551,7 +697,7 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 		filters.Longitude = &value
 	}
 
-	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)
+	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid last ID",
@@ -573,7 +719,7 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 		value, _ := strconv.ParseFloat(minDist, 64)
 		filters.MinDistance = value
 	}
-	if maxDist := c.Query("max-distance"); maxDist != "" {
+	if maxDist := c.DefaultQuery("max-distance", "0"); maxDist != "" {
 		value, err := strconv.ParseFloat(maxDist, 64)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, model.ErrorResponse{
@@ -625,7 +771,7 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 	}
 
 	// Call service
-	daycares, err := pdc.petDaycareService.GetPetDaycares(filters, uint(lastID), pageSize)
+	daycares, err := pdc.petDaycareService.GetPetDaycares(filters, int(page), pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to fetch pet daycares",

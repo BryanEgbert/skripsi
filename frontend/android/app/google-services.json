@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "567748302140",
+    "project_id": "skripsi-e8cfb",
+    "storage_bucket": "skripsi-e8cfb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567748302140:android:258d2e0327fa1dba523a39",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANuMR8AbV6l88m3bXVBLLc0ebXZ7eHzF0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

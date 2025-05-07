@@ -20,7 +20,6 @@ class VaccinationRecordService implements IVaccinationRecordService {
   Future<Result<void>> create(
       String token, int petId, VaccinationRecordRequest req) {
     return makeRequest(201, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -55,7 +54,6 @@ class VaccinationRecordService implements IVaccinationRecordService {
   @override
   Future<Result<void>> delete(String token, int vaccineRecordId) {
     return makeRequest(204, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -79,7 +77,6 @@ class VaccinationRecordService implements IVaccinationRecordService {
   Future<Result<void>> update(
       String token, int vaccineRecordId, VaccinationRecordRequest req) {
     return makeRequest(204, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -114,7 +111,6 @@ class VaccinationRecordService implements IVaccinationRecordService {
     return makeRequest(
       200,
       () async {
-        await dotenv.load();
         final String host = dotenv.env["HOST"]!;
 
         final dio = Dio(BaseOptions(

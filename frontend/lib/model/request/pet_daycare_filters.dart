@@ -1,13 +1,13 @@
 class PetDaycareFilters {
-  final double minDistance;
-  final double maxDistance;
-  final List<String> facilities;
-  final bool? mustBeVaccinated;
-  final int dailyWalks;
-  final int dailyPlaytime;
-  final double minPrice;
-  final double maxPrice;
-  final String? pricingType;
+  double minDistance;
+  double maxDistance;
+  List<String> facilities;
+  bool? mustBeVaccinated;
+  int dailyWalks;
+  int dailyPlaytime;
+  double minPrice;
+  double maxPrice;
+  String? pricingType;
 
   PetDaycareFilters({
     this.minDistance = 0.0,
@@ -45,5 +45,44 @@ class PetDaycareFilters {
     }
 
     return map;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is PetDaycareFilters &&
+        other.minDistance == minDistance &&
+        other.maxDistance == maxDistance &&
+        _listEquals(other.facilities, facilities) &&
+        other.mustBeVaccinated == mustBeVaccinated &&
+        other.dailyWalks == dailyWalks &&
+        other.dailyPlaytime == dailyPlaytime &&
+        other.minPrice == minPrice &&
+        other.maxPrice == maxPrice &&
+        other.pricingType == pricingType;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hashAll([
+      minDistance,
+      maxDistance,
+      dailyWalks,
+      dailyPlaytime,
+      minPrice,
+      maxPrice,
+      mustBeVaccinated,
+      pricingType,
+      facilities.join(','), // deterministic hash from list contents
+    ]);
+  }
+
+  bool _listEquals(List<String> a, List<String> b) {
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
   }
 }

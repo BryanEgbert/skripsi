@@ -108,6 +108,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		&model.BookedSlotStatus{},
 		&model.SavedAddress{},
 		&model.BookedSlotAddress{},
+		&model.ChatMessage{},
 	)
 
 	r := gin.Default()
@@ -139,6 +140,9 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	slotController := controller.NewSlotController(slotService)
 
+	chatService := service.NewChatService(db)
+	chatController := controller.NewChatController(chatService)
+
 	r.Static("/image", "./image")
 	r = routes.RegisterUserRoute(r, userController)
 	r = routes.RegisterAuthRoute(r, authController)
@@ -148,6 +152,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	r = routes.RegisterVaccineRecordRoute(r, vaccineRecordController)
 	r = routes.RegisterTransactionRoute(r, transactionController)
 	r = routes.RegisterSlotRoute(r, slotController)
+	r = routes.RegisterChatRoute(r, chatController)
 
 	return r
 }

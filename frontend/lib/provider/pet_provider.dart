@@ -41,10 +41,15 @@ class PetState extends _$PetState {
   Future<void> editPet(int petId, PetRequest req) async {
     state = AsyncLoading();
 
-    TokenResponse token = await refreshToken();
+    TokenResponse? token;
+    try {
+      token = await refreshToken();
+    } catch (e) {
+      state = AsyncError(jwtExpired, StackTrace.current);
+    }
 
     final petService = PetService();
-    final res = await petService.updatePet(token.accessToken, petId, req);
+    final res = await petService.updatePet(token!.accessToken, petId, req);
 
     switch (res) {
       case Ok<void>():
@@ -60,11 +65,16 @@ class PetState extends _$PetState {
       PetRequest petReq, VaccinationRecordRequest? vaccineReq) async {
     state = AsyncLoading();
 
-    TokenResponse token = await refreshToken();
+    TokenResponse? token;
+    try {
+      token = await refreshToken();
+    } catch (e) {
+      state = AsyncError(jwtExpired, StackTrace.current);
+    }
 
     final petService = PetService();
     final res =
-        await petService.createPet(token.accessToken, petReq, vaccineReq);
+        await petService.createPet(token!.accessToken, petReq, vaccineReq);
 
     switch (res) {
       case Ok<void>():

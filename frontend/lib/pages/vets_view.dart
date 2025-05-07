@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/user.dart';
+import 'package:frontend/pages/chat_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
@@ -24,6 +26,26 @@ class _VetsViewState extends ConsumerState<VetsView> {
   bool _hasMoreData = true;
 
   Object? _error;
+
+  final List<Map<String, dynamic>> vetSpecialties = [
+    {'id': 1, 'name': 'General Practice'},
+    {'id': 2, 'name': 'Preventive Medicine'},
+    {'id': 3, 'name': 'Emergency & Critical Care'},
+    {'id': 4, 'name': 'Internal Medicine'},
+    {'id': 5, 'name': 'Cardiology'},
+    {'id': 6, 'name': 'Neurology'},
+    {'id': 7, 'name': 'Oncology'},
+    {'id': 8, 'name': 'Gastroenterology'},
+    {'id': 9, 'name': 'Dermatology & Allergy Care'},
+    {'id': 10, 'name': 'Dentistry & Oral Surgery'},
+    {'id': 11, 'name': 'Behavioral Medicine'},
+    {'id': 12, 'name': 'Surgery & Orthopedics'},
+    {'id': 13, 'name': 'Soft Tissue Surgery'},
+    {'id': 14, 'name': 'Orthopedic Surgery'},
+    {'id': 15, 'name': 'Ophthalmology'},
+    {'id': 16, 'name': 'Rehabilitation & Physical Therapy'},
+    {'id': 17, 'name': 'Exotic & Small Animal Care'},
+  ];
 
   // ignore: prefer_final_fields
   int _vetSpecialtyId = 0;
@@ -99,7 +121,36 @@ class _VetsViewState extends ConsumerState<VetsView> {
             labelText: "Search vets",
           ),
         ),
-        actions: appBarActions(ref.read(authProvider.notifier)),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.tune_rounded),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+          ...appBarActions(ref.read(authProvider.notifier))
+        ],
+      ),
+      drawer: Column(
+        children: [
+          Text("Vet Specialties"),
+          Wrap(
+            spacing: 8.0,
+            children: vetSpecialties.map((specialty) {
+              final int id = specialty['id'];
+              final String name = specialty['name'];
+              return FilterChip(
+                label: Text(name),
+                selected: _vetSpecialtyId == id,
+                onSelected: (bool selected) {
+                  setState(() {
+                    _vetSpecialtyId = selected ? id : 0;
+                  });
+                },
+              );
+            }).toList(),
+          )
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -115,9 +166,14 @@ class _VetsViewState extends ConsumerState<VetsView> {
               vetSpecialtyNames.add(val.name);
             }
             return ListTile(
-              tileColor: Color(0xFFFFF1E1),
-              // TODO: navigate to chat page
-              onTap: () {},
+              tileColor: Constants.secondaryBackgroundColor,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ChatPage(userId: _records[index].id),
+                  ),
+                );
+              },
               leading: DefaultCircleAvatar(
                 imageUrl: _records[index].imageUrl,
                 iconSize: 56,

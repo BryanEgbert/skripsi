@@ -31,7 +31,7 @@ class _PaginatedListViewState
   final ScrollController _scrollController = ScrollController();
   List<VaccineRecord> _records = [];
 
-  int _lastId = 0;
+  int _page = 1;
   bool _isFetching = false;
   bool _hasMoreData = true;
 
@@ -51,13 +51,13 @@ class _PaginatedListViewState
     setState(() => _isFetching = true);
 
     ref
-        .read(vaccineRecordsProvider(widget.petId, _lastId, widget.pageSize)
-            .future)
+        .read(
+            vaccineRecordsProvider(widget.petId, _page, widget.pageSize).future)
         .then((newData) {
       if (newData.data.isNotEmpty) {
         setState(() {
           _records.addAll(newData.data);
-          _lastId = newData.data.last.id;
+          _page += 1;
         });
       } else {
         setState(() {
@@ -98,7 +98,7 @@ class _PaginatedListViewState
     return RefreshIndicator(
       onRefresh: () async {
         _records = [];
-        _lastId = 0;
+        _page = 1;
         _fetchMoreData();
       },
       child: (_isFetching && _records.isEmpty)
@@ -174,10 +174,13 @@ class _PaginatedListViewState
                         pageBuilder: (context, animation, secondaryAnimation) {
                           return SizedBox.expand(
                             child: GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Image.network(vaccineRecord.imageUrl)),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: InteractiveViewer(
+                                child: Image.network(vaccineRecord.imageUrl),
+                              ),
+                            ),
                           );
                         },
                       );

@@ -193,7 +193,7 @@ func (vc *VaccineRecordController) GetVaccineRecords(c *gin.Context) {
 		return
 	}
 
-	lastID, err := strconv.ParseUint(c.DefaultQuery("last-id", "0"), 10, 64)
+	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid start ID",
@@ -211,7 +211,7 @@ func (vc *VaccineRecordController) GetVaccineRecords(c *gin.Context) {
 		return
 	}
 
-	records, err := vc.vaccineRecordService.GetVaccineRecords(uint(petID), uint(lastID), pageSize)
+	records, err := vc.vaccineRecordService.GetVaccineRecords(uint(petID), int(page), pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong",

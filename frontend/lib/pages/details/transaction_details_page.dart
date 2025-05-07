@@ -9,6 +9,7 @@ import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
+import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class TransactionDetailsPage extends ConsumerStatefulWidget {
   final Transaction transaction;
@@ -21,6 +22,16 @@ class TransactionDetailsPage extends ConsumerStatefulWidget {
 
 class _TransactionDetailsPageState
     extends ConsumerState<TransactionDetailsPage> {
+  void _cancelBooking() {
+    showCancelBookingConfirmationDialog(
+      context,
+      "Are you sure you want to cancel this booking? This action cannot be undone.",
+      () => ref
+          .read(slotStateProvider.notifier)
+          .cancelSlot(widget.transaction.bookedSlot.id),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final slotState = ref.watch(slotStateProvider);
@@ -267,11 +278,7 @@ class _TransactionDetailsPageState
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: ElevatedButton(
                     // TODO: test cancel booking
-                    onPressed: () {
-                      ref
-                          .read(slotStateProvider.notifier)
-                          .cancelSlot(widget.transaction.bookedSlot.id);
-                    },
+                    onPressed: _cancelBooking,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),

@@ -6,8 +6,10 @@ import 'package:frontend/components/paginated_pets_list_view.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/pages/add_pet_page.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
+import 'package:frontend/pages/edit/edit_pet_details_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/pet_provider.dart';
+import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class PetsView extends ConsumerStatefulWidget {
   const PetsView({super.key});
@@ -18,33 +20,10 @@ class PetsView extends ConsumerStatefulWidget {
 
 class _PetsViewState extends ConsumerState<PetsView> {
   void _deletePet(int petId) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Confirm Delete"),
-          content: Text(
-              "Are you sure you want to delete this pet? This action cannot be undone."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                ref.read(petStateProvider.notifier).deletePet(petId);
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                "Delete",
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-          ],
-        );
-      },
+    showDeleteConfirmationDialog(
+      context,
+      "Are you sure you want to delete this pet? This action cannot be undone.",
+      () => ref.read(petStateProvider.notifier).deletePet(petId),
     );
   }
 
@@ -92,9 +71,12 @@ class _PetsViewState extends ConsumerState<PetsView> {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // TODO: edit pet
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => EditPetDetailsPage(petId: item.id),
+              ));
+            },
             icon: Icon(
               Icons.edit,
               color: Colors.orange[600],

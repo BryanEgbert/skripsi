@@ -1,12 +1,22 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/firebase_options.dart';
 import 'package:frontend/pages/home.dart';
 import 'package:frontend/pages/pet_daycare_home_page.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/database_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await dotenv.load();
+
   runApp(
     ProviderScope(
       child: PetDaycareApp(),

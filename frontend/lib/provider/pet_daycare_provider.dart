@@ -1,8 +1,10 @@
 import 'package:frontend/model/error_handler/error_handler.dart';
+import 'package:frontend/model/request/reduce_slot_request.dart';
 import 'package:frontend/model/request/update_pet_daycare_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/services/pet_daycare_service.dart';
+import 'package:frontend/services/slot_service.dart';
 import 'package:frontend/utils/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -35,6 +37,54 @@ class PetDaycareState extends _$PetDaycareState {
         ref.invalidate(petDaycaresProvider(null, null));
         ref.invalidate(getMyPetDaycareProvider);
         ref.invalidate(getPetDaycareByIdProvider(petDaycareId, null, null));
+      case Error<void>():
+        state = AsyncError(res.error, StackTrace.current);
+    }
+  }
+
+  Future<void> deleteReduceSlot(int slotId) async {
+    state = AsyncLoading();
+    TokenResponse? token;
+    try {
+      token = await refreshToken();
+    } catch (e) {
+      state = AsyncError(jwtExpired, StackTrace.current);
+    }
+
+    final service = SlotService();
+    final res = await service.deleteReduceSlot(
+      token!.accessToken,
+      slotId,
+    );
+
+    switch (res) {
+      case Ok<void>():
+        state = AsyncData(204);
+      case Error<void>():
+        state = AsyncError(res.error, StackTrace.current);
+    }
+  }
+
+  Future<void> editSlotCount(String token, int petDaycareId, int reducedCount,
+      String targetDate) async {
+    state = AsyncLoading();
+    TokenResponse? token;
+    try {
+      token = await refreshToken();
+    } catch (e) {
+      state = AsyncError(jwtExpired, StackTrace.current);
+    }
+
+    final service = PetDaycareService();
+    final res = await service.editSlotCount(
+      token!.accessToken,
+      petDaycareId,
+      ReduceSlotRequest(reducedCount: reducedCount, targetDate: targetDate),
+    );
+
+    switch (res) {
+      case Ok<void>():
+        state = AsyncData(204);
       case Error<void>():
         state = AsyncError(res.error, StackTrace.current);
     }

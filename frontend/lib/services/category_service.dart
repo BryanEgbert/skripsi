@@ -18,7 +18,6 @@ class CategoryService implements ICategoryService {
   @override
   Future<Result<ListData<Lookup>>> getVetSpecialties() async {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -36,7 +35,6 @@ class CategoryService implements ICategoryService {
   @override
   Future<Result<ListData<SizeCategory>>> getSizeCategories() async {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -54,7 +52,6 @@ class CategoryService implements ICategoryService {
   @override
   Future<Result<ListData<PetCategory>>> getPetCategories() async {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -71,7 +68,6 @@ class CategoryService implements ICategoryService {
   @override
   Future<Result<ListData<Lookup>>> getDailyPlaytime() {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -89,7 +85,6 @@ class CategoryService implements ICategoryService {
   @override
   Future<Result<ListData<Lookup>>> getDailyWalks() {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(

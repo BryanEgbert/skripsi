@@ -156,7 +156,6 @@ class LocationService implements ILocationService {
   Future<Result<SuggestResponse>> getSuggestedLocation(
       String sessionId, String query) async {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String mapboxToken = dotenv.env["MAPBOX_TOKEN"]!;
 
       final dio = Dio(BaseOptions(
@@ -183,7 +182,6 @@ class LocationService implements ILocationService {
   Future<Result<RetrieveResponse>> retrieveSuggestedLocation(
       String sessionId, String mapboxId) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String mapboxToken = dotenv.env["MAPBOX_TOKEN"]!;
 
       final dio = Dio(BaseOptions(

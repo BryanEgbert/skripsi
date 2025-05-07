@@ -22,7 +22,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
 class EditPetDaycarePage extends ConsumerStatefulWidget {
-  const EditPetDaycarePage({super.key});
+  final int petDaycareId;
+  const EditPetDaycarePage(this.petDaycareId, {super.key});
 
   @override
   ConsumerState<EditPetDaycarePage> createState() => _EditPetDaycarePageState();
@@ -324,7 +325,32 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             // TODO: update pet daycare info
             actions: [
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  ref.read(petDaycareStateProvider.notifier).updatePetDaycare(
+                      widget.petDaycareId,
+                      UpdatePetDaycareRequest(
+                        petDaycareName: _nameController.text,
+                        address: _address,
+                        location: _location,
+                        locality: _locality,
+                        latitude: _latitude,
+                        longitude: _longitude,
+                        openingHour: _openingHoursController.text,
+                        closingHour: _closingHoursController.text,
+                        price: _prices,
+                        pricingType: _pricingTypes,
+                        hasPickupService: _pickupServiceProvided,
+                        mustBeVaccinated: _petVaccinationRequired,
+                        groomingAvailable: _groomingServiceProvided,
+                        foodProvided: _foodProvided,
+                        dailyWalksId: _dailyWalksId,
+                        dailyPlaytimeId: _dailyPlaytimeId,
+                        thumbnails: _images.whereType<File>().toList(),
+                        petCategoryId: _petCategoryIds,
+                        maxNumber: _maxNumbers,
+                        thumbnailIndex: _thumbnailIndex,
+                      ));
+                },
                 child: Text(
                   "SAVE",
                   style: TextStyle(

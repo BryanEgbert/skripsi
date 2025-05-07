@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"gorm.io/gorm"
 )
@@ -12,7 +13,9 @@ import (
 type SlotService interface {
 	GetSlots(petDaycareId uint, req model.GetSlotRequest) (*[]model.SlotsResponse, error)
 	BookSlots(userId uint, req model.BookSlotRequest) error
-	EditSlotCount(slotId uint, req model.ReduceSlotsRequest) error
+	EditSlotCount(userId uint, slotId uint, req model.ReduceSlotsRequest) error
+	GetReducedSlot(userId uint, page int, pageSize int) ([]model.ReduceSlotsDTO, error)
+	DeleteReducedSlot(slotId uint) error
 	AcceptBookedSlot(slotId uint) error
 	RejectBookedSlot(slotId uint) error
 	CancelBookedSlot(slotId uint) error
@@ -24,6 +27,49 @@ type SlotServiceImpl struct {
 
 func NewSlotService(db *gorm.DB) *SlotServiceImpl {
 	return &SlotServiceImpl{db: db}
+}
+
+func (s *SlotServiceImpl) DeleteReducedSlot(slotId uint) error {
+	if err := s.db.Delete(&model.ReduceSlots{}, slotId).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *SlotServiceImpl) GetReducedSlot(userId uint, page int, pageSize int) ([]model.ReduceSlotsDTO, error) {
+	daycare := model.PetDaycare{
+		OwnerID: userId,
+	}
+
+	if err := s.db.
+		Preload("Owner").
+		Preload("Owner.Role").
+		Preload("DailyWalks").
+		Preload("DailyPlaytime").
+		Preload("Thumbnails").
+		Preload("Reviews").
+		Preload("Slots").
+		Preload("Slots.PetCategory").
+		Preload("Slots.PetCategory.SizeCategory").
+		Where("owner_id = ?", userId).
+		First(&daycare).Error; err != nil {
+		return nil, err
+	}
+
+	out := []model.ReduceSlots{}
+
+	if err := s.db.
+		Model(&model.ReduceSlots{DaycareID: daycare.ID}).
+		Offset(pageSize * (page - 1)).
+		Limit(pageSize).
+		Find(&out).Error; err != nil {
+		return nil, err
+	}
+
+	dto := helper.ConvertReducedSlotsToDTO(out)
+
+	return dto, nil
 }
 
 func (s *SlotServiceImpl) AcceptBookedSlot(slotId uint) error {
@@ -132,16 +178,37 @@ func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) 
 	return &out, nil
 }
 
-func (s *SlotServiceImpl) EditSlotCount(slotId uint, req model.ReduceSlotsRequest) error {
-	slot := model.ReduceSlots{
-		SlotID:     slotId,
-		TargetDate: req.TargetDate,
+func (s *SlotServiceImpl) EditSlotCount(userId uint, slotId uint, req model.ReduceSlotsRequest) error {
+	daycare := model.PetDaycare{
+		OwnerID: userId,
 	}
 
 	if err := s.db.
-		Model(&slot).
-		UpdateColumn("reduced_count", gorm.Expr("reduced_count - ?", req.ReducedCount)).
+		Preload("Owner").
+		Preload("Owner.Role").
+		Where("owner_id = ?", userId).
+		First(&daycare).Error; err != nil {
+		return err
+	}
+
+	slot := model.ReduceSlots{
+		SlotID:       slotId,
+		DaycareID:    daycare.ID,
+		TargetDate:   req.TargetDate,
+		ReducedCount: req.ReducedCount,
+	}
+
+	if err := s.db.
+		Model(&model.ReduceSlots{SlotID: slotId}).
+		UpdateColumn("reduced_count", req.ReducedCount).
 		Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			s.db.Create(&slot) // create new record from newUser
+		}
+		return err
+	}
+
+	if err := s.db.Save(slot).Error; err != nil {
 		return err
 	}
 

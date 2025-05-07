@@ -4,8 +4,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
+import 'package:frontend/model/request/create_saved_address_request.dart';
 import 'package:frontend/model/request/update_user_request.dart';
 import 'package:frontend/model/response/list_response.dart';
+import 'package:frontend/model/saved_address.dart';
 import 'package:frontend/model/user.dart';
 
 abstract interface class IUserService {
@@ -15,13 +17,19 @@ abstract interface class IUserService {
       [int specialtyId = 0]);
   Future<void> deleteUser(String token);
   Future<Result<void>> updateUser(String token, UpdateUserRequest reqBody);
+  Future<Result<ListData<SavedAddress>>> getSavedAddress(
+      String token, OffsetPaginationQueryParams pagination);
+  Future<Result<void>> addSavedAddress(
+      String token, CreateSavedAddressRequest req);
+  Future<Result<void>> editSavedAddress(
+      String token, CreateSavedAddressRequest req);
+  Future<Result<void>> deleteSavedAddress(String token, int addressId);
 }
 
 class UserService implements IUserService {
   @override
   Future<Result<void>> deleteUser(String token) async {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -42,7 +50,6 @@ class UserService implements IUserService {
   @override
   Future<Result<User>> getUser(String token, int id) async {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -66,7 +73,6 @@ class UserService implements IUserService {
       String token, CursorBasedPaginationQueryParams pagination,
       [int specialtyId = 0]) {
     return makeRequest(200, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -94,7 +100,6 @@ class UserService implements IUserService {
   @override
   Future<Result<void>> updateUser(String token, UpdateUserRequest reqBody) {
     return makeRequest(204, () async {
-      await dotenv.load();
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -126,5 +131,109 @@ class UserService implements IUserService {
 
       return response;
     });
+  }
+
+  @override
+  Future<Result<void>> addSavedAddress(
+      String token, CreateSavedAddressRequest req) {
+    return makeRequest(201, () async {
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.post(
+        "$host/saved-address",
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+            HttpHeaders.contentTypeHeader: "application/json",
+          },
+        ),
+        data: req.toJson(),
+      );
+
+      return res;
+    });
+  }
+
+  @override
+  Future<Result<void>> deleteSavedAddress(String token, int addressId) {
+    return makeRequest(204, () async {
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.delete(
+        "$host/saved-address/$addressId",
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
+      );
+
+      return res;
+    });
+  }
+
+  @override
+  Future<Result<void>> editSavedAddress(
+      String token, CreateSavedAddressRequest req) {
+    return makeRequest(201, () async {
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.put(
+        "$host/saved-address",
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+            HttpHeaders.contentTypeHeader: "application/json",
+          },
+        ),
+        data: req.toJson(),
+      );
+
+      return res;
+    });
+  }
+
+  @override
+  Future<Result<ListData<SavedAddress>>> getSavedAddress(
+      String token, OffsetPaginationQueryParams pagination) {
+    return makeRequest(201, () async {
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
+        "$host/saved-address",
+        queryParameters: pagination.toMap(),
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
+      );
+
+      return res;
+    }, (res) => ListData.fromJson(res, SavedAddress.fromJson));
   }
 }

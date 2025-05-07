@@ -14,8 +14,9 @@ import (
 type PetDaycareService interface {
 	CreatePetDaycare(userId uint, request model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error)
 	GetMyPetDaycare(userId uint) (*model.GetPetDaycareDetailResponse, error)
-	GetPetDaycares(req model.GetPetDaycaresRequest, startID uint, pageSize int) (model.ListData[model.GetPetDaycaresResponse], error)
+	GetPetDaycares(req model.GetPetDaycaresRequest, page int, pageSize int) (model.ListData[model.GetPetDaycaresResponse], error)
 	GetPetDaycare(id uint, lat *float64, long *float64) (*model.GetPetDaycareDetailResponse, error)
+	GetBookedPetOwners(userId uint, page int, pageSize int) (model.ListData[model.UserDTO], error)
 	DeletePetDaycare(id uint, ownerId uint) error
 	UpdatePetDaycare(id uint, userId uint, newData model.UpdatePetDaycareRequest) (*model.PetDaycareDTO, error)
 }
@@ -26,6 +27,37 @@ type PetDaycareServiceImpl struct {
 
 func NewPetDaycareService(db *gorm.DB) *PetDaycareServiceImpl {
 	return &PetDaycareServiceImpl{db: db}
+}
+
+func (s *PetDaycareServiceImpl) GetBookedPetOwners(userId uint, page int, pageSize int) (model.ListData[model.UserDTO], error) {
+	daycare := model.PetDaycare{OwnerID: userId}
+
+	if err := s.db.First(&daycare).Error; err != nil {
+		return model.ListData[model.UserDTO]{}, err
+	}
+
+	bookedSlots := []model.BookedSlot{}
+
+	if err := s.db.
+		Model(&model.BookedSlot{}).
+		Where("daycare_id = ?", daycare.ID).
+		Joins("User").
+		Joins("User.Role").
+		Preload("User.VetSpecialty").
+		Offset((page - 1) * pageSize).
+		Limit(pageSize).
+		Find(&bookedSlots).Error; err != nil {
+		return model.ListData[model.UserDTO]{}, err
+	}
+
+	out := []model.UserDTO{}
+
+	for _, val := range bookedSlots {
+		user := helper.ConvertUserToDTO(val.User)
+		out = append(out, user)
+	}
+
+	return model.ListData[model.UserDTO]{Data: out}, nil
 }
 
 func (s *PetDaycareServiceImpl) GetMyPetDaycare(userId uint) (*model.GetPetDaycareDetailResponse, error) {
@@ -212,7 +244,7 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 	}, nil
 }
 
-func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, startID uint, pageSize int) (model.ListData[model.GetPetDaycaresResponse], error) {
+func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, page int, pageSize int) (model.ListData[model.GetPetDaycaresResponse], error) {
 	results := []model.GetPetDaycaresResponse{}
 
 	var latitude float64 = 0.0
@@ -234,8 +266,8 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 			"ST_DistanceSphere(ST_MakePoint(longitude, latitude), ST_MakePoint(?, ?)) BETWEEN ? AND ?",
 			req.Longitude,
 			req.Latitude,
-			req.MinDistance,
-			req.MaxDistance)
+			req.MinDistance*1000,
+			req.MaxDistance*1000)
 	}
 
 	if req.MustBeVaccinated != nil {
@@ -267,7 +299,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		query = query.Where("pricing_type = ?", *req.PricingType)
 	}
 
-	rows, err := query.Rows()
+	rows, err := query.Offset(pageSize * (page - 1)).Limit(pageSize).Rows()
 	if err != nil {
 		return model.ListData[model.GetPetDaycaresResponse]{Data: results}, err
 	}
@@ -299,6 +331,12 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 			var price model.PriceDetails
 			rows.Scan(&price.PetCategory.ID, &price.PetCategory.Name, &price.PetCategory.SizeCategory.ID, &price.PetCategory.SizeCategory.Name, &price.PetCategory.SizeCategory.MinWeight, &price.PetCategory.SizeCategory.MaxWeight, &price.Price, &price.PricingType)
 
+			if req.MaxPrice > 0 {
+				if price.Price < req.MinPrice || price.Price > req.MaxPrice {
+					continue
+				}
+			}
+
 			results[i].Prices = append(results[i].Prices, price)
 		}
 
@@ -316,7 +354,15 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		}
 	}
 
-	return model.ListData[model.GetPetDaycaresResponse]{Data: results}, nil
+	filteredResults := []model.GetPetDaycaresResponse{}
+
+	for _, daycare := range results {
+		if len(daycare.Prices) > 0 {
+			filteredResults = append(filteredResults, daycare)
+		}
+	}
+
+	return model.ListData[model.GetPetDaycaresResponse]{Data: filteredResults}, nil
 }
 
 func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.CreatePetDaycareRequest) (*model.PetDaycareDTO, error) {

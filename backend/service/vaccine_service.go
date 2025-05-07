@@ -11,7 +11,7 @@ import (
 
 type VaccineService interface {
 	GetVaccineRecord(id uint) (*model.VaccineRecordDTO, error)
-	GetVaccineRecords(petId uint, lastID uint, limit int) (*[]model.VaccineRecordDTO, error)
+	GetVaccineRecords(petId uint, page int, limit int) (*[]model.VaccineRecordDTO, error)
 	CreateVaccineRecords(petId uint, req model.VaccineRecordRequest) (uint, error)
 	UpdateVaccineRecord(id uint, req model.VaccineRecordRequest) error
 	DeleteVaccineRecords(vaccineRecordId uint) error
@@ -57,11 +57,12 @@ func (s *VaccineServiceImpl) UpdateVaccineRecord(id uint, req model.VaccineRecor
 	return nil
 }
 
-func (s *VaccineServiceImpl) GetVaccineRecords(petId uint, lastID uint, limit int) (*[]model.VaccineRecordDTO, error) {
+func (s *VaccineServiceImpl) GetVaccineRecords(petId uint, page int, limit int) (*[]model.VaccineRecordDTO, error) {
 	var records []model.VaccineRecord
 	if err := s.db.
-		Where("pet_id = ? AND id > ?", petId, lastID).
+		Where("pet_id = ?", petId).
 		Find(&records).
+		Offset((page - 1) * limit).
 		Limit(limit).Error; err != nil {
 		return nil, err
 	}

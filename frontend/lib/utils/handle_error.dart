@@ -10,7 +10,10 @@ void handleError(AsyncValue providerValue, BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       var snackbar = SnackBar(
         key: Key("error-message"),
-        content: Text(providerValue.error.toString()),
+        content: Text(
+          providerValue.error.toString(),
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.red[800],
       );
 
@@ -25,5 +28,22 @@ void handleError(AsyncValue providerValue, BuildContext context) {
         );
       }
     });
+  }
+
+  if (providerValue.hasValue && !providerValue.isLoading) {
+    if (providerValue.value >= 200 && providerValue.value <= 400) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        var snackbar = SnackBar(
+          key: Key("success-message"),
+          content: Text("Operation completed successfully"),
+          backgroundColor: Colors.green[800],
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        }
+      });
+    }
   }
 }
