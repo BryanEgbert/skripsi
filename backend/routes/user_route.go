@@ -15,11 +15,6 @@ func RegisterUserRoute(r *gin.Engine, userController *controller.UserController)
 	userRoutes.GET("/vets", middleware.JWTAuth(), userController.GetVets)
 	userRoutes.GET("/:id", middleware.JWTAuth(), userController.GetUser)
 
-	userRoutes.GET("/saved-address", middleware.JWTAuth(), userController.GetSavedAddress)
-	userRoutes.POST("/saved-address", middleware.JWTAuth(), userController.AddSavedAddress)
-	userRoutes.DELETE("/saved-address/:addressId", middleware.JWTAuth(), userController.DeleteSavedAddress)
-	userRoutes.PUT("/saved-address/:addressId", middleware.JWTAuth(), userController.EditSavedAddress)
-
 	userRoutes.DELETE("", middleware.JWTAuth(), userController.DeleteUser)
 	userRoutes.PUT("", middleware.JWTAuth(), userController.UpdateUserProfile)
 	userRoutes.PATCH("/password", middleware.JWTAuth(), userController.UpdateUserPassword)

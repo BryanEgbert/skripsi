@@ -7,7 +7,9 @@ import 'package:frontend/model/reduced_slot.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/pet_daycare_provider.dart';
+import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
+import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class ViewSlotsPage extends ConsumerStatefulWidget {
   const ViewSlotsPage({super.key});
@@ -25,6 +27,12 @@ class _ViewSlotsPageState extends ConsumerState<ViewSlotsPage> {
   bool _isFetching = false;
   bool _hasMoreData = true;
   Object? _error;
+
+  void _refresh() {
+    _records = [];
+    _page = 1;
+    _fetchMoreData();
+  }
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
@@ -79,18 +87,20 @@ class _ViewSlotsPageState extends ConsumerState<ViewSlotsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Booking Requests',
-          style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+          'Reduced Slots',
+          style: TextStyle(color: Colors.orange),
         ),
         actions: appBarActions(ref.read(authProvider.notifier)),
       ),
       floatingActionButton: FloatingActionButton.extended(
-          // TODO: edit reduce slot
-          onPressed: () {},
-          label: Icon(
-            Icons.add,
-            color: Colors.white,
-          )),
+        // TODO: edit reduce slot
+        onPressed: () {},
+        label: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.orange,
+      ),
       body: (_isFetching && _records.isEmpty)
           ? Center(
               child: CircularProgressIndicator(
@@ -113,9 +123,7 @@ class _ViewSlotsPageState extends ConsumerState<ViewSlotsPage> {
   Widget _buildListView() {
     return RefreshIndicator(
       onRefresh: () async {
-        _records = [];
-        _page = 1;
-        _fetchMoreData();
+        _refresh();
       },
       child: ListView.builder(
         physics: AlwaysScrollableScrollPhysics(),
@@ -123,18 +131,22 @@ class _ViewSlotsPageState extends ConsumerState<ViewSlotsPage> {
         itemCount: _records.length,
         itemBuilder: (context, index) {
           return Card(
-            color: Constants.secondaryBackgroundColor,
+            // color: Constants.secondaryBackgroundColor,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _records[index].targetDate,
+                        formatDateStr(_records[index].targetDate),
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Constants.primaryTextColor,
+                        ),
                       ),
                       Text(
                         "Reduced Slots: ${_records[index].reducedCount}",
@@ -150,15 +162,23 @@ class _ViewSlotsPageState extends ConsumerState<ViewSlotsPage> {
                         onPressed: () {},
                         icon: Icon(
                           Icons.edit,
-                          color: Constants.primaryTextColor,
+                          color: Colors.orange,
                         ),
                       ),
-                      // TODO: delete reduced count, add warning dialog
                       IconButton(
                         onPressed: () {
-                          ref
-                              .read(petDaycareStateProvider.notifier)
-                              .deleteReduceSlot(_records[index].id);
+                          showDeleteConfirmationDialog(context,
+                              "Are you sure? this action cannot be undone.",
+                              () {
+                            ref
+                                .read(petDaycareStateProvider.notifier)
+                                .deleteReduceSlot(_records[index].id);
+
+                            setState(() {
+                              ref.invalidate(petDaycareStateProvider);
+                              _refresh();
+                            });
+                          });
                         },
                         icon: Icon(
                           Icons.delete,

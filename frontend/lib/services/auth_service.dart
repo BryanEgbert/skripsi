@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
@@ -174,8 +172,6 @@ class AuthService implements IAuthService {
               .toList(),
         )
       };
-
-      log("[INFO] $req");
 
       FormData formData = FormData.fromMap(req);
 

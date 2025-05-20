@@ -35,7 +35,7 @@ class _PetsViewState extends ConsumerState<PetsView> {
           "Pets",
           style: TextStyle(color: Colors.orange),
         ),
-        actions: appBarActions(ref.read(authProvider.notifier)),
+        actions: petOwnerAppBarActions(ref.read(authProvider.notifier)),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -67,7 +67,7 @@ class _PetsViewState extends ConsumerState<PetsView> {
         fontWeight: FontWeight.bold,
         color: Colors.orange,
       ),
-      subtitleTextStyle: TextStyle(fontSize: 14, color: Colors.black),
+      subtitleTextStyle: TextStyle(fontSize: 14),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

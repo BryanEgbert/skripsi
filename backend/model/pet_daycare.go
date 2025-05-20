@@ -113,7 +113,7 @@ type CreatePetDaycareRequest struct {
 	OpeningHour       string                  `form:"openingHour"`
 	ClosingHour       string                  `form:"closingHour"`
 	Price             []float64               `form:"price[]"`
-	PricingType       []string                `form:"pricingType[]"`
+	PricingType       []uint                  `form:"pricingType[]"`
 	HasPickupService  bool                    `form:"hasPickupService"`
 	MustBeVaccinated  bool                    `form:"mustBeVaccinated"`
 	GroomingAvailable bool                    `form:"groomingAvailable"`
@@ -138,7 +138,7 @@ type UpdatePetDaycareRequest struct {
 	OpeningHour       string                  `form:"openingHour"`
 	ClosingHour       string                  `form:"closingHour"`
 	Price             []float64               `form:"price[]"`
-	PricingType       []string                `form:"pricingType[]"`
+	PricingType       []uint                  `form:"pricingType[]"`
 	HasPickupService  bool                    `form:"hasPickupService"`
 	MustBeVaccinated  bool                    `form:"mustBeVaccinated"`
 	GroomingAvailable bool                    `form:"groomingAvailable"`

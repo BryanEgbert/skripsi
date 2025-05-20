@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/pages/booking_history_view.dart';
 import 'package:frontend/pages/pet_daycares_view.dart';
 import 'package:frontend/pages/pets_view.dart';
 import 'package:frontend/pages/vets_view.dart';
+import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/utils/chat_websocket_channel.dart';
+import 'package:web_socket_channel/io.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});
@@ -13,6 +17,7 @@ class HomeWidget extends StatefulWidget {
 
 class _HomeWidgetState extends State<HomeWidget> {
   int _selectedIndex = 0;
+  IOWebSocketChannel? _channel;
 
   final List<Widget> _pages = [
     PetsView(),
@@ -21,6 +26,19 @@ class _HomeWidgetState extends State<HomeWidget> {
     BookingHistoryView(),
   ];
 
+  Future<void> _setupWebSocket() async {
+    try {
+      _channel = await ChatWebsocketChannel().instance;
+    } catch (e) {
+      if (e.toString() == jwtExpired && mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => WelcomeWidget()),
+          (route) => false,
+        );
+      }
+    }
+  }
+
   void _onItemTap(int index) {
     setState(() {
       _selectedIndex = index;
@@ -28,8 +46,13 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _setupWebSocket();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // TODO: Change based on roles
     return Scaffold(
       key: const Key("home"),
       body: _pages[_selectedIndex],

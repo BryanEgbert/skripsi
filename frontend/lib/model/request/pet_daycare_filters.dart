@@ -48,6 +48,11 @@ class PetDaycareFilters {
   }
 
   @override
+  String toString() {
+    return "PetDaycareFilters(minDistance: $minDistance, maxDistance: $maxDistance, facilities: $facilities, minPrice: $minPrice, maxPrice: $maxPrice, dailyWalks: $dailyWalks, dailyPlaytime: $dailyPlaytime)";
+  }
+
+  @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 

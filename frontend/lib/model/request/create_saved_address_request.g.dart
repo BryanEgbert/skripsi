@@ -13,6 +13,7 @@ CreateSavedAddressRequest _$CreateSavedAddressRequestFromJson(
       address: json['address'] as String,
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
+      notes: json['notes'] as String?,
     );
 
 Map<String, dynamic> _$CreateSavedAddressRequestToJson(
@@ -22,4 +23,5 @@ Map<String, dynamic> _$CreateSavedAddressRequestToJson(
       'address': instance.address,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
+      'notes': instance.notes,
     };

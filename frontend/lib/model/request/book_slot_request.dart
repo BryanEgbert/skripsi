@@ -4,10 +4,10 @@ part 'book_slot_request.g.dart';
 
 @JsonSerializable()
 class BookSlotRequest {
-  final int petId;
+  final List<int> petId;
+  final bool usePickupService;
   final String startDate;
   final String endDate;
-  final bool usePickupService;
   final String? location;
   final String? address;
   final double? latitude;
@@ -16,9 +16,9 @@ class BookSlotRequest {
 
   BookSlotRequest({
     required this.petId,
+    required this.usePickupService,
     required this.startDate,
     required this.endDate,
-    required this.usePickupService,
     this.location,
     this.address,
     this.latitude,

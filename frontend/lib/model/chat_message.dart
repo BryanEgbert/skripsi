@@ -28,4 +28,13 @@ class ChatMessage {
       _$ChatMessageFromJson(json);
 
   Map<String, dynamic> toJson() => _$ChatMessageToJson(this);
+
+  @override
+  int get hashCode => senderId.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is ChatMessage && other.senderId == senderId;
+  }
 }

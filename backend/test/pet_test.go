@@ -195,7 +195,7 @@ func TestGetPets(t *testing.T) {
 					t.Errorf("json Unmarshal err: %v", err)
 				}
 
-				for i, _ := range res {
+				for i := range res {
 					if assert.NotEmpty(t, res[i].Owner.CreatedAt) {
 						res[i].Owner.CreatedAt = ""
 					}

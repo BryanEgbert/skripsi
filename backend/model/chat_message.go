@@ -11,6 +11,9 @@ type ChatMessage struct {
 	Message    string `gorm:"not null"`
 	ImageURL   *string
 	IsRead     bool `gorm:"default:0"`
+
+	SenderUser   User `gorm:"foreignKey:SenderID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ReceiverUser User `gorm:"foreignKey:ReceiverID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type ChatMessageDTO struct {
@@ -26,6 +29,7 @@ type ChatMessageDTO struct {
 }
 
 type SendMessage struct {
+	UpdateRead bool    `json:"updateRead"`
 	ReceiverID uint    `json:"receiverId"`
 	Message    string  `json:"message"`
 	ImageURL   *string `json:"imageUrl"`

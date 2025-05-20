@@ -3,9 +3,10 @@ package controller
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"sync"
-	"time"
 
+	"firebase.google.com/go/v4/messaging"
 	"github.com/BryanEgbert/skripsi/model"
 	"github.com/BryanEgbert/skripsi/service"
 	"github.com/gin-gonic/gin"
@@ -21,11 +22,160 @@ var clients = make(map[uint]*websocket.Conn)
 var clientsMutex = &sync.RWMutex{}
 
 type ChatController struct {
+	client      *messaging.Client
 	chatService service.ChatService
+	userService service.UserService
 }
 
-func NewChatController(chatService service.ChatService) *ChatController {
-	return &ChatController{chatService: chatService}
+func NewChatController(chatService service.ChatService, userService service.UserService, client *messaging.Client) *ChatController {
+	return &ChatController{chatService: chatService, client: client, userService: userService}
+}
+
+func (c *ChatController) GetUnreadMessage(ctx *gin.Context) {
+	userIDRaw, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	data, err := c.chatService.GetUnreadMessages(uint(userID))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Something went wrong",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, data)
+}
+
+func (c *ChatController) UpdateRead(ctx *gin.Context) {
+	userIDRaw, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	receiverIDQuery := ctx.Query("receiver-id")
+	if receiverIDQuery == "" {
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "invalid receiver ID",
+		})
+		return
+	}
+
+	receiverID, err := strconv.ParseUint(receiverIDQuery, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid receiver ID",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	if err := c.chatService.UpdateRead(userID, uint(receiverID)); err != nil {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Something went wrong",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
+}
+
+func (uc *ChatController) GetUserChatList(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "User ID not found in token",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+	out, err := uc.chatService.GetUserChatList(userID)
+	if err != nil {
+		log.Printf("[ERROR] GetVetChatList err: %v", err)
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{Message: "Something's wrong", Error: err.Error()})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, out)
+}
+
+func (c *ChatController) GetMessages(ctx *gin.Context) {
+	userIDRaw, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	receiverIDQuery := ctx.Query("receiver-id")
+	if receiverIDQuery == "" {
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "invalid receiver ID",
+		})
+		return
+	}
+
+	receiverID, err := strconv.ParseUint(receiverIDQuery, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid receiver ID",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	data, err := c.chatService.GetMessages(uint(userID), uint(receiverID))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Something went wrong",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, data)
 }
 
 func (c *ChatController) Handle(ctx *gin.Context) {
@@ -69,48 +219,89 @@ func (c *ChatController) Handle(ctx *gin.Context) {
 			log.Println("read error:", err)
 			break
 		}
+		if msg.UpdateRead {
+			if err := c.chatService.UpdateRead(senderID, msg.ReceiverID); err != nil {
+				log.Printf("[ERROR] updateRead err: %v", err)
+			}
 
-		chatMsg := model.ChatMessageDTO{
-			Type:       "message",
+			clientsMutex.RLock()
+			receiverConn, ok := clients[msg.ReceiverID]
+			clientsMutex.RUnlock()
+
+			out, err := c.chatService.GetMessages(senderID, msg.ReceiverID)
+			if err != nil {
+				log.Printf("Get error: %v", err)
+			}
+			if ok {
+				if err := receiverConn.WriteJSON(out); err != nil {
+					log.Println("send error:", err)
+				}
+
+			}
+
+			continue
+		}
+
+		newMessage := model.ChatMessage{
 			SenderID:   senderID,
 			ReceiverID: msg.ReceiverID,
 			Message:    msg.Message,
 			ImageURL:   msg.ImageURL,
 			IsRead:     false,
-			CreatedAt:  time.Now().Format(time.RFC3339),
 		}
 
-		newMessage := model.ChatMessage{
-			SenderID:   senderID,
-			ReceiverID: chatMsg.ReceiverID,
-			Message:    chatMsg.Message,
-			ImageURL:   chatMsg.ImageURL,
-			IsRead:     chatMsg.IsRead,
-		}
-
-		chatId, err := c.chatService.InsertMessage(&newMessage)
+		_, err := c.chatService.InsertMessage(&newMessage)
 		if err != nil {
-			chatMsg.Type = "error"
-			chatMsg.Message = err.Error()
-			conn.WriteJSON(chatMsg)
+			// chatMsg.Type = "error"
+			// chatMsg.Message = err.Error()
+			// conn.WriteJSON(chatMsg)
+			log.Println("[ERROR] insert message err:", err)
 
 			continue
 		}
-		chatMsg.ID = chatId
 
 		clientsMutex.RLock()
 		receiverConn, ok := clients[msg.ReceiverID]
 		clientsMutex.RUnlock()
 
-		if err := conn.WriteJSON(chatMsg); err != nil {
-			log.Println("send error:", err)
+		out, err := c.chatService.GetMessages(senderID, msg.ReceiverID)
+		if err != nil {
+			log.Printf("Get error: %v", err)
+		}
+		if ok {
+			// c.chatService.UpdateRead(senderID, chatMsg.ReceiverID)
+
+			if err := receiverConn.WriteJSON(out); err != nil {
+				log.Println("[ERROR] send error:", err)
+			}
+
+			token, err := c.userService.GetDeviceToken(msg.ReceiverID)
+			if err != nil {
+				log.Printf("[ERROR] get device token: %v", err)
+				continue
+			}
+
+			if token == nil {
+				continue
+			}
+
+			if _, err := c.client.Send(ctx, &messaging.Message{
+				Data: map[string]string{
+					"page": "chat",
+				},
+				Notification: &messaging.Notification{
+					Title: "New Message",
+					Body:  "New message incoming",
+				},
+				Token: *token,
+			}); err != nil {
+				log.Printf("[ERROR] sending message: %v\n", err)
+			}
+
 		}
 
-		if ok {
-
-			if err := receiverConn.WriteJSON(chatMsg); err != nil {
-				log.Println("send error:", err)
-			}
+		if err := conn.WriteJSON(out); err != nil {
+			log.Println("[ERROR] send error:", err)
 		}
 	}
 }

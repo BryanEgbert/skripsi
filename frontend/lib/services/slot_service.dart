@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -12,12 +13,7 @@ import 'package:frontend/model/slot.dart';
 
 abstract interface class ISlotService {
   Future<Result<ListData<Slot>>> getSlots(
-      String token,
-      int speciesId,
-      int petDaycareId,
-      int year,
-      int month,
-      CursorBasedPaginationQueryParams pagination);
+      String token, List<int> petCategoryId, int petDaycareId);
   Future<Result<void>> bookSlot(
       String token, int petDaycareId, BookSlotRequest reqBody);
   Future<Result<void>> editSlotCount(
@@ -47,11 +43,11 @@ class SlotService implements ISlotService {
         "$host/daycare/$petDaycareId/slot",
         options: Options(
           headers: {
-            HttpHeaders.contentTypeHeader: "applicaton/json",
+            HttpHeaders.contentTypeHeader: Headers.jsonContentType,
             HttpHeaders.authorizationHeader: "Bearer $token",
           },
         ),
-        data: reqBody.toJson(),
+        data: jsonEncode(reqBody.toJson()),
       );
 
       return res;
@@ -87,12 +83,10 @@ class SlotService implements ISlotService {
 
   @override
   Future<Result<ListData<Slot>>> getSlots(
-      String token,
-      int petCategoryId,
-      int petDaycareId,
-      int year,
-      int month,
-      CursorBasedPaginationQueryParams pagination) {
+    String token,
+    List<int> petCategoryId,
+    int petDaycareId,
+  ) {
     return makeRequest(200, () async {
       final String host = dotenv.env["HOST"]!;
 
@@ -105,10 +99,8 @@ class SlotService implements ISlotService {
       final res = await dio.get(
         "$host/daycare/$petDaycareId/slot",
         queryParameters: {
-          "year": year,
-          "month": month,
-          "pet-category": petCategoryId,
-          ...pagination.toMap(),
+          "pet-category": petCategoryId.join(","),
+          // ...pagination.toMap(),
         },
         options: Options(
           headers: {

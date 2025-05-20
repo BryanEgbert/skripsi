@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/lookup.dart';
@@ -47,7 +45,6 @@ void main() {
       case Ok():
         expect(petRes.value, isNotNull);
         expect(petRes.value!.data, isNotEmpty);
-        log("[INFO] ${petRes.value}");
         break;
       case Error():
         fail("get booked pets error: ${petRes.error}");

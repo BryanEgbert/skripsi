@@ -7,6 +7,7 @@ import (
 )
 
 type TransactionService interface {
+	GetTransaction(id uint, userId uint) (*model.TransactionDTO, error)
 	GetTransactions(userId uint, page int, pageSize int) (*[]model.TransactionDTO, error)
 }
 
@@ -18,20 +19,49 @@ func NewTransactionService(db *gorm.DB) *TransactionServiceImpl {
 	return &TransactionServiceImpl{db: db}
 }
 
+func (s *TransactionServiceImpl) GetTransaction(id uint, userId uint) (*model.TransactionDTO, error) {
+	var transaction model.Transaction
+
+	if err := s.db.
+		Model(&model.Transaction{ID: id, UserID: userId}).
+		Preload("BookedSlot").
+		Preload("BookedSlot.User").
+		Preload("BookedSlot.Status").
+		Preload("BookedSlot.Pet").
+		Preload("BookedSlot.Pet.PetCategory").
+		Preload("BookedSlot.Pet.PetCategory.SizeCategory").
+		Preload("BookedSlot.Address").
+		Preload("BookedSlot.Daycare").
+		Preload("BookedSlot.Daycare.Slots").
+		Preload("BookedSlot.Daycare.Slots.PricingType").
+		Preload("BookedSlot.Daycare.Slots.PetCategory").
+		Preload("BookedSlot.Daycare.Slots.PetCategory.SizeCategory").
+		Find(&transaction).Error; err != nil {
+		return nil, err
+	}
+
+	out := helper.ConvertTransactionToTransactionDTO(transaction)
+
+	return &out, nil
+}
+
 func (s *TransactionServiceImpl) GetTransactions(userId uint, page int, pageSize int) (*[]model.TransactionDTO, error) {
 	var transactions []model.Transaction
 
 	if err := s.db.
 		Model(&model.Transaction{UserID: userId}).
-		Preload("PetDaycare").
-		Preload("PetDaycare.Slots").
-		Preload("PetDaycare.Slots.PetCategory").
-		Preload("PetDaycare.Slots.PetCategory.SizeCategory").
 		Preload("BookedSlot").
+		Preload("BookedSlot.User").
 		Preload("BookedSlot.Status").
 		Preload("BookedSlot.Pet").
 		Preload("BookedSlot.Pet.PetCategory").
+		Preload("BookedSlot.Pet.PetCategory.SizeCategory").
 		Preload("BookedSlot.Address").
+		Preload("BookedSlot.Daycare").
+		Preload("BookedSlot.Daycare.Slots").
+		Preload("BookedSlot.Daycare.Slots.PricingType").
+		Preload("BookedSlot.Daycare.Slots.PetCategory").
+		Preload("BookedSlot.Daycare.Slots.PetCategory.SizeCategory").
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
 		Find(&transactions).Error; err != nil {

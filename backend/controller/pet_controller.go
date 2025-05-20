@@ -56,8 +56,6 @@ func (pc *PetController) GetPet(c *gin.Context) {
 	c.JSON(http.StatusOK, pet)
 }
 
-// GetPets retrieves a paginated list of pets using cursor-based pagination
-// GetPets retrieves a paginated list of pets belonging to the authenticated user
 func (pc *PetController) GetPets(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
@@ -188,7 +186,6 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 	c.JSON(http.StatusCreated, nil)
 }
 
-// UpdatePet updates a pet's information
 func (pc *PetController) UpdatePet(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {

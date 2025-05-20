@@ -19,15 +19,15 @@ import (
 
 // UserController struct
 type UserController struct {
-	UserService          service.UserService
-	PetService           service.PetService
-	VaccineRecordService service.VaccineService
-	PetDaycareService    service.PetDaycareService
+	userService          service.UserService
+	petService           service.PetService
+	vaccineRecordService service.VaccineService
+	petDaycareService    service.PetDaycareService
 }
 
 // NewUserController initializes a new controller
 func NewUserController(userService service.UserService, petService service.PetService, vaccineRecordService service.VaccineService, petDaycareService service.PetDaycareService) *UserController {
-	return &UserController{UserService: userService, PetService: petService, VaccineRecordService: vaccineRecordService, PetDaycareService: petDaycareService}
+	return &UserController{userService: userService, petService: petService, vaccineRecordService: vaccineRecordService, petDaycareService: petDaycareService}
 }
 
 func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
@@ -63,7 +63,7 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 		req.UserImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, imagePath)
 	}
 
-	createdUser, err := uc.UserService.CreateUser(req.CreateUserRequest)
+	createdUser, err := uc.userService.CreateUser(req.CreateUserRequest)
 	if err != nil {
 		c.JSON(http.StatusConflict, model.ErrorResponse{
 			Message: "Failed to create new user",
@@ -97,7 +97,7 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 	}
 	req.ThumbnailURLs = thumbnailURLs
 
-	if _, err := uc.PetDaycareService.CreatePetDaycare(createdUser.UserID, req.CreatePetDaycareRequest); err != nil {
+	if _, err := uc.petDaycareService.CreatePetDaycare(createdUser.UserID, req.CreatePetDaycareRequest); err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to create pet daycare",
 			Error:   err.Error(),
@@ -112,145 +112,6 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 		RefreshToken: createdUser.RefreshToken,
 		ExpiryDate:   createdUser.ExpiryDate,
 	})
-}
-
-func (uc *UserController) DeleteSavedAddress(c *gin.Context) {
-	addressID, err := strconv.ParseUint(c.Param("addressId"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid address ID",
-			Error:   err.Error(),
-		})
-		return
-	}
-
-	if err := uc.UserService.DeleteSavedAddress(uint(addressID)); err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Something's wrong, please try again later",
-			Error:   err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusNoContent, nil)
-}
-
-func (uc *UserController) EditSavedAddress(c *gin.Context) {
-	addressID, err := strconv.ParseUint(c.Param("addressId"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid address ID",
-			Error:   err.Error(),
-		})
-		return
-	}
-
-	var req model.CreateSavedAddress
-	if err := c.ShouldBind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid request body",
-			Error:   err.Error(),
-		})
-		log.Printf("JSON bind err: %v", err)
-		return
-	}
-
-	if err := uc.UserService.EditSavedAddress(uint(addressID), req); err != nil {
-		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-			Message: "Something's wrong when adding address",
-			Error:   err.Error(),
-		})
-		log.Printf("AddSavedAddress err: %v", err)
-		return
-	}
-
-	c.JSON(http.StatusNoContent, nil)
-}
-
-func (uc *UserController) GetSavedAddress(c *gin.Context) {
-	userIDRaw, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
-			Message: "User ID not found in token",
-		})
-		return
-	}
-
-	userID, ok := userIDRaw.(uint)
-	if !ok {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid user ID",
-		})
-		return
-	}
-
-	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid last ID",
-			Error:   err.Error(),
-		})
-		return
-	}
-
-	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid page size",
-			Error:   err.Error(),
-		})
-		return
-	}
-
-	out, err := uc.UserService.GetSavedAddress(userID, int(page), pageSize)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-			Message: "Something's wrong, please try again later",
-			Error:   err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, model.ListData[model.SavedAddressDTO]{Data: out})
-}
-
-func (uc *UserController) AddSavedAddress(c *gin.Context) {
-	userIDRaw, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
-			Message: "User ID not found in token",
-		})
-		return
-	}
-
-	userID, ok := userIDRaw.(uint)
-	if !ok {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid user ID",
-		})
-		return
-	}
-
-	var req model.CreateSavedAddress
-	if err := c.ShouldBind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid request body",
-			Error:   err.Error(),
-		})
-		log.Printf("JSON bind err: %v", err)
-		return
-	}
-
-	if err := uc.UserService.AddSavedAddress(userID, req); err != nil {
-		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-			Message: "Something's wrong when adding address",
-			Error:   err.Error(),
-		})
-		log.Printf("AddSavedAddress err: %v", err)
-		return
-	}
-
-	c.JSON(http.StatusCreated, nil)
 }
 
 func (uc *UserController) CreatePetOwner(c *gin.Context) {
@@ -284,7 +145,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 		req.UserImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, imagePath)
 	}
 
-	createdUser, err := uc.UserService.CreateUser(req.CreateUserRequest)
+	createdUser, err := uc.userService.CreateUser(req.CreateUserRequest)
 	if err != nil {
 		c.JSON(http.StatusConflict, model.ErrorResponse{
 			Message: "Failed to create new user",
@@ -308,7 +169,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 		}
 	}
 
-	petID, err := uc.PetService.CreatePet(createdUser.UserID, req.PetRequest)
+	petID, err := uc.petService.CreatePet(createdUser.UserID, req.PetRequest)
 	if err != nil {
 		c.JSON(http.StatusConflict, model.ErrorResponse{
 			Message: "Failed to create new pet",
@@ -332,7 +193,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 	}
 
 	if req.DateAdministered != "" && req.NextDueDate != "" && req.VaccineRecordImage != nil {
-		_, err = uc.VaccineRecordService.CreateVaccineRecords(petID, req.VaccineRecordRequest)
+		_, err = uc.vaccineRecordService.CreateVaccineRecords(petID, req.VaccineRecordRequest)
 		if err != nil {
 			c.JSON(http.StatusConflict, model.ErrorResponse{
 				Message: "Failed to create new vaccine record",
@@ -384,7 +245,7 @@ func (uc *UserController) GetVets(c *gin.Context) {
 		return
 	}
 
-	vets, err := uc.UserService.GetVets(uint(specialtyId), uint(lastID), pageSize)
+	vets, err := uc.userService.GetVets(uint(specialtyId), uint(lastID), pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to get vets",
@@ -407,7 +268,7 @@ func (uc *UserController) GetUser(c *gin.Context) {
 		return
 	}
 
-	user, err := uc.UserService.GetUser(id)
+	user, err := uc.userService.GetUser(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, model.ErrorResponse{
@@ -468,7 +329,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 		req.UserImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, imagePath)
 	}
 
-	createdUser, err := uc.UserService.CreateUser(req)
+	createdUser, err := uc.userService.CreateUser(req)
 	if err != nil {
 		c.JSON(http.StatusConflict, model.ErrorResponse{
 			Message: "Failed to create new user",
@@ -492,7 +353,7 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	err := uc.UserService.DeleteUser(userID.(uint))
+	err := uc.userService.DeleteUser(userID.(uint))
 	if err != nil {
 		c.JSON(http.StatusNotFound, model.ErrorResponse{
 			Message: "Failed to delete user",
@@ -549,7 +410,7 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 		req.ImageUrl = imagePath
 	}
 
-	if err := uc.UserService.UpdateUserProfile(&req); err != nil {
+	if err := uc.userService.UpdateUserProfile(&req); err != nil {
 		c.JSON(http.StatusNotFound, model.ErrorResponse{
 			Message: "Failed to update user profile",
 			Error:   err.Error(),
@@ -581,7 +442,7 @@ func (uc *UserController) UpdateUserPassword(c *gin.Context) {
 		return
 	}
 
-	err := uc.UserService.UpdateUserPassword(userID.(uint), req.NewPassword)
+	err := uc.userService.UpdateUserPassword(userID.(uint), req.NewPassword)
 	if err != nil {
 		c.JSON(http.StatusNotFound, model.ErrorResponse{
 			Message: "Failed to update password",

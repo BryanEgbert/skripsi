@@ -1,25 +1,65 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/model/chat_message.dart';
+import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/pages/details/pet_daycare_details_page.dart';
 import 'package:frontend/pages/view_booked_pets_page.dart';
 import 'package:frontend/pages/view_booking_requests_page.dart';
 import 'package:frontend/pages/view_slots_page.dart';
+import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/utils/chat_websocket_channel.dart';
+import 'package:web_socket_channel/io.dart';
 
-class PetDaycareHomePage extends StatefulWidget {
+class PetDaycareHomePage extends ConsumerStatefulWidget {
   const PetDaycareHomePage({super.key});
 
   @override
-  State<PetDaycareHomePage> createState() => _PetDaycareHomePageState();
+  ConsumerState<PetDaycareHomePage> createState() => _PetDaycareHomePageState();
 }
 
-class _PetDaycareHomePageState extends State<PetDaycareHomePage> {
+class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
   int _selectedIndex = 0;
+  IOWebSocketChannel? _channel;
+  StreamSubscription? _webSocketSubscription;
 
-  final List<Widget> _pages = [
-    ViewBookedPetsPage(),
-    ViewBookingRequestsPage(),
-    ViewSlotsPage(),
-    PetDaycareDetailsPage.my(),
-  ];
+  List<ChatMessage> messages = [];
+
+  void _setupWebSocket() {
+    try {
+      ChatWebsocketChannel().instance.then(
+        (value) {
+          _channel = value;
+          _webSocketSubscription = _channel!.stream.listen(
+            (message) {
+              final unreadChatMessages =
+                  ref.read(getUnreadChatMessagesProvider);
+              if (unreadChatMessages.hasError && !unreadChatMessages.hasValue) {
+                log("[ERROR] fetching unread messages: ${unreadChatMessages.error.toString()}");
+              } else {
+                setState(() {
+                  messages = unreadChatMessages.value!.data;
+                });
+              }
+            },
+            onError: (e) {
+              setState(() {});
+            },
+          );
+        },
+      );
+    } catch (e) {
+      if (e.toString() == jwtExpired && mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => WelcomeWidget()),
+          (route) => false,
+        );
+      }
+    }
+  }
 
   void _onItemTap(int index) {
     setState(() {
@@ -28,10 +68,30 @@ class _PetDaycareHomePageState extends State<PetDaycareHomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _setupWebSocket();
+  }
+
+  @override
+  void dispose() {
+    _webSocketSubscription?.cancel();
+    _channel?.sink.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // final unreadMessages = ref.watch(chatMessagesProvider());
+    final List<Widget> pages = [
+      ViewBookedPetsPage(messages),
+      ViewBookingRequestsPage(),
+      ViewSlotsPage(),
+      PetDaycareDetailsPage.my(),
+    ];
     return Scaffold(
       key: const Key("home"),
-      body: _pages[_selectedIndex],
+      body: pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         // type: BottomNavigationBarType.fixed,
         // backgroundColor: Colors.orange,
@@ -41,12 +101,14 @@ class _PetDaycareHomePageState extends State<PetDaycareHomePage> {
         items: [
           BottomNavigationBarItem(
             backgroundColor: Colors.orangeAccent,
-            icon: Icon(Icons.pets),
-            label: "Booked Pets",
+            icon: (messages.isNotEmpty)
+                ? Badge.count(count: messages.length, child: Icon(Icons.pets))
+                : Icon(Icons.pets),
+            label: "Bookings",
           ),
           BottomNavigationBarItem(
             backgroundColor: Colors.orangeAccent,
-            icon: Icon(Icons.house),
+            icon: Icon(Icons.book_rounded),
             label: "Booking Requests",
           ),
           BottomNavigationBarItem(

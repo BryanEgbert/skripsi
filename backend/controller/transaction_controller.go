@@ -17,6 +17,43 @@ func NewTransactionController(transactionService service.TransactionService) *Tr
 	return &TransactionController{transactionService}
 }
 
+func (tc *TransactionController) GetTransaction(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	transactionID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid transaction ID",
+		})
+		return
+	}
+
+	out, err := tc.transactionService.GetTransaction(uint(transactionID), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to fetch transactions",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, out)
+}
+
 func (tc *TransactionController) GetTransactions(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {

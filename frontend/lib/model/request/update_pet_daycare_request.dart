@@ -11,7 +11,7 @@ class UpdatePetDaycareRequest {
   String openingHour;
   String closingHour;
   List<double> price;
-  List<String> pricingType;
+  List<int> pricingType;
   bool hasPickupService;
   bool mustBeVaccinated;
   bool groomingAvailable;

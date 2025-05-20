@@ -18,10 +18,7 @@ type UserService interface {
 	DeleteUser(id uint) error
 	UpdateUserProfile(user *model.UpdateUserRequest) error
 	UpdateUserPassword(id uint, newPassword string) error
-	GetSavedAddress(id uint, page int, pageSize int) ([]model.SavedAddressDTO, error)
-	AddSavedAddress(userID uint, req model.CreateSavedAddress) error
-	DeleteSavedAddress(addressID uint) error
-	EditSavedAddress(addressID uint, req model.CreateSavedAddress) error
+	GetDeviceToken(userId uint) (*string, error)
 }
 
 type UserServiceImpl struct {
@@ -32,64 +29,18 @@ func NewUserService(db *gorm.DB) *UserServiceImpl {
 	return &UserServiceImpl{db: db}
 }
 
-func (s *UserServiceImpl) EditSavedAddress(addressID uint, req model.CreateSavedAddress) error {
-	var savedAddress model.SavedAddress
+func (s *UserServiceImpl) GetDeviceToken(userId uint) (*string, error) {
+	var token *string
 
-	if err := s.db.First(&savedAddress, addressID).Error; err != nil {
-		return err
-	}
-
-	savedAddress.Address = req.Address
-	savedAddress.Name = req.Name
-	savedAddress.Latitude = req.Latitude
-	savedAddress.Longitude = req.Longitude
-	savedAddress.Notes = req.Notes
-
-	if err := s.db.Save(&savedAddress).Error; err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *UserServiceImpl) DeleteSavedAddress(addressID uint) error {
-	if err := s.db.Delete(&model.SavedAddress{}, addressID).Error; err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *UserServiceImpl) AddSavedAddress(userID uint, req model.CreateSavedAddress) error {
-	savedAddress := model.SavedAddress{
-		Name:      req.Name,
-		UserID:    userID,
-		Address:   req.Address,
-		Latitude:  req.Latitude,
-		Longitude: req.Longitude,
-		Notes:     req.Notes,
-	}
-
-	if err := s.db.Create(&savedAddress).Error; err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *UserServiceImpl) GetSavedAddress(id uint, page int, pageSize int) ([]model.SavedAddressDTO, error) {
-	var savedAddresses []model.SavedAddress
 	if err := s.db.
-		Model(&model.SavedAddress{UserID: id}).
-		Offset(pageSize * (page - 1)).
-		Limit(pageSize).
-		Find(&savedAddresses).Error; err != nil {
+		Model(&model.User{}).
+		Where("id = ?", userId).
+		Select("device_token").
+		Scan(&token).Error; err != nil {
 		return nil, err
 	}
 
-	out := helper.ConvertSavedAddressesToDTO(savedAddresses)
-
-	return out, nil
+	return token, nil
 }
 
 func (s *UserServiceImpl) GetVets(vetSpecialtyId uint, startId uint, pageSize int) ([]model.UserDTO, error) {
@@ -179,11 +130,12 @@ func (s *UserServiceImpl) CreateUser(request model.CreateUserRequest) (*model.To
 	}
 
 	user := model.User{
-		Name:     request.Name,
-		Email:    request.Email,
-		Password: hashedPassword,
-		RoleID:   request.RoleID,
-		ImageUrl: &request.UserImageUrl,
+		Name:        request.Name,
+		Email:       request.Email,
+		Password:    hashedPassword,
+		RoleID:      request.RoleID,
+		ImageUrl:    &request.UserImageUrl,
+		DeviceToken: request.DeviceToken,
 	}
 
 	// Validate Role exists
@@ -194,7 +146,7 @@ func (s *UserServiceImpl) CreateUser(request model.CreateUserRequest) (*model.To
 		return nil, err
 	}
 	if !roleExists {
-		return nil, errors.New("Invalid role ID")
+		return nil, errors.New("invalid role ID")
 	}
 
 	// Vet role validation (VetSpecialty required)
@@ -214,7 +166,7 @@ func (s *UserServiceImpl) CreateUser(request model.CreateUserRequest) (*model.To
 		}
 
 		if len(validSpecialties) != len(*request.VetSpecialtyID) {
-			return nil, errors.New("One or more VetSpecialty IDs are invalid")
+			return nil, errors.New("one or more VetSpecialty IDs are invalid")
 		}
 
 		user.VetSpecialty = &validSpecialties
@@ -288,9 +240,7 @@ func (s *UserServiceImpl) UpdateUserProfile(user *model.UpdateUserRequest) error
 		var updatedSpecialties []model.VetSpecialty
 		specialtyIDs := []uint{}
 
-		for _, specialty := range *user.VetSpecialtyID {
-			specialtyIDs = append(specialtyIDs, specialty)
-		}
+		specialtyIDs = append(specialtyIDs, *user.VetSpecialtyID...)
 
 		if err := s.db.Where("id IN ?", specialtyIDs).Find(&updatedSpecialties).Error; err != nil {
 			return err
@@ -298,7 +248,7 @@ func (s *UserServiceImpl) UpdateUserProfile(user *model.UpdateUserRequest) error
 
 		// Ensure all requested VetSpecialties are valid
 		if len(updatedSpecialties) != len(specialtyIDs) {
-			return errors.New("One or more VetSpecialty IDs are invalid")
+			return errors.New("one or more VetSpecialty IDs are invalid")
 		}
 
 		existingUser.VetSpecialty = &updatedSpecialties

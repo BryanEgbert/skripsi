@@ -5,7 +5,7 @@ import 'package:frontend/pages/welcome.dart';
 
 void handleError(AsyncValue providerValue, BuildContext context) {
   if (providerValue.hasError &&
-      !providerValue.hasValue &&
+      (providerValue.valueOrNull == null || providerValue.valueOrNull == 0) &&
       !providerValue.isLoading) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       var snackbar = SnackBar(
@@ -31,6 +31,7 @@ void handleError(AsyncValue providerValue, BuildContext context) {
   }
 
   if (providerValue.hasValue && !providerValue.isLoading) {
+    if (providerValue.value == null) return;
     if (providerValue.value >= 200 && providerValue.value <= 400) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         var snackbar = SnackBar(

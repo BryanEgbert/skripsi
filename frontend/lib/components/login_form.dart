@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/pages/pet_daycare_home_page.dart';
+import 'package:frontend/pages/vet_main_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/utils/validator.dart';
 import 'package:frontend/pages/home.dart';
@@ -25,7 +24,6 @@ class _LoginFormState extends ConsumerState<LoginForm> {
   @override
   Widget build(BuildContext context) {
     AsyncValue<TokenResponse?> auth = ref.watch(authProvider);
-    log("value: ${auth.toString()}");
 
     if (auth.hasError && !auth.isLoading) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -40,7 +38,6 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     }
 
     if (auth.value != null && !auth.isLoading) {
-      // TODO: add logic for roleID of 3
       if (auth.value!.roleId == 1) {
         WidgetsBinding.instance.addPostFrameCallback(
           (timeStamp) => Navigator.of(context).pushAndRemoveUntil(
@@ -50,11 +47,20 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             (route) => false,
           ),
         );
-      } else {
+      } else if (auth.value!.roleId == 2) {
         WidgetsBinding.instance.addPostFrameCallback(
           (timeStamp) => Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => PetDaycareHomePage(),
+            ),
+            (route) => false,
+          ),
+        );
+      } else {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (timeStamp) => Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => VetMainPage(),
             ),
             (route) => false,
           ),

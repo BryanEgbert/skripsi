@@ -8,6 +8,7 @@ import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/transaction.dart';
 
 abstract interface class ITransactionService {
+  Future<Result<Transaction>> getTransaction(String token, int transactionId);
   Future<Result<ListData<Transaction>>> getTransactions(
       String token, OffsetPaginationQueryParams pagination);
 }
@@ -36,5 +37,29 @@ class TransactionService implements ITransactionService {
 
       return res;
     }, (res) => ListData.fromJson(res, Transaction.fromJson));
+  }
+
+  @override
+  Future<Result<Transaction>> getTransaction(String token, int transactionId) {
+    return makeRequest(200, () async {
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      var res = await dio.get(
+        "$host/transaction/$transactionId",
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
+      );
+
+      return res;
+    }, (res) => Transaction.fromJson(res));
   }
 }

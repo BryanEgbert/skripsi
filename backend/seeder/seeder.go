@@ -19,6 +19,15 @@ func SeedTable(db *gorm.DB) error {
 		return err
 	}
 
+	pricingTypes := []model.PricingType{
+		{ID: 1, Name: "day"},
+		{ID: 2, Name: "night"},
+	}
+
+	if err := db.Create(&pricingTypes).Error; err != nil {
+		return err
+	}
+
 	bookedSlotStatus := []model.BookedSlotStatus{
 		{ID: 1, Name: "Waiting for confirmation"},
 		{ID: 2, Name: "Confirmed"},
@@ -185,9 +194,9 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	slots := []model.Slots{
-		{DaycareID: daycare[0].ID, PetCategoryID: 1, MaxNumber: 5, Price: 100000.0},
-		{DaycareID: daycare[0].ID, PetCategoryID: 2, MaxNumber: 8, Price: 100000.0},
-		{DaycareID: daycare[1].ID, PetCategoryID: 1, MaxNumber: 20, Price: 100000.0},
+		{DaycareID: daycare[0].ID, PricingTypeID: 1, PetCategoryID: 1, MaxNumber: 5, Price: 100000.0},
+		{DaycareID: daycare[0].ID, PricingTypeID: 1, PetCategoryID: 2, MaxNumber: 8, Price: 100000.0},
+		{DaycareID: daycare[1].ID, PricingTypeID: 1, PetCategoryID: 1, MaxNumber: 20, Price: 100000.0},
 	}
 
 	if err := db.Create(&slots).Error; err != nil {
@@ -349,6 +358,21 @@ func SeedTable(db *gorm.DB) error {
 		return err
 	}
 
+	savedAddress := []model.SavedAddress{
+		{
+			Name:      "Central Park",
+			UserID:    users[0].ID,
+			Address:   "Letjen S. Parman St No.Kav. 28, South Tanjung Duren, Grogol petamburan, West Jakarta City, Jakarta 11470",
+			Latitude:  106.7884039,
+			Longitude: -6.177132,
+		},
+	}
+
+	if err := db.Create(&savedAddress).Error; err != nil {
+		return err
+	}
+
+	var mockStatusID uint = 1
 	bookedSlot := []model.BookedSlot{
 		{
 			UserID:    users[0].ID,
@@ -356,19 +380,14 @@ func SeedTable(db *gorm.DB) error {
 			Pet:       []model.Pet{pet[0]},
 			StartDate: time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
 			EndDate:   time.Date(2025, time.February, 15, 0, 0, 0, 0, time.Local),
-			StatusID:  1,
-			Address: model.BookedSlotAddress{
-				Name:      "Central Park",
-				Address:   "Jln. Tanjung Duren",
-				Latitude:  0.0,
-				Longitude: 0.0,
-			},
+			StatusID:  &mockStatusID,
+			AddressID: &savedAddress[0].ID,
 		},
 		{
 			UserID:    users[0].ID,
 			DaycareID: daycare[1].ID,
 			Pet:       []model.Pet{pet[1]}, StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 3),
-			StatusID: 1,
+			StatusID: &mockStatusID,
 		},
 	}
 
@@ -378,17 +397,17 @@ func SeedTable(db *gorm.DB) error {
 
 	bookedSlotDaily := []model.BookedSlotsDaily{
 		{
-			DaycareID: daycare[0].ID,
+			// DaycareID: daycare[0].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
 		},
 		{
-			DaycareID: daycare[0].ID,
+			// DaycareID: daycare[0].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.February, 14, 0, 0, 0, 0, time.Local),
 		},
 		{
-			DaycareID: daycare[0].ID,
+			// DaycareID: daycare[0].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.February, 15, 0, 0, 0, 0, time.Local),
 		},
@@ -415,7 +434,7 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	reduceSlots := model.ReduceSlots{
-		SlotID: slots[0].ID, DaycareID: slots[0].DaycareID, ReducedCount: 2, TargetDate: time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
+		SlotID: slots[0].ID, ReducedCount: 2, TargetDate: time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
 	}
 
 	if err := db.Create(&reduceSlots).Error; err != nil {
@@ -432,9 +451,9 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	transaction := model.Transaction{
-		UserID:       users[0].ID,
-		PetDaycareID: daycare[0].ID,
-		BookedSlot:   bookedSlot[0],
+		UserID: users[0].ID,
+		// PetDaycareID: daycare[0].ID,
+		BookedSlot: bookedSlot[0],
 	}
 
 	if err := db.Create(&transaction).Error; err != nil {

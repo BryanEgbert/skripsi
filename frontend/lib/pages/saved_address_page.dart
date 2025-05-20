@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/model/saved_address.dart';
+import 'package:frontend/pages/add_saved_address.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 
 class SavedAddressPage extends ConsumerStatefulWidget {
@@ -91,17 +92,23 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.of(context).pop(_records[_selectedIndex]);
-              },
-              icon: Icon(
-                Icons.save,
-                color: Constants.primaryTextColor,
-              ))
+            onPressed: () {
+              Navigator.of(context).pop(_records[_selectedIndex]);
+            },
+            icon: Icon(
+              Icons.save,
+              color: Colors.orange,
+            ),
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        backgroundColor: Colors.orange,
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => AddSavedAddress(),
+          ));
+        },
         label: Icon(
           Icons.add,
           color: Colors.white,
@@ -124,46 +131,80 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
                     controller: _scrollController,
                     itemCount: _records.length + 1,
                     itemBuilder: (context, index) {
-                      var item = _records[index];
-                      return InkWell(
-                        onTap: () {
-                          setState(() {
-                            _selectedIndex = index;
-                          });
-                        },
-                        child: Card(
-                          color: (index == _selectedIndex)
-                              ? Constants.secondaryBackgroundColor
-                              : Colors.white,
-                          child: Column(
-                            children: [
-                              Text(
-                                item.name,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
+                      if (index < _records.length) {
+                        var item = _records[index];
+                        return Container(
+                          margin: EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _selectedIndex = index;
+                              });
+                            },
+                            child: Card(
+                              color: (index == _selectedIndex)
+                                  ? Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Constants.secondaryBackgroundColor
+                                      : null
+                                  : Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    Text(
+                                      item.address,
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      "Notes",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    Text(
+                                      item.notes ?? "-",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    if (index == _selectedIndex)
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            "Selected",
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color:
+                                                    Constants.primaryTextColor),
+                                          )
+                                        ],
+                                      ),
+                                  ],
                                 ),
                               ),
-                              Text(
-                                item.address,
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                "Notes",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              Text(
-                                item.notes ?? "-",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      } else {
+                        if (_isFetching) {
+                          return Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          );
+                        }
+
+                        return SizedBox();
+                      }
                     },
                   ),
                 )

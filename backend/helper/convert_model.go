@@ -158,6 +158,34 @@ func ConvertReviewsToDto(reviews []model.Reviews) []model.ReviewsDTO {
 	return out
 }
 
+func ConvertTransactionToTransactionDTO(val model.Transaction) model.TransactionDTO {
+	transactionDTO := model.TransactionDTO{
+		ID: val.ID,
+		Status: model.BookedSlotStatus{
+			ID:   val.BookedSlot.Status.ID,
+			Name: val.BookedSlot.Status.Name,
+		},
+		PetDaycare: ConvertPetDaycareToDetailResponse(val.BookedSlot.Daycare, 0),
+		StartDate:  val.BookedSlot.StartDate.Format(time.RFC3339),
+		EndDate:    val.BookedSlot.EndDate.Format(time.RFC3339),
+		// BookedPet:  ConvertPetsToDto(val.BookedSlot.Pet),
+		BookedSlot: ConvertBookedSlotToBookingRequest(val.BookedSlot),
+	}
+
+	if val.BookedSlot.Address.Address != "" {
+		transactionDTO.AddressInfo = &model.SavedAddressDTO{
+			ID:        val.BookedSlot.Address.ID,
+			Name:      val.BookedSlot.Address.Name,
+			Address:   val.BookedSlot.Address.Address,
+			Latitude:  val.BookedSlot.Address.Latitude,
+			Longitude: val.BookedSlot.Daycare.Longitude,
+			Notes:     val.BookedSlot.Address.Notes,
+		}
+	}
+
+	return transactionDTO
+}
+
 func ConvertTransactionsToTransactionDTO(transactions []model.Transaction) []model.TransactionDTO {
 	out := []model.TransactionDTO{}
 
@@ -168,7 +196,7 @@ func ConvertTransactionsToTransactionDTO(transactions []model.Transaction) []mod
 				ID:   val.BookedSlot.Status.ID,
 				Name: val.BookedSlot.Status.Name,
 			},
-			PetDaycare: ConvertPetDaycareToDetailResponse(val.PetDaycare, 0),
+			PetDaycare: ConvertPetDaycareToDetailResponse(val.BookedSlot.Daycare, 0),
 			StartDate:  val.BookedSlot.StartDate.Format(time.RFC3339),
 			EndDate:    val.BookedSlot.EndDate.Format(time.RFC3339),
 			// BookedPet:  ConvertPetsToDto(val.BookedSlot.Pet),
@@ -176,7 +204,7 @@ func ConvertTransactionsToTransactionDTO(transactions []model.Transaction) []mod
 		}
 
 		if val.BookedSlot.Address.Address != "" {
-			transactionDTO.AddressInfo = &model.BookedSlotAddressDTO{
+			transactionDTO.AddressInfo = &model.SavedAddressDTO{
 				ID:        val.BookedSlot.Address.ID,
 				Name:      val.BookedSlot.Address.Name,
 				Address:   val.BookedSlot.Address.Address,
@@ -192,15 +220,28 @@ func ConvertTransactionsToTransactionDTO(transactions []model.Transaction) []mod
 	return out
 }
 
+func ConvertSavedAddressToDTO(savedAddress model.SavedAddress) model.SavedAddressDTO {
+	return model.SavedAddressDTO{
+		ID:        savedAddress.ID,
+		Name:      savedAddress.Name,
+		Address:   savedAddress.Address,
+		Notes:     savedAddress.Notes,
+		Latitude:  savedAddress.Latitude,
+		Longitude: savedAddress.Longitude,
+	}
+}
+
 func ConvertSavedAddressesToDTO(savedAddresses []model.SavedAddress) []model.SavedAddressDTO {
-	var out []model.SavedAddressDTO
+	out := []model.SavedAddressDTO{}
 
 	for _, val := range savedAddresses {
 		out = append(out, model.SavedAddressDTO{
-			ID:      val.ID,
-			Name:    val.Name,
-			Address: val.Address,
-			Notes:   val.Notes,
+			ID:        val.ID,
+			Name:      val.Name,
+			Address:   val.Address,
+			Notes:     val.Notes,
+			Latitude:  val.Latitude,
+			Longitude: val.Longitude,
 		})
 
 	}
@@ -210,13 +251,18 @@ func ConvertSavedAddressesToDTO(savedAddresses []model.SavedAddress) []model.Sav
 
 func ConvertBookedSlotToBookingRequest(bookedSlot model.BookedSlot) model.BookingRequest {
 	out := model.BookingRequest{
-		ID:             bookedSlot.ID,
-		User:           ConvertUserToDTO(bookedSlot.User),
-		StartDate:      bookedSlot.StartDate.Format(time.RFC3339),
-		EndDate:        bookedSlot.EndDate.Format(time.RFC3339),
-		PickupRequired: &bookedSlot.UsePickupService,
-		PetCount:       []model.PetCategoryCount{},
-		BookedPet:      ConvertPetsToDto(bookedSlot.Pet),
+		ID:        bookedSlot.ID,
+		User:      ConvertUserToDTO(bookedSlot.User),
+		StartDate: bookedSlot.StartDate.Format(time.RFC3339),
+		EndDate:   bookedSlot.EndDate.Format(time.RFC3339),
+		PetCount:  []model.PetCategoryCount{},
+		BookedPet: ConvertPetsToDto(bookedSlot.Pet),
+	}
+
+	if bookedSlot.AddressID != nil {
+		out.PickupRequired = true
+	} else {
+		out.PickupRequired = false
 	}
 
 	petCategory := make(map[uint]uint)
@@ -236,7 +282,7 @@ func ConvertBookedSlotToBookingRequest(bookedSlot model.BookedSlot) model.Bookin
 	}
 
 	if bookedSlot.Address.Address != "" {
-		out.AddressInfo = &model.BookedSlotAddressDTO{
+		out.AddressInfo = &model.SavedAddressDTO{
 			ID:        bookedSlot.Address.ID,
 			Name:      bookedSlot.Address.Name,
 			Address:   bookedSlot.Address.Address,
@@ -254,9 +300,9 @@ func ConvertReducedSlotsToDTO(reducedSlots []model.ReduceSlots) []model.ReduceSl
 
 	for _, val := range reducedSlots {
 		dto := model.ReduceSlotsDTO{
-			ID:           val.ID,
-			SlotID:       val.SlotID,
-			DaycareID:    val.DaycareID,
+			ID:     val.ID,
+			SlotID: val.SlotID,
+			// DaycareID:    val.DaycareID,
 			ReducedCount: val.ReducedCount,
 			TargetDate:   val.TargetDate.Format(time.RFC3339),
 		}
@@ -271,14 +317,21 @@ func ConvertBookedSlotsToBookingRequests(bookedSlots []model.BookedSlot) []model
 	out := []model.BookingRequest{}
 
 	for _, val := range bookedSlots {
+		addressDTO := ConvertSavedAddressToDTO(val.Address)
 		bookingRequest := model.BookingRequest{
-			ID:             val.ID,
-			User:           ConvertUserToDTO(val.User),
-			StartDate:      val.StartDate.Format(time.RFC3339),
-			EndDate:        val.EndDate.Format(time.RFC3339),
-			PickupRequired: &val.UsePickupService,
-			PetCount:       []model.PetCategoryCount{},
-			BookedPet:      ConvertPetsToDto(val.Pet),
+			ID:          val.ID,
+			User:        ConvertUserToDTO(val.User),
+			StartDate:   val.StartDate.Format(time.RFC3339),
+			EndDate:     val.EndDate.Format(time.RFC3339),
+			PetCount:    []model.PetCategoryCount{},
+			BookedPet:   ConvertPetsToDto(val.Pet),
+			AddressInfo: &addressDTO,
+		}
+
+		if val.AddressID == nil {
+			bookingRequest.PickupRequired = false
+		} else {
+			bookingRequest.PickupRequired = true
 		}
 
 		petCategory := make(map[uint]uint)
@@ -333,7 +386,7 @@ func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float6
 				SlotAmount:   slot.MaxNumber,
 			},
 			Price:       slot.Price,
-			PricingType: slot.PricingType,
+			PricingType: slot.PricingType.Name,
 		})
 	}
 

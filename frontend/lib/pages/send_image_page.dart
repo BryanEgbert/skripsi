@@ -1,83 +1,146 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/send_message.dart';
+import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/provider/image_provider.dart';
+import 'package:frontend/utils/chat_websocket_channel.dart';
+import 'package:web_socket_channel/io.dart';
 
-class SendImagePage extends StatefulWidget {
+class SendImagePage extends ConsumerStatefulWidget {
+  final int receiverId;
   final File image;
-  const SendImagePage({super.key, required this.image});
+  const SendImagePage(
+      {super.key, required this.image, required this.receiverId});
 
   @override
-  State<SendImagePage> createState() => _SendImagePageState();
+  ConsumerState<SendImagePage> createState() => _SendImagePageState();
 }
 
-class _SendImagePageState extends State<SendImagePage> {
+class _SendImagePageState extends ConsumerState<SendImagePage> {
   final _textController = TextEditingController();
-  bool _isUploading = false;
+  IOWebSocketChannel? _channel;
+
+  void _setupWebSocket() {
+    try {
+      ChatWebsocketChannel().instance.then(
+        (value) {
+          _channel = value;
+        },
+      );
+    } catch (e) {
+      if (e.toString() == jwtExpired && mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => WelcomeWidget()),
+          (route) => false,
+        );
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _setupWebSocket();
+  }
+
+  @override
+  void dispose() {
+    _channel?.sink.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    log("websocket:  ${_channel == null}");
+    final imageState = ref.watch(imageStateProvider);
+    if (imageState.hasError &&
+        (imageState.valueOrNull == null || imageState.valueOrNull == 0) &&
+        !imageState.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        var snackbar = SnackBar(
+          key: Key("error-message"),
+          content: Text(
+            imageState.error.toString(),
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red[800],
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: Icon(Icons.arrow_back_ios)),
       ),
-      body: Column(
-        children: [
-          Expanded(child: Image.file(widget.image)),
-          Row(
-            children: [
-              TextField(
-                controller: _textController,
-                keyboardType: TextInputType.multiline,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  enabled: _isUploading == false,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(child: Image.file(widget.image)),
+            Divider(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 4, 8, 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _textController,
+                      keyboardType: TextInputType.multiline,
+                      // maxLines: 3,
+                      decoration: InputDecoration(
+                        enabled: imageState.isLoading == false,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        labelText: "Message",
+                      ),
+                    ),
                   ),
-                  labelText: "Message",
-                ),
+                  IconButton(
+                    onPressed: () {
+                      if (imageState.isLoading) return;
+
+                      // String fileName =
+                      //     DateTime.now().millisecondsSinceEpoch.toString();
+                      // Reference storageReference = FirebaseStorage.instance
+                      //     .ref()
+                      //     .child('images/$fileName');
+                      // UploadTask uploadTask =
+                      //     storageReference.putFile(File(widget.image.path));
+                      // String imageUrl =
+                      //     await (await uploadTask).ref.getDownloadURL();
+                      ref
+                          .read(imageStateProvider.notifier)
+                          .upload(widget.image);
+
+                      _channel!.sink.add(jsonEncode(
+                        SendMessage(
+                          receiverId: widget.receiverId,
+                          message: _textController.text,
+                          imageUrl: imageState.value!.imageUrl,
+                        ).toJson(),
+                      ));
+
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(
+                      Icons.send_rounded,
+                      color: Colors.orange[700],
+                    ),
+                  ),
+                ],
               ),
-              IconButton(
-                onPressed: () async {
-                  setState(() {
-                    _isUploading = true;
-                  });
-
-                  if (_isUploading) return;
-
-                  String fileName =
-                      DateTime.now().millisecondsSinceEpoch.toString();
-                  Reference storageReference =
-                      FirebaseStorage.instance.ref().child('images/$fileName');
-                  UploadTask uploadTask =
-                      storageReference.putFile(File(widget.image.path));
-                  String imageUrl =
-                      await (await uploadTask).ref.getDownloadURL();
-
-                  setState(() {
-                    _isUploading = false;
-                  });
-
-                  if (context.mounted) {
-                    Navigator.of(context).pop(SendMessage(
-                      receiverId: 0,
-                      message: _textController.text,
-                      imageUrl: imageUrl,
-                    ));
-                  }
-                },
-                icon: Icon(
-                  Icons.send_rounded,
-                  color: Colors.orange[700],
-                ),
-              ),
-            ],
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

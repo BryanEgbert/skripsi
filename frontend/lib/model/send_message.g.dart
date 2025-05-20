@@ -7,6 +7,7 @@ part of 'send_message.dart';
 // **************************************************************************
 
 SendMessage _$SendMessageFromJson(Map<String, dynamic> json) => SendMessage(
+      updateRead: json['updateRead'] as bool? ?? false,
       receiverId: (json['receiverId'] as num).toInt(),
       message: json['message'] as String,
       imageUrl: json['imageUrl'] as String?,
@@ -14,6 +15,7 @@ SendMessage _$SendMessageFromJson(Map<String, dynamic> json) => SendMessage(
 
 Map<String, dynamic> _$SendMessageToJson(SendMessage instance) =>
     <String, dynamic>{
+      'updateRead': instance.updateRead,
       'receiverId': instance.receiverId,
       'message': instance.message,
       'imageUrl': instance.imageUrl,

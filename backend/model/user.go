@@ -8,11 +8,12 @@ import (
 
 type User struct {
 	gorm.Model
-	Name     string  `gorm:"unique;not null"`
-	Email    string  `gorm:"unique;not null"`
-	Password string  `gorm:"not null"`
-	ImageUrl *string `gorm:"default:null"`
-	RoleID   uint    `gorm:"not null"`
+	Name        string  `gorm:"unique;not null"`
+	Email       string  `gorm:"unique;not null"`
+	Password    string  `gorm:"not null"`
+	ImageUrl    *string `gorm:"default:null"`
+	RoleID      uint    `gorm:"not null"`
+	DeviceToken *string
 
 	Role           Role            `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	VetSpecialty   *[]VetSpecialty `gorm:"default:null;many2many:user_vet_specialties;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
@@ -48,6 +49,7 @@ type CreateUserRequest struct {
 	RoleID         uint                  `form:"roleId" binding:"required"`
 	VetSpecialtyID *[]uint               `form:"vetSpecialtyId[]"`
 	UserImage      *multipart.FileHeader `form:"userProfilePicture"`
+	DeviceToken    *string               `form:"deviceToken"`
 	UserImageUrl   string
 }
 

@@ -79,12 +79,11 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Constants.secondaryBackgroundColor,
         title: Text(
           'Booking History',
-          style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.orange),
         ),
-        actions: appBarActions(ref.read(authProvider.notifier)),
+        actions: petOwnerAppBarActions(ref.read(authProvider.notifier)),
       ),
       body: (_isFetching && _records.isEmpty)
           ? Center(
@@ -164,7 +163,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
-                            TransactionDetailsPage(_records[index]),
+                            TransactionDetailsPage(_records[index].id),
                       ));
                     },
                     child: Card(
@@ -188,7 +187,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                       ),
                                     ),
                                     Text(
-                                      "${formatDate(_records[index].startDate)} - ${formatDate(_records[index].endDate)}",
+                                      "${formatDateStr(_records[index].startDate)} - ${formatDateStr(_records[index].endDate)}",
                                       style: TextStyle(fontSize: 10),
                                     )
                                   ],
@@ -224,10 +223,19 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                       showCancelBookingConfirmationDialog(
                                         context,
                                         "Are you sure you want to cancel this booking? This action cannot be undone.",
-                                        () => ref
-                                            .read(slotStateProvider.notifier)
-                                            .cancelSlot(
-                                                _records[index].bookedSlot.id),
+                                        () {
+                                          ref
+                                              .read(slotStateProvider.notifier)
+                                              .cancelSlot(_records[index]
+                                                  .bookedSlot
+                                                  .id);
+
+                                          setState(() {
+                                            _records = [];
+                                            _page = 1;
+                                            _fetchMoreData();
+                                          });
+                                        },
                                       );
                                     },
                                     style: FilledButton.styleFrom(

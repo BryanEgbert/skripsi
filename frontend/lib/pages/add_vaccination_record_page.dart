@@ -43,7 +43,7 @@ class _AddVaccinationRecordPageState
   void _submitForm() {
     if (_vaccinationPhoto == null) {
       setState(() {
-        _imageError = "Image must not be empty";
+        _imageError = "Image required";
       });
       return;
     }

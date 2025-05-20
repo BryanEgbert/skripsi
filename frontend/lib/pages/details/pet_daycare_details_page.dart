@@ -1,12 +1,13 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
+import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/image_slider.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/pet_daycare.dart';
 import 'package:frontend/pages/book_slots_page.dart';
+import 'package:frontend/pages/chat_page.dart';
 import 'package:frontend/pages/edit/edit_pet_daycare_page.dart';
 import 'package:frontend/pages/ratings_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
@@ -29,8 +30,6 @@ class PetDaycareDetailsPage extends ConsumerStatefulWidget {
 }
 
 class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
-  bool _usePickupService = false;
-
   @override
   Widget build(BuildContext context) {
     AsyncValue<PetDaycareDetails> daycare;
@@ -41,14 +40,10 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
       daycare = ref.watch(getMyPetDaycareProvider);
     }
 
-    log("[INFO] $daycare");
-
     switch (daycare) {
       case AsyncError(:final error):
         return Scaffold(
-          backgroundColor: const Color(0xFFFFF8F0),
           appBar: AppBar(
-            backgroundColor: Colors.white,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios, color: Colors.orange),
               onPressed: () => Navigator.pop(context),
@@ -77,9 +72,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
         );
       case AsyncData(:final value):
         return Scaffold(
-          backgroundColor: const Color(0xFFFFF8F0),
           appBar: AppBar(
-            backgroundColor: Colors.white,
             leading: (widget.petDaycareId != 0)
                 ? IconButton(
                     icon:
@@ -87,8 +80,10 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                     onPressed: () => Navigator.pop(context),
                   )
                 : null,
-            title: const Text('Pet Daycare',
-                style: TextStyle(color: Colors.orange)),
+            title: const Text(
+              'Pet Daycare',
+              style: TextStyle(color: Colors.orange),
+            ),
             actions: appBarActions(ref.read(authProvider.notifier)),
           ),
           floatingActionButton: (widget.petDaycareId == 0)
@@ -127,7 +122,9 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
               images: value.thumbnailUrls,
             ),
             Container(
-              color: Color(0xFFFFF1E1),
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.secondaryBackgroundColor
+                  : null,
               padding: EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,7 +178,32 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  if (widget.petDaycareId != 0)
+                    ListTile(
+                      contentPadding: EdgeInsets.all(0),
+                      leading: DefaultCircleAvatar(
+                        imageUrl: value.owner.imageUrl,
+                        iconSize: 16,
+                        circleAvatarRadius: 16,
+                      ),
+                      title: Text(
+                        value.owner.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Constants.primaryTextColor,
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.chat_rounded,
+                        color: Colors.orange,
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              ChatPage(userId: value.owner.id),
+                        ));
+                      },
+                    ),
                   if (value.description != "")
                     ReadMoreText(
                       value.description,
@@ -203,7 +225,9 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(12),
-              color: Color(0xFFFFF1E1),
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.secondaryBackgroundColor
+                  : null,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -227,7 +251,9 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(12),
-              color: Color(0xFFFFF1E1),
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.secondaryBackgroundColor
+                  : null,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -303,7 +329,9 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
               child: Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(12),
-                color: Color(0xFFFFF1E1),
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Constants.secondaryBackgroundColor
+                    : null,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -322,25 +350,6 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
             ),
             if (widget.petDaycareId != 0) ...[
               const SizedBox(height: 16),
-              CheckboxListTile(
-                  title: Text(
-                    "Use Pick-Up Service",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange,
-                      fontSize: 14,
-                    ),
-                  ),
-                  checkColor: Colors.orange,
-                  tileColor: Color(0xFFFFF1E1),
-                  value: _usePickupService,
-                  onChanged: (value) {
-                    setState(() {
-                      if (value != null) {
-                        _usePickupService = value;
-                      }
-                    });
-                  }),
               Container(
                 margin: EdgeInsets.only(right: 12),
                 child: ElevatedButton(

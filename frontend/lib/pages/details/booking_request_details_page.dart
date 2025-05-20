@@ -60,7 +60,7 @@ class _BookingRequestDetailsPageState
                   ),
                 ),
                 Text(
-                    "${formatDate(widget.bookingReq.startDate)} - ${formatDate(widget.bookingReq.endDate)}"),
+                    "${formatDateStr(widget.bookingReq.startDate)} - ${formatDateStr(widget.bookingReq.endDate)}"),
                 SizedBox(height: 4),
                 Row(
                   children: [
@@ -86,9 +86,14 @@ class _BookingRequestDetailsPageState
                 ),
                 if (widget.bookingReq.pickupRequired)
                   Container(
-                    padding: EdgeInsets.all(4.0),
-                    color: Colors.orangeAccent,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: const Color.fromARGB(255, 255, 227, 193),
+                    ),
+                    padding: EdgeInsets.all(8.0),
                     child: Column(
+                      spacing: 4,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           widget.bookingReq.addressInfo!.name,

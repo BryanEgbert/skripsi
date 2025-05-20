@@ -33,10 +33,6 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final _allDogSizePriceController = TextEditingController();
-  final _allDogSizePricingTypeController = TextEditingController(text: "day");
-  final _allDogSizeSlotController = TextEditingController();
-
   final _miniatureDogPriceController = TextEditingController();
   final _miniatureDogPricingTypeController = TextEditingController(text: "day");
   final _miniatureDogSlotController = TextEditingController();
@@ -65,7 +61,6 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
   final _bunniesPricingTypeController = TextEditingController(text: "day");
   final _bunniesSlotController = TextEditingController();
 
-  bool _acceptDogs = false;
   bool _acceptMiniatureDog = false;
   bool _acceptSmallDog = false;
   bool _acceptMediumDog = false;
@@ -74,10 +69,9 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
 
   List<int> _petCategoryIds = [];
   List<double> _prices = [];
-  List<String> _pricingTypes = [];
+  List<int> _pricingTypes = [];
   List<int> _maxNumbers = [];
 
-  bool _separateBySize = false;
   bool _acceptCats = false;
   bool _acceptBunnies = false;
 
@@ -93,8 +87,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
     _pricingTypes = [];
     _maxNumbers = [];
 
-    if (!_acceptDogs &&
-        !_acceptSmallDog &&
+    if (!_acceptSmallDog &&
         !_acceptMediumDog &&
         !_acceptLargeDog &&
         !_acceptCats &&
@@ -105,101 +98,84 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       return;
     }
 
-    if (_separateBySize == false) {
-      var ids = [
-        _miniatureDogID,
-        _smallDogID,
-        _mediumDogID,
-        _largeDogID,
-        _giantDogID
-      ];
-      _petCategoryIds.addAll(ids);
-
-      for (var i = 0; i < ids.length; i++) {
-        _prices.add(double.tryParse(_allDogSizePriceController.text) ?? 0.0);
-        _pricingTypes.add(_allDogSizePricingTypeController.text);
-        _maxNumbers.add(int.tryParse(_allDogSizeSlotController.text) ?? 0);
-      }
+    if (_acceptMiniatureDog) {
+      _petCategoryIds.add(_miniatureDogID);
+      _prices.add(double.tryParse(_miniatureDogPriceController.text) ?? 0.0);
+      _pricingTypes
+          .add(_miniatureDogPricingTypeController.text == "day" ? 1 : 2);
+      _maxNumbers.add(int.tryParse(_miniatureDogSlotController.text) ?? 0);
     } else {
-      if (_acceptMiniatureDog) {
-        _petCategoryIds.add(_miniatureDogID);
-        _prices.add(double.tryParse(_miniatureDogPriceController.text) ?? 0.0);
-        _pricingTypes.add(_miniatureDogPricingTypeController.text);
-        _maxNumbers.add(int.tryParse(_miniatureDogSlotController.text) ?? 0);
-      } else {
-        int index = _petCategoryIds.indexOf(_miniatureDogID);
-        if (index != -1) {
-          _petCategoryIds.removeAt(index);
-          _prices.removeAt(index);
-          _pricingTypes.removeAt(index);
-          _maxNumbers.removeAt(index);
-        }
+      int index = _petCategoryIds.indexOf(_miniatureDogID);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
       }
-      if (_acceptSmallDog) {
-        _petCategoryIds.add(_smallDogID);
-        _prices.add(double.tryParse(_smallDogPriceController.text) ?? 0.0);
-        _pricingTypes.add(_smallDogPricingTypeController.text);
-        _maxNumbers.add(int.tryParse(_smallDogSlotController.text) ?? 0);
-      } else {
-        int index = _petCategoryIds.indexOf(_smallDogID);
-        if (index != -1) {
-          _petCategoryIds.removeAt(index);
-          _prices.removeAt(index);
-          _pricingTypes.removeAt(index);
-          _maxNumbers.removeAt(index);
-        }
-      }
-
-      if (_acceptMediumDog) {
-        _petCategoryIds.add(_mediumDogID);
-        _prices.add(double.tryParse(_mediumDogPriceController.text) ?? 0.0);
-        _pricingTypes.add(_mediumDogPricingTypeController.text);
-        _maxNumbers.add(int.tryParse(_mediumDogSlotController.text) ?? 0);
-      } else {
-        int index = _petCategoryIds.indexOf(_mediumDogID);
-        if (index != -1) {
-          _petCategoryIds.removeAt(index);
-          _prices.removeAt(index);
-          _pricingTypes.removeAt(index);
-          _maxNumbers.removeAt(index);
-        }
-      }
-
-      if (_acceptLargeDog) {
-        _petCategoryIds.add(_largeDogID);
-        _prices.add(double.tryParse(_largeDogPriceController.text) ?? 0.0);
-        _pricingTypes.add(_largeDogPricingTypeController.text);
-        _maxNumbers.add(int.tryParse(_largeDogSlotController.text) ?? 0);
-      } else {
-        int index = _petCategoryIds.indexOf(_largeDogID);
-        if (index != -1) {
-          _petCategoryIds.removeAt(index);
-          _prices.removeAt(index);
-          _pricingTypes.removeAt(index);
-          _maxNumbers.removeAt(index);
-        }
-      }
-
-      if (_acceptGiantDog) {
-        _petCategoryIds.add(_giantDogID);
-        _prices.add(double.tryParse(_giantDogPriceController.text) ?? 0.0);
-        _pricingTypes.add(_giantDogPricingTypeController.text);
-        _maxNumbers.add(int.tryParse(_giantDogSlotController.text) ?? 0);
-      } else {
-        int index = _petCategoryIds.indexOf(_giantDogID);
-        if (index != -1) {
-          _petCategoryIds.removeAt(index);
-          _prices.removeAt(index);
-          _pricingTypes.removeAt(index);
-          _maxNumbers.removeAt(index);
-        }
+    }
+    if (_acceptSmallDog) {
+      _petCategoryIds.add(_smallDogID);
+      _prices.add(double.tryParse(_smallDogPriceController.text) ?? 0.0);
+      _pricingTypes.add(_smallDogPricingTypeController.text == "day" ? 1 : 2);
+      _maxNumbers.add(int.tryParse(_smallDogSlotController.text) ?? 0);
+    } else {
+      int index = _petCategoryIds.indexOf(_smallDogID);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
       }
     }
 
+    if (_acceptMediumDog) {
+      _petCategoryIds.add(_mediumDogID);
+      _prices.add(double.tryParse(_mediumDogPriceController.text) ?? 0.0);
+      _pricingTypes.add(_mediumDogPricingTypeController.text == "day" ? 1 : 2);
+      _maxNumbers.add(int.tryParse(_mediumDogSlotController.text) ?? 0);
+    } else {
+      int index = _petCategoryIds.indexOf(_mediumDogID);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
+      }
+    }
+
+    if (_acceptLargeDog) {
+      _petCategoryIds.add(_largeDogID);
+      _prices.add(double.tryParse(_largeDogPriceController.text) ?? 0.0);
+      _pricingTypes.add(_largeDogPricingTypeController.text == "day" ? 1 : 2);
+      _maxNumbers.add(int.tryParse(_largeDogSlotController.text) ?? 0);
+    } else {
+      int index = _petCategoryIds.indexOf(_largeDogID);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
+      }
+    }
+
+    if (_acceptGiantDog) {
+      _petCategoryIds.add(_giantDogID);
+      _prices.add(double.tryParse(_giantDogPriceController.text) ?? 0.0);
+      _pricingTypes.add(_giantDogPricingTypeController.text == "day" ? 1 : 2);
+      _maxNumbers.add(int.tryParse(_giantDogSlotController.text) ?? 0);
+    } else {
+      int index = _petCategoryIds.indexOf(_giantDogID);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
+      }
+    }
     if (_acceptCats) {
       _petCategoryIds.add(6);
       _prices.add(double.tryParse(_catsPriceController.text) ?? 0.0);
-      _pricingTypes.add(_catsPricingTypeController.text);
+      _pricingTypes.add(_catsPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_catsSlotController.text) ?? 0);
     } else {
       int index = _petCategoryIds.indexOf(6);
@@ -214,7 +190,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
     if (_acceptBunnies) {
       _petCategoryIds.add(7);
       _prices.add(double.tryParse(_bunniesPriceController.text) ?? 0.0);
-      _pricingTypes.add(_bunniesPricingTypeController.text);
+      _pricingTypes.add(_bunniesPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_bunniesSlotController.text) ?? 0);
     } else {
       int index = _petCategoryIds.indexOf(7);
@@ -246,7 +222,6 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
     final petCategory = ref.watch(petCategoryProvider);
 
     log("[INFO] prices: $_prices, pet category: $_petCategoryIds, pricingType: $_pricingTypes");
-    log("[INFO] acceptSmallDog: $_acceptSmallDog, separateBySize: $_separateBySize");
 
     if (_error != null) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -296,137 +271,91 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                             color: Colors.orange,
                           ),
                         ),
-                        CheckboxListTile(
-                          title: Text("Accept Dogs?"),
-                          subtitle:
-                              Text("Check if you allow dogs in your daycare"),
-                          value: _acceptDogs,
-                          onChanged: (value) {
+                        _buildSizedCheckbox(
+                          "Miniature-Sized Breeds",
+                          "1 - 5kg",
+                          _acceptMiniatureDog,
+                          (val) {
                             setState(() {
-                              _acceptDogs = value!;
+                              _acceptMiniatureDog = val ?? false;
                             });
                           },
                         ),
-                        if (_acceptDogs) ...[
-                          RadioListTile(
-                            title: Text("All-Sized Dogs"),
-                            subtitle:
-                                Text("One capacity for dogs of any size."),
-                            value: false,
-                            groupValue: _separateBySize,
-                            onChanged: (value) {
-                              setState(() {
-                                _separateBySize = value as bool;
-                              });
-                            },
-                          ),
-                          _priceSlotInput(
-                            context,
-                            !_separateBySize,
-                            _allDogSizePriceController,
-                            _allDogSizePricingTypeController,
-                            _allDogSizeSlotController,
-                          ),
-                          RadioListTile(
-                            title: Text("Separate by Size"),
-                            subtitle:
-                                Text("Different capacities for each size."),
-                            value: true,
-                            groupValue: _separateBySize,
-                            onChanged: (value) {
-                              setState(() {
-                                _separateBySize = value as bool;
-                              });
-                            },
-                          ),
-                          if (_separateBySize) ...[
-                            _buildSizedCheckbox(
-                              "Miniature-Sized Breeds",
-                              "1 - 5kg",
-                              _acceptMiniatureDog,
-                              (val) {
-                                setState(() {
-                                  _acceptMiniatureDog = val ?? false;
-                                });
-                              },
-                            ),
-                            _priceSlotInput(
-                              context,
-                              _acceptMiniatureDog,
-                              _miniatureDogPriceController,
-                              _miniatureDogPricingTypeController,
-                              _miniatureDogSlotController,
-                            ),
-                            _buildSizedCheckbox(
-                              "Small-Sized Breeds",
-                              "5 - 10kg",
-                              _acceptSmallDog,
-                              (val) {
-                                setState(() {
-                                  _acceptSmallDog = val ?? false;
-                                });
-                              },
-                            ),
-                            _priceSlotInput(
-                              context,
-                              _acceptSmallDog,
-                              _smallDogPriceController,
-                              _smallDogPricingTypeController,
-                              _smallDogSlotController,
-                            ),
-                            _buildSizedCheckbox(
-                              "Medium-Sized Breeds",
-                              "10 - 25kg",
-                              _acceptMediumDog,
-                              (val) {
-                                setState(() {
-                                  _acceptMediumDog = val ?? false;
-                                });
-                              },
-                            ),
-                            _priceSlotInput(
-                              context,
-                              _acceptMediumDog,
-                              _mediumDogPriceController,
-                              _mediumDogPricingTypeController,
-                              _mediumDogSlotController,
-                            ),
-                            _buildSizedCheckbox(
-                              "Large-Sized Breeds",
-                              "25 - 45kg",
-                              _acceptLargeDog,
-                              (val) {
-                                setState(() {
-                                  _acceptLargeDog = val ?? false;
-                                });
-                              },
-                            ),
-                            _priceSlotInput(
-                              context,
-                              _acceptLargeDog,
-                              _largeDogPriceController,
-                              _largeDogPricingTypeController,
-                              _largeDogSlotController,
-                            ),
-                            _buildSizedCheckbox(
-                              "Giant-Sized Breeds",
-                              "45kg+",
-                              _acceptGiantDog,
-                              (val) {
-                                setState(() {
-                                  _acceptGiantDog = val ?? false;
-                                });
-                              },
-                            ),
-                            _priceSlotInput(
-                              context,
-                              _acceptGiantDog,
-                              _giantDogPriceController,
-                              _giantDogPricingTypeController,
-                              _giantDogSlotController,
-                            ),
-                          ],
-                        ],
+                        _priceSlotInput(
+                          context,
+                          _acceptMiniatureDog,
+                          _miniatureDogPriceController,
+                          _miniatureDogPricingTypeController,
+                          _miniatureDogSlotController,
+                        ),
+                        _buildSizedCheckbox(
+                          "Small-Sized Breeds",
+                          "5 - 10kg",
+                          _acceptSmallDog,
+                          (val) {
+                            setState(() {
+                              _acceptSmallDog = val ?? false;
+                            });
+                          },
+                        ),
+                        _priceSlotInput(
+                          context,
+                          _acceptSmallDog,
+                          _smallDogPriceController,
+                          _smallDogPricingTypeController,
+                          _smallDogSlotController,
+                        ),
+                        _buildSizedCheckbox(
+                          "Medium-Sized Breeds",
+                          "10 - 25kg",
+                          _acceptMediumDog,
+                          (val) {
+                            setState(() {
+                              _acceptMediumDog = val ?? false;
+                            });
+                          },
+                        ),
+                        _priceSlotInput(
+                          context,
+                          _acceptMediumDog,
+                          _mediumDogPriceController,
+                          _mediumDogPricingTypeController,
+                          _mediumDogSlotController,
+                        ),
+                        _buildSizedCheckbox(
+                          "Large-Sized Breeds",
+                          "25 - 45kg",
+                          _acceptLargeDog,
+                          (val) {
+                            setState(() {
+                              _acceptLargeDog = val ?? false;
+                            });
+                          },
+                        ),
+                        _priceSlotInput(
+                          context,
+                          _acceptLargeDog,
+                          _largeDogPriceController,
+                          _largeDogPricingTypeController,
+                          _largeDogSlotController,
+                        ),
+                        _buildSizedCheckbox(
+                          "Giant-Sized Breeds",
+                          "45kg+",
+                          _acceptGiantDog,
+                          (val) {
+                            setState(() {
+                              _acceptGiantDog = val ?? false;
+                            });
+                          },
+                        ),
+                        _priceSlotInput(
+                          context,
+                          _acceptGiantDog,
+                          _giantDogPriceController,
+                          _giantDogPricingTypeController,
+                          _giantDogSlotController,
+                        ),
                         SizedBox(height: 20),
                         Text("Others",
                             style: TextStyle(
@@ -579,14 +508,11 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
 
   Widget _buildSizedCheckbox(String title, String subtitle, bool val,
       void Function(bool?)? onChanged) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16.0),
-      child: CheckboxListTile(
-        title: Text(title),
-        subtitle: Text(subtitle),
-        value: val,
-        onChanged: onChanged,
-      ),
+    return CheckboxListTile(
+      title: Text(title),
+      subtitle: Text(subtitle),
+      value: val,
+      onChanged: onChanged,
     );
   }
 }

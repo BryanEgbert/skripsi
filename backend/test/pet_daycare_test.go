@@ -110,7 +110,7 @@ func TestGetBookedPet(t *testing.T) {
 					t.Errorf("json Unmarshal err: %v", err)
 				}
 
-				for i, _ := range res.Data {
+				for i := range res.Data {
 					res.Data[i].Owner.CreatedAt = ""
 				}
 
@@ -277,9 +277,7 @@ func TestGetPetDaycareSlot(t *testing.T) {
 			Name: "On get pet daycare slot, should return slot of the month",
 			ID:   1,
 			In: model.GetSlotRequest{
-				PetCategoryID: 1,
-				Year:          2025,
-				Month:         2,
+				PetCategoryID: []uint{1},
 			},
 			Token:          token1,
 			ExpectedStatus: 200,
@@ -293,7 +291,7 @@ func TestGetPetDaycareSlot(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			req, err := http.NewRequest("GET",
-				fmt.Sprintf("/daycare/%d/slot?pet-category=%d&year=%d&month=%d", test.ID, test.In.PetCategoryID, test.In.Year, test.In.Month),
+				fmt.Sprintf("/daycare/%d/slot?pet-category=%d", test.ID, test.In.PetCategoryID),
 				nil)
 			if err != nil {
 				t.Errorf("http NewRequest err: %v", err)

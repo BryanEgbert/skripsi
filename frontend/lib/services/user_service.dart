@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
 import 'package:frontend/model/request/create_saved_address_request.dart';
@@ -24,6 +26,10 @@ abstract interface class IUserService {
   Future<Result<void>> editSavedAddress(
       String token, CreateSavedAddressRequest req);
   Future<Result<void>> deleteSavedAddress(String token, int addressId);
+  Future<Result<ListData<User>>> getUserChatList(String token);
+  Future<Result<ListData<ChatMessage>>> getChatMessages(
+      String token, int receiverId);
+  Future<Result<void>> updateChatReads(String token, int receiverId);
 }
 
 class UserService implements IUserService {
@@ -146,14 +152,14 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.post(
-        "$host/saved-address",
+        "$host/users/saved-address",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",
             HttpHeaders.contentTypeHeader: "application/json",
           },
         ),
-        data: req.toJson(),
+        data: jsonEncode(req.toJson()),
       );
 
       return res;
@@ -172,7 +178,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.delete(
-        "$host/saved-address/$addressId",
+        "$host/users/saved-address/$addressId",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",
@@ -214,7 +220,7 @@ class UserService implements IUserService {
   @override
   Future<Result<ListData<SavedAddress>>> getSavedAddress(
       String token, OffsetPaginationQueryParams pagination) {
-    return makeRequest(201, () async {
+    return makeRequest(200, () async {
       final String host = dotenv.env["HOST"]!;
 
       final dio = Dio(BaseOptions(
@@ -224,7 +230,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.get(
-        "$host/saved-address",
+        "$host/users/saved-address",
         queryParameters: pagination.toMap(),
         options: Options(
           headers: {
@@ -235,5 +241,80 @@ class UserService implements IUserService {
 
       return res;
     }, (res) => ListData.fromJson(res, SavedAddress.fromJson));
+  }
+
+  @override
+  Future<Result<ListData<User>>> getUserChatList(String token) {
+    return makeRequest(200, () async {
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
+        "$host/chat/user",
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
+      );
+
+      return res;
+    }, (res) => ListData.fromJson(res, User.fromJson));
+  }
+
+  @override
+  Future<Result<ListData<ChatMessage>>> getChatMessages(
+      String token, int receiverId) async {
+    return makeRequest(200, () async {
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
+        "$host/chat-messages",
+        queryParameters: {"receiver-id": receiverId},
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
+      );
+
+      return res;
+    }, (res) => ListData.fromJson(res, ChatMessage.fromJson));
+  }
+
+  @override
+  Future<Result<void>> updateChatReads(String token, int receiverId) {
+    return makeRequest(204, () async {
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.patch(
+        "$host/chat/read",
+        queryParameters: {"receiver-id": receiverId},
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
+      );
+
+      return res;
+    });
   }
 }

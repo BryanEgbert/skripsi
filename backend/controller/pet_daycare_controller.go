@@ -29,7 +29,7 @@ func NewPetDaycareController(petDaycareService service.PetDaycareService, petSer
 }
 
 func (pdc *PetDaycareController) DeleteReducedSlot(ctx *gin.Context) {
-	slotIDRaw := ctx.Query("slotId")
+	slotIDRaw := ctx.Param("slotId")
 	if slotIDRaw == "" {
 		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "slot ID missing",
@@ -388,31 +388,26 @@ func (pdc *PetDaycareController) EditSlotCount(c *gin.Context) {
 }
 
 func (pdc *PetDaycareController) GetPetDaycareSlots(c *gin.Context) {
-	petCategoryId, err := strconv.ParseInt(c.Query("pet-category"), 10, 32)
-	if err != nil {
+	var petCategoryIds []uint
+	petCategoryIdRaw := c.Query("pet-category")
+	if petCategoryIdRaw == "" {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid pet category",
-			Error:   err.Error(),
+			Message: "Missing pet category",
 		})
 		return
 	}
 
-	year, err := strconv.ParseInt(c.Query("year"), 10, 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid year",
-			Error:   err.Error(),
-		})
-		return
-	}
+	for _, val := range strings.Split(petCategoryIdRaw, ",") {
+		petCategoryId, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "Invalid pet category",
+				Error:   err.Error(),
+			})
+			return
+		}
 
-	month, err := strconv.ParseInt(c.Query("month"), 10, 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid month",
-			Error:   err.Error(),
-		})
-		return
+		petCategoryIds = append(petCategoryIds, uint(petCategoryId))
 	}
 
 	petDaycareIDParam := c.Param("id")
@@ -426,9 +421,7 @@ func (pdc *PetDaycareController) GetPetDaycareSlots(c *gin.Context) {
 	}
 
 	output, err := pdc.slotService.GetSlots(uint(petDaycareID), model.GetSlotRequest{
-		PetCategoryID: uint(petCategoryId),
-		Year:          int(year),
-		Month:         int(month),
+		PetCategoryID: petCategoryIds,
 	})
 	if err != nil {
 		c.JSON(http.StatusNotFound, model.ErrorResponse{
@@ -885,7 +878,7 @@ func (pdc *PetDaycareController) BookSlot(c *gin.Context) {
 	}
 
 	var req model.BookSlotRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid request data",
 			Error:   err.Error(),

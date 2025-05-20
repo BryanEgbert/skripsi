@@ -1,13 +1,16 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/components/chat_bubble.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
+import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/send_message.dart';
 import 'package:frontend/pages/send_image_page.dart';
 import 'package:frontend/pages/welcome.dart';
@@ -30,27 +33,39 @@ class ChatPage extends ConsumerStatefulWidget {
 class _ChatPageState extends ConsumerState<ChatPage> {
   final _textController = TextEditingController();
   IOWebSocketChannel? channel;
-  SendMessage? _sendMessage;
+  List<ChatMessage> _totalMessages = [];
+  bool _isSocketReady = false;
 
   Future<void> _pickImage(ImageSource source) async {
     final photo = await ImagePicker().pickImage(source: source);
     if (mounted) {
-      _sendMessage = await Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => SendImagePage(image: File(photo!.path)),
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => SendImagePage(
+          image: File(photo!.path),
+          receiverId: widget.userId,
+        ),
       ));
-
-      if (_sendMessage != null) {
-        _sendMessage!.receiverId = widget.userId;
-        channel!.sink.add(_sendMessage);
-
-        _sendMessage = null;
-      }
     }
   }
 
-  Future<void> _setupWebSocket() async {
+  void _setupWebSocket() {
     try {
-      channel = await ChatWebsocketChannel.instance;
+      ChatWebsocketChannel().instance.then(
+        (value) {
+          channel = value;
+          log("channel: ${channel!.stream.toString()}");
+          channel?.sink.add(
+            jsonEncode(
+              SendMessage(
+                      updateRead: true, receiverId: widget.userId, message: "")
+                  .toJson(),
+            ),
+          );
+          setState(() {
+            _isSocketReady = true;
+          });
+        },
+      );
     } catch (e) {
       if (e.toString() == jwtExpired && mounted) {
         Navigator.of(context).pushAndRemoveUntil(
@@ -68,9 +83,16 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 
   @override
+  void dispose() {
+    channel?.sink.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final receiverUser = ref.watch(getUserByIdProvider(widget.userId));
     final myInfo = ref.watch(getTokenProvider);
+    final chat = ref.watch(chatMessagesProvider(widget.userId));
 
     return switch (receiverUser) {
       AsyncError(:final error) => ErrorText(
@@ -84,175 +106,193 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               icon: Icon(Icons.arrow_back_ios),
             ),
             title: Row(
+              spacing: 8,
               mainAxisSize: MainAxisSize.min,
               children: [
                 DefaultCircleAvatar(imageUrl: value.imageUrl),
-                Text(value.name),
+                Text(
+                  value.name,
+                  style: TextStyle(color: Constants.primaryTextColor),
+                ),
               ],
             ),
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: StreamBuilder(
-                  stream: channel!.stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      var msg = ChatMessage.fromJson(jsonDecode(snapshot.data));
+          body: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: _isSocketReady
+                      ? StreamBuilder(
+                          stream: channel?.stream,
+                          builder: (context, snapshot) {
+                            if (chat.hasValue) {
+                              _totalMessages = chat.value!.data;
+                            }
 
-                      final dateTime = DateTime.parse(msg.createdAt);
-                      final formatter = DateFormat('EEE, dd MMM yyyy');
-                      final formattedDate = formatter.format(dateTime);
-
-                      if (msg.type == "message") {
-                        return Row(
-                          mainAxisAlignment:
-                              (msg.senderId == myInfo.value!.userId)
-                                  ? MainAxisAlignment.end
-                                  : MainAxisAlignment.start,
-                          children: [
-                            if (msg.senderId == myInfo.value!.userId)
-                              Text(formattedDate),
-                            Container(
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: (msg.senderId == myInfo.value!.userId)
-                                    ? Colors.orange[300]
-                                    : Constants.secondaryBackgroundColor,
-                              ),
-                              child: Column(
-                                children: [
-                                  if (msg.imageUrl != null)
-                                    Image.network(msg.imageUrl!),
-                                  Text(
-                                    msg.message,
-                                    style: TextStyle(
-                                      color: Colors.black87,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            if (msg.senderId != myInfo.value!.userId)
-                              Text(formattedDate),
-                          ],
-                        );
-                      } else if (msg.type == "error") {
-                        return Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment:
-                                  (msg.senderId == myInfo.value!.userId)
-                                      ? MainAxisAlignment.end
-                                      : MainAxisAlignment.start,
-                              children: [
-                                if (msg.senderId == myInfo.value!.userId)
-                                  Text(formattedDate),
-                                Container(
-                                  padding: EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: (msg.senderId ==
-                                            myInfo.value!.userId)
-                                        ? Colors.orange[300]
-                                        : Constants.secondaryBackgroundColor,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      if (msg.imageUrl != null)
-                                        Image.network(msg.imageUrl!),
-                                      Text(
-                                        msg.message,
-                                        style: TextStyle(
-                                          color: Colors.black87,
-                                        ),
-                                      )
-                                    ],
-                                  ),
+                            if (snapshot.hasData) {
+                              var messages = ListData<ChatMessage>.fromJson(
+                                  jsonDecode(snapshot.data),
+                                  ChatMessage.fromJson);
+                              _totalMessages = messages.data;
+                              channel?.sink.add(
+                                jsonEncode(
+                                  SendMessage(
+                                          updateRead: true,
+                                          receiverId: widget.userId,
+                                          message: "")
+                                      .toJson(),
                                 ),
-                                if (msg.senderId != myInfo.value!.userId)
-                                  Text(formattedDate),
-                              ],
-                            ),
-                            Text(
-                              "Failed to send message",
-                              style: TextStyle(color: Colors.red[800]),
-                            ),
-                          ],
-                        );
-                      } else {
-                        return SizedBox();
-                      }
-                    } else if (snapshot.hasError) {
-                      var snackbar = SnackBar(
-                        key: Key("error-message"),
-                        content: Text(
-                          snapshot.error.toString(),
-                          style: TextStyle(color: Colors.white),
+                              );
+                            } else if (snapshot.hasError) {
+                              var snackbar = SnackBar(
+                                key: Key("error-message"),
+                                content: Text(
+                                  snapshot.error.toString(),
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: Colors.red[800],
+                              );
+
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackbar);
+                            }
+
+                            return ListView.builder(
+                              padding: EdgeInsets.all(8),
+                              itemCount: _totalMessages.length,
+                              itemBuilder: (context, index) {
+                                var msg = _totalMessages[index];
+
+                                final dateTime = DateTime.parse(msg.createdAt);
+                                final formatter =
+                                    DateFormat('EEE, dd MMM yyyy');
+                                final formattedDate =
+                                    formatter.format(dateTime);
+
+                                if (msg.type == "message") {
+                                  return ChatBubble(
+                                    msg: msg,
+                                    myInfo: myInfo,
+                                    formattedDate: formattedDate,
+                                  );
+                                } else if (msg.type == "error") {
+                                  return Column(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          color: (msg.senderId ==
+                                                  myInfo.value!.userId)
+                                              ? Colors.orange[300]
+                                              : Constants
+                                                  .secondaryBackgroundColor,
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            if (msg.imageUrl != null)
+                                              Image.network(msg.imageUrl!),
+                                            Text(
+                                              msg.message,
+                                              style: TextStyle(
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  formattedDate,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey[700],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Text(
+                                        "Failed to send message",
+                                        style:
+                                            TextStyle(color: Colors.red[800]),
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  return SizedBox();
+                                }
+                              },
+                            );
+                          },
+                        )
+                      : Center(
+                          child: CircularProgressIndicator.adaptive(),
                         ),
-                        backgroundColor: Colors.red[800],
-                      );
-
-                      ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                    }
-
-                    return SizedBox();
-                  },
                 ),
-              ),
-              Container(
-                color: Constants.secondaryBackgroundColor,
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  spacing: 4,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextField(
-                      controller: _textController,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        suffix: PopupMenuButton(
-                            itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    child: Text("Take Photo"),
-                                    onTap: () {
-                                      _pickImage(ImageSource.camera);
-                                    },
-                                  ),
-                                  PopupMenuItem(
-                                    child: Text("Gallery"),
-                                    onTap: () {
-                                      _pickImage(ImageSource.gallery);
-                                    },
-                                  ),
-                                ]),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        labelText: "Message",
+                Divider(),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(8, 4, 8, 12),
+                  child: Row(
+                    spacing: 4,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      PopupMenuButton(
+                        icon: Icon(Icons.more_vert_rounded),
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            child: Text("Take Photo"),
+                            onTap: () {
+                              _pickImage(ImageSource.camera);
+                            },
+                          ),
+                          PopupMenuItem(
+                            child: Text("Gallery"),
+                            onTap: () {
+                              _pickImage(ImageSource.gallery);
+                            },
+                          ),
+                        ],
                       ),
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          if (_textController.text.isNotEmpty) {
-                            channel!.sink.add(SendMessage(
-                              receiverId: widget.userId,
-                              message: _textController.text,
-                            ));
+                      Expanded(
+                        child: TextField(
+                          controller: _textController,
+                          keyboardType: TextInputType.multiline,
+                          minLines: 1,
+                          maxLines: 3,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            labelText: "Message",
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            if (_textController.text.isNotEmpty) {
+                              var sendMessage = jsonEncode(SendMessage(
+                                receiverId: widget.userId,
+                                message: _textController.text,
+                              ).toJson());
+                              log("sendMessage: $sendMessage");
 
-                            _textController.text = "";
-                          }
-                        },
-                        icon: Icon(
-                          Icons.send_rounded,
-                          color: Colors.orange[800],
-                        )),
-                  ],
+                              channel!.sink.add(sendMessage);
+
+                              _textController.clear();
+                            }
+                          },
+                          icon: Icon(
+                            Icons.send_rounded,
+                            color: Colors.orange[800],
+                          )),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       _ => Center(

@@ -8,10 +8,12 @@ part of 'book_slot_request.dart';
 
 BookSlotRequest _$BookSlotRequestFromJson(Map<String, dynamic> json) =>
     BookSlotRequest(
-      petId: (json['petId'] as num).toInt(),
+      petId: (json['petId'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
+      usePickupService: json['usePickupService'] as bool,
       startDate: json['startDate'] as String,
       endDate: json['endDate'] as String,
-      usePickupService: json['usePickupService'] as bool,
       location: json['location'] as String?,
       address: json['address'] as String?,
       latitude: (json['latitude'] as num?)?.toDouble(),
@@ -22,9 +24,9 @@ BookSlotRequest _$BookSlotRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$BookSlotRequestToJson(BookSlotRequest instance) =>
     <String, dynamic>{
       'petId': instance.petId,
+      'usePickupService': instance.usePickupService,
       'startDate': instance.startDate,
       'endDate': instance.endDate,
-      'usePickupService': instance.usePickupService,
       'location': instance.location,
       'address': instance.address,
       'latitude': instance.latitude,

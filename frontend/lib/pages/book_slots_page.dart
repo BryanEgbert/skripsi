@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
@@ -6,11 +8,14 @@ import 'package:frontend/components/paginated_pets_list_view.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/model/request/book_slot_request.dart';
 import 'package:frontend/model/saved_address.dart';
+import 'package:frontend/pages/add_saved_address.dart';
 import 'package:frontend/pages/saved_address_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
+import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/validator.dart';
+import 'package:intl/intl.dart';
 
 class BookSlotsPage extends ConsumerStatefulWidget {
   final int petDaycareId;
@@ -23,18 +28,15 @@ class BookSlotsPage extends ConsumerStatefulWidget {
 class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
   final _formKey = GlobalKey<FormState>();
 
-  final _startDateController = TextEditingController();
-  final _endDateController = TextEditingController();
+  final _dateRangeController = TextEditingController();
+
+  String? _startDate;
+  String? _endDate;
 
   final Map<int, bool> _petIdValue = {};
+  final List<int> _petCategoryIds = [];
 
   bool _usePickupService = false;
-
-  String _address = "";
-  double _latitude = 0.0;
-  double _longitude = 0.0;
-  String _locality = "";
-  String? _location;
 
   SavedAddress? _savedAddress;
   String? _locationErrorText;
@@ -48,21 +50,22 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
       return;
     }
 
-    for (var petId in _petIdValue.keys) {
-      ref.read(slotStateProvider.notifier).bookSlot(
+    log("petID: ${_petIdValue.keys.toList()}");
+
+    ref.read(slotStateProvider.notifier).bookSlot(
           widget.petDaycareId,
           BookSlotRequest(
-            petId: petId,
-            startDate: _startDateController.text,
-            endDate: _endDateController.text,
+            petId: _petIdValue.keys.toList(),
+            startDate: _startDate!,
+            endDate: _endDate!,
             usePickupService: _usePickupService,
             address: _savedAddress?.address,
             location: _savedAddress?.name,
             latitude: _savedAddress?.latitude,
             longitude: _savedAddress?.longitude,
             notes: _savedAddress?.notes,
-          ));
-    }
+          ),
+        );
   }
 
   @override
@@ -70,11 +73,12 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
     final savedAddress = ref.watch(savedAddressProvider());
     final slotState = ref.watch(slotStateProvider);
 
+    log("use pickup: $_usePickupService");
+
     handleError(slotState, context);
 
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Constants.backgroundColor,
           leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: Icon(Icons.arrow_back_ios),
@@ -84,181 +88,265 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
             style: TextStyle(color: Colors.orange),
           ),
         ),
-        bottomSheet: Container(
-          color: Colors.orange,
-          padding: EdgeInsets.all(16),
-          child: ElevatedButton(
-            onPressed: () {
-              if (slotState.isLoading) return;
-
-              _submitForm();
-            },
-            child: (slotState.isLoading)
-                ? CircularProgressIndicator()
-                : Text(
-                    "Book Slot",
-                    style: TextStyle(color: Colors.white),
-                  ),
-          ),
-        ),
         body: switch (savedAddress) {
           AsyncError(:final error) => ErrorText(
               errorText: error.toString(),
               onRefresh: () => ref.refresh(savedAddressProvider().future)),
-          AsyncData(:final value) => Column(
-              spacing: 8,
-              children: [
-                Container(
-                  color: Constants.secondaryBackgroundColor,
-                  padding: EdgeInsets.all(12),
-                  child: Form(
-                    key: _formKey,
+          AsyncData(:final value) => SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 8,
+                children: [
+                  Container(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Constants.secondaryBackgroundColor
+                        : null,
+                    padding: EdgeInsets.all(12),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        TextFormField(
-                          controller: _startDateController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            labelText: "Start Date",
-                          ),
-                          validator: (value) =>
-                              validateNotEmpty("Input", value),
+                        CheckboxListTile(
+                          controlAffinity: ListTileControlAffinity.leading,
+                          value: _usePickupService,
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _usePickupService = value;
+                                ref.invalidate(slotStateProvider);
+                              });
+                            }
+                          },
+                          title: Text("Use Pick-Up Service"),
                         ),
-                        TextFormField(
-                          controller: _endDateController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
+                        AbsorbPointer(
+                          absorbing: !_usePickupService,
+                          child: InkWell(
+                            onTap: () async {
+                              if (value.data.isNotEmpty) {
+                                final pickedAddress =
+                                    await Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                  builder: (context) => SavedAddressPage(
+                                    selected: 1,
+                                  ),
+                                )) as SavedAddress;
+
+                                _savedAddress = pickedAddress;
+                              } else {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => AddSavedAddress(),
+                                ));
+                              }
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24.0),
+                              child: Row(
+                                spacing: 12,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.location_on,
+                                    color: _usePickupService
+                                        ? Theme.of(context).brightness ==
+                                                Brightness.light
+                                            ? Constants.primaryTextColor
+                                            : Colors.orange
+                                        : Colors.grey[700],
+                                  ),
+                                  if (value.data.isEmpty)
+                                    Text(
+                                      "Choose an address",
+                                      style: TextStyle(
+                                        color: _usePickupService
+                                            ? Theme.of(context).brightness ==
+                                                    Brightness.light
+                                                ? Constants.primaryTextColor
+                                                : Colors.orange
+                                            : Colors.grey[700],
+                                      ),
+                                    )
+                                  else
+                                    Text(
+                                      value.data[0].name,
+                                      style: TextStyle(
+                                        color: _usePickupService
+                                            ? Theme.of(context).brightness ==
+                                                    Brightness.light
+                                                ? Constants.primaryTextColor
+                                                : Colors.orange
+                                            : Colors.grey[700],
+                                      ),
+                                    ),
+                                  Icon(
+                                    Icons.navigate_next_rounded,
+                                    color: _usePickupService
+                                        ? Theme.of(context).brightness ==
+                                                Brightness.light
+                                            ? Constants.primaryTextColor
+                                            : Colors.orange
+                                        : Colors.grey[700],
+                                  ),
+                                ],
+                              ),
                             ),
-                            labelText: "End Date",
                           ),
-                          validator: (value) =>
-                              validateNotEmpty("Input", value),
                         ),
                       ],
                     ),
                   ),
-                ),
-                Container(
-                  color: Constants.secondaryBackgroundColor,
-                  padding: EdgeInsets.all(12),
-                  child: Column(
-                    children: [
-                      Row(
+                  Expanded(
+                    child: Container(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.secondaryBackgroundColor
+                          : null,
+                      padding: EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Checkbox(
-                            value: _usePickupService,
-                            onChanged: (value) {
-                              if (value != null) {
-                                _usePickupService = value;
-                              }
-                            },
-                          ),
                           Text(
-                            "Use Pick-Up Service",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            "Pick Pets",
+                            style: TextStyle(
+                                color: Colors.orange,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Expanded(
+                            child: PaginatedPetsListView(
+                              pageSize: Constants.pageSize,
+                              buildBody: (pet) {
+                                return CheckboxListTile(
+                                  value: _petIdValue[pet.id] ?? false,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      if (value != null) {
+                                        _petIdValue[pet.id] = value;
+                                        ref.invalidate(slotStateProvider);
+
+                                        if (value) {
+                                          _petCategoryIds
+                                              .add(pet.petCategory.id);
+                                        } else {
+                                          _petCategoryIds
+                                              .remove(pet.petCategory.id);
+                                        }
+                                      }
+                                    });
+                                  },
+                                  title: Text(pet.name),
+                                  secondary: DefaultCircleAvatar(
+                                      imageUrl: pet.imageUrl ?? ""),
+                                  subtitle: Text(
+                                    "Pet Category: ${pet.petCategory.name}",
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Constants.secondaryBackgroundColor
+                        : null,
+                    padding: EdgeInsets.all(12),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        spacing: 4,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Choose Booking Date",
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextFormField(
+                            enabled: _petIdValue.values.contains(true),
+                            readOnly: true,
+                            controller: _dateRangeController,
+                            onTap: () async {
+                              final slotDate = ref.read(getSlotsProvider(
+                                widget.petDaycareId,
+                                _petCategoryIds.toSet().toList(),
+                              ));
+
+                              final dateRange = await showDateRangePicker(
+                                context: context,
+                                firstDate: DateTime.now(),
+                                lastDate:
+                                    DateTime.now().add(Duration(days: 3653)),
+                                selectableDayPredicate:
+                                    (day, selectedStartDay, selectedEndDay) {
+                                  if (slotDate.hasValue) {
+                                    return !slotDate.value!.data.any(
+                                      (element) {
+                                        if (element.slotAmount <= 0) {
+                                          DateTime disabledDate =
+                                              DateTime.parse(element.date);
+                                          return disabledDate.year ==
+                                                  day.year &&
+                                              disabledDate.month == day.month &&
+                                              disabledDate.day == day.day;
+                                        }
+
+                                        return true;
+                                      },
+                                    );
+                                  }
+
+                                  return true;
+                                },
+                              );
+
+                              if (dateRange == null) return;
+
+                              setState(() {
+                                _startDate =
+                                    toRfc3339WithOffset(dateRange.start);
+                                _endDate = toRfc3339WithOffset(dateRange.end);
+                                _dateRangeController.text =
+                                    "${formatDate(dateRange.start)} - ${formatDate(dateRange.end)}";
+                              });
+                            },
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              labelText: "Booking Date",
+                            ),
+                            validator: (value) =>
+                                validateNotEmpty("Input", value),
                           ),
                         ],
                       ),
-                      AbsorbPointer(
-                        absorbing: !_usePickupService,
-                        child: InkWell(
-                          onTap: () async {
-                            if (value.data.isNotEmpty) {
-                              final pickedAddress = await Navigator.of(context)
-                                  .push(MaterialPageRoute(
-                                builder: (context) => SavedAddressPage(
-                                  selected: 1,
-                                ),
-                              )) as SavedAddress;
-
-                              _savedAddress = pickedAddress;
-                            }
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                color: _usePickupService
-                                    ? Constants.primaryTextColor
-                                    : Colors.grey[700],
-                              ),
-                              if (value.data.isEmpty)
-                                Text(
-                                  "Choose an address",
-                                  style: TextStyle(
-                                    color: _usePickupService
-                                        ? Constants.primaryTextColor
-                                        : Colors.grey[700],
-                                  ),
-                                )
-                              else
-                                Text(
-                                  value.data[0].name,
-                                  style: TextStyle(
-                                    color: _usePickupService
-                                        ? Constants.primaryTextColor
-                                        : Colors.grey[700],
-                                  ),
-                                ),
-                              SizedBox(width: double.infinity),
-                              Icon(
-                                Icons.navigate_next_rounded,
-                                color: _usePickupService
-                                    ? Constants.primaryTextColor
-                                    : Colors.grey[700],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    color: Constants.secondaryBackgroundColor,
-                    padding: EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Pick Pets",
-                          style: TextStyle(
-                              color: Colors.orange,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Expanded(
-                          child: PaginatedPetsListView(
-                            pageSize: Constants.pageSize,
-                            buildBody: (pet) {
-                              return CheckboxListTile(
-                                value: _petIdValue[pet.id] ?? false,
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (value != null) {
-                                      _petIdValue[pet.id] = value;
-                                    }
-                                  });
-                                },
-                                title: Text(pet.name),
-                                secondary: DefaultCircleAvatar(
-                                    imageUrl: pet.imageUrl ?? ""),
-                                subtitle: Text(
-                                  "Pet Category: ${pet.petCategory.name}",
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      ],
                     ),
                   ),
-                ),
-              ],
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 12),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (slotState.isLoading) return;
+
+                        if (value.data.isNotEmpty) {
+                          _savedAddress ??= value.data[0];
+                        }
+
+                        _submitForm();
+                      },
+                      child: (slotState.isLoading)
+                          ? CircularProgressIndicator()
+                          : Text(
+                              "Book Slot",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           _ => Center(
               child: CircularProgressIndicator(

@@ -66,8 +66,8 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
               onRefresh: () => ref.refresh(petProvider(widget.petId).future),
             ),
           AsyncData(:final value) => _buildBody(value),
-          _ => CircularProgressIndicator(
-              color: Colors.orange,
+          _ => Center(
+              child: CircularProgressIndicator.adaptive(),
             ),
         });
   }

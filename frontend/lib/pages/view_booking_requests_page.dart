@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/pages/details/booking_request_details_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
@@ -85,7 +86,7 @@ class _ViewBookingRequestsPageState
       appBar: AppBar(
         title: Text(
           'Booking Requests',
-          style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.orange),
         ),
         actions: appBarActions(ref.read(authProvider.notifier)),
       ),
@@ -180,7 +181,7 @@ class _ViewBookingRequestsPageState
                               ),
                             ),
                             Text(
-                              "${formatDate(_records[index].startDate)} - ${formatDate(_records[index].endDate)}",
+                              "${formatDateStr(_records[index].startDate)} - ${formatDateStr(_records[index].endDate)}",
                               style: TextStyle(fontSize: 12),
                             )
                           ],

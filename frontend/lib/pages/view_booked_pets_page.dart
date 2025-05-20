@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,15 +7,20 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/user.dart';
 import 'package:frontend/pages/chat_page.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
+import 'package:frontend/pages/send_image_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ViewBookedPetsPage extends ConsumerStatefulWidget {
-  const ViewBookedPetsPage({super.key});
+  // final IOWebSocketChannel channel;
+  final List<ChatMessage> messages;
+  const ViewBookedPetsPage(this.messages, {super.key});
 
   @override
   ConsumerState<ViewBookedPetsPage> createState() => _ViewBookedPetsPageState();
@@ -23,6 +29,8 @@ class ViewBookedPetsPage extends ConsumerStatefulWidget {
 class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
   final ScrollController _scrollPetController = ScrollController();
   final ScrollController _scrollPetOwnerController = ScrollController();
+
+  // IOWebSocketChannel? _channel;
 
   List<Pet> _petRecords = [];
   List<User> _bookedPetRecords = [];
@@ -100,12 +108,32 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
     }
   }
 
+  // void _setupWebSocket() {
+  //   try {
+  //     ChatWebsocketChannel().instance.then(
+  //       (value) {
+  //         _channel = value;
+  //         log("channel: ${_channel!.stream.toString()}");
+  //       },
+  //     );
+  //   } catch (e) {
+  //     if (e.toString() == jwtExpired && mounted) {
+  //       Navigator.of(context).pushAndRemoveUntil(
+  //         MaterialPageRoute(builder: (context) => WelcomeWidget()),
+  //         (route) => false,
+  //       );
+  //     }
+  //   }
+  // }
+
   @override
   void initState() {
     super.initState();
 
     _scrollPetController.addListener(_onScroll);
     _scrollPetOwnerController.addListener(_onPetOwnerScroll);
+
+    // _setupWebSocket();
 
     _fetchMoreData(0);
     _fetchMoreData(1);
@@ -114,12 +142,12 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
   @override
   void dispose() {
     _scrollPetController.dispose();
+    // _channel?.sink.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    log("[INFO] booked pets: $_petRecords");
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -141,14 +169,14 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
           ]),
         ),
         body: TabBarView(children: [
-          _buildViewByPets(),
-          _buildViewByPetOwners(),
+          _buildViewByPets(widget.messages),
+          _buildViewByPetOwners(widget.messages),
         ]),
       ),
     );
   }
 
-  Widget _buildViewByPetOwners() {
+  Widget _buildViewByPetOwners(List<ChatMessage> messages) {
     return RefreshIndicator(
       onRefresh: () async {
         _bookedPetRecords = [];
@@ -170,7 +198,58 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                         _fetchMoreData(1);
                       },
                     )
-                  : _buildBookedPetOwnersListView()
+                  : ListView.builder(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      controller: _scrollPetOwnerController,
+                      itemCount: _bookedPetRecords.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index < _bookedPetRecords.length) {
+                          return ListTile(
+                            leading: DefaultCircleAvatar(
+                                imageUrl: _bookedPetRecords[index].imageUrl),
+                            title: Text(_bookedPetRecords[index].name),
+                            titleTextStyle: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange,
+                            ),
+                            trailing: (messages.isNotEmpty)
+                                ? Badge.count(
+                                    count: messages.length,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        _navigateToChatPage(
+                                            _bookedPetRecords[index].id);
+                                      },
+                                      icon: Icon(
+                                        Icons.chat_rounded,
+                                        color: Constants.primaryTextColor,
+                                      ),
+                                    ),
+                                  )
+                                : IconButton(
+                                    onPressed: () {
+                                      _navigateToChatPage(
+                                          _bookedPetRecords[index].id);
+                                    },
+                                    icon: Icon(
+                                      Icons.chat_rounded,
+                                      color: Constants.primaryTextColor,
+                                    ),
+                                  ),
+                          );
+                        } else {
+                          if (_isFetching) {
+                            return Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.orange,
+                            ));
+                          }
+
+                          return SizedBox();
+                        }
+                      },
+                    )
               : ErrorText(
                   errorText: _error!,
                   onRefresh: () async {
@@ -182,7 +261,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
     );
   }
 
-  Widget _buildViewByPets() {
+  Widget _buildViewByPets(List<ChatMessage> messages) {
     return RefreshIndicator(
       onRefresh: () async {
         _petRecords = [];
@@ -204,7 +283,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                         _fetchMoreData(0);
                       },
                     )
-                  : _buildPetsListView()
+                  : _buildPetsListView(messages)
               : ErrorText(
                   errorText: _error!,
                   onRefresh: () async {
@@ -216,54 +295,14 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
     );
   }
 
-  Widget _buildBookedPetOwnersListView() {
-    return ListView.builder(
-      physics: AlwaysScrollableScrollPhysics(),
-      controller: _scrollPetOwnerController,
-      itemCount: _bookedPetRecords.length + 1,
-      itemBuilder: (context, index) {
-        if (index < _bookedPetRecords.length) {
-          return ListTile(
-            leading: DefaultCircleAvatar(
-                imageUrl: _bookedPetRecords[index].imageUrl),
-            title: Text(_bookedPetRecords[index].name),
-            titleTextStyle: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.orange,
-            ),
-            trailing: IconButton(
-              onPressed: () {
-                _navigateToChatPage(_bookedPetRecords[index].id);
-              },
-              icon: Icon(
-                Icons.chat_rounded,
-                color: Constants.primaryTextColor,
-              ),
-            ),
-          );
-        } else {
-          if (_isFetching) {
-            return Center(
-                child: CircularProgressIndicator(
-              color: Colors.orange,
-            ));
-          }
-
-          return SizedBox();
-        }
-      },
-    );
-  }
-
-  Widget _buildPetsListView() {
+  Widget _buildPetsListView(List<ChatMessage> messages) {
     return ListView.builder(
       physics: AlwaysScrollableScrollPhysics(),
       controller: _scrollPetController,
       itemCount: _petRecords.length + 1,
       itemBuilder: (context, index) {
         if (index < _petRecords.length) {
-          return _buildListTile(context, _petRecords[index]);
+          return _buildListTile(context, _petRecords[index], messages);
         } else {
           if (_isFetching) {
             return Center(
@@ -278,7 +317,8 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
     );
   }
 
-  Widget _buildListTile(BuildContext context, Pet item) {
+  Widget _buildListTile(
+      BuildContext context, Pet item, List<ChatMessage> messages) {
     return ListTile(
       leading: DefaultCircleAvatar(imageUrl: item.imageUrl ?? ""),
       title: Text(item.name),
@@ -290,23 +330,75 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
         color: Colors.orange,
       ),
       subtitleTextStyle: TextStyle(fontSize: 14, color: Colors.black),
-      trailing: PopupMenuButton(
-        itemBuilder: (context) {
-          return [
-            // TODO: add log pet functionality
-            PopupMenuItem(
-              child: Text("Log activity"),
-              onTap: () {},
-            ),
-            PopupMenuItem(
-              onTap: () {
-                _navigateToChatPage(item.owner.id);
+      trailing: (messages.isNotEmpty)
+          ? Badge.count(
+              count: messages.length,
+              child: PopupMenuButton(
+                itemBuilder: (context) {
+                  return [
+                    PopupMenuItem(
+                      child: Text("Log activity"),
+                      onTap: () async {
+                        final photo = await ImagePicker()
+                            .pickImage(source: ImageSource.camera);
+                        if (mounted) {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SendImagePage(
+                              image: File(photo!.path),
+                              // channel: widget.channel,
+                              receiverId: item.owner.id,
+                            ),
+                          ));
+                        }
+                      },
+                    ),
+                    PopupMenuItem(
+                      onTap: () {
+                        _navigateToChatPage(item.owner.id);
+                      },
+                      child: (messages.isNotEmpty)
+                          ? Badge.count(
+                              count: messages.length,
+                              child: Text("Chat pet's owner"),
+                            )
+                          : Text("Chat pet's owner"),
+                    ),
+                  ];
+                },
+              ),
+            )
+          : PopupMenuButton(
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                    child: Text("Log activity"),
+                    onTap: () async {
+                      final photo = await ImagePicker()
+                          .pickImage(source: ImageSource.camera);
+                      if (mounted) {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => SendImagePage(
+                            image: File(photo!.path),
+                            receiverId: item.owner.id,
+                          ),
+                        ));
+                      }
+                    },
+                  ),
+                  PopupMenuItem(
+                    onTap: () {
+                      _navigateToChatPage(item.owner.id);
+                    },
+                    child: (messages.isNotEmpty)
+                        ? Badge.count(
+                            count: messages.length,
+                            child: Text("Chat pet's owner"),
+                          )
+                        : Text("Chat pet's owner"),
+                  ),
+                ];
               },
-              child: Text("Chat pet's owner"),
             ),
-          ];
-        },
-      ),
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(

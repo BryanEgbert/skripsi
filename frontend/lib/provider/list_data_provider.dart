@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/model/chat_message.dart';
@@ -15,9 +12,11 @@ import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/model/reviews.dart';
 import 'package:frontend/model/saved_address.dart';
+import 'package:frontend/model/slot.dart';
 import 'package:frontend/model/transaction.dart';
 import 'package:frontend/model/user.dart';
 import 'package:frontend/model/vaccine_record.dart';
+import 'package:frontend/services/chat_service.dart';
 import 'package:frontend/services/pet_daycare_service.dart';
 import 'package:frontend/services/pet_service.dart';
 import 'package:frontend/services/slot_service.dart';
@@ -26,7 +25,6 @@ import 'package:frontend/services/user_service.dart';
 import 'package:frontend/services/vaccination_record_service.dart';
 import 'package:frontend/utils/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 part 'list_data_provider.g.dart';
 
@@ -59,7 +57,17 @@ Future<ListData<PetDaycare>> petDaycares(
   final daycares = await petDaycareService.getPetDaycares(
     token.accessToken,
     Coordinate(latitude: lat, longitude: long),
-    PetDaycareFilters(),
+    PetDaycareFilters(
+      dailyPlaytime: dailyPlaytime,
+      dailyWalks: dailyWalks,
+      facilities: facilities,
+      maxDistance: maxDistance,
+      minDistance: minDistance,
+      maxPrice: maxPrice,
+      minPrice: minPrice,
+      mustBeVaccinated: mustBeVaccinated,
+      pricingType: pricingType,
+    ),
     OffsetPaginationQueryParams(page: page, pageSize: pageSize),
   );
 
@@ -72,30 +80,65 @@ Future<ListData<PetDaycare>> petDaycares(
 }
 
 @riverpod
-Stream<ChatMessage> connectChat(Ref ref) async* {
-  final String host = dotenv.env["HOST"]!;
+Future<ListData<ChatMessage>> getUnreadChatMessages(Ref ref) async {
+  TokenResponse? token;
+  try {
+    token = await refreshToken();
+  } catch (e) {
+    return Future.error(jwtExpired, StackTrace.current);
+  }
 
-  // List<ChatMessage> messages = [];
+  final service = ChatService();
+  final chatList = await service.getUnreadChatMessages(token.accessToken);
 
-  final channel = WebSocketChannel.connect(Uri.parse("$host/chat"));
+  switch (chatList) {
+    case Ok():
+      return chatList.value!;
+    case Error():
+      return Future.error(chatList.error);
+  }
+}
 
-  await channel.ready;
+@riverpod
+Future<ListData<User>> getUserChatList(Ref ref) async {
+  TokenResponse? token;
+  try {
+    token = await refreshToken();
+  } catch (e) {
+    return Future.error(jwtExpired, StackTrace.current);
+  }
 
-  // channel.stream.listen(
-  //   (event) {
-  //     messages.add(ChatMessage.fromJson(json.decode(event.toString())));
-  //   },
-  // );
+  final service = UserService();
+  final chatList = await service.getUserChatList(token.accessToken);
 
-  // for (final value in channel.stream) {
-  //   yield ChatMessage.fromJson(json.decode(value.toString()));
-  // }
+  switch (chatList) {
+    case Ok():
+      return chatList.value!;
+    case Error():
+      return Future.error(chatList.error);
+  }
+}
 
-  yield* channel.stream.map(
-    (event) {
-      return ChatMessage.fromJson(json.decode(event.toString()));
-    },
-  );
+@riverpod
+Future<ListData<Slot>> getSlots(
+    Ref ref, int petDaycareId, List<int> petCategoryIds) async {
+  TokenResponse? token;
+  try {
+    token = await refreshToken();
+  } catch (e) {
+    return Future.error(jwtExpired, StackTrace.current);
+  }
+
+  final service = SlotService();
+  final res =
+      await service.getSlots(token.accessToken, petCategoryIds, petDaycareId);
+
+  switch (res) {
+    case Ok():
+      return res.value!;
+    case Error():
+      return Future.error(res.error);
+  }
 }
 
 @riverpod
@@ -245,7 +288,7 @@ Future<ListData<User>> bookedPetOwner(Ref ref,
   }
 
   final service = PetDaycareService();
-  final res = await service.getBookedPetOwners(token!.accessToken,
+  final res = await service.getBookedPetOwners(token.accessToken,
       OffsetPaginationQueryParams(page: page, pageSize: pageSize));
 
   switch (res) {
@@ -310,6 +353,26 @@ Future<User> getUserById(Ref ref, int userId) async {
 
   final userService = UserService();
   final res = await userService.getUser(token.accessToken, userId);
+
+  switch (res) {
+    case Ok():
+      return res.value!;
+    case Error():
+      return Future.error(res.error);
+  }
+}
+
+@riverpod
+Future<ListData<ChatMessage>> chatMessages(Ref ref, int receiverId) async {
+  TokenResponse? token;
+  try {
+    token = await refreshToken();
+  } catch (e) {
+    return Future.error(e.toString());
+  }
+
+  final userService = UserService();
+  final res = await userService.getChatMessages(token.accessToken, receiverId);
 
   switch (res) {
     case Ok():
@@ -421,6 +484,26 @@ Future<ListData<BookingRequest>> getBookingRequests(Ref ref,
     token.accessToken,
     OffsetPaginationQueryParams(page: page, pageSize: pageSize),
   );
+
+  switch (res) {
+    case Ok():
+      return res.value!;
+    case Error():
+      return Future.error(res.error);
+  }
+}
+
+@riverpod
+Future<Transaction> getTransaction(Ref ref, int transactionId) async {
+  TokenResponse? token;
+  try {
+    token = await refreshToken();
+  } catch (e) {
+    return Future.error(e.toString());
+  }
+
+  final service = TransactionService();
+  final res = await service.getTransaction(token.accessToken, transactionId);
 
   switch (res) {
     case Ok():

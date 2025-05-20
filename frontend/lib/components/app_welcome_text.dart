@@ -16,7 +16,6 @@ class AppWelcomeText extends StatelessWidget {
             text: const TextSpan(
               text: "Welcome to\n",
               style: TextStyle(
-                color: Colors.black,
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
               ),

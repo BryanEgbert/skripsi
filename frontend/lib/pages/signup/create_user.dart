@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/signup_guide_text.dart';
 import 'package:frontend/model/request/create_user_request.dart';
@@ -24,6 +25,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
   File? _userProfilePicture;
 
   Future<void> _pickImage() async {
@@ -37,7 +39,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
     }
   }
 
-  void _navigateToNext() {
+  Future<void> _navigateToNext() async {
     final createUserReq = CreateUserRequest(
       name: _nameController.text,
       email: _emailController.text,
@@ -45,8 +47,10 @@ class _CreateUserPageState extends State<CreateUserPage> {
       roleId: widget.roleId,
       userImage: _userProfilePicture,
       vetSpecialtyId: [],
+      deviceToken: await FirebaseMessaging.instance.getToken(),
     );
     if (_formKey.currentState!.validate()) {
+      if (!mounted) return;
       if (widget.roleId == 1) {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => EnterPetDetailsPage(

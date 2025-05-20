@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:frontend/model/response/error_response.dart';
@@ -76,7 +74,6 @@ Future<Result<T>> makeRequest<T>(
     final res = await reqFunc();
     if (res.statusCode == successStatusCode) {
       T? resp;
-      log("[INFO] ${res.data}");
       if (parse != null) {
         resp = parse(res.data);
       }
@@ -85,8 +82,7 @@ Future<Result<T>> makeRequest<T>(
     } else {
       switch (res.statusCode) {
         case 400:
-          ErrorResponse errorRes = ErrorResponse.fromJson(
-              jsonDecode(res.data) as Map<String, dynamic>);
+          ErrorResponse errorRes = ErrorResponse.fromJson(res.data);
 
           return Result.badRequestErr(errorRes.error);
         case 401:

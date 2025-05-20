@@ -6,6 +6,7 @@ import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/select_pet_type_modal.dart';
 import 'package:frontend/components/profile_image_picker.dart';
 import 'package:frontend/model/lookup.dart';
+import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/pet_provider.dart';
@@ -32,6 +33,8 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
   int _petCategoryId = 0;
   File? _petProfilePicture;
 
+  bool _isLoaded = false;
+
   Future<void> _pickImage() async {
     final photo = await ImagePicker().pickImage(source: ImageSource.gallery);
 
@@ -39,6 +42,16 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
       setState(() {
         _petProfilePicture = File(photo.path);
       });
+    }
+  }
+
+  void _initInitialData(Pet? value) {
+    if (!_isLoaded) {
+      _nameController.text = value!.name;
+      _isNeutered = value.neutered;
+      _petCategoryId = value.petCategory.id;
+      _petCategoryController.text = value.petCategory.name;
+      _isLoaded = true;
     }
   }
 
@@ -81,9 +94,7 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
             onRefresh: () => ref.refresh(petStateProvider.future),
           ),
         AsyncData(:final value) => Builder(builder: (context) {
-            _nameController.text = value!.name;
-            _isNeutered = value.neutered;
-            _petCategoryId = value.petCategory.id;
+            _initInitialData(value);
 
             return SafeArea(
               child: Container(
@@ -98,17 +109,18 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                       ProfileImagePicker(
                         onTap: _pickImage,
                         image: _petProfilePicture,
-                        imageUrl: value.imageUrl,
+                        imageUrl: value?.imageUrl,
                       ),
                       TextFormField(
                         controller: _nameController,
                         key: Key("name-input"),
                         decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            labelText: "Name",
-                            hintText: value.name),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          labelText: "Name",
+                          hintText: value?.name,
+                        ),
                         validator: (value) => validateNotEmpty("Name", value),
                       ),
                       TextFormField(
@@ -165,7 +177,7 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                                   petCategoryId: _petCategoryId,
                                   neutered: _isNeutered,
                                   petImage: _petProfilePicture,
-                                  status: value.status,
+                                  status: value?.status,
                                 ),
                               );
                         },

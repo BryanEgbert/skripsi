@@ -1,0 +1,98 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/constants.dart';
+import 'package:frontend/model/chat_message.dart';
+import 'package:frontend/model/response/token_response.dart';
+
+class ChatBubble extends StatelessWidget {
+  const ChatBubble({
+    super.key,
+    required this.msg,
+    required this.myInfo,
+    required this.formattedDate,
+  });
+
+  final ChatMessage msg;
+  final AsyncValue<TokenResponse> myInfo;
+  final String formattedDate;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: (msg.senderId != myInfo.value!.userId)
+          ? MainAxisAlignment.start
+          : MainAxisAlignment.end,
+      children: [
+        Container(
+          margin: EdgeInsets.only(bottom: 4),
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: (msg.senderId == myInfo.value!.userId)
+                ? Colors.orange[200]
+                : Constants.secondaryBackgroundColor,
+          ),
+          child: Column(
+            crossAxisAlignment: (msg.senderId != myInfo.value!.userId)
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (msg.imageUrl != null)
+                GestureDetector(
+                  onTap: () {
+                    showGeneralDialog(
+                      context: context,
+                      barrierColor: Colors.black.withValues(alpha: 0.5),
+                      barrierLabel: 'Image details',
+                      pageBuilder: (context, animation, secondaryAnimation) {
+                        return SizedBox.expand(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: InteractiveViewer(
+                              child: Image.network(msg.imageUrl!),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Image.network(
+                    msg.imageUrl!,
+                    width: 200,
+                  ),
+                ),
+              Text(
+                msg.message,
+                style: TextStyle(
+                  color: Colors.black87,
+                ),
+              ),
+              Row(
+                spacing: 4,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    formattedDate,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  if (msg.isRead && msg.senderId == myInfo.value!.userId)
+                    Icon(
+                      Icons.remove_red_eye_rounded,
+                      color: Colors.grey[700],
+                      size: 14,
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

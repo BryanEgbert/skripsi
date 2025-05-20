@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/app_bar_back_button.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/reviews.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
@@ -104,7 +105,9 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                   children: [
                     Container(
                       padding: EdgeInsets.all(16),
-                      color: Color(0xFFFFF1E1),
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.secondaryBackgroundColor
+                          : null,
                       child: Row(
                         children: [
                           Icon(Icons.star, color: Colors.amber, size: 40),
@@ -113,22 +116,36 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                    text: widget.ratingsAvg.toString(),
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black)),
+                                  text: widget.ratingsAvg.toString(),
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Colors.black
+                                        : null,
+                                  ),
+                                ),
                                 TextSpan(
-                                    text: '/5',
-                                    style: TextStyle(
-                                        fontSize: 18, color: Colors.black)),
+                                  text: '/5',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Colors.black
+                                        : null,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
                           Spacer(),
-                          Text('${widget.ratingsCount} Reviews',
-                              style:
-                                  TextStyle(fontSize: 16, color: Colors.black)),
+                          Text(
+                            '${widget.ratingsCount} Reviews',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -153,7 +170,9 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
   Widget _buildReviewCard(Reviews value) {
     return Container(
       margin: EdgeInsets.only(bottom: 8),
-      color: Color(0xFFFFF1E1),
+      color: Theme.of(context).brightness == Brightness.light
+          ? Constants.secondaryBackgroundColor
+          : null,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -182,7 +201,7 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                           rating: value.rating.toDouble(),
                           allowHalfRating: false,
                         ),
-                        Text(formatDate(value.createdAt),
+                        Text(formatDateStr(value.createdAt),
                             style: TextStyle(fontSize: 12, color: Colors.grey)),
                       ],
                     ),

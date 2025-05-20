@@ -49,7 +49,7 @@ _testmain.go
 .env
 image/
 test_image/
-
+skripsi-e8cfb-firebase-adminsdk-fbsvc-4d06e0c321.json
 # This file includes artifacts of Go build that should not be checked in.
 # For files created by specific development environment (e.g. editor),
 # use alternative ways to exclude files from git.

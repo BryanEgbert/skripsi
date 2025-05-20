@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
@@ -19,11 +21,8 @@ class PetDaycaresView extends ConsumerStatefulWidget {
   ConsumerState<PetDaycaresView> createState() => _PetDaycaresViewState();
 }
 
-// TODO: add filter feature
 class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
-  // TODO: change to get location from GPS
-  double? _latitude;
-  double? _longitude;
+  double? _latitude, _longitude;
 
   final ScrollController _scrollController = ScrollController();
   List<PetDaycare> _records = [];
@@ -35,7 +34,9 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
   bool _serviceEnabled = false;
   LocationPermission _permission = LocationPermission.denied;
 
-  PetDaycareFilters filters = PetDaycareFilters();
+  final List<String> _serviceFeatures = [];
+
+  final PetDaycareFilters _filters = PetDaycareFilters();
 
   Object? _error;
 
@@ -58,15 +59,15 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
       _longitude,
       _lastId,
       10,
-      filters.minDistance,
-      filters.maxDistance,
-      filters.facilities,
-      filters.mustBeVaccinated,
-      filters.dailyWalks,
-      filters.dailyPlaytime,
-      filters.minPrice,
-      filters.maxPrice,
-      filters.pricingType,
+      _filters.minDistance,
+      _filters.maxDistance,
+      _serviceFeatures,
+      _filters.mustBeVaccinated,
+      _filters.dailyWalks,
+      _filters.dailyPlaytime,
+      _filters.minPrice,
+      _filters.maxPrice,
+      _filters.pricingType,
     ).future)
         .then((newData) {
       if (newData.data.isNotEmpty) {
@@ -126,6 +127,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
 
   @override
   Widget build(BuildContext context) {
+    log("filter: $_filters");
     if (_error != null) {
       return ErrorText(
           errorText: _error.toString(),
@@ -152,210 +154,358 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.tune_rounded),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-          ),
-          ...appBarActions(ref.read(authProvider.notifier)),
+          Builder(builder: (context) {
+            return IconButton(
+              icon: Icon(Icons.tune_rounded),
+              onPressed: () {
+                Scaffold.of(context).openEndDrawer();
+              },
+            );
+          }),
+          ...petOwnerAppBarActions(ref.read(authProvider.notifier)),
         ],
       ),
-      drawer: Stack(
-        children: [
-          Column(
-            children: [
-              Text(
-                "Pet Vaccination",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              FilterChip(
-                label: Text("Require Pet Vaccination"),
-                selected: filters.mustBeVaccinated ?? false,
-                onSelected: (value) {
-                  if (value == true) {
-                    filters.mustBeVaccinated = value;
-                  } else {
-                    filters.mustBeVaccinated = null;
-                  }
-                },
-              ),
-              Text("Distance in kilometer (GPS must be turned on)"),
-              Text(
-                "To disable filter by distance, set slider to 0",
-                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-              ),
-              RangeSlider(
-                max: 500,
-                min: 0,
-                divisions: 500,
-                labels: RangeLabels(
-                  "${filters.minDistance.round()} km",
-                  "${filters.maxDistance.round()} km",
+      endDrawer: Container(
+        padding: EdgeInsets.all(12),
+        color: Theme.of(context).brightness == Brightness.light
+            ? Constants.secondaryBackgroundColor
+            : Constants.darkBackgroundColor,
+        child: SingleChildScrollView(
+          child: SafeArea(
+            child: Column(
+              spacing: 4,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: Icon(
+                        Icons.navigate_before,
+                        color: Constants.primaryTextColor,
+                      ),
+                    ),
+                    Text(
+                      "Back",
+                      style: TextStyle(color: Constants.primaryTextColor),
+                    )
+                  ],
                 ),
-                values: RangeValues(filters.minDistance, filters.maxDistance),
-                onChanged: _serviceEnabled
-                    ? (value) {
-                        filters.minDistance = value.start;
-                        filters.maxDistance = value.end;
-                      }
-                    : null,
-                activeColor: Constants.primaryTextColor,
-              ),
-              Text("Price Range"),
-              Text(
-                "To disable price range filter, set slider to 0",
-                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-              ),
-              RangeSlider(
-                max: 1000000,
-                min: 0,
-                divisions: 100000,
-                labels: RangeLabels(
-                  "Rp${filters.minPrice.round()}",
-                  "Rp${filters.maxPrice.round()}",
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Pet Vaccination",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Constants.primaryTextColor,
+                      ),
+                    ),
+                    FilterChip(
+                      label: Text(
+                        "Require Pet Vaccination",
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      selected: _filters.mustBeVaccinated ?? false,
+                      onSelected: (value) {
+                        if (value == true) {
+                          setState(() {
+                            _filters.mustBeVaccinated = value;
+                          });
+                        } else {
+                          setState(() {
+                            _filters.mustBeVaccinated = null;
+                          });
+                        }
+                      },
+                    ),
+                    Text(
+                      "Distance in kilometer (GPS must be turned on)",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Constants.primaryTextColor,
+                      ),
+                    ),
+                    Text(
+                      "To disable filter by distance, set slider to 0",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.grey[700]
+                            : null,
+                      ),
+                    ),
+                    RangeSlider(
+                      max: 500,
+                      min: 0,
+                      divisions: 500,
+                      labels: RangeLabels(
+                        "${_filters.minDistance.round()} km",
+                        "${_filters.maxDistance.round()} km",
+                      ),
+                      values: RangeValues(
+                          _filters.minDistance, _filters.maxDistance),
+                      onChanged: _serviceEnabled
+                          ? (value) {
+                              setState(() {
+                                _filters.minDistance = value.start;
+                                _filters.maxDistance = value.end;
+                              });
+                            }
+                          : null,
+                      activeColor: Constants.primaryTextColor,
+                    ),
+                    Text(
+                      "Price Range",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Constants.primaryTextColor,
+                      ),
+                    ),
+                    Text(
+                      "To disable price range filter, set slider to 0",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.grey[700]
+                            : null,
+                      ),
+                    ),
+                    RangeSlider(
+                      max: 1000000,
+                      min: 0,
+                      divisions: 100000,
+                      labels: RangeLabels(
+                        "Rp${_filters.minPrice.round()}",
+                        "Rp${_filters.maxPrice.round()}",
+                      ),
+                      values: RangeValues(_filters.minPrice, _filters.maxPrice),
+                      onChanged: (value) {
+                        setState(() {
+                          _filters.minPrice = value.start;
+                          _filters.maxPrice = value.end;
+                        });
+                      },
+                      activeColor: Constants.primaryTextColor,
+                    ),
+                    Text(
+                      "Facilities",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Constants.primaryTextColor,
+                      ),
+                    ),
+                    Wrap(
+                      spacing: 4,
+                      children: [
+                        FilterChip(
+                          selected: _serviceFeatures.contains("pickup"),
+                          label: Text(
+                            "Pick-Up Service Provided",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onSelected: (value) {
+                            if (value == true) {
+                              setState(() {
+                                _serviceFeatures.add("pickup");
+                              });
+                            } else {
+                              setState(() {
+                                _serviceFeatures.remove("pickup");
+                              });
+                            }
+                          },
+                        ),
+                        FilterChip(
+                          selected: _serviceFeatures.contains("food"),
+                          label: Text(
+                            "Food Provided",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onSelected: (value) {
+                            setState(() {
+                              if (value == true) {
+                                _serviceFeatures.add("food");
+                              } else {
+                                _serviceFeatures.remove("food");
+                              }
+                            });
+                          },
+                        ),
+                        FilterChip(
+                          selected: _serviceFeatures.contains("grooming"),
+                          label: Text(
+                            "Grooming Service Provided",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onSelected: (value) {
+                            setState(() {
+                              if (value == true) {
+                                _serviceFeatures.add("grooming");
+                              } else {
+                                _serviceFeatures.remove("grooming");
+                              }
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "Daily Walks",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Constants.primaryTextColor,
+                      ),
+                    ),
+                    Wrap(
+                      spacing: 4,
+                      children: [
+                        FilterChip(
+                          selected: _filters.dailyWalks == 1,
+                          label: Text(
+                            "No Walks Provided",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onSelected: (value) {
+                            if (value == true) {
+                              setState(() {
+                                _filters.dailyWalks = 1;
+                              });
+                            }
+                          },
+                        ),
+                        FilterChip(
+                          selected: _filters.dailyWalks == 2,
+                          label: Text(
+                            "One Walk a Day",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onSelected: (value) {
+                            if (value == true) {
+                              setState(() {
+                                _filters.dailyWalks = 2;
+                              });
+                            }
+                          },
+                        ),
+                        FilterChip(
+                          selected: _filters.dailyWalks == 3,
+                          label: Text(
+                            "Two Walks a Day",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onSelected: (value) {
+                            if (value == true) {
+                              setState(() {
+                                _filters.dailyWalks = 3;
+                              });
+                            }
+                          },
+                        ),
+                        FilterChip(
+                          selected: _filters.dailyWalks == 4,
+                          label: Text(
+                            "More Than Two Walks a Day",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onSelected: (value) {
+                            if (value == true) {
+                              setState(() {
+                                _filters.dailyWalks = 4;
+                              });
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "Daily Playtime",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Constants.primaryTextColor,
+                      ),
+                    ),
+                    Wrap(
+                      spacing: 4,
+                      children: [
+                        FilterChip(
+                          selected: _filters.dailyPlaytime == 1,
+                          label: Text(
+                            "No Playtime Provided",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onSelected: (value) {
+                            if (value == true) {
+                              setState(() {
+                                _filters.dailyPlaytime = 1;
+                              });
+                            }
+                          },
+                        ),
+                        FilterChip(
+                          selected: _filters.dailyPlaytime == 2,
+                          label: Text(
+                            "One Play Session a Day",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onSelected: (value) {
+                            if (value == true) {
+                              _filters.dailyPlaytime = 2;
+                            }
+                          },
+                        ),
+                        FilterChip(
+                          selected: _filters.dailyPlaytime == 3,
+                          label: Text(
+                            "Two Play Session a Day",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onSelected: (value) {
+                            if (value == true) {
+                              setState(() {
+                                _filters.dailyPlaytime = 3;
+                              });
+                            }
+                          },
+                        ),
+                        FilterChip(
+                          selected: _filters.dailyPlaytime == 4,
+                          label: Text(
+                            "More Than Two Play Session a Day",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onSelected: (value) {
+                            if (value == true) {
+                              setState(() {
+                                _filters.dailyPlaytime = 4;
+                              });
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                values: RangeValues(filters.minPrice, filters.maxPrice),
-                onChanged: (value) {
-                  filters.minPrice = value.start;
-                  filters.maxPrice = value.end;
-                },
-                activeColor: Constants.primaryTextColor,
-              ),
-              Text("Facilities"),
-              Row(
-                children: [
-                  FilterChip(
-                    selected: filters.facilities.contains("pickup"),
-                    label: Text("Pick-Up Service Provided"),
-                    onSelected: (value) {
-                      if (value == true) {
-                        filters.facilities.add("pickup");
-                      } else {
-                        filters.facilities.remove("pickup");
-                      }
-                    },
-                  ),
-                  FilterChip(
-                    selected: filters.facilities.contains("food"),
-                    label: Text("Food Provided"),
-                    onSelected: (value) {
-                      if (value == true) {
-                        filters.facilities.add("food");
-                      } else {
-                        filters.facilities.remove("food");
-                      }
-                    },
-                  ),
-                  FilterChip(
-                    selected: filters.facilities.contains("grooming"),
-                    label: Text("Grooming Service Provided"),
-                    onSelected: (value) {
-                      if (value == true) {
-                        filters.facilities.add("grooming");
-                      } else {
-                        filters.facilities.remove("grooming");
-                      }
-                    },
-                  ),
-                ],
-              ),
-              Text("Daily Walks"),
-              Row(
-                children: [
-                  FilterChip(
-                    selected: filters.dailyWalks == 1,
-                    label: Text("No Walks Provided"),
-                    onSelected: (value) {
-                      if (value == true) {
-                        filters.dailyWalks = 1;
-                      }
-                    },
-                  ),
-                  FilterChip(
-                    selected: filters.dailyWalks == 2,
-                    label: Text("One Walk a Day"),
-                    onSelected: (value) {
-                      if (value == true) {
-                        filters.dailyWalks = 2;
-                      }
-                    },
-                  ),
-                  FilterChip(
-                    selected: filters.dailyWalks == 3,
-                    label: Text("Two Walks a Day"),
-                    onSelected: (value) {
-                      if (value == true) {
-                        filters.dailyWalks = 3;
-                      }
-                    },
-                  ),
-                  FilterChip(
-                    selected: filters.dailyWalks == 4,
-                    label: Text("More Than Two Walks a Day"),
-                    onSelected: (value) {
-                      if (value == true) {
-                        filters.dailyWalks = 4;
-                      }
-                    },
-                  ),
-                ],
-              ),
-              Text("Daily Playtime"),
-              Row(
-                children: [
-                  FilterChip(
-                    selected: filters.dailyPlaytime == 1,
-                    label: Text("No Playtime Provided"),
-                    onSelected: (value) {
-                      if (value == true) {
-                        filters.dailyPlaytime = 1;
-                      }
-                    },
-                  ),
-                  FilterChip(
-                    selected: filters.dailyPlaytime == 2,
-                    label: Text("One Play Session a Day"),
-                    onSelected: (value) {
-                      if (value == true) {
-                        filters.dailyPlaytime = 2;
-                      }
-                    },
-                  ),
-                  FilterChip(
-                    selected: filters.dailyPlaytime == 3,
-                    label: Text("Two Play Session a Day"),
-                    onSelected: (value) {
-                      if (value == true) {
-                        filters.dailyPlaytime = 3;
-                      }
-                    },
-                  ),
-                  FilterChip(
-                    selected: filters.dailyPlaytime == 4,
-                    label: Text("More Than Two Play Session a Day"),
-                    onSelected: (value) {
-                      if (value == true) {
-                        filters.dailyPlaytime = 4;
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ],
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _records = [];
+                      _lastId = 0;
+                      _fetchMoreData();
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                      textStyle:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  child: Text("Save"),
+                )
+              ],
+            ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              if (filters == PetDaycareFilters()) {
-                return;
-              }
-
-              Navigator.of(context).pop();
-              setState(() {});
-            },
-            child: Text("Save"),
-          )
-        ],
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -407,7 +557,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                       ),
                       Text(
                         "Turn on location to find the nearest pet daycare",
-                        style: TextStyle(color: Colors.grey[800], fontSize: 12),
+                        style: TextStyle(color: Colors.grey[800], fontSize: 11),
                       ),
                     ],
                   ),
@@ -416,8 +566,9 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                       await Geolocator.openLocationSettings();
                     },
                     child: Text(
-                      "Turn On Location",
-                      style: TextStyle(color: Colors.grey[800], fontSize: 12),
+                      "Turn On",
+                      style: TextStyle(
+                          color: Constants.primaryTextColor, fontSize: 11),
                     ),
                   ),
                 ],

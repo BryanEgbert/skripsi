@@ -151,7 +151,7 @@ class _PaginatedListViewState
                       color: Colors.orange,
                     ),
                   ),
-                  Text(formatDate(vaccineRecord.dateAdministered)),
+                  Text(formatDateStr(vaccineRecord.dateAdministered)),
                   Text(
                     "Next Due Date:",
                     style: TextStyle(
@@ -160,7 +160,7 @@ class _PaginatedListViewState
                       color: Colors.orange,
                     ),
                   ),
-                  Text(formatDate(vaccineRecord.nextDueDate)),
+                  Text(formatDateStr(vaccineRecord.nextDueDate)),
                 ],
               ),
               Row(

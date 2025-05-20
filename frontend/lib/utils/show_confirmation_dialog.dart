@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/constants.dart';
 
 void showCancelBookingConfirmationDialog(
     BuildContext context, String message, Function() delFunc) {
@@ -13,7 +14,7 @@ void showCancelBookingConfirmationDialog(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text("Cancel"),
+            child: Text("No"),
           ),
           TextButton(
             onPressed: () {
@@ -21,8 +22,8 @@ void showCancelBookingConfirmationDialog(
               Navigator.of(context).pop();
             },
             child: Text(
-              "Delete",
-              style: TextStyle(color: Colors.red),
+              "Yes",
+              style: TextStyle(color: Constants.primaryTextColor),
             ),
           ),
         ],

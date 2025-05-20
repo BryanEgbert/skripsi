@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
@@ -11,6 +9,8 @@ abstract interface class ILocationService {
       String sessionId, String query);
   Future<Result<RetrieveResponse>> retrieveSuggestedLocation(
       String sessionId, String mapboxId);
+  Future<Result<RetrieveResponse>> reverseLookup(
+      double latitude, double longitude);
 }
 
 class MockLocationService implements ILocationService {
@@ -149,6 +149,79 @@ class MockLocationService implements ILocationService {
       return res;
     }, (res) => RetrieveResponse.fromJson(res));
   }
+
+  @override
+  Future<Result<RetrieveResponse>> reverseLookup(
+      double latitude, double longitude) {
+    return makeRequest(200, () async {
+      final mockData = {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "coordinates": [13.3295589, 52.5125463],
+              "type": "Point"
+            },
+            "properties": {
+              "name": "Straße Des 17. Juni 115",
+              "mapbox_id":
+                  "dXJuOm1ieGFkcjo2YjU1MDMxMy1iNzM0LTQxNjYtYjk0MC0zZTU1MTE4MmQwOGY",
+              "feature_type": "address",
+              "address": "Straße Des 17. Juni 115",
+              "full_address": "Straße Des 17. Juni 115, 10623 Berlin, Germany",
+              "place_formatted": "10623 Berlin, Germany",
+              "context": {
+                "country": {
+                  "id": "dXJuOm1ieHBsYzpJam8",
+                  "name": "Germany",
+                  "country_code": "DE",
+                  "country_code_alpha_3": "DEU"
+                },
+                "postcode": {"id": "dXJuOm1ieHBsYzpVYTQ2", "name": "10623"},
+                "place": {"id": "dXJuOm1ieHBsYzpBY1E2", "name": "Berlin"},
+                "locality": {
+                  "id": "dXJuOm1ieHBsYzpBd1pxT2c",
+                  "name": "Charlottenburg"
+                },
+                "address": {
+                  "id":
+                      "dXJuOm1ieGFkcjo2YjU1MDMxMy1iNzM0LTQxNjYtYjk0MC0zZTU1MTE4MmQwOGY",
+                  "name": "Straße Des 17. Juni 115",
+                  "address_number": "Straße",
+                  "street_name": "Des 17. Juni 115"
+                },
+                "street": {"name": "Des 17. Juni 115"}
+              },
+              "coordinates": {
+                "latitude": 52.5125463,
+                "longitude": 13.3295589,
+                "accuracy": "rooftop",
+                "routable_points": [
+                  {
+                    "name": "default",
+                    "latitude": 52.51264818693428,
+                    "longitude": 13.32955240836938
+                  }
+                ]
+              },
+              "language": "en",
+              "maki": "marker",
+              "external_ids": {},
+              "metadata": {}
+            }
+          }
+        ],
+        "attribution":
+            "© 2023 Mapbox and its suppliers. All rights reserved. Use of this data is subject to the Mapbox Terms of Service. (https://www.mapbox.com/about/maps/)"
+      };
+
+      final res = Response(
+          data: mockData, requestOptions: RequestOptions(), statusCode: 200);
+
+      return res;
+    }, (res) => RetrieveResponse.fromJson(res));
+  }
 }
 
 class LocationService implements ILocationService {
@@ -198,7 +271,33 @@ class LocationService implements ILocationService {
           "country": "id",
         },
       );
-      log("[INFO] retrieve: ${res.data.toString()}");
+
+      return res;
+    }, (res) => RetrieveResponse.fromJson(res));
+  }
+
+  @override
+  Future<Result<RetrieveResponse>> reverseLookup(
+      double latitude, double longitude) {
+    return makeRequest(200, () async {
+      final String mapboxToken = dotenv.env["MAPBOX_TOKEN"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
+        "https://api.mapbox.com/search/searchbox/v1/reverse",
+        queryParameters: {
+          "access_token": mapboxToken,
+          "latitude": latitude,
+          "longitude": longitude,
+          "country": "id",
+        },
+      );
+
       return res;
     }, (res) => RetrieveResponse.fromJson(res));
   }

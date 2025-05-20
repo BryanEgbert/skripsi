@@ -6,6 +6,7 @@ class CreateUserRequest {
   final String password;
   final int roleId;
   final List<int> vetSpecialtyId;
+  final String? deviceToken;
   final File? userImage;
 
   CreateUserRequest({
@@ -14,6 +15,7 @@ class CreateUserRequest {
     required this.password,
     required this.roleId,
     required this.vetSpecialtyId,
+    required this.deviceToken,
     this.userImage,
   });
 
@@ -25,6 +27,10 @@ class CreateUserRequest {
       "roleId": roleId.toString(),
       "vetSpecialtyId[]": vetSpecialtyId,
     };
+
+    if (deviceToken != null) {
+      map["deviceToken"] = deviceToken;
+    }
 
     return map;
   }

@@ -8,30 +8,29 @@ import (
 
 type BookedSlot struct {
 	gorm.Model
-	UserID           uint      `gorm:"not null"`
-	DaycareID        uint      `gorm:"not null"`
-	StartDate        time.Time `gorm:"not null"`
-	EndDate          time.Time `gorm:"not null"`
-	UsePickupService bool      `gorm:"not null,default:0"`
-	StatusID         uint      `gorm:"not null,default:1"`
-	AddressID        *uint     `gorm:"default:null"`
+	UserID    uint      `gorm:"not null"`
+	SlotID    uint      `gorm:"not null"`
+	DaycareID uint      `gorm:"not null"`
+	StartDate time.Time `gorm:"not null"`
+	EndDate   time.Time `gorm:"not null"`
+	StatusID  *uint     `gorm:"default:1"`
+	AddressID *uint     `gorm:"default:null"`
 
-	User    User              `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Pet     []Pet             `gorm:"many2many:pet_booked_slots;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Daycare PetDaycare        `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Status  BookedSlotStatus  `gorm:"foreignKey:StatusID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Address BookedSlotAddress `gorm:"foreignKey:AddressID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	User    User             `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Pet     []Pet            `gorm:"many2many:pet_booked_slots;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Daycare PetDaycare       `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Status  BookedSlotStatus `gorm:"foreignKey:StatusID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Address SavedAddress     `gorm:"foreignKey:AddressID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type BookSlotRequest struct {
-	DaycareID        uint
-	PetID            []uint    `json:"petId" binding:"required"`
-	StartDate        time.Time `json:"startDate" binding:"required"`
-	EndDate          time.Time `json:"endDate" binding:"required"`
-	UsePickupService bool      `json:"usePickupService" binding:"required"`
-	Location         *string   `json:"location"`
-	Address          *string   `json:"address"`
-	Latitude         *float64  `json:"latitude"`
-	Longitude        *float64  `json:"longitude"`
-	Notes            *string   `json:"note"`
+	DaycareID uint
+	PetID     []uint    `json:"petId" binding:"required"`
+	StartDate time.Time `json:"startDate" binding:"required"`
+	EndDate   time.Time `json:"endDate" binding:"required"`
+	Location  *string   `json:"location"`
+	Address   *string   `json:"address"`
+	Latitude  *float64  `json:"latitude"`
+	Longitude *float64  `json:"longitude"`
+	Notes     *string   `json:"note"`
 }

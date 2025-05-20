@@ -4,11 +4,13 @@ part 'send_message.g.dart';
 
 @JsonSerializable()
 class SendMessage {
+  bool updateRead;
   int receiverId;
   String message;
   String? imageUrl;
 
   SendMessage({
+    this.updateRead = false,
     required this.receiverId,
     required this.message,
     this.imageUrl,

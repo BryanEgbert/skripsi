@@ -73,6 +73,7 @@ func (s *PetDaycareServiceImpl) GetMyPetDaycare(userId uint) (*model.GetPetDayca
 		Preload("Thumbnails").
 		Preload("Reviews").
 		Preload("Slots").
+		Preload("Slots.PricingType").
 		Preload("Slots.PetCategory").
 		Preload("Slots.PetCategory.SizeCategory").
 		Where("owner_id = ?", userId).
@@ -98,6 +99,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat *float64, long *float
 			Preload("Thumbnails").
 			Preload("Reviews").
 			Preload("Slots").
+			Preload("Slots.PricingType").
 			Preload("Slots.PetCategory").
 			Preload("Slots.PetCategory.SizeCategory").
 			Select("*, ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(longitude, latitude)) AS Distance", long, lat).
@@ -113,6 +115,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat *float64, long *float
 			Preload("Thumbnails").
 			Preload("Reviews").
 			Preload("Slots").
+			Preload("Slots.PricingType").
 			Preload("Slots.PetCategory").
 			Preload("Slots.PetCategory.SizeCategory").
 			Find(&daycare, id).Error; err != nil {
@@ -136,6 +139,7 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 	if err := tx.
 		Preload("Thumbnails").
 		Preload("Slots").
+		Preload("Slots.PricingType").
 		Where("id = ? AND owner_id = ?", id, userId).
 		First(&daycare).Error; err != nil {
 		tx.Rollback()
@@ -208,6 +212,8 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 				DaycareID:     daycare.ID,
 				PetCategoryID: newData.PetCategoryID[i],
 				MaxNumber:     newData.MaxNumber[i],
+				Price:         newData.Price[i],
+				PricingTypeID: newData.PricingType[i],
 			})
 		}
 
@@ -271,7 +277,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 	}
 
 	if req.MustBeVaccinated != nil {
-		query = query.Where("must_be_vaccinated = ?", req.MustBeVaccinated)
+		query = query.Where("address_id IS NOT NULL")
 	}
 
 	if len(req.Facilities) > 0 {
@@ -317,8 +323,9 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		row.Scan(&results[i].Thumbnail)
 
 		rows, err := s.db.Table("slots").
-			Select("pet_categories.id", "pet_categories.name", "size_categories.*", "slots.price", "slots.pricing_type").
+			Select("pet_categories.id", "pet_categories.name", "size_categories.*", "slots.price", "pricing_types.name").
 			Joins("JOIN pet_categories ON pet_categories.id = slots.pet_category_id").
+			Joins("JOIN pricing_types ON pricing_types.id = slots.pricing_type_id").
 			Joins("JOIN size_categories ON size_categories.id = pet_categories.size_category_id").
 			Where("slots.daycare_id = ?", result.ID).
 			Rows()
@@ -449,7 +456,7 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 			PetCategoryID: petCategory,
 			MaxNumber:     request.MaxNumber[i],
 			Price:         request.Price[i],
-			PricingType:   request.PricingType[i],
+			PricingTypeID: request.PricingType[i],
 		})
 	}
 
@@ -485,7 +492,7 @@ func (s *PetDaycareServiceImpl) DeletePetDaycare(id uint, ownerId uint) error {
 	}
 
 	if len(daycare.BookedSlots) != 0 {
-		return errors.New("There are pets booked in your pet daycare")
+		return errors.New("there are pets booked in your pet daycare")
 	}
 
 	if err := s.db.

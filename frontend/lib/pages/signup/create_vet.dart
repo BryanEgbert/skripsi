@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/response/token_response.dart';
-import 'package:frontend/pages/vet_page.dart';
+import 'package:frontend/pages/vet_main_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/category_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
@@ -56,14 +56,29 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
           centerTitle: false,
           actions: [
             IconButton(
-                onPressed: () async {
-                  if (!auth.isLoading) {
-                    await ref
-                        .read(authProvider.notifier)
-                        .register(widget.reqBody);
-                  }
-                },
-                icon: Icon(Icons.check_rounded))
+              onPressed: () async {
+                if (widget.reqBody.vetSpecialtyId.isEmpty) {
+                  var snackbar = SnackBar(
+                    key: Key("error-message"),
+                    content: Text(
+                      "Must choose at least one vet specialty",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.red[800],
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                  return;
+                }
+
+                if (!auth.isLoading) {
+                  await ref
+                      .read(authProvider.notifier)
+                      .register(widget.reqBody);
+                }
+              },
+              icon: Icon(Icons.check_rounded),
+            )
           ],
         ),
         backgroundColor: Color(0xFFFFF8F0),

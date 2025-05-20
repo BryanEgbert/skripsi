@@ -76,8 +76,6 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
       maxNumber: [],
     );
 
-    log("[INFO] $createPetDaycareReq");
-
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => AddPetDaycareThumbnails(

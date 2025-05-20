@@ -7,7 +7,13 @@ import (
 )
 
 func RegisterChatRoute(r *gin.Engine, chatController *controller.ChatController) *gin.Engine {
-	r.GET("/chat", middleware.JWTAuth(), chatController.Handle)
+	chatRoute := r.Group("/chat")
+	chatRoute.PATCH("/read", middleware.JWTAuth(), chatController.UpdateRead)
+	chatRoute.GET("/unread", middleware.JWTAuth(), chatController.GetUnreadMessage)
+	chatRoute.GET("", middleware.JWTAuth(), chatController.Handle)
+	chatRoute.GET("/user", middleware.JWTAuth(), chatController.GetUserChatList)
+
+	r.GET("/chat-messages", middleware.JWTAuth(), chatController.GetMessages)
 
 	return r
 }

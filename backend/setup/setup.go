@@ -1,11 +1,13 @@
 package setup
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"testing"
 
+	firebase "firebase.google.com/go/v4"
 	"github.com/BryanEgbert/skripsi/controller"
 	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
@@ -14,6 +16,7 @@ import (
 	"github.com/BryanEgbert/skripsi/service"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"google.golang.org/api/option"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -66,9 +69,11 @@ func SetupTest(t *testing.T) *gorm.DB {
 		&model.DailyPlaytime{},
 		&model.ReduceSlots{},
 		&model.BookedSlotsDaily{},
+		&model.ChatImage{},
+		&model.PricingType{},
 	)
 
-	if err := db.Exec("TRUNCATE TABLE users, vet_specialties, user_vet_specialties, pet_daycares, pets, size_categories, roles, slots, booked_slots, thumbnails, pet_categories, reviews, refresh_tokens, transactions, daily_walks, daily_playtimes, reduce_slots, booked_slots_dailies RESTART IDENTITY CASCADE;").Error; err != nil {
+	if err := db.Exec("TRUNCATE TABLE users, vet_specialties, user_vet_specialties, pet_daycares, pets, size_categories, roles, slots, booked_slots, thumbnails, pet_categories, reviews, refresh_tokens, transactions, daily_walks, daily_playtimes, reduce_slots, booked_slots_dailies, pricing_types RESTART IDENTITY CASCADE;").Error; err != nil {
 		t.Fatalf("Truncate err: %v", err)
 	}
 
@@ -107,11 +112,24 @@ func Setup(db *gorm.DB) *gin.Engine {
 		&model.VaccineRecord{},
 		&model.BookedSlotStatus{},
 		&model.SavedAddress{},
-		&model.BookedSlotAddress{},
 		&model.ChatMessage{},
+		&model.ChatImage{},
 	)
 
+	ctx := context.Background()
 	r := gin.Default()
+	opt := option.WithCredentialsFile("./skripsi-e8cfb-firebase-adminsdk-fbsvc-4d06e0c321.json")
+	app, err := firebase.NewApp(ctx, nil, opt)
+	if err != nil {
+		log.Fatalf("error initializing app: %v\n", err)
+		os.Exit(1)
+	}
+
+	client, err := app.Messaging(ctx)
+	if err != nil {
+		log.Fatalf("error getting Messaging client: %v\n", err)
+		os.Exit(1)
+	}
 
 	userService := service.NewUserService(db)
 	petService := service.NewPetService(db)
@@ -141,7 +159,13 @@ func Setup(db *gorm.DB) *gin.Engine {
 	slotController := controller.NewSlotController(slotService)
 
 	chatService := service.NewChatService(db)
-	chatController := controller.NewChatController(chatService)
+	chatController := controller.NewChatController(chatService, userService, client)
+
+	imageService := service.NewImageService(db)
+	imageController := controller.NewImageController(imageService)
+
+	savedAddressService := service.NewSavedAddressService(db)
+	savedAddressController := controller.NewSavedAddressController(savedAddressService)
 
 	r.Static("/image", "./image")
 	r = routes.RegisterUserRoute(r, userController)
@@ -153,6 +177,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 	r = routes.RegisterTransactionRoute(r, transactionController)
 	r = routes.RegisterSlotRoute(r, slotController)
 	r = routes.RegisterChatRoute(r, chatController)
+	r = routes.RegisterImageRoute(r, imageController)
+	r = routes.RegisterSavedAddressRoute(r, savedAddressController)
 
 	return r
 }

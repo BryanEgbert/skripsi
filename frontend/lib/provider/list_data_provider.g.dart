@@ -6,7 +6,7 @@ part of 'list_data_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$petDaycaresHash() => r'ecc86ffd082e164de892873d21fd564b3908c148';
+String _$petDaycaresHash() => r'943e575868429b74ba71eb7568f3cb40947a4d99';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -353,22 +353,190 @@ class _PetDaycaresProviderElement
   String? get pricingType => (origin as PetDaycaresProvider).pricingType;
 }
 
-String _$connectChatHash() => r'a87b6d04727f73daeb2365e147cb3fdea7a954e8';
+String _$getUnreadChatMessagesHash() =>
+    r'c013cbf729ae629f9af718f46980382897c9c12e';
 
-/// See also [connectChat].
-@ProviderFor(connectChat)
-final connectChatProvider = AutoDisposeStreamProvider<ChatMessage>.internal(
-  connectChat,
-  name: r'connectChatProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$connectChatHash,
+/// See also [getUnreadChatMessages].
+@ProviderFor(getUnreadChatMessages)
+final getUnreadChatMessagesProvider =
+    AutoDisposeFutureProvider<ListData<ChatMessage>>.internal(
+  getUnreadChatMessages,
+  name: r'getUnreadChatMessagesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$getUnreadChatMessagesHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef ConnectChatRef = AutoDisposeStreamProviderRef<ChatMessage>;
+typedef GetUnreadChatMessagesRef
+    = AutoDisposeFutureProviderRef<ListData<ChatMessage>>;
+String _$getUserChatListHash() => r'6278a948e5c83ec912ea7f8815dd91772c57660d';
+
+/// See also [getUserChatList].
+@ProviderFor(getUserChatList)
+final getUserChatListProvider =
+    AutoDisposeFutureProvider<ListData<User>>.internal(
+  getUserChatList,
+  name: r'getUserChatListProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$getUserChatListHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef GetUserChatListRef = AutoDisposeFutureProviderRef<ListData<User>>;
+String _$getSlotsHash() => r'82529f18c957b7af727a2bdca1ea0b07b05db63b';
+
+/// See also [getSlots].
+@ProviderFor(getSlots)
+const getSlotsProvider = GetSlotsFamily();
+
+/// See also [getSlots].
+class GetSlotsFamily extends Family<AsyncValue<ListData<Slot>>> {
+  /// See also [getSlots].
+  const GetSlotsFamily();
+
+  /// See also [getSlots].
+  GetSlotsProvider call(
+    int petDaycareId,
+    List<int> petCategoryIds,
+  ) {
+    return GetSlotsProvider(
+      petDaycareId,
+      petCategoryIds,
+    );
+  }
+
+  @override
+  GetSlotsProvider getProviderOverride(
+    covariant GetSlotsProvider provider,
+  ) {
+    return call(
+      provider.petDaycareId,
+      provider.petCategoryIds,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getSlotsProvider';
+}
+
+/// See also [getSlots].
+class GetSlotsProvider extends AutoDisposeFutureProvider<ListData<Slot>> {
+  /// See also [getSlots].
+  GetSlotsProvider(
+    int petDaycareId,
+    List<int> petCategoryIds,
+  ) : this._internal(
+          (ref) => getSlots(
+            ref as GetSlotsRef,
+            petDaycareId,
+            petCategoryIds,
+          ),
+          from: getSlotsProvider,
+          name: r'getSlotsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getSlotsHash,
+          dependencies: GetSlotsFamily._dependencies,
+          allTransitiveDependencies: GetSlotsFamily._allTransitiveDependencies,
+          petDaycareId: petDaycareId,
+          petCategoryIds: petCategoryIds,
+        );
+
+  GetSlotsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.petDaycareId,
+    required this.petCategoryIds,
+  }) : super.internal();
+
+  final int petDaycareId;
+  final List<int> petCategoryIds;
+
+  @override
+  Override overrideWith(
+    FutureOr<ListData<Slot>> Function(GetSlotsRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetSlotsProvider._internal(
+        (ref) => create(ref as GetSlotsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        petDaycareId: petDaycareId,
+        petCategoryIds: petCategoryIds,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<ListData<Slot>> createElement() {
+    return _GetSlotsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetSlotsProvider &&
+        other.petDaycareId == petDaycareId &&
+        other.petCategoryIds == petCategoryIds;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, petDaycareId.hashCode);
+    hash = _SystemHash.combine(hash, petCategoryIds.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetSlotsRef on AutoDisposeFutureProviderRef<ListData<Slot>> {
+  /// The parameter `petDaycareId` of this provider.
+  int get petDaycareId;
+
+  /// The parameter `petCategoryIds` of this provider.
+  List<int> get petCategoryIds;
+}
+
+class _GetSlotsProviderElement
+    extends AutoDisposeFutureProviderElement<ListData<Slot>> with GetSlotsRef {
+  _GetSlotsProviderElement(super.provider);
+
+  @override
+  int get petDaycareId => (origin as GetSlotsProvider).petDaycareId;
+  @override
+  List<int> get petCategoryIds => (origin as GetSlotsProvider).petCategoryIds;
+}
+
 String _$reducedSlotsHash() => r'7a7321901eb4ad089bb4adafb9dfc4f893b8e9d6';
 
 /// See also [reducedSlots].
@@ -1244,7 +1412,7 @@ class _PetListProviderElement
   int get pageSize => (origin as PetListProvider).pageSize;
 }
 
-String _$bookedPetOwnerHash() => r'881ae317f3ffc940d8a7e508b5d1cbefeddd6bfb';
+String _$bookedPetOwnerHash() => r'8196dbebfb3d7491392e1446d10da2e2b70484d3';
 
 /// See also [bookedPetOwner].
 @ProviderFor(bookedPetOwner)
@@ -1799,6 +1967,138 @@ class _GetUserByIdProviderElement extends AutoDisposeFutureProviderElement<User>
   int get userId => (origin as GetUserByIdProvider).userId;
 }
 
+String _$chatMessagesHash() => r'0c96a5e10ecf7d9d598523b9159c967e4ed97704';
+
+/// See also [chatMessages].
+@ProviderFor(chatMessages)
+const chatMessagesProvider = ChatMessagesFamily();
+
+/// See also [chatMessages].
+class ChatMessagesFamily extends Family<AsyncValue<ListData<ChatMessage>>> {
+  /// See also [chatMessages].
+  const ChatMessagesFamily();
+
+  /// See also [chatMessages].
+  ChatMessagesProvider call(
+    int receiverId,
+  ) {
+    return ChatMessagesProvider(
+      receiverId,
+    );
+  }
+
+  @override
+  ChatMessagesProvider getProviderOverride(
+    covariant ChatMessagesProvider provider,
+  ) {
+    return call(
+      provider.receiverId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'chatMessagesProvider';
+}
+
+/// See also [chatMessages].
+class ChatMessagesProvider
+    extends AutoDisposeFutureProvider<ListData<ChatMessage>> {
+  /// See also [chatMessages].
+  ChatMessagesProvider(
+    int receiverId,
+  ) : this._internal(
+          (ref) => chatMessages(
+            ref as ChatMessagesRef,
+            receiverId,
+          ),
+          from: chatMessagesProvider,
+          name: r'chatMessagesProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$chatMessagesHash,
+          dependencies: ChatMessagesFamily._dependencies,
+          allTransitiveDependencies:
+              ChatMessagesFamily._allTransitiveDependencies,
+          receiverId: receiverId,
+        );
+
+  ChatMessagesProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.receiverId,
+  }) : super.internal();
+
+  final int receiverId;
+
+  @override
+  Override overrideWith(
+    FutureOr<ListData<ChatMessage>> Function(ChatMessagesRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: ChatMessagesProvider._internal(
+        (ref) => create(ref as ChatMessagesRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        receiverId: receiverId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<ListData<ChatMessage>> createElement() {
+    return _ChatMessagesProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ChatMessagesProvider && other.receiverId == receiverId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, receiverId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin ChatMessagesRef on AutoDisposeFutureProviderRef<ListData<ChatMessage>> {
+  /// The parameter `receiverId` of this provider.
+  int get receiverId;
+}
+
+class _ChatMessagesProviderElement
+    extends AutoDisposeFutureProviderElement<ListData<ChatMessage>>
+    with ChatMessagesRef {
+  _ChatMessagesProviderElement(super.provider);
+
+  @override
+  int get receiverId => (origin as ChatMessagesProvider).receiverId;
+}
+
 String _$getVetsHash() => r'58e957b0d8d95f6ee404623181fd4dfadd2b485c';
 
 /// See also [getVets].
@@ -2311,6 +2611,138 @@ class _GetBookingRequestsProviderElement
   int get page => (origin as GetBookingRequestsProvider).page;
   @override
   int get pageSize => (origin as GetBookingRequestsProvider).pageSize;
+}
+
+String _$getTransactionHash() => r'cc7a38272599754817ba4a9fddef7a9460054726';
+
+/// See also [getTransaction].
+@ProviderFor(getTransaction)
+const getTransactionProvider = GetTransactionFamily();
+
+/// See also [getTransaction].
+class GetTransactionFamily extends Family<AsyncValue<Transaction>> {
+  /// See also [getTransaction].
+  const GetTransactionFamily();
+
+  /// See also [getTransaction].
+  GetTransactionProvider call(
+    int transactionId,
+  ) {
+    return GetTransactionProvider(
+      transactionId,
+    );
+  }
+
+  @override
+  GetTransactionProvider getProviderOverride(
+    covariant GetTransactionProvider provider,
+  ) {
+    return call(
+      provider.transactionId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getTransactionProvider';
+}
+
+/// See also [getTransaction].
+class GetTransactionProvider extends AutoDisposeFutureProvider<Transaction> {
+  /// See also [getTransaction].
+  GetTransactionProvider(
+    int transactionId,
+  ) : this._internal(
+          (ref) => getTransaction(
+            ref as GetTransactionRef,
+            transactionId,
+          ),
+          from: getTransactionProvider,
+          name: r'getTransactionProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getTransactionHash,
+          dependencies: GetTransactionFamily._dependencies,
+          allTransitiveDependencies:
+              GetTransactionFamily._allTransitiveDependencies,
+          transactionId: transactionId,
+        );
+
+  GetTransactionProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.transactionId,
+  }) : super.internal();
+
+  final int transactionId;
+
+  @override
+  Override overrideWith(
+    FutureOr<Transaction> Function(GetTransactionRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetTransactionProvider._internal(
+        (ref) => create(ref as GetTransactionRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        transactionId: transactionId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<Transaction> createElement() {
+    return _GetTransactionProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetTransactionProvider &&
+        other.transactionId == transactionId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, transactionId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetTransactionRef on AutoDisposeFutureProviderRef<Transaction> {
+  /// The parameter `transactionId` of this provider.
+  int get transactionId;
+}
+
+class _GetTransactionProviderElement
+    extends AutoDisposeFutureProviderElement<Transaction>
+    with GetTransactionRef {
+  _GetTransactionProviderElement(super.provider);
+
+  @override
+  int get transactionId => (origin as GetTransactionProvider).transactionId;
 }
 
 String _$getTransactionsHash() => r'ee85aa24056cade231802008cfb7860591666a63';

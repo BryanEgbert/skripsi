@@ -65,10 +65,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
   // TODO: change this on release
   final _locationService = MockLocationService();
 
-  final _allDogSizePriceController = TextEditingController();
-  final _allDogSizePricingTypeController = TextEditingController(text: "day");
-  final _allDogSizeSlotController = TextEditingController();
-
   final _miniatureDogPriceController = TextEditingController();
   final _miniatureDogPricingTypeController = TextEditingController(text: "day");
   final _miniatureDogSlotController = TextEditingController();
@@ -97,29 +93,20 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
   final _bunniesPricingTypeController = TextEditingController(text: "day");
   final _bunniesSlotController = TextEditingController();
 
-  bool _acceptDogs = false;
   bool _acceptMiniatureDog = false;
   bool _acceptSmallDog = false;
   bool _acceptMediumDog = false;
   bool _acceptLargeDog = false;
   bool _acceptGiantDog = false;
 
-  List<int> _petCategoryIds = [];
-  List<double> _prices = [];
-  List<String> _pricingTypes = [];
-  List<int> _maxNumbers = [];
-  List<int> _thumbnailIndex = [];
+  final List<int> _petCategoryIds = [];
+  final List<double> _prices = [];
+  final List<int> _pricingTypes = [];
+  final List<int> _maxNumbers = [];
+  final List<int> _thumbnailIndex = [];
 
-  List<int> _existingPetCategoryId = [];
-  List<int> _petCategoryIdToCheck = [
-    _miniatureDogID,
-    _smallDogID,
-    _mediumDogID,
-    _largeDogID,
-    _giantDogID
-  ];
+  final List<int> _existingPetCategoryId = [];
 
-  bool _separateBySize = false;
   bool _acceptCats = false;
   bool _acceptBunnies = false;
 
@@ -248,6 +235,8 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                         }
                       }
 
+                      _updatePrice();
+
                       final updatePetDaycareReq = UpdatePetDaycareRequest(
                         petDaycareName: _nameController.text,
                         address: _address,
@@ -322,42 +311,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
               style: TextStyle(color: Colors.orange),
             ),
             centerTitle: false,
-            // TODO: update pet daycare info
-            actions: [
-              TextButton(
-                onPressed: () {
-                  ref.read(petDaycareStateProvider.notifier).updatePetDaycare(
-                      widget.petDaycareId,
-                      UpdatePetDaycareRequest(
-                        petDaycareName: _nameController.text,
-                        address: _address,
-                        location: _location,
-                        locality: _locality,
-                        latitude: _latitude,
-                        longitude: _longitude,
-                        openingHour: _openingHoursController.text,
-                        closingHour: _closingHoursController.text,
-                        price: _prices,
-                        pricingType: _pricingTypes,
-                        hasPickupService: _pickupServiceProvided,
-                        mustBeVaccinated: _petVaccinationRequired,
-                        groomingAvailable: _groomingServiceProvided,
-                        foodProvided: _foodProvided,
-                        dailyWalksId: _dailyWalksId,
-                        dailyPlaytimeId: _dailyPlaytimeId,
-                        thumbnails: _images.whereType<File>().toList(),
-                        petCategoryId: _petCategoryIds,
-                        maxNumber: _maxNumbers,
-                        thumbnailIndex: _thumbnailIndex,
-                      ));
-                },
-                child: Text(
-                  "SAVE",
-                  style: TextStyle(
-                      color: Colors.orange, fontWeight: FontWeight.bold),
-                ),
-              )
-            ],
           ),
           body: Center(
             child: CircularProgressIndicator(
@@ -383,21 +336,13 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       _existingPetCategoryId.add(pricing.petCategory.id);
     }
 
-    if (_petCategoryIdToCheck
-        .every((e) => _existingPetCategoryId.contains(e))) {
-      _separateBySize = true;
-    } else {
-      _separateBySize = false;
-    }
-
     for (var pricing in value.pricings) {
-      _petCategoryIds.add(pricing.petCategory.id);
-      _prices.add(pricing.price);
-      _pricingTypes.add(pricing.pricingType);
-      _maxNumbers.add(pricing.petCategory.slotAmount);
+      // _petCategoryIds.add(pricing.petCategory.id);
+      // _prices.add(pricing.price);
+      // _pricingTypes.add(pricing.pricingType);
+      // _maxNumbers.add(pricing.petCategory.slotAmount);
 
       if (pricing.petCategory.id == _miniatureDogID) {
-        _acceptDogs = true;
         _acceptMiniatureDog = true;
         _miniatureDogPriceController.text = pricing.price.toString();
         _miniatureDogPricingTypeController.text = pricing.pricingType;
@@ -406,7 +351,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       }
 
       if (pricing.petCategory.id == _smallDogID) {
-        _acceptDogs = true;
         _acceptSmallDog = true;
         _smallDogPriceController.text = pricing.price.toString();
         _smallDogPricingTypeController.text = pricing.pricingType;
@@ -414,7 +358,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             pricing.petCategory.slotAmount.toString();
       }
       if (pricing.petCategory.id == _mediumDogID) {
-        _acceptDogs = true;
         _acceptMediumDog = true;
         _mediumDogPriceController.text = pricing.price.toString();
         _mediumDogPricingTypeController.text = pricing.pricingType;
@@ -422,7 +365,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             pricing.petCategory.slotAmount.toString();
       }
       if (pricing.petCategory.id == _largeDogID) {
-        _acceptDogs = true;
         _acceptLargeDog = true;
         _largeDogPriceController.text = pricing.price.toString();
         _largeDogPricingTypeController.text = pricing.pricingType;
@@ -430,7 +372,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             pricing.petCategory.slotAmount.toString();
       }
       if (pricing.petCategory.id == _giantDogID) {
-        _acceptDogs = true;
         _acceptGiantDog = true;
         _giantDogPriceController.text = pricing.price.toString();
         _giantDogPricingTypeController.text = pricing.pricingType;
@@ -467,6 +408,97 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
     _dailyWalksId = value.dailyWalks.id;
     _dailyPlaytimeId = value.dailyPlaytime.id;
+  }
+
+  void _updatePrice() {
+    if (_acceptSmallDog) {
+      _petCategoryIds.add(_smallDogID);
+      _prices.add(double.tryParse(_smallDogPriceController.text) ?? 0.0);
+      _pricingTypes.add(_smallDogPricingTypeController.text == "day" ? 1 : 2);
+      _maxNumbers.add(int.tryParse(_smallDogSlotController.text) ?? 0);
+    } else {
+      int index = _petCategoryIds.indexOf(_smallDogID);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
+      }
+    }
+
+    if (_acceptMediumDog) {
+      _petCategoryIds.add(_mediumDogID);
+      _prices.add(double.tryParse(_mediumDogPriceController.text) ?? 0.0);
+      _pricingTypes.add(_mediumDogPricingTypeController.text == "day" ? 1 : 2);
+      _maxNumbers.add(int.tryParse(_mediumDogSlotController.text) ?? 0);
+    } else {
+      int index = _petCategoryIds.indexOf(_mediumDogID);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
+      }
+    }
+
+    if (_acceptLargeDog) {
+      _petCategoryIds.add(_largeDogID);
+      _prices.add(double.tryParse(_largeDogPriceController.text) ?? 0.0);
+      _pricingTypes.add(_largeDogPricingTypeController.text == "day" ? 1 : 2);
+      _maxNumbers.add(int.tryParse(_largeDogSlotController.text) ?? 0);
+    } else {
+      int index = _petCategoryIds.indexOf(_largeDogID);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
+      }
+    }
+
+    if (_acceptGiantDog) {
+      _petCategoryIds.add(_giantDogID);
+      _prices.add(double.tryParse(_giantDogPriceController.text) ?? 0.0);
+      _pricingTypes.add(_giantDogPricingTypeController.text == "day" ? 1 : 2);
+      _maxNumbers.add(int.tryParse(_giantDogSlotController.text) ?? 0);
+    } else {
+      int index = _petCategoryIds.indexOf(_giantDogID);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
+      }
+    }
+    if (_acceptCats) {
+      _petCategoryIds.add(6);
+      _prices.add(double.tryParse(_catsPriceController.text) ?? 0.0);
+      _pricingTypes.add(_catsPricingTypeController.text == "day" ? 1 : 2);
+      _maxNumbers.add(int.tryParse(_catsSlotController.text) ?? 0);
+    } else {
+      int index = _petCategoryIds.indexOf(6);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
+      }
+    }
+
+    if (_acceptBunnies) {
+      _petCategoryIds.add(7);
+      _prices.add(double.tryParse(_bunniesPriceController.text) ?? 0.0);
+      _pricingTypes.add(_bunniesPricingTypeController.text == "day" ? 1 : 2);
+      _maxNumbers.add(int.tryParse(_bunniesSlotController.text) ?? 0);
+    } else {
+      int index = _petCategoryIds.indexOf(7);
+      if (index != -1) {
+        _petCategoryIds.removeAt(index);
+        _prices.removeAt(index);
+        _pricingTypes.removeAt(index);
+        _maxNumbers.removeAt(index);
+      }
+    }
   }
 
   Widget _buildPetDaycareServiceForm(BuildContext context) {
@@ -618,134 +650,91 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                   color: Colors.orange,
                 ),
               ),
-              CheckboxListTile(
-                title: Text("Accept Dogs?"),
-                subtitle: Text("Check if you allow dogs in your daycare"),
-                value: _acceptDogs,
-                onChanged: (value) {
+              _buildSizedCheckbox(
+                "Miniature-Sized Breeds",
+                "1 - 5kg",
+                _acceptMiniatureDog,
+                (val) {
                   setState(() {
-                    _acceptDogs = value!;
+                    _acceptMiniatureDog = val ?? false;
                   });
                 },
               ),
-              if (_acceptDogs) ...[
-                RadioListTile(
-                  title: Text("All-Sized Dogs"),
-                  subtitle: Text("One capacity for dogs of any size."),
-                  value: false,
-                  groupValue: _separateBySize,
-                  onChanged: (value) {
-                    setState(() {
-                      _separateBySize = value as bool;
-                    });
-                  },
-                ),
-                _priceSlotInput(
-                  context,
-                  !_separateBySize,
-                  _allDogSizePriceController,
-                  _allDogSizePricingTypeController,
-                  _allDogSizeSlotController,
-                ),
-                RadioListTile(
-                  title: Text("Separate by Size"),
-                  subtitle: Text("Different capacities for each size."),
-                  value: true,
-                  groupValue: _separateBySize,
-                  onChanged: (value) {
-                    setState(() {
-                      _separateBySize = value as bool;
-                    });
-                  },
-                ),
-                if (_separateBySize) ...[
-                  _buildSizedCheckbox(
-                    "Miniature-Sized Breeds",
-                    "1 - 5kg",
-                    _acceptMiniatureDog,
-                    (val) {
-                      setState(() {
-                        _acceptMiniatureDog = val ?? false;
-                      });
-                    },
-                  ),
-                  _priceSlotInput(
-                    context,
-                    _acceptMiniatureDog,
-                    _miniatureDogPriceController,
-                    _miniatureDogPricingTypeController,
-                    _miniatureDogSlotController,
-                  ),
-                  _buildSizedCheckbox(
-                    "Small-Sized Breeds",
-                    "5 - 10kg",
-                    _acceptSmallDog,
-                    (val) {
-                      setState(() {
-                        _acceptSmallDog = val ?? false;
-                      });
-                    },
-                  ),
-                  _priceSlotInput(
-                    context,
-                    _acceptSmallDog,
-                    _smallDogPriceController,
-                    _smallDogPricingTypeController,
-                    _smallDogSlotController,
-                  ),
-                  _buildSizedCheckbox(
-                    "Medium-Sized Breeds",
-                    "10 - 25kg",
-                    _acceptMediumDog,
-                    (val) {
-                      setState(() {
-                        _acceptMediumDog = val ?? false;
-                      });
-                    },
-                  ),
-                  _priceSlotInput(
-                    context,
-                    _acceptMediumDog,
-                    _mediumDogPriceController,
-                    _mediumDogPricingTypeController,
-                    _mediumDogSlotController,
-                  ),
-                  _buildSizedCheckbox(
-                    "Large-Sized Breeds",
-                    "25 - 45kg",
-                    _acceptLargeDog,
-                    (val) {
-                      setState(() {
-                        _acceptLargeDog = val ?? false;
-                      });
-                    },
-                  ),
-                  _priceSlotInput(
-                    context,
-                    _acceptLargeDog,
-                    _largeDogPriceController,
-                    _largeDogPricingTypeController,
-                    _largeDogSlotController,
-                  ),
-                  _buildSizedCheckbox(
-                    "Giant-Sized Breeds",
-                    "45kg+",
-                    _acceptGiantDog,
-                    (val) {
-                      setState(() {
-                        _acceptGiantDog = val ?? false;
-                      });
-                    },
-                  ),
-                  _priceSlotInput(
-                    context,
-                    _acceptGiantDog,
-                    _giantDogPriceController,
-                    _giantDogPricingTypeController,
-                    _giantDogSlotController,
-                  ),
-                ],
-              ],
+              _priceSlotInput(
+                context,
+                _acceptMiniatureDog,
+                _miniatureDogPriceController,
+                _miniatureDogPricingTypeController,
+                _miniatureDogSlotController,
+              ),
+              _buildSizedCheckbox(
+                "Small-Sized Breeds",
+                "5 - 10kg",
+                _acceptSmallDog,
+                (val) {
+                  setState(() {
+                    _acceptSmallDog = val ?? false;
+                  });
+                },
+              ),
+              _priceSlotInput(
+                context,
+                _acceptSmallDog,
+                _smallDogPriceController,
+                _smallDogPricingTypeController,
+                _smallDogSlotController,
+              ),
+              _buildSizedCheckbox(
+                "Medium-Sized Breeds",
+                "10 - 25kg",
+                _acceptMediumDog,
+                (val) {
+                  setState(() {
+                    _acceptMediumDog = val ?? false;
+                  });
+                },
+              ),
+              _priceSlotInput(
+                context,
+                _acceptMediumDog,
+                _mediumDogPriceController,
+                _mediumDogPricingTypeController,
+                _mediumDogSlotController,
+              ),
+              _buildSizedCheckbox(
+                "Large-Sized Breeds",
+                "25 - 45kg",
+                _acceptLargeDog,
+                (val) {
+                  setState(() {
+                    _acceptLargeDog = val ?? false;
+                  });
+                },
+              ),
+              _priceSlotInput(
+                context,
+                _acceptLargeDog,
+                _largeDogPriceController,
+                _largeDogPricingTypeController,
+                _largeDogSlotController,
+              ),
+              _buildSizedCheckbox(
+                "Giant-Sized Breeds",
+                "45kg+",
+                _acceptGiantDog,
+                (val) {
+                  setState(() {
+                    _acceptGiantDog = val ?? false;
+                  });
+                },
+              ),
+              _priceSlotInput(
+                context,
+                _acceptGiantDog,
+                _giantDogPriceController,
+                _giantDogPricingTypeController,
+                _giantDogSlotController,
+              ),
               SizedBox(height: 20),
               Text("Others",
                   style: TextStyle(
@@ -1135,14 +1124,11 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
   Widget _buildSizedCheckbox(String title, String subtitle, bool val,
       void Function(bool?)? onChanged) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16.0),
-      child: CheckboxListTile(
-        title: Text(title),
-        subtitle: Text(subtitle),
-        value: val,
-        onChanged: onChanged,
-      ),
+    return CheckboxListTile(
+      title: Text(title),
+      subtitle: Text(subtitle),
+      value: val,
+      onChanged: onChanged,
     );
   }
 }

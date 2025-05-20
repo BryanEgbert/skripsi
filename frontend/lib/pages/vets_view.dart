@@ -17,7 +17,6 @@ class VetsView extends ConsumerStatefulWidget {
 }
 
 class _VetsViewState extends ConsumerState<VetsView> {
-  // TODO: Complete view vet page
   final ScrollController _scrollController = ScrollController();
   List<User> _records = [];
 
@@ -128,7 +127,7 @@ class _VetsViewState extends ConsumerState<VetsView> {
               Scaffold.of(context).openDrawer();
             },
           ),
-          ...appBarActions(ref.read(authProvider.notifier))
+          ...petOwnerAppBarActions(ref.read(authProvider.notifier)),
         ],
       ),
       drawer: Column(
@@ -166,7 +165,9 @@ class _VetsViewState extends ConsumerState<VetsView> {
               vetSpecialtyNames.add(val.name);
             }
             return ListTile(
-              tileColor: Constants.secondaryBackgroundColor,
+              tileColor: Theme.of(context).brightness == Brightness.light
+                  ? Constants.secondaryBackgroundColor
+                  : null,
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
