@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/paginated_vaccine_records_list_view.dart';
-import 'package:frontend/constants.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/pages/add_vaccination_record_page.dart';
 import 'package:frontend/pages/edit/edit_pet_details_page.dart';
@@ -40,7 +39,7 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
 
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Constants.secondaryBackgroundColor,
+          // backgroundColor: Constants.secondaryBackgroundColor,
           leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: Icon(Icons.arrow_back_ios),

@@ -8,6 +8,7 @@ import 'package:frontend/pages/pet_daycare_home_page.dart';
 import 'package:frontend/pages/vet_main_page.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/database_provider.dart';
+import 'package:frontend/provider/theme_provider.dart';
 import 'package:frontend/services/firebase_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -27,11 +28,37 @@ void main() async {
   );
 }
 
-class PetDaycareApp extends StatelessWidget {
+class PetDaycareApp extends ConsumerStatefulWidget {
   const PetDaycareApp({super.key});
 
   @override
+  ConsumerState<PetDaycareApp> createState() => _PetDaycareAppState();
+}
+
+class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
+  @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeStateProvider);
+    final tokenProvider = ref.watch(getTokenProvider);
+    Widget home = Container(color: Colors.white);
+
+    tokenProvider.when(
+      data: (user) {
+        if (user.roleId == 1) {
+          home = HomeWidget();
+        } else if (user.roleId == 2) {
+          home = PetDaycareHomePage();
+        } else {
+          home = VetMainPage();
+        }
+      },
+      loading: () {
+        home = Container(color: Colors.white);
+      },
+      error: (_, __) {
+        home = WelcomeWidget();
+      },
+    );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Pet Daycare Search App",
@@ -88,6 +115,9 @@ class PetDaycareApp extends StatelessWidget {
             iconTheme: IconThemeData(
           color: Colors.orange,
         )),
+        textTheme: GoogleFonts.poppinsTextTheme(
+          Theme.of(context).textTheme,
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
@@ -111,28 +141,8 @@ class PetDaycareApp extends StatelessWidget {
           ),
         ),
       ),
-      themeMode: ThemeMode.light,
-      home: Consumer(
-        builder: (context, ref, child) {
-          var provider = ref.watch(getTokenProvider);
-
-          if (provider.hasError && !provider.isLoading) {
-            return WelcomeWidget();
-          } else if (provider.hasValue && !provider.isLoading) {
-            if (provider.value!.roleId == 1) {
-              return HomeWidget();
-            } else if (provider.value!.roleId == 2) {
-              return PetDaycareHomePage();
-            } else {
-              return VetMainPage();
-            }
-          } else {
-            return Container(
-              color: Colors.white,
-            );
-          }
-        },
-      ),
+      themeMode: (themeMode.value == false) ? ThemeMode.light : ThemeMode.dark,
+      home: home,
     );
   }
 }

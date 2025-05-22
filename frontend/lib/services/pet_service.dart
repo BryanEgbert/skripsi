@@ -8,7 +8,6 @@ import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/model/response/list_response.dart';
-import 'package:frontend/model/vaccine_record.dart';
 
 abstract interface class IPetService {
   Future<Result<Pet>> getById(String token, int id);
@@ -16,9 +15,6 @@ abstract interface class IPetService {
       String token, CursorBasedPaginationQueryParams pagination);
   Future<Result<ListData<Pet>>> getBookedPets(
       String token, CursorBasedPaginationQueryParams pagination);
-  Future<Result<ListData<VaccineRecord>>> getVaccineRecords(
-      String token, int petId, OffsetPaginationQueryParams pagination);
-
   Future<Result<void>> createPet(String token, PetRequest petReqBody,
       VaccinationRecordRequest? vaccineReqBody);
   Future<Result<void>> updatePet(String token, int id, PetRequest reqBody);
@@ -202,27 +198,27 @@ class PetService implements IPetService {
     }, (res) => ListData.fromJson(res, Pet.fromJson));
   }
 
-  @override
-  Future<Result<ListData<VaccineRecord>>> getVaccineRecords(
-      String token, int petId, OffsetPaginationQueryParams pagination) {
-    return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+  // @override
+  // Future<Result<ListData<VaccineRecord>>> getVaccineRecords(
+  //     String token, int petId, OffsetPaginationQueryParams pagination) {
+  //   return makeRequest(200, () async {
+  //     final String host = dotenv.env["HOST"]!;
 
-      final dio = Dio(BaseOptions(
-        validateStatus: (status) {
-          return status != null; // Accept all HTTP status codes
-        },
-      ));
+  //     final dio = Dio(BaseOptions(
+  //       validateStatus: (status) {
+  //         return status != null; // Accept all HTTP status codes
+  //       },
+  //     ));
 
-      final res = await dio.get(
-        "$host/pets/$petId/vaccination-record",
-        queryParameters: pagination.toMap(),
-        options: Options(headers: {
-          HttpHeaders.authorizationHeader: "Bearer $token",
-        }),
-      );
+  //     final res = await dio.get(
+  //       "$host/pets/$petId/vaccination-record",
+  //       queryParameters: pagination.toMap(),
+  //       options: Options(headers: {
+  //         HttpHeaders.authorizationHeader: "Bearer $token",
+  //       }),
+  //     );
 
-      return res;
-    }, (res) => ListData.fromJson(res, VaccineRecord.fromJson));
-  }
+  //     return res;
+  //   }, (res) => ListData.fromJson(res, VaccineRecord.fromJson));
+  // }
 }

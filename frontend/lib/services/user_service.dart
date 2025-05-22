@@ -152,7 +152,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.post(
-        "$host/users/saved-address",
+        "$host/saved-address",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",
@@ -178,7 +178,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.delete(
-        "$host/users/saved-address/$addressId",
+        "$host/saved-address/$addressId",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",

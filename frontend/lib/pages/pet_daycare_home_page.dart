@@ -8,7 +8,6 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/pages/details/pet_daycare_details_page.dart';
 import 'package:frontend/pages/view_booked_pets_page.dart';
 import 'package:frontend/pages/view_booking_requests_page.dart';
-import 'package:frontend/pages/view_slots_page.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
@@ -86,7 +85,7 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
     final List<Widget> pages = [
       ViewBookedPetsPage(messages),
       ViewBookingRequestsPage(),
-      ViewSlotsPage(),
+      // ViewSlotsPage(),
       PetDaycareDetailsPage.my(),
     ];
     return Scaffold(
@@ -111,11 +110,11 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
             icon: Icon(Icons.book_rounded),
             label: "Booking Requests",
           ),
-          BottomNavigationBarItem(
-            backgroundColor: Colors.orangeAccent,
-            icon: Icon(Icons.calendar_month_rounded),
-            label: "Slots",
-          ),
+          // BottomNavigationBarItem(
+          //   backgroundColor: Colors.orangeAccent,
+          //   icon: Icon(Icons.calendar_month_rounded),
+          //   label: "Slots",
+          // ),
           BottomNavigationBarItem(
             backgroundColor: Colors.orangeAccent,
             icon: Icon(Icons.house),

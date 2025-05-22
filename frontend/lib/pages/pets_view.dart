@@ -3,16 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/paginated_pets_list_view.dart';
+import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/pages/add_pet_page.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/pages/edit/edit_pet_details_page.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/pet_provider.dart';
 import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class PetsView extends ConsumerStatefulWidget {
-  const PetsView({super.key});
+  final List<ChatMessage> messages;
+  const PetsView(this.messages, {super.key});
 
   @override
   ConsumerState<PetsView> createState() => _PetsViewState();
@@ -35,7 +36,7 @@ class _PetsViewState extends ConsumerState<PetsView> {
           "Pets",
           style: TextStyle(color: Colors.orange),
         ),
-        actions: petOwnerAppBarActions(ref.read(authProvider.notifier)),
+        actions: petOwnerAppBarActions(widget.messages.length),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -61,7 +62,13 @@ class _PetsViewState extends ConsumerState<PetsView> {
       leading: DefaultCircleAvatar(imageUrl: item.imageUrl ?? ""),
       title: Text(item.name),
       subtitle: Text(
-          "Pet category: ${item.petCategory.name}\nStatus: ${item.status}"),
+        "Pet category: ${item.petCategory.name}\nStatus: ${item.status}",
+        style: TextStyle(
+          color: Theme.of(context).brightness == Brightness.light
+              ? Colors.black
+              : Colors.white,
+        ),
+      ),
       titleTextStyle: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,

@@ -3,14 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/user.dart';
 import 'package:frontend/pages/chat_page.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
 
 class VetsView extends ConsumerStatefulWidget {
-  const VetsView({super.key});
+  final List<ChatMessage> messages;
+  const VetsView(this.messages, {super.key});
 
   @override
   ConsumerState<VetsView> createState() => _VetsViewState();
@@ -127,7 +128,7 @@ class _VetsViewState extends ConsumerState<VetsView> {
               Scaffold.of(context).openDrawer();
             },
           ),
-          ...petOwnerAppBarActions(ref.read(authProvider.notifier)),
+          ...petOwnerAppBarActions(widget.messages.length),
         ],
       ),
       drawer: Column(

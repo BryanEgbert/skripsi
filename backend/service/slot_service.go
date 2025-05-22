@@ -19,6 +19,7 @@ type SlotService interface {
 	AcceptBookedSlot(slotId uint) error
 	RejectBookedSlot(slotId uint) error
 	CancelBookedSlot(slotId uint) error
+	GetBookingRequests(userID uint, page int, pageSize int) (model.ListData[model.BookingRequest], error)
 }
 
 type SlotServiceImpl struct {
@@ -27,6 +28,30 @@ type SlotServiceImpl struct {
 
 func NewSlotService(db *gorm.DB) *SlotServiceImpl {
 	return &SlotServiceImpl{db: db}
+}
+
+func (s *SlotServiceImpl) GetBookingRequests(userID uint, page int, pageSize int) (model.ListData[model.BookingRequest], error) {
+	var bookedSlots []model.BookedSlot
+
+	if err := s.db.
+		Model(&model.BookedSlot{}).
+		Preload("Pet").
+		Preload("Pet.PetCategory").
+		Preload("Address").
+		Joins("Status").
+		Joins("Daycare", s.db.Omit("Distance")).
+		Joins("User").
+		Where("status_id = ? AND \"Daycare\".owner_id = ?", 1, userID).
+		Offset((page - 1) * pageSize).
+		Limit(pageSize).
+		Find(&bookedSlots).Error; err != nil {
+		return model.ListData[model.BookingRequest]{}, err
+	}
+
+	out := helper.ConvertBookedSlotsToBookingRequests(bookedSlots)
+
+	return model.ListData[model.BookingRequest]{Data: out}, nil
+
 }
 
 func (s *SlotServiceImpl) DeleteReducedSlot(slotId uint) error {
@@ -80,11 +105,42 @@ func (s *SlotServiceImpl) GetReducedSlot(userId uint, page int, pageSize int) ([
 }
 
 func (s *SlotServiceImpl) AcceptBookedSlot(slotId uint) error {
-	// bookedSlot := model.BookedSlot{Model: gorm.Model{ID: slotId}}
-	if err := s.db.
+	// bookedSlot := model.BookedSlot{Model: gorm.Model{ID: slotId}}tx := s.db.Begin()
+	tx := s.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.
 		Model(&model.BookedSlot{}).
 		Where("id = ?", slotId).
 		Update("status_id", 2).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	var bookedSlot model.BookedSlot
+	if err := tx.First(&bookedSlot, slotId).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	var slots model.Slots
+	if err := tx.First(&slots, bookedSlot.SlotID).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Table("pet_daycares").
+		Where("pet_daycares.id = ?", slots.DaycareID).
+		UpdateColumn("booked_num", gorm.Expr("booked_num + ?", 1)).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
 		return err
 	}
 
@@ -287,7 +343,7 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 		var bookedSlotsCount int64
 		if err := s.db.
 			Model(&model.BookedSlot{
-				DaycareID: req.DaycareID,
+				// DaycareID: req.DaycareID,
 				SlotID:    val.ID,
 				StartDate: req.StartDate,
 				EndDate:   req.EndDate,
@@ -333,9 +389,9 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 			addressID = &address.ID
 		}
 		newBookSlot := model.BookedSlot{
-			UserID:    userId,
-			SlotID:    val.ID,
-			DaycareID: req.DaycareID,
+			UserID: userId,
+			SlotID: val.ID,
+			// DaycareID: req.DaycareID,
 			StartDate: req.StartDate,
 			EndDate:   req.EndDate,
 			AddressID: addressID,

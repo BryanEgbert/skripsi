@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
@@ -7,8 +9,8 @@ import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/reviews.dart';
 
 abstract interface class IReviewService {
-  Future<Result<ListData<Reviews>>> getReviews(String token, int petDaycareId,
-      CursorBasedPaginationQueryParams pagination);
+  Future<Result<ListData<Reviews>>> getReviews(
+      String token, int petDaycareId, OffsetPaginationQueryParams pagination);
   Future<Result<void>> createReview(
       String token, int petDaycareId, CreateReviewRequest reqBody);
   Future<void> deleteReview(String token, int petDaycareId);
@@ -65,22 +67,23 @@ class ReviewService implements IReviewService {
   }
 
   @override
-  Future<Result<ListData<Reviews>>> getReviews(String token, int petDaycareId,
-      CursorBasedPaginationQueryParams pagination) {
+  Future<Result<ListData<Reviews>>> getReviews(
+      String token, int petDaycareId, OffsetPaginationQueryParams pagination) {
     return makeRequest(200, () async {
       final String host = dotenv.env["HOST"]!;
 
-      final dio = Dio(BaseOptions(
+      var dio = Dio(BaseOptions(
         validateStatus: (status) {
           return status != null; // Accept all HTTP status codes
         },
       ));
 
-      var res = await dio.get(
-        "$host/$petDaycareId/reviews",
-        queryParameters: pagination.toMap(),
+      final res = await dio.get(
+        "$host/daycare/$petDaycareId/review",
         options: Options(
-          headers: {"Authorization": "Bearer $token"},
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
         ),
       );
 

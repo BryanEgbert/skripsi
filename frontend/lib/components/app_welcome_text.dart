@@ -13,11 +13,14 @@ class AppWelcomeText extends StatelessWidget {
         children: [
           RichText(
             textAlign: TextAlign.start,
-            text: const TextSpan(
+            text: TextSpan(
               text: "Welcome to\n",
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.black
+                    : Colors.white,
               ),
               children: [
                 TextSpan(

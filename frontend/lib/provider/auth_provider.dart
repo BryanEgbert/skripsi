@@ -6,6 +6,7 @@ import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/database_service.dart';
+import 'package:frontend/services/user_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_provider.g.dart';
@@ -97,6 +98,7 @@ class Auth extends _$Auth {
     state = AsyncLoading();
 
     final dbService = DatabaseService();
+    // final userService = UserService();
     await dbService.delete();
 
     state = AsyncData(null);

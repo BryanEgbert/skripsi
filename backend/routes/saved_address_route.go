@@ -8,10 +8,10 @@ import (
 
 func RegisterSavedAddressRoute(r *gin.Engine, savedAddressController *controller.SavedAddressController) *gin.Engine {
 	routes := r.Group("/saved-address")
-	routes.GET("/saved-address", middleware.JWTAuth(), savedAddressController.GetSavedAddress)
-	routes.POST("/saved-address", middleware.JWTAuth(), savedAddressController.AddSavedAddress)
-	routes.DELETE("/saved-address/:addressId", middleware.JWTAuth(), savedAddressController.DeleteSavedAddress)
-	routes.PUT("/saved-address/:addressId", middleware.JWTAuth(), savedAddressController.EditSavedAddress)
+	routes.GET("", middleware.JWTAuth(), savedAddressController.GetSavedAddress)
+	routes.POST("", middleware.JWTAuth(), savedAddressController.AddSavedAddress)
+	routes.DELETE("/:addressId", middleware.JWTAuth(), savedAddressController.DeleteSavedAddress)
+	routes.PUT("/:addressId", middleware.JWTAuth(), savedAddressController.EditSavedAddress)
 
 	return r
 }

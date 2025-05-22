@@ -273,12 +273,14 @@ func ConvertBookedSlotToBookingRequest(bookedSlot model.BookedSlot) model.Bookin
 
 	for key, count := range petCategory {
 		var name string
+		var sizeCategory model.SizeCategory
 		for _, petC := range bookedSlot.Pet {
 			if petC.PetCategory.ID == key {
 				name = petC.PetCategory.Name
+				sizeCategory = petC.PetCategory.SizeCategory
 			}
 		}
-		out.PetCount = append(out.PetCount, model.PetCategoryCount{PetCategory: model.PetCategoryDTO{ID: key, Name: name}, Total: count})
+		out.PetCount = append(out.PetCount, model.PetCategoryCount{PetCategory: model.PetCategoryDTO{ID: key, Name: name, SizeCategory: sizeCategory}, Total: count})
 	}
 
 	if bookedSlot.Address.Address != "" {

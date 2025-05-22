@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
-import 'package:frontend/constants.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/pages/details/booking_request_details_page.dart';
 import 'package:frontend/provider/auth_provider.dart';

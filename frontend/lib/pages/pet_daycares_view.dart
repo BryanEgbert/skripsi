@@ -5,17 +5,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/pet_daycare.dart';
 import 'package:frontend/model/request/pet_daycare_filters.dart';
 import 'package:frontend/pages/details/pet_daycare_details_page.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:geolocator/geolocator.dart';
 
 final locationEnabledProvider = StateProvider<bool>((ref) => false);
 
 class PetDaycaresView extends ConsumerStatefulWidget {
-  const PetDaycaresView({super.key});
+  final List<ChatMessage> messages;
+  const PetDaycaresView(this.messages, {super.key});
 
   @override
   ConsumerState<PetDaycaresView> createState() => _PetDaycaresViewState();
@@ -162,7 +163,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
               },
             );
           }),
-          ...petOwnerAppBarActions(ref.read(authProvider.notifier)),
+          ...petOwnerAppBarActions(widget.messages.length),
         ],
       ),
       endDrawer: Container(

@@ -813,7 +813,7 @@ class _PetProviderElement extends AutoDisposeFutureProviderElement<Pet>
   int get petId => (origin as PetProvider).petId;
 }
 
-String _$vaccineRecordsHash() => r'2024613e7414b89645e35a04c5ba474ea3817dde';
+String _$vaccineRecordsHash() => r'7f17126183b311575491ccb534bb77db12371685';
 
 /// See also [vaccineRecords].
 @ProviderFor(vaccineRecords)
@@ -2896,7 +2896,7 @@ class _GetTransactionsProviderElement
   int get pageSize => (origin as GetTransactionsProvider).pageSize;
 }
 
-String _$getReviewsHash() => r'f6d29a64904bd53c9f9a180228baad59a023828c';
+String _$getReviewsHash() => r'cda720c799e0fb287a3c8a475926e2cf6dfc1895';
 
 /// See also [getReviews].
 @ProviderFor(getReviews)

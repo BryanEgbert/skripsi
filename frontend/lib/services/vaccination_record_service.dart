@@ -3,10 +3,14 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
+import 'package:frontend/model/pagination_query_params.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
+import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/vaccine_record.dart';
 
 abstract interface class IVaccinationRecordService {
+  Future<Result<ListData<VaccineRecord>>> getAll(
+      String token, int petId, OffsetPaginationQueryParams pagination);
   Future<Result<void>> update(
       String token, int vaccineRecordId, VaccinationRecordRequest req);
   Future<Result<void>> create(
@@ -130,5 +134,29 @@ class VaccinationRecordService implements IVaccinationRecordService {
       },
       (res) => VaccineRecord.fromJson(res),
     );
+  }
+
+  @override
+  Future<Result<ListData<VaccineRecord>>> getAll(
+      String token, int petId, OffsetPaginationQueryParams pagination) {
+    return makeRequest(200, () async {
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.get(
+        "$host/pets/$petId/vaccination-record",
+        queryParameters: pagination.toMap(),
+        options: Options(headers: {
+          HttpHeaders.authorizationHeader: "Bearer $token",
+        }),
+      );
+
+      return res;
+    }, (res) => ListData.fromJson(res, VaccineRecord.fromJson));
   }
 }

@@ -31,7 +31,7 @@ class ReviewState extends _$ReviewState {
     switch (res) {
       case Ok():
         state = AsyncData(204);
-        ref.invalidate(GetReviewsProvider(petDaycareId));
+        ref.invalidate(getReviewsProvider(petDaycareId));
       case Error():
         state = AsyncError(res.error, StackTrace.current);
     }

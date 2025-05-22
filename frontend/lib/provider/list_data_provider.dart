@@ -19,6 +19,7 @@ import 'package:frontend/model/vaccine_record.dart';
 import 'package:frontend/services/chat_service.dart';
 import 'package:frontend/services/pet_daycare_service.dart';
 import 'package:frontend/services/pet_service.dart';
+import 'package:frontend/services/review_service.dart';
 import 'package:frontend/services/slot_service.dart';
 import 'package:frontend/services/transaction_service.dart';
 import 'package:frontend/services/user_service.dart';
@@ -199,8 +200,8 @@ Future<ListData<VaccineRecord>> vaccineRecords(Ref ref, int petId,
     return Future.error(jwtExpired, StackTrace.current);
   }
 
-  final petService = PetService();
-  final res = await petService.getVaccineRecords(token.accessToken, petId,
+  final vaccinationRecordService = VaccinationRecordService();
+  final res = await vaccinationRecordService.getAll(token.accessToken, petId,
       OffsetPaginationQueryParams(page: page, pageSize: pageSize));
 
   switch (res) {
@@ -547,10 +548,8 @@ Future<ListData<Reviews>> getReviews(Ref ref, int petDaycareId,
     return Future.error(e.toString());
   }
 
-  final petDaycareService = PetDaycareService();
-  final res = await petDaycareService.getReviews(
-      token.accessToken,
-      petDaycareId,
+  final reviewService = ReviewService();
+  final res = await reviewService.getReviews(token.accessToken, petDaycareId,
       OffsetPaginationQueryParams(page: page, pageSize: pageSize));
 
   switch (res) {

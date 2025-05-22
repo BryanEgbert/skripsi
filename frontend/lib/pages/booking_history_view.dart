@@ -3,9 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/add_review_modal.dart';
-import 'package:frontend/constants.dart';
+import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/transaction.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/pages/details/transaction_details_page.dart';
 import 'package:frontend/provider/slot_provider.dart';
@@ -14,7 +13,8 @@ import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class BookingHistoryView extends ConsumerStatefulWidget {
-  const BookingHistoryView({super.key});
+  final List<ChatMessage> messages;
+  const BookingHistoryView(this.messages, {super.key});
 
   @override
   ConsumerState<BookingHistoryView> createState() => _BookingHistoryViewState();
@@ -83,7 +83,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
           'Booking History',
           style: TextStyle(color: Colors.orange),
         ),
-        actions: petOwnerAppBarActions(ref.read(authProvider.notifier)),
+        actions: petOwnerAppBarActions(widget.messages.length),
       ),
       body: (_isFetching && _records.isEmpty)
           ? Center(
