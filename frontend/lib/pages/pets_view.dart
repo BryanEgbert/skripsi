@@ -1,14 +1,18 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/paginated_pets_list_view.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/pages/add_pet_page.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/pages/edit/edit_pet_details_page.dart';
 import 'package:frontend/provider/pet_provider.dart';
+import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class PetsView extends ConsumerStatefulWidget {
@@ -20,16 +24,29 @@ class PetsView extends ConsumerStatefulWidget {
 }
 
 class _PetsViewState extends ConsumerState<PetsView> {
+  // String? _error;
+
   void _deletePet(int petId) {
     showDeleteConfirmationDialog(
-      context,
-      "Are you sure you want to delete this pet? This action cannot be undone.",
-      () => ref.read(petStateProvider.notifier).deletePet(petId),
-    );
+        context,
+        "Are you sure you want to delete this pet? This action cannot be undone.",
+        () => ref.read(petStateProvider.notifier).deletePet(petId));
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final petState = ref.watch(petStateProvider);
+    handleValue(petState, context, ref.read(petStateProvider.notifier).reset);
+    // if (_error != null) {
+    //   handleError(AsyncValue.error(_error!, StackTrace.current), context);
+    //   _error = null;
+    // }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -60,13 +77,20 @@ class _PetsViewState extends ConsumerState<PetsView> {
   Widget _buildListTile(Pet item) {
     return ListTile(
       leading: DefaultCircleAvatar(imageUrl: item.imageUrl ?? ""),
-      title: Text(item.name),
+      title: Text(
+        item.name,
+        style: TextStyle(
+          color: Theme.of(context).brightness == Brightness.light
+              ? Constants.primaryTextColor
+              : Colors.orange,
+        ),
+      ),
       subtitle: Text(
         "Pet category: ${item.petCategory.name}\nStatus: ${item.status}",
         style: TextStyle(
           color: Theme.of(context).brightness == Brightness.light
               ? Colors.black
-              : Colors.white,
+              : Colors.white70,
         ),
       ),
       titleTextStyle: TextStyle(
@@ -74,7 +98,12 @@ class _PetsViewState extends ConsumerState<PetsView> {
         fontWeight: FontWeight.bold,
         color: Colors.orange,
       ),
-      subtitleTextStyle: TextStyle(fontSize: 14),
+      subtitleTextStyle: TextStyle(
+        fontSize: 14,
+        color: Theme.of(context).brightness == Brightness.light
+            ? Colors.black
+            : Colors.white70,
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

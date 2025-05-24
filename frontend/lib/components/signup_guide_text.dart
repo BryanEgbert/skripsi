@@ -29,7 +29,9 @@ class SignupGuideText extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.normal,
-                  color: Color(0xff333333),
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.black
+                      : Colors.white70,
                 ),
               ),
             ]),

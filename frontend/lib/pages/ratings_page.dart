@@ -82,7 +82,7 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
   @override
   Widget build(BuildContext context) {
     if (_error != null) {
-      handleError(
+      handleValue(
           AsyncValue.error(_error.toString(), StackTrace.current), context);
     }
 
@@ -93,7 +93,7 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
           style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
         ),
         leading: appBarBackButton(context),
-        actions: appBarActions(ref.read(authProvider.notifier)),
+        actions: appBarActions(),
       ),
       body: (_isFetching && _records.isEmpty)
           ? Center(
@@ -123,7 +123,7 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                                     color: Theme.of(context).brightness ==
                                             Brightness.light
                                         ? Colors.black
-                                        : null,
+                                        : Colors.white70,
                                   ),
                                 ),
                                 TextSpan(
@@ -133,7 +133,7 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                                     color: Theme.of(context).brightness ==
                                             Brightness.light
                                         ? Colors.black
-                                        : null,
+                                        : Colors.white70,
                                   ),
                                 ),
                               ],
@@ -144,6 +144,10 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                             '${widget.ratingsCount} Reviews',
                             style: TextStyle(
                               fontSize: 16,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
                             ),
                           ),
                         ],
@@ -212,7 +216,13 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
             SizedBox(height: 8),
             Text(
               value.description,
-              style: TextStyle(fontSize: 14, height: 1.5),
+              style: TextStyle(
+                fontSize: 14,
+                height: 1.5,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.black
+                    : Colors.white70,
+              ),
             ),
           ],
         ),

@@ -50,17 +50,19 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
 
   @override
   void dispose() {
+    log("[SEND IMAGE PAGE] dispose");
     _channel?.sink.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    log("websocket:  ${_channel == null}");
     final imageState = ref.watch(imageStateProvider);
+
     if (imageState.hasError &&
         (imageState.valueOrNull == null || imageState.valueOrNull == 0) &&
         !imageState.isLoading) {
+      log("send image err");
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         var snackbar = SnackBar(
           key: Key("error-message"),
@@ -72,7 +74,39 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
         );
 
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+        if (imageState.error.toString() == jwtExpired ||
+            imageState.error.toString() == userDeleted) {
+          WidgetsBinding.instance.addPostFrameCallback(
+            (timeStamp) {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => WelcomeWidget(),
+                ),
+                (route) => false,
+              );
+            },
+          );
+        }
       });
+    } else if (!imageState.hasError &&
+        !imageState.isLoading &&
+        imageState.hasValue) {
+      ChatWebsocketChannel().instance.then(
+        (value) {
+          _channel = value;
+          _channel!.sink.add(jsonEncode(
+            SendMessage(
+              receiverId: widget.receiverId,
+              message: _textController.text,
+              imageUrl: imageState.value!.imageUrl,
+            ).toJson(),
+          ));
+
+          if (!mounted) return;
+          Navigator.of(context).pop();
+        },
+      );
     }
 
     return Scaffold(
@@ -92,6 +126,11 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
                 children: [
                   Expanded(
                     child: TextField(
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white70,
+                      ),
                       controller: _textController,
                       keyboardType: TextInputType.multiline,
                       // maxLines: 3,
@@ -105,7 +144,7 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (imageState.isLoading) return;
 
                       // String fileName =
@@ -120,21 +159,15 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
                       ref
                           .read(imageStateProvider.notifier)
                           .upload(widget.image);
-
-                      _channel!.sink.add(jsonEncode(
-                        SendMessage(
-                          receiverId: widget.receiverId,
-                          message: _textController.text,
-                          imageUrl: imageState.value!.imageUrl,
-                        ).toJson(),
-                      ));
-
-                      Navigator.of(context).pop();
                     },
-                    icon: Icon(
-                      Icons.send_rounded,
-                      color: Colors.orange[700],
-                    ),
+                    icon: (!imageState.isLoading)
+                        ? Icon(
+                            Icons.send_rounded,
+                            color: Colors.orange[700],
+                          )
+                        : CircularProgressIndicator(
+                            color: Colors.orange,
+                          ),
                   ),
                 ],
               ),

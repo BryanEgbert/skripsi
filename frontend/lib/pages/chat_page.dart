@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -14,6 +15,7 @@ import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/send_message.dart';
 import 'package:frontend/pages/send_image_page.dart';
 import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/provider/chat_tracker_provider.dart';
 import 'package:frontend/provider/database_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
@@ -31,21 +33,49 @@ class ChatPage extends ConsumerStatefulWidget {
 }
 
 class _ChatPageState extends ConsumerState<ChatPage> {
+  // final _streamController = StreamController.broadcast();
   final _textController = TextEditingController();
+  ScrollController _listScrollController = ScrollController();
+
   IOWebSocketChannel? channel;
+  StreamSubscription? _webSocketSubscription;
+
   List<ChatMessage> _totalMessages = [];
+  int _messageCount = 0;
+
   bool _isSocketReady = false;
 
   Future<void> _pickImage(ImageSource source) async {
     final photo = await ImagePicker().pickImage(source: source);
     if (mounted) {
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => SendImagePage(
-          image: File(photo!.path),
-          receiverId: widget.userId,
-        ),
-      ));
+      Navigator.of(context)
+          .push(MaterialPageRoute(
+            builder: (context) => SendImagePage(
+              image: File(photo!.path),
+              receiverId: widget.userId,
+            ),
+          ))
+          .then(
+            (_) => setState(
+              () {
+                ref
+                    .read(chatMessagesProvider(widget.userId).future)
+                    .then((newData) {
+                  setState(() {
+                    _totalMessages = newData.data;
+                    _messageCount = _totalMessages.length;
+                  });
+                });
+              },
+            ),
+          );
     }
+  }
+
+  void _fetchMessages() {
+    ref.read(chatMessagesProvider(widget.userId).future).then((newData) {
+      _totalMessages = newData.data;
+    });
   }
 
   void _setupWebSocket() {
@@ -53,14 +83,38 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       ChatWebsocketChannel().instance.then(
         (value) {
           channel = value;
-          log("channel: ${channel!.stream.toString()}");
-          channel?.sink.add(
+          // _streamController.add(channel!.stream);
+          channel!.sink.add(
             jsonEncode(
               SendMessage(
-                      updateRead: true, receiverId: widget.userId, message: "")
-                  .toJson(),
+                updateRead: true,
+                receiverId: widget.userId,
+                message: "",
+              ).toJson(),
             ),
           );
+          // _webSocketSubscription = _streamController.stream.listen(
+          //   (message) {
+          //     log("[CHAT PAGE] new messages");
+          //     var messages = ListData<ChatMessage>.fromJson(
+          //         jsonDecode(message), ChatMessage.fromJson);
+          //     if (messages.data.length > _messageCount) {
+          //       log("[INFO] update read");
+          //       channel!.sink.add(
+          //         jsonEncode(
+          //           SendMessage(
+          //             updateRead: true,
+          //             receiverId: widget.userId,
+          //             message: "",
+          //           ).toJson(),
+          //         ),
+          //       );
+          //       _messageCount = messages.data.length;
+          //     }
+          //     _fetchMessages();
+          //   },
+          // );
+
           setState(() {
             _isSocketReady = true;
           });
@@ -80,11 +134,14 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   void initState() {
     super.initState();
     _setupWebSocket();
+    _fetchMessages();
   }
 
   @override
   void dispose() {
-    channel?.sink.close();
+    // _webSocketSubscription?.cancel();
+    // channel?.sink.close();
+    // ChatWebsocketChannel().sink.close();
     super.dispose();
   }
 
@@ -92,7 +149,25 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   Widget build(BuildContext context) {
     final receiverUser = ref.watch(getUserByIdProvider(widget.userId));
     final myInfo = ref.watch(getTokenProvider);
-    final chat = ref.watch(chatMessagesProvider(widget.userId));
+    final chatTracker = ref.watch(chatTrackerProvider);
+    if (chatTracker.value ?? false) {
+      setState(() {
+        _fetchMessages();
+        channel!.sink.add(
+          jsonEncode(
+            SendMessage(
+              updateRead: true,
+              receiverId: widget.userId,
+              message: "",
+            ).toJson(),
+          ),
+        );
+      });
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ref.read(chatTrackerProvider.notifier).reset();
+      });
+    }
+    // final chat = ref.watch(chatMessagesProvider(widget.userId));
 
     return switch (receiverUser) {
       AsyncError(:final error) => ErrorText(
@@ -122,109 +197,71 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               children: [
                 Expanded(
                   child: _isSocketReady
-                      ? StreamBuilder(
-                          stream: channel?.stream,
-                          builder: (context, snapshot) {
-                            if (chat.hasValue) {
-                              _totalMessages = chat.value!.data;
-                            }
+                      ? ListView.builder(
+                          controller: _listScrollController,
+                          padding: EdgeInsets.all(8),
+                          itemCount: _totalMessages.length,
+                          itemBuilder: (context, index) {
+                            var msg = _totalMessages[index];
 
-                            if (snapshot.hasData) {
-                              var messages = ListData<ChatMessage>.fromJson(
-                                  jsonDecode(snapshot.data),
-                                  ChatMessage.fromJson);
-                              _totalMessages = messages.data;
-                              channel?.sink.add(
-                                jsonEncode(
-                                  SendMessage(
-                                          updateRead: true,
-                                          receiverId: widget.userId,
-                                          message: "")
-                                      .toJson(),
-                                ),
+                            final dateTime =
+                                DateTime.parse(msg.createdAt).toLocal();
+
+                            final formatter =
+                                DateFormat('EEE, dd MMM yyyy HH:mm');
+                            final formattedDate = formatter.format(dateTime);
+
+                            if (msg.type == "message") {
+                              return ChatBubble(
+                                msg: msg,
+                                myInfo: myInfo,
+                                formattedDate: formattedDate,
                               );
-                            } else if (snapshot.hasError) {
-                              var snackbar = SnackBar(
-                                key: Key("error-message"),
-                                content: Text(
-                                  snapshot.error.toString(),
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                backgroundColor: Colors.red[800],
-                              );
-
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackbar);
-                            }
-
-                            return ListView.builder(
-                              padding: EdgeInsets.all(8),
-                              itemCount: _totalMessages.length,
-                              itemBuilder: (context, index) {
-                                var msg = _totalMessages[index];
-
-                                final dateTime = DateTime.parse(msg.createdAt);
-                                final formatter =
-                                    DateFormat('EEE, dd MMM yyyy');
-                                final formattedDate =
-                                    formatter.format(dateTime);
-
-                                if (msg.type == "message") {
-                                  return ChatBubble(
-                                    msg: msg,
-                                    myInfo: myInfo,
-                                    formattedDate: formattedDate,
-                                  );
-                                } else if (msg.type == "error") {
-                                  return Column(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          color: (msg.senderId ==
-                                                  myInfo.value!.userId)
-                                              ? Colors.orange[300]
-                                              : Constants
-                                                  .secondaryBackgroundColor,
+                            } else if (msg.type == "error") {
+                              return Column(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: (msg.senderId ==
+                                              myInfo.value!.userId)
+                                          ? Colors.orange[300]
+                                          : Constants.secondaryBackgroundColor,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        if (msg.imageUrl != null)
+                                          Image.network(msg.imageUrl!),
+                                        Text(
+                                          msg.message,
+                                          style: TextStyle(
+                                            color: Colors.black87,
+                                          ),
                                         ),
-                                        child: Column(
+                                        Row(
                                           children: [
-                                            if (msg.imageUrl != null)
-                                              Image.network(msg.imageUrl!),
                                             Text(
-                                              msg.message,
+                                              formattedDate,
                                               style: TextStyle(
-                                                color: Colors.black87,
+                                                fontSize: 12,
+                                                color: Colors.grey[700],
                                               ),
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  formattedDate,
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.grey[700],
-                                                  ),
-                                                ),
-                                              ],
                                             ),
                                           ],
                                         ),
-                                      ),
-                                      Text(
-                                        "Failed to send message",
-                                        style:
-                                            TextStyle(color: Colors.red[800]),
-                                      ),
-                                    ],
-                                  );
-                                } else {
-                                  return SizedBox();
-                                }
-                              },
-                            );
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    "Failed to send message",
+                                    style: TextStyle(color: Colors.red[800]),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return SizedBox();
+                            }
                           },
                         )
                       : Center(
@@ -258,6 +295,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       ),
                       Expanded(
                         child: TextField(
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.black
+                                    : Colors.white70,
+                          ),
                           controller: _textController,
                           keyboardType: TextInputType.multiline,
                           minLines: 1,
@@ -277,11 +320,18 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                                 receiverId: widget.userId,
                                 message: _textController.text,
                               ).toJson());
-                              log("sendMessage: $sendMessage");
 
                               channel!.sink.add(sendMessage);
 
                               _textController.clear();
+                              ref
+                                  .read(chatMessagesProvider(widget.userId)
+                                      .future)
+                                  .then((newData) {
+                                setState(() {
+                                  _totalMessages = newData.data;
+                                });
+                              });
                             }
                           },
                           icon: Icon(

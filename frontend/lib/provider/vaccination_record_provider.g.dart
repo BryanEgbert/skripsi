@@ -7,7 +7,7 @@ part of 'vaccination_record_provider.dart';
 // **************************************************************************
 
 String _$vaccinationRecordStateHash() =>
-    r'22260dcf2e01a8b06193ddc67465ff40f425c1ac';
+    r'd124b29513318a4e8ef96c1cfbabd4d97e7bc169';
 
 /// See also [VaccinationRecordState].
 @ProviderFor(VaccinationRecordState)

@@ -222,6 +222,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                         }
                       },
                     ),
+                    const SizedBox(height: 4),
                     Text(
                       "Distance in kilometer (GPS must be turned on)",
                       style: TextStyle(
@@ -235,7 +236,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                         fontSize: 14,
                         color: Theme.of(context).brightness == Brightness.light
                             ? Colors.grey[700]
-                            : null,
+                            : Colors.white70,
                       ),
                     ),
                     RangeSlider(
@@ -258,6 +259,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                           : null,
                       activeColor: Constants.primaryTextColor,
                     ),
+                    const SizedBox(height: 4),
                     Text(
                       "Price Range",
                       style: TextStyle(
@@ -271,7 +273,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                         fontSize: 14,
                         color: Theme.of(context).brightness == Brightness.light
                             ? Colors.grey[700]
-                            : null,
+                            : Colors.white70,
                       ),
                     ),
                     RangeSlider(
@@ -291,6 +293,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                       },
                       activeColor: Constants.primaryTextColor,
                     ),
+                    const SizedBox(height: 4),
                     Text(
                       "Facilities",
                       style: TextStyle(
@@ -353,6 +356,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 4),
                     Text(
                       "Daily Walks",
                       style: TextStyle(
@@ -421,6 +425,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 4),
                     Text(
                       "Daily Playtime",
                       style: TextStyle(
@@ -489,6 +494,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -600,11 +606,21 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
               SizedBox(height: 4),
               Text(
                 item.name,
-                style: TextStyle(fontSize: 12),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Constants.primaryTextColor
+                      : Colors.orange,
+                ),
               ),
               Text(
                 "${item.locality} (${(item.distance.toDouble() / 1000).toStringAsFixed(2)}km away)",
-                style: TextStyle(fontSize: 10),
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.black
+                      : Colors.white70,
+                ),
               ),
               SizedBox(height: 2),
               avgRatingWidget(item),
@@ -648,11 +664,22 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
       children: [
         Text(
           price!.petCategory.name,
-          style: TextStyle(fontSize: 10),
+          style: TextStyle(
+            fontSize: 10,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.black
+                : Colors.white70,
+          ),
         ),
         Text(
           "Rp. ${price.price}/${price.pricingType}",
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.black
+                : Colors.white70,
+          ),
         )
       ],
     );
@@ -668,7 +695,12 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
         ),
         Text(
           "${item.averageRating}/5 (${item.ratingCount})",
-          style: TextStyle(fontSize: 10),
+          style: TextStyle(
+            fontSize: 10,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.black
+                : Colors.white70,
+          ),
         ),
       ],
     );

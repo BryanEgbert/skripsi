@@ -29,7 +29,7 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
     final vetSpecialties = ref.watch(vetSpecialtiesProvider);
     AsyncValue<TokenResponse?> auth = ref.watch(authProvider);
 
-    handleError(auth, context);
+    handleValue(auth, context);
 
     if (auth.hasValue && !auth.hasError && !auth.isLoading) {
       if (auth.value != null) {
@@ -81,7 +81,7 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
             )
           ],
         ),
-        backgroundColor: Color(0xFFFFF8F0),
+        // backgroundColor: Color(0xFFFFF8F0),
         body: switch (vetSpecialties) {
           AsyncError(:final error) => ErrorText(
               errorText:

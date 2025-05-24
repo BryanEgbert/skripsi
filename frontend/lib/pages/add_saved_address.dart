@@ -70,7 +70,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
   Widget build(BuildContext context) {
     final savedAddressState = ref.watch(savedAddressStateProvider);
 
-    handleError(savedAddressState, context);
+    handleValue(savedAddressState, context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -81,7 +81,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
           "Add Address",
           style: TextStyle(color: Constants.primaryTextColor),
         ),
-        actions: appBarActions(ref.read(authProvider.notifier)),
+        actions: appBarActions(),
       ),
       body: SafeArea(
         child: Container(
@@ -167,6 +167,11 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                   searchController: _searchController,
                   builder: (context, controller) {
                     return TextFormField(
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white70,
+                      ),
                       controller: controller,
                       validator: (value) => validateNotEmpty("Value", value),
                       decoration: InputDecoration(
@@ -246,6 +251,11 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                   },
                 ),
                 TextFormField(
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white70,
+                  ),
                   controller: _addressController,
                   validator: (value) => validateNotEmpty("Value", value),
                   maxLines: 6,
@@ -259,6 +269,11 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                   ),
                 ),
                 TextFormField(
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white70,
+                  ),
                   controller: _notesController,
                   key: Key("notes-input"),
                   keyboardType: TextInputType.multiline,

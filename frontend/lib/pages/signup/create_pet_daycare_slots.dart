@@ -87,7 +87,8 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
     _pricingTypes = [];
     _maxNumbers = [];
 
-    if (!_acceptSmallDog &&
+    if (!_acceptMiniatureDog &&
+        !_acceptSmallDog &&
         !_acceptMediumDog &&
         !_acceptLargeDog &&
         !_acceptCats &&
@@ -423,6 +424,11 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
         Text("Rp."),
         Expanded(
           child: TextFormField(
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black
+                  : Colors.white70,
+            ),
             controller: priceController,
             enabled: enabled,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -436,6 +442,11 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
         Text("/"),
         Expanded(
             child: TextFormField(
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.black
+                : Colors.white70,
+          ),
           controller: pricingTypeController,
           enabled: enabled,
           readOnly: true,
@@ -483,6 +494,11 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
         )),
         Expanded(
           child: TextFormField(
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black
+                  : Colors.white70,
+            ),
             controller: slotController,
             enabled: enabled,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],

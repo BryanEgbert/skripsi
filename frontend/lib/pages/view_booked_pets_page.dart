@@ -156,7 +156,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
             "Booked Pets",
             style: TextStyle(color: Colors.orange),
           ),
-          actions: appBarActions(ref.read(authProvider.notifier)),
+          actions: appBarActions(),
           bottom: TabBar(tabs: [
             Tab(
               icon: Icon(Icons.pets_rounded),
@@ -323,7 +323,13 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
       leading: DefaultCircleAvatar(imageUrl: item.imageUrl ?? ""),
       title: Text(item.name),
       subtitle: Text(
-          "Pet category: ${item.petCategory.name}\nStatus: ${item.status}\nOwner: ${item.owner.name}"),
+        "Pet category: ${item.petCategory.name}\nStatus: ${item.status}\nOwner: ${item.owner.name}",
+        style: TextStyle(
+          color: Theme.of(context).brightness == Brightness.light
+              ? Colors.black
+              : Colors.white70,
+        ),
+      ),
       titleTextStyle: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,

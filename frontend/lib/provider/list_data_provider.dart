@@ -24,6 +24,7 @@ import 'package:frontend/services/slot_service.dart';
 import 'package:frontend/services/transaction_service.dart';
 import 'package:frontend/services/user_service.dart';
 import 'package:frontend/services/vaccination_record_service.dart';
+import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:frontend/utils/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -106,7 +107,7 @@ Future<ListData<User>> getUserChatList(Ref ref) async {
   try {
     token = await refreshToken();
   } catch (e) {
-    return Future.error(jwtExpired, StackTrace.current);
+    return Future.error(e, StackTrace.current);
   }
 
   final service = UserService();
@@ -253,6 +254,17 @@ Future<VaccineRecord> getVaccinationRecordById(
     case Error():
       return Future.error(res.error);
   }
+}
+
+@riverpod
+Future<void> initWebsocket(Ref ref) async {
+  await ChatWebsocketChannel().instance;
+}
+
+@riverpod
+Stream<dynamic> chatWebsocketStream(Ref ref) {
+  ref.watch(initWebsocketProvider);
+  return ChatWebsocketChannel().stream;
 }
 
 @riverpod

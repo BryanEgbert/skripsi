@@ -49,7 +49,7 @@ func (s *TransactionServiceImpl) GetTransactions(userId uint, page int, pageSize
 	var transactions []model.Transaction
 
 	if err := s.db.
-		Model(&model.Transaction{UserID: userId}).
+		Model(&model.Transaction{}).
 		Preload("BookedSlot").
 		Preload("BookedSlot.User").
 		Preload("BookedSlot.Status").
@@ -62,6 +62,7 @@ func (s *TransactionServiceImpl) GetTransactions(userId uint, page int, pageSize
 		Preload("BookedSlot.Daycare.Slots.PricingType").
 		Preload("BookedSlot.Daycare.Slots.PetCategory").
 		Preload("BookedSlot.Daycare.Slots.PetCategory.SizeCategory").
+		Where("user_id = ?", userId).
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
 		Find(&transactions).Error; err != nil {

@@ -100,8 +100,13 @@ class _CreateUserPageState extends State<CreateUserPage> {
                     spacing: 12,
                     children: [
                       profilePicturePicker(),
-                      SizedBox(height: 0),
                       TextFormField(
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                         key: Key("name-input"),
                         controller: _nameController,
                         decoration: InputDecoration(
@@ -113,6 +118,12 @@ class _CreateUserPageState extends State<CreateUserPage> {
                         validator: (value) => validateNotEmpty("Name", value),
                       ),
                       TextFormField(
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                         key: Key("email-input"),
                         controller: _emailController,
                         decoration: InputDecoration(
@@ -122,7 +133,13 @@ class _CreateUserPageState extends State<CreateUserPage> {
                           labelText: "Email",
                           helper: Text(
                             "e.g. test@gmail.com",
-                            style: TextStyle(fontSize: 12),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                            ),
                           ),
                         ),
                         validator: (value) {
@@ -130,6 +147,12 @@ class _CreateUserPageState extends State<CreateUserPage> {
                         },
                       ),
                       TextFormField(
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                         key: Key("password-input"),
                         controller: _passwordController,
                         decoration: InputDecoration(
@@ -139,7 +162,13 @@ class _CreateUserPageState extends State<CreateUserPage> {
                           labelText: "Password",
                           helper: Text(
                             "Must contain at least 8 characters",
-                            style: TextStyle(fontSize: 12),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                            ),
                           ),
                         ),
                         obscureText: true,
@@ -206,7 +235,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
             ],
           ),
           Text(
-            "Change Photo",
+            "Edit Photo",
             style: TextStyle(color: Colors.orange[800]),
           ),
         ],

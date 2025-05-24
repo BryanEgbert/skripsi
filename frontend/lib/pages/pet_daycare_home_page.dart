@@ -10,6 +10,7 @@ import 'package:frontend/pages/view_booked_pets_page.dart';
 import 'package:frontend/pages/view_booking_requests_page.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/provider/user_provider.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -35,14 +36,12 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
           _webSocketSubscription = _channel!.stream.listen(
             (message) {
               final unreadChatMessages =
-                  ref.read(getUnreadChatMessagesProvider);
-              if (unreadChatMessages.hasError && !unreadChatMessages.hasValue) {
-                log("[ERROR] fetching unread messages: ${unreadChatMessages.error.toString()}");
-              } else {
+                  ref.read(getUnreadChatMessagesProvider.future);
+              unreadChatMessages.then((newData) {
                 setState(() {
-                  messages = unreadChatMessages.value!.data;
+                  messages = newData.data;
                 });
-              }
+              });
             },
             onError: (e) {
               setState(() {});
@@ -70,6 +69,10 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
   void initState() {
     super.initState();
     _setupWebSocket();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      log("update token");
+      ref.read(userStateProvider.notifier).updateDeviceToken();
+    });
   }
 
   @override
@@ -93,8 +96,12 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
       body: pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         // type: BottomNavigationBarType.fixed,
-        // backgroundColor: Colors.orange,
-        selectedItemColor: Colors.white,
+        backgroundColor: Theme.of(context).brightness == Brightness.light
+            ? Colors.orange
+            : null,
+        selectedItemColor: Theme.of(context).brightness == Brightness.light
+            ? Colors.white
+            : Colors.orange,
 
         unselectedItemColor: Colors.white,
         items: [

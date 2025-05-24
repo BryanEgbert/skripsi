@@ -75,7 +75,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
     log("use pickup: $_usePickupService");
 
-    handleError(slotState, context);
+    handleValue(slotState, context);
 
     return Scaffold(
         appBar: AppBar(
@@ -286,7 +286,8 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                       (element) {
                                         if (element.slotAmount <= 0) {
                                           DateTime disabledDate =
-                                              DateTime.parse(element.date);
+                                              DateTime.parse(element.date)
+                                                  .toLocal();
                                           return disabledDate.year ==
                                                   day.year &&
                                               disabledDate.month == day.month &&

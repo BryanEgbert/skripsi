@@ -17,6 +17,10 @@ class PetDaycareState extends _$PetDaycareState {
     return Future.value(0);
   }
 
+  Future<void> reset() async {
+    state = AsyncData(0);
+  }
+
   Future<void> updatePetDaycare(
       int petDaycareId, UpdatePetDaycareRequest req) async {
     state = AsyncLoading();
@@ -34,7 +38,6 @@ class PetDaycareState extends _$PetDaycareState {
     switch (res) {
       case Ok<void>():
         state = AsyncData(204);
-        ref.invalidate(petDaycaresProvider(null, null));
         ref.invalidate(getMyPetDaycareProvider);
         ref.invalidate(getPetDaycareByIdProvider(petDaycareId, null, null));
       case Error<void>():

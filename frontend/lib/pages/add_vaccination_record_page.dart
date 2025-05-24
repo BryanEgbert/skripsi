@@ -64,7 +64,7 @@ class _AddVaccinationRecordPageState
   Widget build(BuildContext context) {
     final vaccinationRecordState = ref.watch(vaccinationRecordStateProvider);
 
-    handleError(vaccinationRecordState, context);
+    handleValue(vaccinationRecordState, context);
 
     if (vaccinationRecordState.hasValue &&
         !vaccinationRecordState.hasError &&

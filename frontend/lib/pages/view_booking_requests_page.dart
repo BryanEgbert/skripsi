@@ -87,7 +87,7 @@ class _ViewBookingRequestsPageState
           'Booking Requests',
           style: TextStyle(color: Colors.orange),
         ),
-        actions: appBarActions(ref.read(authProvider.notifier)),
+        actions: appBarActions(),
       ),
       body: (_isFetching && _records.isEmpty)
           ? Center(
@@ -130,7 +130,7 @@ class _ViewBookingRequestsPageState
     final slotState = ref.watch(slotStateProvider);
     log("slotState: $slotState");
 
-    handleError(slotState, context);
+    handleValue(slotState, context, ref.read(slotStateProvider.notifier).reset);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -181,7 +181,13 @@ class _ViewBookingRequestsPageState
                             ),
                             Text(
                               "${formatDateStr(_records[index].startDate)} - ${formatDateStr(_records[index].endDate)}",
-                              style: TextStyle(fontSize: 12),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Colors.black
+                                    : Colors.white70,
+                              ),
                             )
                           ],
                         ),
@@ -189,7 +195,15 @@ class _ViewBookingRequestsPageState
                     ),
                     const Divider(),
                     for (var val in _records[index].petCount)
-                      Text("${val.total} ${val.petCategory.name}"),
+                      Text(
+                        "${val.total} ${val.petCategory.name}",
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
+                      ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

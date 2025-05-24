@@ -482,7 +482,7 @@ func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 	}
 	request.ThumbnailURLs = thumbnailURLs
 
-	daycare, err := pdc.petDaycareService.UpdatePetDaycare(uint(petDaycareID), userID, request)
+	_, err = pdc.petDaycareService.UpdatePetDaycare(uint(petDaycareID), userID, request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to update pet daycare",
@@ -491,7 +491,7 @@ func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, daycare)
+	c.JSON(http.StatusNoContent, nil)
 }
 
 // CreatePetDaycare handles the creation of a new pet daycare

@@ -28,6 +28,7 @@ class TransactionService implements ITransactionService {
 
       var res = await dio.get(
         "$host/transaction",
+        queryParameters: pagination.toMap(),
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",

@@ -16,6 +16,10 @@ class PetState extends _$PetState {
     return null;
   }
 
+  void reset() {
+    state = const AsyncData(null); // Reset to clean state
+  }
+
   Future<void> deletePet(int petId) async {
     state = AsyncLoading();
     TokenResponse? token;
@@ -31,8 +35,6 @@ class PetState extends _$PetState {
     switch (res) {
       case Ok<void>():
         state = AsyncData(204);
-        ref.invalidate(petProvider(petId));
-        ref.invalidate(petListProvider);
       case Error<void>():
         state = AsyncError(res.error, StackTrace.current);
     }

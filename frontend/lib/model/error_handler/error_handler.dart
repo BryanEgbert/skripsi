@@ -5,6 +5,7 @@ import 'package:frontend/model/response/error_response.dart';
 
 final String unknownErr = "Unknown Error";
 final String jwtExpired = "Session expired";
+final String userDeleted = "User has been deleted, please create a new account";
 
 sealed class Result<T> {
   const Result();
@@ -88,6 +89,11 @@ Future<Result<T>> makeRequest<T>(
         case 401:
           return Result.unauthorized("Invalid email or password");
         case 403:
+          if (res.data != null) {
+            ErrorResponse errorRes = ErrorResponse.fromJson(res.data);
+
+            return Result.forbiddenErr(errorRes.error);
+          }
           return Result.forbiddenErr("Session expired");
         case 404:
           return Result.notFoundErr("URL doesn't exists");

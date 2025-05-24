@@ -99,6 +99,12 @@ class _CreateVaccinationRecordsPageState
                     spacing: 8,
                     children: [
                       TextFormField(
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                         controller: _dateAdministeredController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -130,6 +136,12 @@ class _CreateVaccinationRecordsPageState
                         validator: (value) => validateNotEmpty("value", value),
                       ),
                       TextFormField(
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                         enabled: _isDateAdministeredFilled,
                         controller: _nextDueDateController,
                         decoration: InputDecoration(
@@ -215,7 +227,14 @@ class _CreateVaccinationRecordsPageState
                           color: Colors.grey[700],
                         ),
                       ),
-                      child: const Text("Skip"),
+                      child: (!token.isLoading)
+                          ? Text("Skip")
+                          : Row(
+                              children: [
+                                Text("Skip"),
+                                CircularProgressIndicator(),
+                              ],
+                            ),
                     ),
                   ],
                 ),

@@ -19,6 +19,7 @@ type UserService interface {
 	UpdateUserProfile(user *model.UpdateUserRequest) error
 	UpdateUserPassword(id uint, newPassword string) error
 	GetDeviceToken(userId uint) (*string, error)
+	UpdateDeviceToken(userId uint, deviceToken *string) error
 }
 
 type UserServiceImpl struct {
@@ -27,6 +28,22 @@ type UserServiceImpl struct {
 
 func NewUserService(db *gorm.DB) *UserServiceImpl {
 	return &UserServiceImpl{db: db}
+}
+
+func (s *UserServiceImpl) UpdateDeviceToken(userId uint, deviceToken *string) error {
+	if deviceToken == nil {
+		return nil
+	}
+
+	if err := s.db.
+		Model(&model.User{}).
+		Where("id = ?", userId).
+		Update("device_token", deviceToken).
+		Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *UserServiceImpl) GetDeviceToken(userId uint) (*string, error) {

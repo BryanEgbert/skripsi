@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/provider/pet_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
 
 class PaginatedPetsListView extends ConsumerStatefulWidget {
@@ -53,7 +56,9 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
         });
       }
     }).catchError((e) {
-      _error = e;
+      setState(() {
+        _error = e;
+      });
     }).whenComplete(() => setState(() => _isFetching = false));
   }
 
@@ -73,9 +78,27 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
   @override
   Widget build(BuildContext context) {
     if (_error != null) {
-      handleError(
+      handleValue(
           AsyncValue.error(_error.toString(), StackTrace.current), context);
     }
+
+    // ref.listen(
+    //   petStateProvider,
+    //   (previous, next) {
+    //     log("[PAGINATED PETS LIST VIEW] reload petListProvider, next: $next");
+    //     if (next.hasError && !next.isLoading && !next.hasValue) {
+    //       handleError(next, context);
+    //     } else {
+    //       if (next.value == 204) {
+    //         setState(() {
+    //           _records = [];
+    //           _lastId = 0;
+    //           _fetchMoreData();
+    //         });
+    //       }
+    //     }
+    //   },
+    // );
 
     return RefreshIndicator(
       onRefresh: () async {

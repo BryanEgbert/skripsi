@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -9,6 +11,7 @@ import 'package:frontend/pages/vet_main_page.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/database_provider.dart';
 import 'package:frontend/provider/theme_provider.dart';
+import 'package:frontend/provider/user_provider.dart';
 import 'package:frontend/services/firebase_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -37,10 +40,28 @@ class PetDaycareApp extends ConsumerStatefulWidget {
 
 class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
   @override
+  void initState() {
+    super.initState();
+    log("init Home");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      log("update token");
+      ref.read(userStateProvider.notifier).updateDeviceToken();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeStateProvider);
     final tokenProvider = ref.watch(getTokenProvider);
+    final updateToken = ref.watch(userStateProvider);
     Widget home = Container(color: Colors.white);
+
+    updateToken.when(
+        data: (_) {},
+        error: (_, __) {
+          home = WelcomeWidget();
+        },
+        loading: () {});
 
     tokenProvider.when(
       data: (user) {

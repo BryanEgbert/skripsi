@@ -24,9 +24,9 @@ type VaccineRecordDTO struct {
 }
 
 type VaccineRecordRequest struct {
-	DateAdministered      string                `form:"dateAdministered" binding:"required"`
-	NextDueDate           string                `form:"nextDueDate" binding:"required"`
-	VaccineRecordImage    *multipart.FileHeader `form:"vaccineRecordImage" binding:"required"`
+	DateAdministered      string                `form:"dateAdministered"`
+	NextDueDate           string                `form:"nextDueDate"`
+	VaccineRecordImage    *multipart.FileHeader `form:"vaccineRecordImage"`
 	VaccineRecordImageUrl string
 }
 

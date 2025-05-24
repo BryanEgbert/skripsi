@@ -62,7 +62,7 @@ class _EditVaccinationRecordPageState
         ref.watch(getVaccinationRecordByIdProvider(widget.vaccinationRecordId));
     final recordState = ref.watch(vaccinationRecordStateProvider);
 
-    handleError(recordState, context);
+    handleValue(recordState, context);
 
     if (recordState.hasValue && !recordState.isLoading) {
       if (recordState.value == 204) {
@@ -102,8 +102,9 @@ class _EditVaccinationRecordPageState
   }
 
   Widget _buildBody(BuildContext context, VaccineRecord value) {
-    DateTime parsedDateAdministered = DateTime.parse(value.dateAdministered);
-    DateTime parsedNextDueDate = DateTime.parse(value.nextDueDate);
+    DateTime parsedDateAdministered =
+        DateTime.parse(value.dateAdministered).toLocal();
+    DateTime parsedNextDueDate = DateTime.parse(value.nextDueDate).toLocal();
     if (!_hasLoaded) {
       _vaccinationRecordImageUrl = value.imageUrl;
       _dateAdministered = parsedDateAdministered;
@@ -128,6 +129,11 @@ class _EditVaccinationRecordPageState
           children: [
             _vaccineRecordImagePicker(),
             TextField(
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.black
+                    : Colors.white70,
+              ),
               controller: _dateAdministeredController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
@@ -158,6 +164,11 @@ class _EditVaccinationRecordPageState
               },
             ),
             TextField(
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.black
+                    : Colors.white70,
+              ),
               enabled: _isDateAdministeredFilled,
               controller: _nextDueDateController,
               decoration: InputDecoration(

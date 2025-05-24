@@ -24,7 +24,7 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
     final user = ref.watch(getMyUserProvider);
     final reviewState = ref.watch(reviewStateProvider);
 
-    handleError(reviewState, context);
+    handleValue(reviewState, context);
 
     return switch (user) {
       AsyncError(:final error) => ErrorText(

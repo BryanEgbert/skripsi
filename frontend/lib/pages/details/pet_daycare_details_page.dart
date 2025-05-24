@@ -50,7 +50,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
             ),
             title: const Text('Pet Daycare',
                 style: TextStyle(color: Colors.orange)),
-            actions: appBarActions(ref.read(authProvider.notifier)),
+            actions: appBarActions(),
           ),
           floatingActionButton: widget.petDaycareId != 0
               ? FloatingActionButton.large(
@@ -84,7 +84,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
               'Pet Daycare',
               style: TextStyle(color: Colors.orange),
             ),
-            actions: appBarActions(ref.read(authProvider.notifier)),
+            actions: appBarActions(),
           ),
           floatingActionButton: (widget.petDaycareId == 0)
               ? FloatingActionButton(
@@ -142,14 +142,24 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       widget.petDaycareId != 0) ...[
                     Text(
                       "${(value.distance.toDouble() / 1000).toStringAsFixed(2)}km away",
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white70,
+                      ),
                       maxLines: 2,
                     ),
                     SizedBox(height: 4),
                   ],
                   Text(
                     value.address,
-                    style: TextStyle(fontSize: 12),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white70,
+                    ),
                     maxLines: 2,
                   ),
                   const SizedBox(height: 4),
@@ -159,22 +169,46 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       SizedBox(width: 4),
                       Text(
                         "${value.averageRating}/5 (${value.ratingCount})",
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         "|",
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         "${value.bookedNum} ",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 12),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                       ),
                       Text(
                         "slots booked",
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                       ),
                     ],
                   ),
@@ -208,7 +242,12 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                     ReadMoreText(
                       value.description,
                       textAlign: TextAlign.justify,
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white70,
+                      ),
                       moreStyle: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.orange,
@@ -241,9 +280,26 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                   ),
                   const SizedBox(height: 8),
                   for (var price in value.pricings)
-                    Text(
-                      "${price.petCategory.name} (${price.petCategory.sizeCategory.minWeight}-${price.petCategory.sizeCategory.maxWeight}kg) - Rp. ${price.price}/${price.pricingType}",
-                    ),
+                    if (price.petCategory.sizeCategory.maxWeight != null)
+                      Text(
+                        "${price.petCategory.name} (${price.petCategory.sizeCategory.minWeight}-${price.petCategory.sizeCategory.maxWeight}kg) - Rp. ${price.price}/${price.pricingType}",
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
+                      )
+                    else
+                      Text(
+                        "${price.petCategory.name} (${price.petCategory.sizeCategory.minWeight}kg+) - Rp. ${price.price}/${price.pricingType}",
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
+                      ),
                 ],
               ),
             ),
@@ -270,49 +326,91 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                         ? Icon(Icons.check, color: Colors.green)
                         : Icon(Icons.close, color: Colors.red),
                     SizedBox(width: 8),
-                    Text("Pet Vaccination Required"),
+                    Text(
+                      "Pet Vaccination Required",
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white70,
+                      ),
+                    ),
                   ]),
                   Row(children: [
                     value.hasPickupService
                         ? Icon(Icons.check, color: Colors.green)
                         : Icon(Icons.close, color: Colors.red),
                     SizedBox(width: 8),
-                    Text("Pick-Up Service"),
+                    Text(
+                      "Pick-Up Service",
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white70,
+                      ),
+                    ),
                   ]),
                   Row(children: [
                     value.groomingAvailable
                         ? Icon(Icons.check, color: Colors.green)
                         : Icon(Icons.close, color: Colors.red),
                     SizedBox(width: 8),
-                    Text("Grooming Service"),
+                    Text(
+                      "Grooming Service",
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white70,
+                      ),
+                    ),
                   ]),
                   Row(children: [
                     value.foodProvided
                         ? Icon(Icons.check, color: Colors.green)
                         : Icon(Icons.close, color: Colors.red),
                     SizedBox(width: 8),
-                    Text("In-House Food Provided"),
-                  ]),
-                  if (value.foodProvided)
-                    const Padding(
-                      padding: EdgeInsets.only(left: 32.0),
-                      child: Text("Brand: Pedigree",
-                          style: TextStyle(color: Colors.grey)),
+                    Text(
+                      "In-House Food Provided",
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white70,
+                      ),
                     ),
+                  ]),
+                  // if (value.foodProvided)
+                  //   const Padding(
+                  //     padding: EdgeInsets.only(left: 32.0),
+                  //     child: Text("Brand: Pedigree",
+                  //         style: TextStyle(color: Colors.grey)),
+                  //   ),
                   const SizedBox(height: 16),
                   const Text(
                     "Number of Walks",
                     style: TextStyle(
                         color: Colors.orange, fontWeight: FontWeight.w600),
                   ),
-                  Text(value.dailyWalks.name),
+                  Text(
+                    value.dailyWalks.name,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white70,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   const Text(
                     "Number of Playtime",
                     style: TextStyle(
                         color: Colors.orange, fontWeight: FontWeight.w600),
                   ),
-                  Text(value.dailyPlaytime.name),
+                  Text(
+                    value.dailyPlaytime.name,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white70,
+                    ),
+                  ),
                 ],
               ),
             ),

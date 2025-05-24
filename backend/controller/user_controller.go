@@ -30,6 +30,44 @@ func NewUserController(userService service.UserService, petService service.PetSe
 	return &UserController{userService: userService, petService: petService, vaccineRecordService: vaccineRecordService, petDaycareService: petDaycareService}
 }
 
+func (uc *UserController) UpdateDeviceToken(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "User ID not found in token",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	var req model.UpdateDeviceTokenRequest
+	if err := c.ShouldBind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request body",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	if err := uc.userService.UpdateDeviceToken(userID, req.DeviceToken); err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "Something went wrong",
+				Error:   err.Error(),
+			})
+		}
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
 func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 	var req model.CreatePetDaycareProviderRequest
 
@@ -131,7 +169,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 	if req.UserImage != nil {
 		rand.New(rand.NewSource(time.Now().UnixNano())) // Seed to get different results each run
 		randomNum := rand.Uint64()
-		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(req.VaccineRecordImage.Filename)))
+		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(req.UserImage.Filename)))
 
 		if err := c.SaveUploadedFile(req.UserImage, imagePath); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
@@ -142,7 +180,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 			return
 		}
 
-		req.UserImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, imagePath)
+		req.UserImageUrl = fmt.Sprintf("http://%s/%s", c.Request.Host, imagePath)
 	}
 
 	createdUser, err := uc.userService.CreateUser(req.CreateUserRequest)
@@ -157,7 +195,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 
 	if req.PetImage != nil {
 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(createdUser.UserID, filepath.Ext(req.PetImage.Filename)))
-		imageUrl := fmt.Sprintf("%s/%s", c.Request.Host, filename)
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
 		req.PetImageUrl = &imageUrl
 
 		if err := c.SaveUploadedFile(req.PetImage, filename); err != nil {
@@ -181,7 +219,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 
 	if req.VaccineRecordImage != nil {
 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(createdUser.UserID, filepath.Ext(req.VaccineRecordImage.Filename)))
-		req.VaccineRecordImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, filename)
+		req.VaccineRecordImageUrl = fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
 
 		if err := c.SaveUploadedFile(req.VaccineRecordImage, filename); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{

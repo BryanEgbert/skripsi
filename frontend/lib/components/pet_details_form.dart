@@ -57,7 +57,15 @@ class _PetDetailsFormState extends ConsumerState<PetDetailsForm> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Choose Your Pet's Type & Size"),
+                      Text(
+                        "Choose Your Pet's Type & Size",
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
+                      ),
                       Icon(
                         Icons.arrow_forward_ios_rounded,
                         color: Colors.orange,
@@ -74,7 +82,14 @@ class _PetDetailsFormState extends ConsumerState<PetDetailsForm> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Spayed/Neutered"),
+                Text(
+                  "Spayed/Neutered",
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white,
+                  ),
+                ),
                 Checkbox(
                   value: isNeutered,
                   onChanged: (value) {

@@ -29,13 +29,15 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
   final _openingHoursController = TextEditingController();
   final _closingHoursController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _searchController = SearchController();
 
   String _address = "";
-  double _latitude = 0.0;
-  double _longitude = 0.0;
+  double? _latitude;
+  double? _longitude;
   String _locality = "";
   String? _location;
   String? _locationErrorText;
+  String? _error;
 
   final _sessionId = Uuid().v4();
   // TODO: change this on release
@@ -53,6 +55,15 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
       return;
     }
 
+    if (_latitude == null && _longitude == null && _location == null) {
+      setState(() {
+        _error = "Invalid location";
+      });
+      return;
+    }
+
+    log("latitude $_latitude, longitude: $_longitude");
+
     final createPetDaycareReq = CreatePetDaycareRequest(
       petDaycareName: _nameController.text,
       address: _address,
@@ -61,8 +72,8 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
       openingHour: _openingHoursController.text,
       closingHour: _closingHoursController.text,
       locality: _locality,
-      latitude: _latitude,
-      longitude: _longitude,
+      latitude: _latitude!,
+      longitude: _longitude!,
       price: [],
       pricingType: [],
       hasPickupService: false,
@@ -88,6 +99,22 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_error != null) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        var snackbar = SnackBar(
+          key: Key("error-message"),
+          content: Text(
+            _error!,
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red[800],
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+        _error = null;
+      });
+    }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -113,6 +140,12 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                     spacing: 12,
                     children: [
                       TextFormField(
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                         controller: _nameController,
                         key: Key("name-input"),
                         decoration: InputDecoration(
@@ -127,6 +160,12 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                       _locationInput(),
                       _operationHoursInput(context),
                       TextFormField(
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                         controller: _descriptionController,
                         key: Key("description-input"),
                         maxLines: 6,
@@ -135,7 +174,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          labelText: "Description",
+                          labelText: "Description (optional)",
                         ),
                       ),
                       ElevatedButton(
@@ -166,6 +205,12 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
           children: [
             Expanded(
               child: TextFormField(
+                readOnly: true,
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.black
+                      : Colors.white70,
+                ),
                 controller: _openingHoursController,
                 decoration: InputDecoration(
                   labelText: "Opening Hour",
@@ -192,9 +237,22 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                 },
               ),
             ),
-            Text("to"),
+            Text(
+              "to",
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.black
+                    : Colors.white70,
+              ),
+            ),
             Expanded(
               child: TextFormField(
+                readOnly: true,
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.black
+                      : Colors.white70,
+                ),
                 controller: _closingHoursController,
                 decoration: InputDecoration(
                   labelText: "Closing Hour",
@@ -228,66 +286,85 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
   }
 
   Widget _locationInput() {
-    return Autocomplete<SuggestionDetailsResponse>(
-      fieldViewBuilder:
-          (context, textEditingController, focusNode, onFieldSubmitted) {
+    return SearchAnchor(
+      searchController: _searchController,
+      builder: (context, controller) {
         return TextFormField(
-          controller: textEditingController,
-          focusNode: focusNode,
-          onFieldSubmitted: (value) {
-            onFieldSubmitted();
-          },
-          key: Key("location-input"),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.black
+                : Colors.white70,
+          ),
+          controller: controller,
+          validator: (value) => validateNotEmpty("Value", value),
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
             ),
-            labelText: "Location",
-            prefixIcon: Icon(Icons.location_on_outlined),
+            labelText: "Location name",
+            labelStyle: TextStyle(fontSize: 12),
           ),
-          validator: (value) => validateNotEmpty("Location", value),
+          onTap: () {
+            controller.openView();
+          },
+          onChanged: (_) {
+            controller.openView();
+          },
+          onTapOutside: (_) {
+            controller.closeView(controller.text);
+          },
         );
       },
-      displayStringForOption: (option) => "${option.name}\n${option.address}",
-      optionsBuilder: (textEditingValue) async {
+      suggestionsBuilder: (context, controller) async {
+        if (controller.text.isEmpty) return [];
         final res = await _locationService.getSuggestedLocation(
-            _sessionId, textEditingValue.text);
+            _sessionId, controller.text);
 
         switch (res) {
           case Ok<SuggestResponse>():
-            setState(() {
-              _locationErrorText = null;
-            });
-            return res.value!.suggestions;
+            return res.value!.suggestions.map(
+              (e) => ListTile(
+                onTap: () async {
+                  final retrieve = await _locationService
+                      .retrieveSuggestedLocation(_sessionId, e.mapboxId);
+                  switch (retrieve) {
+                    case Ok<RetrieveResponse>():
+                      setState(() {
+                        _address = retrieve
+                                .value!.features[0].properties.fullAddress ??
+                            retrieve.value!.features[0].properties.address ??
+                            "";
+                        _searchController.text =
+                            retrieve.value!.features[0].properties.name;
+                        _latitude = retrieve
+                            .value!.features[0].properties.coordinates.latitude;
+                        _longitude = retrieve.value!.features[0].properties
+                            .coordinates.longitude;
+                        _location = retrieve.value!.features[0].properties.name;
+                      });
+                      controller.closeView(_searchController.text);
+                    case Error<RetrieveResponse>():
+                      var snackbar = SnackBar(
+                        key: Key("error-message"),
+                        content:
+                            Text("Something's wrong when fetching address"),
+                        backgroundColor: Colors.red[800],
+                      );
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                      }
+                  }
+                },
+                title: Text(e.name),
+                subtitle: Text(e.fullAddress ?? e.address ?? ""),
+              ),
+            );
           case Error<SuggestResponse>():
             log("[INFO] suggest location err: ${res.error}");
-            setState(() {
-              _locationErrorText = "Network error, please try again";
-            });
-            return [];
-        }
-      },
-      onSelected: (option) async {
-        log("[INFO] mapboxId: ${option.mapboxId}");
-        final res = await _locationService.retrieveSuggestedLocation(
-            _sessionId, option.mapboxId);
-
-        switch (res) {
-          case Ok<RetrieveResponse>():
-            _locality =
-                res.value!.features[0].properties.context.locality!.name;
-            _address = res.value!.features[0].properties.context.address!.name;
-            _location = res.value!.features[0].properties.name;
-            _latitude = res.value!.features[0].properties.coordinates.latitude;
-            _longitude =
-                res.value!.features[0].properties.coordinates.longitude;
-            debugPrint(
-                "[INFO] you just selected ${option.address} - $_locality - lat: $_latitude - long: $_longitude");
-          case Error<RetrieveResponse>():
-            setState(() {
-              _locationErrorText =
-                  "Something's wrong when retrieving location data";
-            });
+            return [
+              Text(res.error),
+            ];
         }
       },
     );

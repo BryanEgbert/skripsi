@@ -24,8 +24,11 @@ String? validateNotEmpty(String inputFieldName, String? value) {
 }
 
 String? validatePriceInput(bool enabled, String? value) {
+  if (value == null) {
+    return "Price cannot be empty";
+  }
   if (enabled && (double.tryParse(value!) ?? 0) <= 0) {
-    return "Enter a valid price";
+    return "Must be greater than 0";
   }
 
   return null;

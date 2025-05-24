@@ -37,7 +37,7 @@ class _TransactionDetailsPageState
     final transaction = ref.watch(getTransactionProvider(widget.transactionId));
     final slotState = ref.watch(slotStateProvider);
 
-    handleError(slotState, context);
+    handleValue(slotState, context);
 
     double totalPrice = 0;
     Color statusColor = Colors.black;
@@ -54,7 +54,7 @@ class _TransactionDetailsPageState
             'Booking Details',
             style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
           ),
-          actions: appBarActions(ref.read(authProvider.notifier)),
+          actions: appBarActions(),
         ),
         body: switch (transaction) {
           AsyncError(:final error) => ErrorText(

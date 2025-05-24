@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/account_settings_page.dart';
 import 'package:frontend/pages/pet_owner_chat_list_page.dart';
-import 'package:frontend/provider/auth_provider.dart';
 
 List<Widget> petOwnerAppBarActions(int unreadMessageCount) {
   return [
@@ -13,6 +12,9 @@ List<Widget> petOwnerAppBarActions(int unreadMessageCount) {
                 color: Colors.orange,
               )
             : Badge.count(
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.red[100]
+                    : null,
                 count: unreadMessageCount,
                 child: Icon(
                   Icons.chat,
@@ -42,7 +44,7 @@ List<Widget> petOwnerAppBarActions(int unreadMessageCount) {
   ];
 }
 
-List<Widget> appBarActions(Auth auth) {
+List<Widget> appBarActions() {
   return [
     Builder(builder: (context) {
       return IconButton(

@@ -61,9 +61,9 @@ func (s *VaccineServiceImpl) GetVaccineRecords(petId uint, page int, limit int) 
 	var records []model.VaccineRecord
 	if err := s.db.
 		Where("pet_id = ?", petId).
-		Find(&records).
 		Offset((page - 1) * limit).
-		Limit(limit).Error; err != nil {
+		Limit(limit).
+		Find(&records).Error; err != nil {
 		return nil, err
 	}
 

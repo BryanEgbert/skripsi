@@ -220,7 +220,7 @@ func (c *ChatController) Handle(ctx *gin.Context) {
 			break
 		}
 		if msg.UpdateRead {
-			if err := c.chatService.UpdateRead(senderID, msg.ReceiverID); err != nil {
+			if err := c.chatService.UpdateRead(msg.ReceiverID, senderID); err != nil {
 				log.Printf("[ERROR] updateRead err: %v", err)
 			}
 
@@ -281,21 +281,21 @@ func (c *ChatController) Handle(ctx *gin.Context) {
 				continue
 			}
 
-			if token == nil {
-				continue
-			}
-
-			if _, err := c.client.Send(ctx, &messaging.Message{
-				Data: map[string]string{
-					"page": "chat",
-				},
-				Notification: &messaging.Notification{
-					Title: "New Message",
-					Body:  "New message incoming",
-				},
-				Token: *token,
-			}); err != nil {
-				log.Printf("[ERROR] sending message: %v\n", err)
+			if token != nil {
+				log.Printf("[INFO] Device token is null")
+				_, err := c.client.Send(ctx, &messaging.Message{
+					Data: map[string]string{
+						"page": "chat",
+					},
+					Notification: &messaging.Notification{
+						Title: "New Message",
+						Body:  "New message incoming",
+					},
+					Token: *token,
+				})
+				if err != nil {
+					log.Printf("[ERROR] sending message: %v\n", err)
+				}
 			}
 
 		}

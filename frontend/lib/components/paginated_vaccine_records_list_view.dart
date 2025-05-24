@@ -35,6 +35,8 @@ class _PaginatedListViewState
   bool _isFetching = false;
   bool _hasMoreData = true;
 
+  int _deleteIndex = -1;
+
   Object? _error;
 
   void _onScroll() {
@@ -95,6 +97,37 @@ class _PaginatedListViewState
 
     handleError(vaccinationRecord, context);
 
+    if (vaccinationRecord.hasValue && !vaccinationRecord.isLoading) {
+      if (vaccinationRecord.value != null) {
+        if (vaccinationRecord.value! >= 200 &&
+            vaccinationRecord.value! <= 400) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            var snackbar = SnackBar(
+              key: Key("success-message"),
+              content: Text(
+                "Operation completed successfully",
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.black
+                      : Colors.white70,
+                ),
+              ),
+              backgroundColor: Colors.green[800],
+            );
+
+            ScaffoldMessenger.of(context).showSnackBar(snackbar);
+            if (_deleteIndex != -1) {
+              setState(() {
+                _records.removeAt(_deleteIndex);
+                _deleteIndex = -1;
+                ref.invalidate(vaccinationRecordStateProvider);
+              });
+            }
+          });
+        }
+      }
+    }
+
     return RefreshIndicator(
       onRefresh: () async {
         _records = [];
@@ -132,7 +165,9 @@ class _PaginatedListViewState
     return Container(
       margin: EdgeInsets.symmetric(vertical: 6, horizontal: 16),
       child: Card(
-        color: Color(0xFFFDF6EC),
+        color: Theme.of(context).brightness == Brightness.light
+            ? Color(0xFFFDF6EC)
+            : null,
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
@@ -151,7 +186,14 @@ class _PaginatedListViewState
                       color: Colors.orange,
                     ),
                   ),
-                  Text(formatDateStr(vaccineRecord.dateAdministered)),
+                  Text(
+                    formatDateStr(vaccineRecord.dateAdministered),
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+                  ),
                   Text(
                     "Next Due Date:",
                     style: TextStyle(
@@ -160,7 +202,14 @@ class _PaginatedListViewState
                       color: Colors.orange,
                     ),
                   ),
-                  Text(formatDateStr(vaccineRecord.nextDueDate)),
+                  Text(
+                    formatDateStr(vaccineRecord.nextDueDate),
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+                  ),
                 ],
               ),
               Row(
@@ -212,6 +261,7 @@ class _PaginatedListViewState
                                 .read(vaccinationRecordStateProvider.notifier)
                                 .delete(vaccineRecord.id, widget.petId,
                                     widget.pageSize);
+                            _deleteIndex = index;
                             // setState(() {
                             //   _records.removeAt(index);
                             // });

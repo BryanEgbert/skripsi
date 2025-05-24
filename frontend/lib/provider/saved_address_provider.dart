@@ -15,6 +15,10 @@ class SavedAddressState extends _$SavedAddressState {
     return Future.value(0);
   }
 
+  Future<void> reset() async {
+    state = AsyncData(0);
+  }
+
   Future<void> addSavedAddress(CreateSavedAddressRequest req) async {
     state = AsyncLoading();
     TokenResponse? token;

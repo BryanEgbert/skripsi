@@ -1,13 +1,17 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/paginated_vaccine_records_list_view.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/pages/add_vaccination_record_page.dart';
 import 'package:frontend/pages/edit/edit_pet_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/pet_provider.dart';
+import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class PetDetailsPage extends ConsumerStatefulWidget {
@@ -35,7 +39,11 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    log("[PET DETAILS PAGE] build");
     final pet = ref.watch(petProvider(widget.petId));
+    final petState = ref.watch(petStateProvider);
+    log("[PET DETAILS PAGE] petState: $petState");
+    handleValue(petState, context, ref.read(petStateProvider.notifier).reset);
 
     return Scaffold(
         appBar: AppBar(
@@ -78,7 +86,9 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
         _buildPetDetails(petValue),
         SizedBox(height: 8),
         Container(
-          color: Color(0xFFFFF1E1),
+          color: Theme.of(context).brightness == Brightness.light
+              ? Constants.secondaryBackgroundColor
+              : null,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -116,7 +126,9 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
         ),
         Expanded(
           child: Container(
-            color: Color(0xFFFFF1E1),
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.secondaryBackgroundColor
+                : null,
             child: PaginatedVaccineRecordsListView(
               widget.petId,
               pageSize: 10,
@@ -131,7 +143,9 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
   Widget _buildPetDetails(Pet petValue) {
     return Container(
       padding: EdgeInsets.all(16),
-      color: Color(0xFFFFF1E1),
+      color: Theme.of(context).brightness == Brightness.light
+          ? Constants.secondaryBackgroundColor
+          : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -154,9 +168,31 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
                       color: Colors.orange,
                     ),
                   ),
-                  Text("pet category: ${petValue.petCategory.name}"),
-                  Text("status: ${petValue.status}"),
-                  if (!widget.isOwner) Text("owner: ${petValue.owner.name}"),
+                  Text(
+                    "pet category: ${petValue.petCategory.name}",
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+                  ),
+                  Text(
+                    "status: ${petValue.status}",
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+                  ),
+                  if (!widget.isOwner)
+                    Text(
+                      "owner: ${petValue.owner.name}",
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white,
+                      ),
+                    ),
                 ],
               ),
             ],

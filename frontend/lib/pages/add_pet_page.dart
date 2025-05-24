@@ -73,7 +73,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
   Widget build(BuildContext context) {
     final petState = ref.watch(petStateProvider);
 
-    handleError(petState, context);
+    handleValue(petState, context);
 
     if (petState.hasValue && !petState.isLoading) {
       if (petState.value == 201) {
@@ -101,7 +101,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
           "Pets",
           style: TextStyle(color: Colors.orange),
         ),
-        actions: appBarActions(ref.read(authProvider.notifier)),
+        actions: appBarActions(),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

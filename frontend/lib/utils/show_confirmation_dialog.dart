@@ -7,8 +7,22 @@ void showCancelBookingConfirmationDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text("Cancel Booking"),
-        content: Text(message),
+        title: Text(
+          "Cancel Booking",
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
+        ),
+        content: Text(
+          message,
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.black
+                : Colors.white70,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () {
@@ -38,8 +52,22 @@ void showDeleteConfirmationDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text("Confirm Delete"),
-        content: Text(message),
+        title: Text(
+          "Confirm Delete",
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
+        ),
+        content: Text(
+          message,
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.black
+                : Colors.white70,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () {
@@ -69,8 +97,22 @@ void showConfirmationDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(title),
-        content: Text(message),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
+        ),
+        content: Text(
+          message,
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.black
+                : Colors.white70,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () {

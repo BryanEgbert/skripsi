@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
@@ -77,6 +79,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
 
   @override
   Widget build(BuildContext context) {
+    log("[Booking History View] _records: $_records");
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -107,7 +110,8 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
   Widget _buildBookingHistoryList() {
     final slotState = ref.watch(slotStateProvider);
 
-    handleError(slotState, context);
+    // TODO: add reset function to provider
+    handleError(slotState, context, ref.read(slotStateProvider.notifier).reset);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -124,7 +128,14 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
               spacing: 4,
               children: [
                 Icon(Icons.info_outline_rounded),
-                Text("Tap the cards to view details")
+                Text(
+                  "Tap the cards to view details",
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.grey[700]
+                        : Colors.white70,
+                  ),
+                )
               ],
             ),
             Expanded(
@@ -135,6 +146,16 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                 itemBuilder: (context, index) {
                   Color statusColor = Colors.black;
                   Color chipColor = Colors.transparent;
+
+                  if (slotState.hasValue && !slotState.isLoading) {
+                    if (slotState.value == 204) {
+                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                        setState(() {
+                          ref.read(slotStateProvider.notifier).reset();
+                        });
+                      });
+                    }
+                  }
 
                   if (_records[index].status.id == 1) {
                     statusColor = Colors.deepOrange;
@@ -147,16 +168,6 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                       _records[index].status.id == 5) {
                     statusColor = Colors.red;
                     chipColor = Color(0XFFFFD7D7);
-                  }
-
-                  if (slotState.hasValue && !slotState.isLoading) {
-                    if (slotState.value == 204) {
-                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                        setState(() {});
-
-                        ref.read(slotStateProvider.notifier).reset();
-                      });
-                    }
                   }
 
                   return InkWell(
@@ -188,7 +199,13 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                     ),
                                     Text(
                                       "${formatDateStr(_records[index].startDate)} - ${formatDateStr(_records[index].endDate)}",
-                                      style: TextStyle(fontSize: 10),
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.light
+                                            ? Colors.black
+                                            : Colors.white70,
+                                      ),
                                     )
                                   ],
                                 ),
@@ -210,7 +227,15 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                               ],
                             ),
                             const Divider(),
-                            Text(_records[index].petDaycare.address),
+                            Text(
+                              _records[index].petDaycare.address,
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Colors.black
+                                    : Colors.white70,
+                              ),
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [

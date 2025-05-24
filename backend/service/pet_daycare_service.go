@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -199,6 +200,7 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 
 	// Handle Slots update (SpeciesID + SizeCategoryID + MaxNumber)
 	if len(newData.PetCategoryID) > 0 && len(newData.MaxNumber) > 0 {
+		log.Printf("data: %v", newData)
 		// Delete old slots
 		if err := tx.Where("daycare_id = ?", daycare.ID).Delete(&model.Slots{}).Error; err != nil {
 			tx.Rollback()

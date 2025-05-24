@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 String formatDateStr(String dateString) {
-  DateTime dateTime = DateTime.parse(dateString);
+  DateTime dateTime = DateTime.parse(dateString).toLocal();
   return DateFormat('dd MMMM yyyy').format(dateTime);
 }
 

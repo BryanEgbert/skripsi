@@ -25,11 +25,10 @@ class _BookingRequestDetailsPageState
   Widget build(BuildContext context) {
     final slotState = ref.watch(slotStateProvider);
 
-    handleError(slotState, context);
+    handleValue(slotState, context);
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Constants.secondaryBackgroundColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.orange),
           onPressed: () => Navigator.pop(context),
@@ -38,14 +37,16 @@ class _BookingRequestDetailsPageState
           'Booking Details',
           style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
         ),
-        actions: appBarActions(ref.read(authProvider.notifier)),
+        actions: appBarActions(),
       ),
       body: Column(
         spacing: 8,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            color: Constants.secondaryBackgroundColor,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.secondaryBackgroundColor
+                : null,
             padding: EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,9 +61,16 @@ class _BookingRequestDetailsPageState
                   ),
                 ),
                 Text(
-                    "${formatDateStr(widget.bookingReq.startDate)} - ${formatDateStr(widget.bookingReq.endDate)}"),
-                SizedBox(height: 4),
+                  "${formatDateStr(widget.bookingReq.startDate)} - ${formatDateStr(widget.bookingReq.endDate)}",
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white70,
+                  ),
+                ),
+                SizedBox(height: 12),
                 Row(
+                  spacing: 8,
                   children: [
                     Text(
                       "Use Pick-up Service",
@@ -84,29 +92,43 @@ class _BookingRequestDetailsPageState
                       )
                   ],
                 ),
-                if (widget.bookingReq.pickupRequired)
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      color: const Color.fromARGB(255, 255, 227, 193),
-                    ),
-                    padding: EdgeInsets.all(8.0),
-                    child: Column(
-                      spacing: 4,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.bookingReq.addressInfo!.name,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                        Text(
-                          widget.bookingReq.addressInfo!.address,
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ],
-                    ),
+                if (widget.bookingReq.pickupRequired) const SizedBox(height: 4),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Color.fromARGB(255, 255, 227, 193)
+                        : Colors.black87,
                   ),
+                  padding: EdgeInsets.all(8.0),
+                  child: Column(
+                    spacing: 4,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.bookingReq.addressInfo!.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
+                      ),
+                      Text(
+                        widget.bookingReq.addressInfo!.address,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -164,7 +186,9 @@ class _BookingRequestDetailsPageState
           Expanded(
             child: Container(
               width: double.infinity,
-              color: Constants.secondaryBackgroundColor,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.secondaryBackgroundColor
+                  : null,
               padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

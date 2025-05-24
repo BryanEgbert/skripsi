@@ -60,22 +60,22 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
     final pet = ref.watch(getPetByIdProvider(widget.petId));
     final petState = ref.watch(petStateProvider);
 
-    handleError(petState, context);
+    handleValue(petState, context, ref.read(petStateProvider.notifier).reset);
 
-    if (petState.hasValue && !petState.isLoading) {
-      if (petState.value == 204) {
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          var snackbar = SnackBar(
-            key: Key("success-message"),
-            content: Text("Pet edited successfully"),
-            backgroundColor: Colors.green[800],
-          );
+    // if (petState.hasValue && !petState.isLoading) {
+    //   if (petState.value == 204) {
+    //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //       var snackbar = SnackBar(
+    //         key: Key("success-message"),
+    //         content: Text("Pet edited successfully"),
+    //         backgroundColor: Colors.green[800],
+    //       );
 
-          ScaffoldMessenger.of(context).showSnackBar(snackbar);
-          Navigator.of(context).pop();
-        });
-      }
-    }
+    //       ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    //       Navigator.of(context).pop();
+    //     });
+    //   }
+    // }
 
     return Scaffold(
       appBar: AppBar(
@@ -112,6 +112,12 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                         imageUrl: value?.imageUrl,
                       ),
                       TextFormField(
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                         controller: _nameController,
                         key: Key("name-input"),
                         decoration: InputDecoration(
@@ -120,10 +126,22 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                           ),
                           labelText: "Name",
                           hintText: value?.name,
+                          hintStyle: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.black
+                                    : Colors.white70,
+                          ),
                         ),
                         validator: (value) => validateNotEmpty("Name", value),
                       ),
                       TextFormField(
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                        ),
                         controller: _petCategoryController,
                         focusNode: _petCategoryFocusNode,
                         readOnly: true,
@@ -152,7 +170,15 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("Spayed/Neutered"),
+                            Text(
+                              "Spayed/Neutered",
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Colors.black
+                                    : Colors.white70,
+                              ),
+                            ),
                             Checkbox(
                               value: _isNeutered,
                               onChanged: (value) {
@@ -165,12 +191,12 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () async {
+                        onPressed: () {
                           if (petState.isLoading) return;
 
                           if (!_formKey.currentState!.validate()) return;
 
-                          await ref.read(petStateProvider.notifier).editPet(
+                          ref.read(petStateProvider.notifier).editPet(
                                 widget.petId,
                                 PetRequest(
                                   name: _nameController.text,

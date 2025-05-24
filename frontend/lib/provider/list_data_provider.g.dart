@@ -373,7 +373,7 @@ final getUnreadChatMessagesProvider =
 // ignore: unused_element
 typedef GetUnreadChatMessagesRef
     = AutoDisposeFutureProviderRef<ListData<ChatMessage>>;
-String _$getUserChatListHash() => r'6278a948e5c83ec912ea7f8815dd91772c57660d';
+String _$getUserChatListHash() => r'f1ed53f4e5190700e3f5edd912ad8d382bc6e6cc';
 
 /// See also [getUserChatList].
 @ProviderFor(getUserChatList)
@@ -1266,6 +1266,41 @@ class _GetVaccinationRecordByIdProviderElement
       (origin as GetVaccinationRecordByIdProvider).vaccinationRecordId;
 }
 
+String _$initWebsocketHash() => r'20afbf14789ee588889418f904c72110443a6db9';
+
+/// See also [initWebsocket].
+@ProviderFor(initWebsocket)
+final initWebsocketProvider = AutoDisposeFutureProvider<void>.internal(
+  initWebsocket,
+  name: r'initWebsocketProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$initWebsocketHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef InitWebsocketRef = AutoDisposeFutureProviderRef<void>;
+String _$chatWebsocketStreamHash() =>
+    r'6a1dcf4ed3735bcde3eaba853a0a302e69cdb06f';
+
+/// See also [chatWebsocketStream].
+@ProviderFor(chatWebsocketStream)
+final chatWebsocketStreamProvider = AutoDisposeStreamProvider<dynamic>.internal(
+  chatWebsocketStream,
+  name: r'chatWebsocketStreamProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$chatWebsocketStreamHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ChatWebsocketStreamRef = AutoDisposeStreamProviderRef<dynamic>;
 String _$petListHash() => r'c409decdc18fbfa41dc5768f676016a784e2f1bf';
 
 /// See also [petList].

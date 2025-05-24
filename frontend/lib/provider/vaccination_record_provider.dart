@@ -15,6 +15,10 @@ class VaccinationRecordState extends _$VaccinationRecordState {
     return Future.value(0);
   }
 
+  Future<void> reset() async {
+    state = AsyncData(0);
+  }
+
   Future<void> create(int petId, VaccinationRecordRequest req) async {
     TokenResponse token = await refreshToken();
 
@@ -24,7 +28,6 @@ class VaccinationRecordState extends _$VaccinationRecordState {
     switch (res) {
       case Ok():
         state = AsyncData(201);
-        ref.invalidate(vaccineRecordsProvider(petId));
       case Error():
         state = AsyncError(res.error, StackTrace.current);
     }

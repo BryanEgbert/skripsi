@@ -6,12 +6,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/user.dart';
 import 'package:frontend/pages/chat_page.dart';
 import 'package:frontend/pages/welcome.dart';
-import 'package:frontend/provider/auth_provider.dart';
+import 'package:frontend/provider/database_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/provider/message_tracker_provider.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:frontend/utils/handle_error.dart';
 import 'package:web_socket_channel/io.dart';
@@ -25,12 +27,15 @@ class PetOwnerChatListPage extends ConsumerStatefulWidget {
 }
 
 class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
-  IOWebSocketChannel? _channel;
+  // final _streamController = StreamController.broadcast();
+
+  // IOWebSocketChannel? _channel;
   Set<User> users = {};
+  List<ChatMessage> _unreadMessages = [];
   Object? _error;
   bool _isFetching = false;
 
-  StreamSubscription? _webSocketSubscription;
+  // StreamSubscription? _webSocketSubscription;
 
   void _fetchData() {
     setState(() {
@@ -40,30 +45,55 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
     ref.read(getUserChatListProvider.future).then((newData) {
       users = newData.data.toSet();
     }).catchError((e) {
-      _error = e;
+      setState(() {
+        _error = e;
+      });
     }).whenComplete(() => setState(() => _isFetching = false));
+
+    ref.read(getUnreadChatMessagesProvider.future).then((newData) {
+      setState(() {
+        _unreadMessages = newData.data;
+      });
+    });
   }
 
   void _setupWebSocket() {
     try {
       ChatWebsocketChannel().instance.then(
         (value) {
-          _channel = value;
-          _webSocketSubscription = _channel!.stream.listen(
-            (message) {
-              // Only fetch when new messages arrive
-              _fetchData();
-            },
-            onError: (e) {
-              setState(() {
-                _error = e;
-              });
-            },
-          );
+          // _channel = value;
+          // _streamController.add(_channel!.stream);
+          // _webSocketSubscription = _streamController.stream.listen(
+          //   (message) {
+          //     log("new message");
+          //     // Only fetch when new messages arrive
+          //     ref.read(getUserChatListProvider.future).then((newData) {
+          //       users = newData.data.toSet();
+          //     }).catchError((e) {
+          //       setState(() {
+          //         _error = e;
+          //       });
+          //     });
+
+          //     ref.read(getUnreadChatMessagesProvider.future).then((newData) {
+          //       setState(() {
+          //         _unreadMessages = newData.data;
+          //       });
+          //     });
+          //   },
+          //   onError: (e) {
+          //     setState(() {
+          //       log("websocket err: $e");
+          //       _error = e;
+          //     });
+          //   },
+          // );
         },
       );
     } catch (e) {
-      if (e.toString() == jwtExpired && mounted) {
+      log("fetchData: $e");
+      if (e.toString() == jwtExpired ||
+          e.toString() == userDeleted && mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => WelcomeWidget()),
           (route) => false,
@@ -81,16 +111,28 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
 
   @override
   void dispose() {
-    _webSocketSubscription?.cancel();
-    _channel?.sink.close();
+    log("[PET OWNER CHAT LIST] dispose");
+    // _webSocketSubscription?.cancel();
+    // _streamController.close();
+    // _channel?.sink.close();
+    // ChatWebsocketChannel().sink.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final tracker = ref.watch(petOwnerChatListTrackerProvider);
+
     if (_error != null) {
-      handleError(
+      handleValue(
           AsyncValue.error(_error.toString(), StackTrace.current), context);
+    }
+
+    if (tracker.value ?? false) {
+      _fetchData();
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ref.read(petOwnerChatListTrackerProvider.notifier).reset();
+      });
     }
 
     return Scaffold(
@@ -99,7 +141,7 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
           "Messages",
           style: TextStyle(color: Constants.primaryTextColor),
         ),
-        actions: appBarActions(ref.read(authProvider.notifier)),
+        actions: appBarActions(),
       ),
       body: (_isFetching)
           ? Center(
@@ -108,20 +150,51 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
           : RefreshIndicator(
               onRefresh: () async {
                 ref.read(getUserChatListProvider.future).then((newData) {
-                  users = newData.data.toSet();
+                  setState(() {
+                    users = newData.data.toSet();
+                  });
                 }).catchError((e) {
-                  _error = e;
+                  setState(() {
+                    _error = e;
+                  });
+                  // if (!mounted) return;
+                  // handleError(
+                  //   AsyncValue.error(_error.toString(), StackTrace.current),
+                  //   context,
+                  // );
                 });
               },
               child: ListView.builder(
                 physics: AlwaysScrollableScrollPhysics(),
                 itemCount: users.length,
                 itemBuilder: (context, index) {
+                  log("[PET OWNER CHAT PAGE] unreadMessages: ${_unreadMessages.length}");
                   var item = users.elementAt(index);
+                  var unreadCount = _unreadMessages
+                      .where(
+                        (element) => element.senderId == item.id,
+                      )
+                      .length;
+
                   return ListTile(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ChatPage(userId: item.id)));
+                    onTap: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ChatPage(userId: item.id),
+                        ),
+                      );
+
+                      ref
+                          .read(getUnreadChatMessagesProvider.future)
+                          .then((newData) {
+                        setState(() {
+                          _unreadMessages = newData.data;
+                        });
+                      });
+                      ref.read(messageTrackerProvider.notifier).shouldReload();
+                      ref
+                          .read(petOwnerChatListTrackerProvider.notifier)
+                          .shouldReload();
                     },
                     leading: DefaultCircleAvatar(imageUrl: item.imageUrl),
                     title: Text(
@@ -131,10 +204,22 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
                         color: Constants.primaryTextColor,
                       ),
                     ),
-                    trailing: Icon(
-                      Icons.chat,
-                      color: Colors.orange,
-                    ),
+                    trailing: unreadCount == 0
+                        ? Icon(
+                            Icons.chat,
+                            color: Colors.orange,
+                          )
+                        : Badge.count(
+                            count: unreadCount,
+                            backgroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.red[100]
+                                    : null,
+                            child: Icon(
+                              Icons.chat,
+                              color: Colors.orange,
+                            ),
+                          ),
                   );
                 },
               ),

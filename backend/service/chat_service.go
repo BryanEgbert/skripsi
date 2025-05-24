@@ -31,7 +31,7 @@ func (c *ChatServiceImpl) GetUserChatList(userId uint) (model.ListData[model.Use
 	if err := c.db.
 		Model(&model.ChatMessage{}).
 		Distinct("sender_id").
-		Where("receiver_id = ? OR sender_id = ?", userId, userId).
+		Where("(receiver_id = ? OR sender_id = ?) AND sender_id != ?", userId, userId, userId).
 		Joins("SenderUser").
 		Joins("SenderUser.Role").
 		Find(&message).Error; err != nil {
@@ -39,7 +39,24 @@ func (c *ChatServiceImpl) GetUserChatList(userId uint) (model.ListData[model.Use
 	}
 
 	for _, val := range message {
+
 		user := helper.ConvertUserToDTO(val.SenderUser)
+		out = append(out, user)
+	}
+
+	if err := c.db.
+		Model(&model.ChatMessage{}).
+		Distinct("receiver_id").
+		Where("(receiver_id = ? OR sender_id = ?) AND receiver_id != ?", userId, userId, userId).
+		Joins("ReceiverUser").
+		Joins("ReceiverUser.Role").
+		Find(&message).Error; err != nil {
+		return model.ListData[model.UserDTO]{}, err
+	}
+
+	for _, val := range message {
+
+		user := helper.ConvertUserToDTO(val.ReceiverUser)
 		out = append(out, user)
 	}
 
@@ -80,6 +97,7 @@ func (c *ChatServiceImpl) GetMessages(userId1 uint, userId2 uint) (model.ListDat
 	if err := c.db.
 		Model(&model.ChatMessage{}).
 		Where("(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)", userId1, userId2, userId2, userId1).
+		Order("id ASC").
 		Find(&chatMessages).Error; err != nil {
 		return model.ListData[model.ChatMessageDTO]{}, err
 	}

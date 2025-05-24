@@ -100,7 +100,7 @@ class _VetsViewState extends ConsumerState<VetsView> {
   @override
   Widget build(BuildContext context) {
     if (_error != null) {
-      handleError(
+      handleValue(
         AsyncValue.error(_error.toString(), StackTrace.current),
         context,
       );

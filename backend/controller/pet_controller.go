@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 
+	apputils "github.com/BryanEgbert/skripsi/app_utils"
 	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"github.com/BryanEgbert/skripsi/service"
@@ -259,17 +260,17 @@ func (pc *PetController) UpdatePet(c *gin.Context) {
 
 // DeletePet deletes a pet
 func (pc *PetController) DeletePet(c *gin.Context) {
-	// userIDRaw, exists := c.Get("userID")
-	// if !exists {
-	// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-	// 	return
-	// }
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
 
-	// userID, ok := userIDRaw.(uint)
-	// if !ok {
-	// 	c.JSON(http.StatusForbidden, gin.H{"error": "Invalid user ID"})
-	// 	return
-	// }
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Invalid user ID"})
+		return
+	}
 
 	petID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -281,7 +282,15 @@ func (pc *PetController) DeletePet(c *gin.Context) {
 	}
 
 	// Delete pet only if it belongs to the authenticated user
-	if err := pc.petService.DeletePet(uint(petID)); err != nil {
+	if err := pc.petService.DeletePet(uint(petID), userID); err != nil {
+		if errors.Is(err, apputils.ErrOnlyOnePet) {
+			c.JSON(http.StatusForbidden, model.ErrorResponse{
+				Message: "You must have at least one pet",
+				Error:   err.Error(),
+			})
+			return
+		}
+
 		c.JSON(http.StatusNotFound, model.ErrorResponse{
 			Message: "Failed to delete pet",
 			Error:   err.Error(),

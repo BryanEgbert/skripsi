@@ -14,6 +14,7 @@ func RegisterUserRoute(r *gin.Engine, userController *controller.UserController)
 	userRoutes := r.Group("/users")
 	userRoutes.GET("/vets", middleware.JWTAuth(), userController.GetVets)
 	userRoutes.GET("/:id", middleware.JWTAuth(), userController.GetUser)
+	userRoutes.PATCH("/device-token", middleware.JWTAuth(), userController.UpdateDeviceToken)
 
 	userRoutes.DELETE("", middleware.JWTAuth(), userController.DeleteUser)
 	userRoutes.PUT("", middleware.JWTAuth(), userController.UpdateUserProfile)

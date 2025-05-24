@@ -3,6 +3,7 @@ package service
 import (
 	"os"
 
+	apputils "github.com/BryanEgbert/skripsi/app_utils"
 	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"gorm.io/gorm"
@@ -15,7 +16,7 @@ type PetService interface {
 	GetBookedPets(userId uint, startID uint, pageSize int) (*[]model.PetDTO, error)
 	CreatePet(ownerID uint, req model.PetRequest) (uint, error)
 	UpdatePet(id uint, pet model.PetDTO) error
-	DeletePet(id uint) error
+	DeletePet(id uint, userId uint) error
 }
 
 type PetServiceImpl struct {
@@ -194,7 +195,18 @@ func (s *PetServiceImpl) CreatePet(ownerID uint, req model.PetRequest) (uint, er
 }
 
 // DeletePet deletes a pet by ID
-func (s *PetServiceImpl) DeletePet(id uint) error {
+func (s *PetServiceImpl) DeletePet(id uint, userId uint) error {
+	petCount := int64(0)
+	if err := s.db.Model(&model.Pet{}).
+		Where("owner_id = ?", userId).
+		Count(&petCount).Error; err != nil {
+		return err
+	}
+
+	if petCount <= 1 {
+		return apputils.ErrOnlyOnePet
+	}
+
 	var pet model.Pet
 	if err := s.db.First(&pet, id).Error; err != nil {
 		return err

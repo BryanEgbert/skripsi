@@ -83,14 +83,14 @@ class _ViewSlotsPageState extends ConsumerState<ViewSlotsPage> {
   Widget build(BuildContext context) {
     final petDaycareState = ref.watch(petDaycareStateProvider);
 
-    handleError(petDaycareState, context);
+    handleValue(petDaycareState, context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Reduced Slots',
           style: TextStyle(color: Colors.orange),
         ),
-        actions: appBarActions(ref.read(authProvider.notifier)),
+        actions: appBarActions(),
       ),
       floatingActionButton: FloatingActionButton.extended(
         // TODO: edit reduce slot

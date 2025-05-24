@@ -30,6 +30,7 @@ abstract interface class IUserService {
   Future<Result<ListData<ChatMessage>>> getChatMessages(
       String token, int receiverId);
   Future<Result<void>> updateChatReads(String token, int receiverId);
+  Future<Result<void>> updateDeviceToken(String token, String deviceToken);
 }
 
 class UserService implements IUserService {
@@ -312,6 +313,34 @@ class UserService implements IUserService {
             HttpHeaders.authorizationHeader: "Bearer $token",
           },
         ),
+      );
+
+      return res;
+    });
+  }
+
+  @override
+  Future<Result<void>> updateDeviceToken(String token, String? deviceToken) {
+    return makeRequest(204, () async {
+      final String host = dotenv.env["HOST"]!;
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final res = await dio.patch(
+        "$host/users/device-token",
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+            HttpHeaders.contentTypeHeader: "application/json",
+          },
+        ),
+        data: {
+          "deviceToken": deviceToken,
+        },
       );
 
       return res;

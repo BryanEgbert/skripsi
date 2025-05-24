@@ -55,7 +55,7 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
     final user = ref.watch(getMyUserProvider);
     final userState = ref.watch(userStateProvider);
 
-    handleError(userState, context);
+    handleValue(userState, context, ref.read(userStateProvider.notifier).reset);
 
     return Scaffold(
         appBar: AppBar(
@@ -93,6 +93,12 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
                           ),
                           SizedBox(height: 0),
                           TextFormField(
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                            ),
                             key: Key("name-input"),
                             controller: _nameController,
                             decoration: InputDecoration(

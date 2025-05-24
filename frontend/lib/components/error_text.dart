@@ -16,7 +16,8 @@ class ErrorText extends StatefulWidget {
 class _ErrorTextState extends State<ErrorText> {
   @override
   Widget build(BuildContext context) {
-    if (widget.errorText.toString() == jwtExpired) {
+    if (widget.errorText.toString() == jwtExpired ||
+        widget.errorText.toString() == userDeleted) {
       WidgetsBinding.instance.addPostFrameCallback(
         (timeStamp) {
           Navigator.of(context).pushAndRemoveUntil(
@@ -32,7 +33,14 @@ class _ErrorTextState extends State<ErrorText> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(widget.errorText.toString()),
+          Text(
+            widget.errorText.toString(),
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black
+                  : Colors.white70,
+            ),
+          ),
           IconButton(
             onPressed: widget.onRefresh,
             icon: Icon(

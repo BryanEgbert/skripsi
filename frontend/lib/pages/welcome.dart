@@ -36,7 +36,7 @@ class WelcomeWidget extends StatelessWidget {
     );
   }
 
-  ElevatedButton createAccountButton(BuildContext context) {
+  Widget createAccountButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
         Navigator.of(context).push(
@@ -49,16 +49,25 @@ class WelcomeWidget extends StatelessWidget {
     );
   }
 
-  Row separator() {
-    return Row(
-      children: <Widget>[
-        Expanded(child: Divider()),
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 10),
-          child: Text("or"),
-        ),
-        Expanded(child: Divider()),
-      ],
-    );
+  Widget separator() {
+    return Builder(builder: (context) {
+      return Row(
+        children: <Widget>[
+          Expanded(child: Divider()),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              "or",
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.black
+                    : Colors.white70,
+              ),
+            ),
+          ),
+          Expanded(child: Divider()),
+        ],
+      );
+    });
   }
 }

@@ -122,11 +122,11 @@ class AuthService implements IAuthService {
             filename: userReq.userImage!.path.split('/').last);
       }
 
-      // if (petReq.petImage != null) {
-      //   req["petProfilePicture"] = await MultipartFile.fromFile(
-      //       petReq.petImage!.path,
-      //       filename: petReq.petImage!.path.split('/').last);
-      // }
+      if (petReq.petImage != null) {
+        req["petProfilePicture"] = await MultipartFile.fromFile(
+            petReq.petImage!.path,
+            filename: petReq.petImage!.path.split('/').last);
+      }
 
       if (vaccineReq.vaccineRecordImage != null) {
         req["vaccineRecordImage"] = await MultipartFile.fromFile(

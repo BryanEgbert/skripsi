@@ -85,6 +85,7 @@ func SeedTable(db *gorm.DB) error {
 
 	five := float32(5.0)
 	ten := float32(10)
+	twelve := float32(12)
 	twentyFive := float32(25)
 	fortyFive := float32(45)
 
@@ -95,7 +96,8 @@ func SeedTable(db *gorm.DB) error {
 		{Name: "medium", MinWeight: 10, MaxWeight: &twentyFive},
 		{Name: "large", MinWeight: 25, MaxWeight: &fortyFive},
 		{Name: "giant", MinWeight: 45},
-		{Name: "all size", MinWeight: 0},
+		{Name: "cat", MinWeight: 1, MaxWeight: &twelve},
+		{Name: "rabbit", MinWeight: 1, MaxWeight: &ten},
 	}
 	if err := db.Create(&sizeCategories).Error; err != nil {
 		return err
@@ -221,136 +223,136 @@ func SeedTable(db *gorm.DB) error {
 
 	vaccineRecords := []model.VaccineRecord{
 		{
-			DateAdministered: "2024-03-10",
-			NextDueDate:      "2025-03-10",
+			DateAdministered: "2024-01-20",
+			NextDueDate:      "2025-01-20",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[0].ID, // Ensure the pet exists
+			PetID:            pet[0].ID,
 		},
 		{
-			DateAdministered: "2024-02-15",
-			NextDueDate:      "2025-02-15",
+			DateAdministered: "2024-04-12",
+			NextDueDate:      "2025-04-12",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[1].ID, // Ensure the pet exists
+			PetID:            pet[1].ID,
 		},
 		{
-			DateAdministered: "2024-03-10",
-			NextDueDate:      "2025-03-10",
+			DateAdministered: "2024-02-08",
+			NextDueDate:      "2025-02-08",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[0].ID, // Ensure the pet exists
+			PetID:            pet[0].ID,
 		},
 		{
-			DateAdministered: "2024-02-15",
-			NextDueDate:      "2025-02-15",
+			DateAdministered: "2024-05-18",
+			NextDueDate:      "2025-05-18",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[1].ID, // Ensure the pet exists
+			PetID:            pet[1].ID,
 		},
 		{
-			DateAdministered: "2024-03-10",
-			NextDueDate:      "2025-03-10",
+			DateAdministered: "2024-03-22",
+			NextDueDate:      "2025-03-22",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[0].ID, // Ensure the pet exists
+			PetID:            pet[0].ID,
 		},
 		{
-			DateAdministered: "2024-02-15",
-			NextDueDate:      "2025-02-15",
+			DateAdministered: "2024-01-30",
+			NextDueDate:      "2025-01-30",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[1].ID, // Ensure the pet exists
+			PetID:            pet[1].ID,
 		},
 		{
-			DateAdministered: "2024-03-10",
-			NextDueDate:      "2025-03-10",
+			DateAdministered: "2024-02-27",
+			NextDueDate:      "2025-02-27",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[0].ID, // Ensure the pet exists
+			PetID:            pet[0].ID,
 		},
 		{
-			DateAdministered: "2024-02-15",
-			NextDueDate:      "2025-02-15",
+			DateAdministered: "2024-04-03",
+			NextDueDate:      "2025-04-03",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[1].ID, // Ensure the pet exists
+			PetID:            pet[1].ID,
 		},
 		{
-			DateAdministered: "2024-03-10",
-			NextDueDate:      "2025-03-10",
+			DateAdministered: "2024-05-01",
+			NextDueDate:      "2025-05-01",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[0].ID, // Ensure the pet exists
-		},
-		{
-			DateAdministered: "2024-02-15",
-			NextDueDate:      "2025-02-15",
-			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[1].ID, // Ensure the pet exists
+			PetID:            pet[0].ID,
 		},
 		{
 			DateAdministered: "2024-03-10",
 			NextDueDate:      "2025-03-10",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[0].ID, // Ensure the pet exists
+			PetID:            pet[1].ID,
 		},
 		{
-			DateAdministered: "2024-02-15",
-			NextDueDate:      "2025-02-15",
+			DateAdministered: "2024-01-15",
+			NextDueDate:      "2025-01-15",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[1].ID, // Ensure the pet exists
+			PetID:            pet[0].ID,
 		},
 		{
-			DateAdministered: "2024-03-10",
-			NextDueDate:      "2025-03-10",
+			DateAdministered: "2024-05-22",
+			NextDueDate:      "2025-05-22",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[0].ID, // Ensure the pet exists
+			PetID:            pet[1].ID,
 		},
 		{
-			DateAdministered: "2024-02-15",
-			NextDueDate:      "2025-02-15",
+			DateAdministered: "2024-02-11",
+			NextDueDate:      "2025-02-11",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[1].ID, // Ensure the pet exists
+			PetID:            pet[0].ID,
 		},
 		{
-			DateAdministered: "2024-03-10",
-			NextDueDate:      "2025-03-10",
+			DateAdministered: "2024-03-28",
+			NextDueDate:      "2025-03-28",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[0].ID, // Ensure the pet exists
+			PetID:            pet[1].ID,
 		},
 		{
-			DateAdministered: "2024-02-15",
-			NextDueDate:      "2025-02-15",
+			DateAdministered: "2024-04-05",
+			NextDueDate:      "2025-04-05",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[1].ID, // Ensure the pet exists
+			PetID:            pet[0].ID,
 		},
 		{
-			DateAdministered: "2024-03-10",
-			NextDueDate:      "2025-03-10",
+			DateAdministered: "2024-01-27",
+			NextDueDate:      "2025-01-27",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[0].ID, // Ensure the pet exists
+			PetID:            pet[1].ID,
 		},
 		{
-			DateAdministered: "2024-02-15",
-			NextDueDate:      "2025-02-15",
+			DateAdministered: "2024-02-19",
+			NextDueDate:      "2025-02-19",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[1].ID, // Ensure the pet exists
+			PetID:            pet[0].ID,
 		},
 		{
-			DateAdministered: "2024-03-10",
-			NextDueDate:      "2025-03-10",
+			DateAdministered: "2024-04-09",
+			NextDueDate:      "2025-04-09",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[0].ID, // Ensure the pet exists
+			PetID:            pet[1].ID,
 		},
 		{
-			DateAdministered: "2024-02-15",
-			NextDueDate:      "2025-02-15",
+			DateAdministered: "2024-03-03",
+			NextDueDate:      "2025-03-03",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[1].ID, // Ensure the pet exists
+			PetID:            pet[0].ID,
 		},
 		{
-			DateAdministered: "2024-03-10",
-			NextDueDate:      "2025-03-10",
+			DateAdministered: "2024-05-14",
+			NextDueDate:      "2025-05-14",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[0].ID, // Ensure the pet exists
+			PetID:            pet[1].ID,
 		},
 		{
-			DateAdministered: "2024-02-15",
-			NextDueDate:      "2025-02-15",
+			DateAdministered: "2024-01-10",
+			NextDueDate:      "2025-01-10",
 			ImageURL:         vaccineRecordImgUrl,
-			PetID:            pet[1].ID, // Ensure the pet exists
+			PetID:            pet[0].ID,
+		},
+		{
+			DateAdministered: "2024-02-25",
+			NextDueDate:      "2025-02-25",
+			ImageURL:         vaccineRecordImgUrl,
+			PetID:            pet[1].ID,
 		},
 	}
 

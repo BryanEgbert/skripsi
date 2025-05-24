@@ -127,14 +127,8 @@ func (s *SlotServiceImpl) AcceptBookedSlot(slotId uint) error {
 		return err
 	}
 
-	var slots model.Slots
-	if err := tx.First(&slots, bookedSlot.SlotID).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
 	if err := tx.Table("pet_daycares").
-		Where("pet_daycares.id = ?", slots.DaycareID).
+		Where("pet_daycares.id = ?", bookedSlot.DaycareID).
 		UpdateColumn("booked_num", gorm.Expr("booked_num + ?", 1)).Error; err != nil {
 		tx.Rollback()
 		return err

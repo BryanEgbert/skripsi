@@ -15,6 +15,10 @@ class ReviewState extends _$ReviewState {
     return Future.value(0);
   }
 
+  Future<void> reset() async {
+    state = AsyncData(0);
+  }
+
   Future<void> addReview(int petDaycareId, CreateReviewRequest req) async {
     state = AsyncLoading();
     TokenResponse? token;

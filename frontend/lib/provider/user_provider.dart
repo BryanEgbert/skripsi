@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/update_user_request.dart';
 import 'package:frontend/model/response/token_response.dart';
@@ -15,18 +18,50 @@ class UserState extends _$UserState {
     return Future.value(0);
   }
 
+  Future<void> reset() async {
+    state = AsyncData(0);
+  }
+
   Future<void> editUser(UpdateUserRequest req) async {
     state = AsyncLoading();
 
-    TokenResponse token = await refreshToken();
+    TokenResponse? token;
+    try {
+      token = await refreshToken();
+    } catch (e) {
+      state = AsyncError(jwtExpired, StackTrace.current);
+    }
 
     final userService = UserService();
-    final res = await userService.updateUser(token.accessToken, req);
+    final res = await userService.updateUser(token!.accessToken, req);
 
     switch (res) {
       case Ok<void>():
         state = AsyncData(204);
         ref.invalidate(getUserByIdProvider(token.userId));
+      case Error():
+        state = AsyncError(res.error, StackTrace.current);
+    }
+  }
+
+  Future<void> updateDeviceToken() async {
+    state = AsyncLoading();
+
+    TokenResponse? token;
+    try {
+      token = await refreshToken();
+    } catch (e) {
+      state = AsyncError(jwtExpired, StackTrace.current);
+    }
+    final deviceToken = await FirebaseMessaging.instance.getToken();
+
+    final userService = UserService();
+    final res =
+        await userService.updateDeviceToken(token!.accessToken, deviceToken);
+
+    switch (res) {
+      case Ok<void>():
+        state = AsyncData(204);
       case Error():
         state = AsyncError(res.error, StackTrace.current);
     }
