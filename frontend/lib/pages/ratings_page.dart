@@ -83,7 +83,7 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
   Widget build(BuildContext context) {
     if (_error != null) {
       handleValue(
-          AsyncValue.error(_error.toString(), StackTrace.current), context);
+          AsyncValue.error(_error.toString(), StackTrace.current), this);
     }
 
     return Scaffold(

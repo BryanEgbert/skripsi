@@ -47,6 +47,7 @@ func (s *PetDaycareServiceImpl) GetBookedPetOwners(userId uint, page int, pageSi
 		Preload("User.VetSpecialty").
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
+		Where("status_id = 2").
 		Find(&bookedSlots).Error; err != nil {
 		return model.ListData[model.UserDTO]{}, err
 	}

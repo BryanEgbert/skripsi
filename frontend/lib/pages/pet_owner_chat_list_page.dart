@@ -123,7 +123,7 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
 
     if (_error != null) {
       handleValue(
-          AsyncValue.error(_error.toString(), StackTrace.current), context);
+          AsyncValue.error(_error.toString(), StackTrace.current), this);
     }
 
     if (tracker.value ?? false) {
@@ -135,9 +135,17 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(Icons.arrow_back_ios),
+        ),
         title: Text(
           "Messages",
-          style: TextStyle(color: Constants.primaryTextColor),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         actions: appBarActions(),
       ),
@@ -202,22 +210,18 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
                         color: Constants.primaryTextColor,
                       ),
                     ),
-                    trailing: unreadCount == 0
-                        ? Icon(
-                            Icons.chat,
-                            color: Colors.orange,
-                          )
-                        : Badge.count(
-                            count: unreadCount,
-                            backgroundColor:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.red[100]
-                                    : null,
-                            child: Icon(
-                              Icons.chat,
-                              color: Colors.orange,
-                            ),
-                          ),
+                    trailing: Badge.count(
+                      count: unreadCount,
+                      isLabelVisible: unreadCount != 0,
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.red[100]
+                              : null,
+                      child: Icon(
+                        Icons.chat,
+                        color: Colors.orange,
+                      ),
+                    ),
                   );
                 },
               ),

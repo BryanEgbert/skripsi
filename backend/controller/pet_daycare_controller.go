@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	apputils "github.com/BryanEgbert/skripsi/app_utils"
 	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"github.com/BryanEgbert/skripsi/service"
@@ -824,6 +825,13 @@ func (pdc *PetDaycareController) BookSlot(c *gin.Context) {
 	req.DaycareID = uint(daycareId)
 
 	if err := pdc.slotService.BookSlots(userID, req); err != nil {
+		if errors.Is(err, apputils.ErrOnlyOneSlotDate) || errors.Is(err, apputils.ErrSlotFull) {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: err.Error(),
+			})
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to book slots",
 			Error:   err.Error(),

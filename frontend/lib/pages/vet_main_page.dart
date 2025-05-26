@@ -30,6 +30,7 @@ class VetMainPage extends ConsumerStatefulWidget {
 
 class VetMainPageState extends ConsumerState<VetMainPage> {
   IOWebSocketChannel? _channel;
+  late Stream _websocketStream;
   StreamSubscription? _webSocketSubscription;
 
   Object? _error;
@@ -42,7 +43,8 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
       ChatWebsocketChannel().instance.then(
         (value) {
           _channel = value;
-          _webSocketSubscription = _channel!.stream.listen(
+          _websocketStream = value.stream.asBroadcastStream();
+          _webSocketSubscription = _websocketStream.listen(
             (message) {
               _fetchData();
 
@@ -103,6 +105,7 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
   void dispose() {
     _webSocketSubscription?.cancel();
     _channel?.sink.close();
+    ChatWebsocketChannel().close();
     super.dispose();
   }
 
@@ -176,22 +179,18 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
                             color: Constants.primaryTextColor,
                           ),
                         ),
-                        trailing: unreadCount == 0
-                            ? Icon(
-                                Icons.chat,
-                                color: Colors.orange,
-                              )
-                            : Badge.count(
-                                count: unreadCount,
-                                backgroundColor: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.red[100]
-                                    : null,
-                                child: Icon(
-                                  Icons.chat,
-                                  color: Colors.orange,
-                                ),
-                              ),
+                        trailing: Badge.count(
+                          count: unreadCount,
+                          isLabelVisible: unreadCount != 0,
+                          backgroundColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.red[100]
+                                  : null,
+                          child: Icon(
+                            Icons.chat,
+                            color: Colors.orange,
+                          ),
+                        ),
                       );
                     },
                   ),

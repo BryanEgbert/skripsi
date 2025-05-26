@@ -231,7 +231,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.get(
-        "$host/users/saved-address",
+        "$host/saved-address",
         queryParameters: pagination.toMap(),
         options: Options(
           headers: {

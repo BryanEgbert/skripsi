@@ -67,7 +67,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
     final createPetDaycareReq = CreatePetDaycareRequest(
       petDaycareName: _nameController.text,
       address: _address,
-      location: _location!,
+      location: _searchController.text,
       description: _descriptionController.text,
       openingHour: _openingHoursController.text,
       closingHour: _closingHoursController.text,
@@ -340,7 +340,8 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                             .value!.features[0].properties.coordinates.latitude;
                         _longitude = retrieve.value!.features[0].properties
                             .coordinates.longitude;
-                        _location = retrieve.value!.features[0].properties.name;
+                        _locality = retrieve.value!.features[0].properties
+                            .context.locality!.name;
                       });
                       controller.closeView(_searchController.text);
                     case Error<RetrieveResponse>():

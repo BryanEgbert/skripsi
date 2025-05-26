@@ -14,11 +14,7 @@ BookSlotRequest _$BookSlotRequestFromJson(Map<String, dynamic> json) =>
       usePickupService: json['usePickupService'] as bool,
       startDate: json['startDate'] as String,
       endDate: json['endDate'] as String,
-      location: json['location'] as String?,
-      address: json['address'] as String?,
-      latitude: (json['latitude'] as num?)?.toDouble(),
-      longitude: (json['longitude'] as num?)?.toDouble(),
-      notes: json['notes'] as String?,
+      addressId: (json['addressId'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$BookSlotRequestToJson(BookSlotRequest instance) =>
@@ -27,9 +23,5 @@ Map<String, dynamic> _$BookSlotRequestToJson(BookSlotRequest instance) =>
       'usePickupService': instance.usePickupService,
       'startDate': instance.startDate,
       'endDate': instance.endDate,
-      'location': instance.location,
-      'address': instance.address,
-      'latitude': instance.latitude,
-      'longitude': instance.longitude,
-      'notes': instance.notes,
+      'addressId': instance.addressId,
     };

@@ -25,7 +25,7 @@ class _BookingRequestDetailsPageState
   Widget build(BuildContext context) {
     final slotState = ref.watch(slotStateProvider);
 
-    handleValue(slotState, context);
+    handleValue(slotState, this);
 
     return Scaffold(
       appBar: AppBar(

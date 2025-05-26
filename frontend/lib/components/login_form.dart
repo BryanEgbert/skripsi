@@ -29,7 +29,10 @@ class _LoginFormState extends ConsumerState<LoginForm> {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         var snackbar = SnackBar(
           key: Key("error-message"),
-          content: Text(auth.error.toString()),
+          content: Text(
+            auth.error.toString(),
+            style: TextStyle(color: Colors.white),
+          ),
           backgroundColor: Colors.red,
         );
 

@@ -28,7 +28,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
   final ScrollController _scrollController = ScrollController();
   List<PetDaycare> _records = [];
 
-  int _lastId = 0;
+  int _page = 1;
   bool _isFetching = false;
   bool _hasMoreData = true;
 
@@ -50,7 +50,10 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
   }
 
   void _fetchMoreData() {
+    log("running fetch data");
     if (!_hasMoreData) return; // Stop fetching if no more data
+
+    log("hasMoreData");
 
     setState(() => _isFetching = true);
 
@@ -58,7 +61,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
         .read(petDaycaresProvider(
       _latitude,
       _longitude,
-      _lastId,
+      _page,
       10,
       _filters.minDistance,
       _filters.maxDistance,
@@ -74,7 +77,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
       if (newData.data.isNotEmpty) {
         setState(() {
           _records.addAll(newData.data);
-          _lastId = newData.data.last.id;
+          _page += 1;
         });
       } else {
         setState(() {
@@ -134,7 +137,8 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
           errorText: _error.toString(),
           onRefresh: () async {
             _records = [];
-            _lastId = 0;
+            _page = 1;
+            _hasMoreData = true;
             _fetchMoreData();
           });
     }
@@ -494,12 +498,13 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
                       _records = [];
-                      _lastId = 0;
+                      _page = 1;
+                      _hasMoreData = true;
                       _fetchMoreData();
                     });
                     Navigator.of(context).pop();
@@ -507,7 +512,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                   style: ElevatedButton.styleFrom(
                       textStyle:
                           TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                  child: Text("Save"),
+                  child: Text("Apply Filter"),
                 )
               ],
             ),
@@ -517,7 +522,8 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
       body: RefreshIndicator(
         onRefresh: () async {
           _records = [];
-          _lastId = 0;
+          _page = 1;
+          _hasMoreData = true;
           _fetchMoreData();
         },
         child: (_isFetching && _records.isEmpty)
@@ -560,11 +566,19 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                     children: [
                       Icon(
                         Icons.info,
-                        color: Colors.grey,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.grey[800]
+                            : Colors.white70,
                       ),
                       Text(
                         "Turn on location to find the nearest pet daycare",
-                        style: TextStyle(color: Colors.grey[800], fontSize: 11),
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.grey[800]
+                                  : Colors.white70,
+                          fontSize: 11,
+                        ),
                       ),
                     ],
                   ),
@@ -575,7 +589,10 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                     child: Text(
                       "Turn On",
                       style: TextStyle(
-                          color: Constants.primaryTextColor, fontSize: 11),
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.primaryTextColor
+                            : Colors.orange,
+                      ),
                     ),
                   ),
                 ],

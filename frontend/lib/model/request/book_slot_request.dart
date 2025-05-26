@@ -8,22 +8,14 @@ class BookSlotRequest {
   final bool usePickupService;
   final String startDate;
   final String endDate;
-  final String? location;
-  final String? address;
-  final double? latitude;
-  final double? longitude;
-  final String? notes;
+  final int? addressId;
 
   BookSlotRequest({
     required this.petId,
     required this.usePickupService,
     required this.startDate,
     required this.endDate,
-    this.location,
-    this.address,
-    this.latitude,
-    this.longitude,
-    this.notes,
+    this.addressId,
   });
 
   factory BookSlotRequest.fromJson(Map<String, dynamic> json) =>

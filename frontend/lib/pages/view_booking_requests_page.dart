@@ -130,7 +130,7 @@ class _ViewBookingRequestsPageState
     final slotState = ref.watch(slotStateProvider);
     log("slotState: $slotState");
 
-    handleValue(slotState, context, ref.read(slotStateProvider.notifier).reset);
+    handleValue(slotState, this, ref.read(slotStateProvider.notifier).reset);
 
     return RefreshIndicator(
       onRefresh: () async {

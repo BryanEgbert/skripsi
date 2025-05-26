@@ -43,7 +43,7 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
     final pet = ref.watch(petProvider(widget.petId));
     final petState = ref.watch(petStateProvider);
     log("[PET DETAILS PAGE] petState: $petState");
-    handleValue(petState, context, ref.read(petStateProvider.notifier).reset);
+    handleValue(petState, this, ref.read(petStateProvider.notifier).reset);
 
     return Scaffold(
         appBar: AppBar(

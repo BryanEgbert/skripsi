@@ -13,8 +13,8 @@ import 'package:frontend/model/user.dart';
 import 'package:frontend/pages/chat_page.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/pages/send_image_page.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/provider/message_tracker_provider.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ViewBookedPetsPage extends ConsumerStatefulWidget {
@@ -42,9 +42,10 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
   bool _hasMoreData = true;
   String? _error;
 
-  void _navigateToChatPage(int userId) {
-    Navigator.of(context).push(
+  Future<void> _navigateToChatPage(int userId) async {
+    await Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => ChatPage(userId: userId)));
+    ref.read(petDaycareChatListTrackerProvider.notifier).shouldReload();
   }
 
   void _onScroll() {
@@ -148,6 +149,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
 
   @override
   Widget build(BuildContext context) {
+    log("[VIEW BOOKED PETS] build");
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -213,30 +215,20 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                               fontWeight: FontWeight.bold,
                               color: Colors.orange,
                             ),
-                            trailing: (messages.isNotEmpty)
-                                ? Badge.count(
-                                    count: messages.length,
-                                    child: IconButton(
-                                      onPressed: () {
-                                        _navigateToChatPage(
-                                            _bookedPetRecords[index].id);
-                                      },
-                                      icon: Icon(
-                                        Icons.chat_rounded,
-                                        color: Constants.primaryTextColor,
-                                      ),
-                                    ),
-                                  )
-                                : IconButton(
-                                    onPressed: () {
-                                      _navigateToChatPage(
-                                          _bookedPetRecords[index].id);
-                                    },
-                                    icon: Icon(
-                                      Icons.chat_rounded,
-                                      color: Constants.primaryTextColor,
-                                    ),
-                                  ),
+                            trailing: Badge.count(
+                              count: messages.length,
+                              isLabelVisible: messages.isNotEmpty,
+                              child: IconButton(
+                                onPressed: () async {
+                                  await _navigateToChatPage(
+                                      _bookedPetRecords[index].id);
+                                },
+                                icon: Icon(
+                                  Icons.chat_rounded,
+                                  color: Colors.orange,
+                                ),
+                              ),
+                            ),
                           );
                         } else {
                           if (_isFetching) {
@@ -336,75 +328,42 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
         color: Colors.orange,
       ),
       subtitleTextStyle: TextStyle(fontSize: 14, color: Colors.black),
-      trailing: (messages.isNotEmpty)
-          ? Badge.count(
-              count: messages.length,
-              child: PopupMenuButton(
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem(
-                      child: Text("Log activity"),
-                      onTap: () async {
-                        final photo = await ImagePicker()
-                            .pickImage(source: ImageSource.camera);
-                        if (mounted) {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => SendImagePage(
-                              image: File(photo!.path),
-                              // channel: widget.channel,
-                              receiverId: item.owner.id,
-                            ),
-                          ));
-                        }
-                      },
-                    ),
-                    PopupMenuItem(
-                      onTap: () {
-                        _navigateToChatPage(item.owner.id);
-                      },
-                      child: (messages.isNotEmpty)
-                          ? Badge.count(
-                              count: messages.length,
-                              child: Text("Chat pet's owner"),
-                            )
-                          : Text("Chat pet's owner"),
-                    ),
-                  ];
+      trailing: Badge.count(
+        count: messages.length,
+        isLabelVisible: messages.isNotEmpty,
+        child: PopupMenuButton(
+          itemBuilder: (context) {
+            return [
+              PopupMenuItem(
+                child: Text("Log activity"),
+                onTap: () async {
+                  final photo =
+                      await ImagePicker().pickImage(source: ImageSource.camera);
+                  if (mounted) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => SendImagePage(
+                        image: File(photo!.path),
+                        // channel: widget.channel,
+                        receiverId: item.owner.id,
+                      ),
+                    ));
+                  }
                 },
               ),
-            )
-          : PopupMenuButton(
-              itemBuilder: (context) {
-                return [
-                  PopupMenuItem(
-                    child: Text("Log activity"),
-                    onTap: () async {
-                      final photo = await ImagePicker()
-                          .pickImage(source: ImageSource.camera);
-                      if (mounted) {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => SendImagePage(
-                            image: File(photo!.path),
-                            receiverId: item.owner.id,
-                          ),
-                        ));
-                      }
-                    },
-                  ),
-                  PopupMenuItem(
-                    onTap: () {
-                      _navigateToChatPage(item.owner.id);
-                    },
-                    child: (messages.isNotEmpty)
-                        ? Badge.count(
-                            count: messages.length,
-                            child: Text("Chat pet's owner"),
-                          )
-                        : Text("Chat pet's owner"),
-                  ),
-                ];
-              },
-            ),
+              PopupMenuItem(
+                onTap: () async {
+                  await _navigateToChatPage(item.owner.id);
+                },
+                child: Badge(
+                  label: Text("!"),
+                  isLabelVisible: messages.isNotEmpty,
+                  child: Text("Chat pet's owner"),
+                ),
+              ),
+            ];
+          },
+        ),
+      ),
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(

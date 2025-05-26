@@ -22,12 +22,14 @@ class ChatWebsocketChannel {
     return _instance!.stream.asBroadcastStream();
   }
 
-  WebSocketSink get sink {
+  void close() {
     if (_instance == null) {
       throw Exception("WebSocket not connected");
     }
 
-    return _instance!.sink;
+    _instance!.sink.close();
+
+    _instance = null;
   }
 
   Future<IOWebSocketChannel> get instance async {

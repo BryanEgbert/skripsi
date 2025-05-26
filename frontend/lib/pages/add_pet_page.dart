@@ -73,7 +73,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
   Widget build(BuildContext context) {
     final petState = ref.watch(petStateProvider);
 
-    handleValue(petState, context);
+    handleValue(petState, this);
 
     if (petState.hasValue && !petState.isLoading) {
       if (petState.value == 201) {
@@ -127,6 +127,11 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                     image: _petProfilePicture,
                   ),
                   TextFormField(
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white70,
+                    ),
                     controller: _nameController,
                     key: Key("name-input"),
                     decoration: InputDecoration(
@@ -138,6 +143,11 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                     validator: (value) => validateNotEmpty("Name", value),
                   ),
                   TextFormField(
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white70,
+                    ),
                     controller: _petCategoryController,
                     focusNode: _petCategoryFocusNode,
                     readOnly: true,
@@ -189,6 +199,11 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                   _vaccineRecordImagePicker(),
                   TextFormField(
                     controller: _dateAdministeredController,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white70,
+                    ),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -218,6 +233,11 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                     },
                   ),
                   TextFormField(
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white70,
+                    ),
                     enabled: _isDateAdministeredFilled,
                     controller: _nextDueDateController,
                     decoration: InputDecoration(

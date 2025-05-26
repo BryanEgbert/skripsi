@@ -50,8 +50,8 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
 
   @override
   void dispose() {
-    log("[SEND IMAGE PAGE] dispose");
-    _channel?.sink.close();
+    // log("[SEND IMAGE PAGE] dispose");
+    // _channel?.sink.close();
     super.dispose();
   }
 

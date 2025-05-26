@@ -62,7 +62,7 @@ class _EditVaccinationRecordPageState
         ref.watch(getVaccinationRecordByIdProvider(widget.vaccinationRecordId));
     final recordState = ref.watch(vaccinationRecordStateProvider);
 
-    handleValue(recordState, context);
+    handleValue(recordState, this);
 
     if (recordState.hasValue && !recordState.isLoading) {
       if (recordState.value == 204) {

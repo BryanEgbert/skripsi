@@ -83,7 +83,7 @@ class _ViewSlotsPageState extends ConsumerState<ViewSlotsPage> {
   Widget build(BuildContext context) {
     final petDaycareState = ref.watch(petDaycareStateProvider);
 
-    handleValue(petDaycareState, context);
+    handleValue(petDaycareState, this);
     return Scaffold(
       appBar: AppBar(
         title: Text(

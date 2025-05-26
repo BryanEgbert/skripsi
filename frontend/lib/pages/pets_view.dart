@@ -41,7 +41,7 @@ class _PetsViewState extends ConsumerState<PetsView> {
   @override
   Widget build(BuildContext context) {
     final petState = ref.watch(petStateProvider);
-    handleValue(petState, context, ref.read(petStateProvider.notifier).reset);
+    handleValue(petState, this, ref.read(petStateProvider.notifier).reset);
     // if (_error != null) {
     //   handleError(AsyncValue.error(_error!, StackTrace.current), context);
     //   _error = null;

@@ -55,7 +55,7 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
     final user = ref.watch(getMyUserProvider);
     final userState = ref.watch(userStateProvider);
 
-    handleValue(userState, context, ref.read(userStateProvider.notifier).reset);
+    handleValue(userState, this, ref.read(userStateProvider.notifier).reset);
 
     return Scaffold(
         appBar: AppBar(

@@ -29,15 +29,16 @@ class HomeWidget extends ConsumerStatefulWidget {
 }
 
 class _HomeWidgetState extends ConsumerState<HomeWidget> {
-  final _streamController = StreamController.broadcast();
+  // final _streamController = StreamController.broadcast();
 
   int _selectedIndex = 0;
-  // IOWebSocketChannel? _channel;
+  IOWebSocketChannel? _channel;
+  late Stream _websocketStream;
   // StreamSubscription? _webSocketSubscription;
   int _messageCount = 0;
 
   bool _isSocketReady = false;
-  String? _error;
+  Object? _error;
 
   List<ChatMessage> _messages = [];
 
@@ -58,8 +59,9 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
 
     try {
       ChatWebsocketChannel().instance.then((value) {
-        // _channel = value;
-        _streamController.addStream(value.stream);
+        _channel = value;
+        _websocketStream = value.stream.asBroadcastStream();
+        // _streamController.addStream(value.stream);
         // _webSocketSubscription = value.stream.listen(
         //   (message) {
         //     log("[HOME PAGE] new message: ${message.length}");
@@ -77,7 +79,8 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
         });
       });
     } catch (e) {
-      if (e.toString() == jwtExpired && mounted) {
+      if (e.toString() == jwtExpired ||
+          e.toString() == userDeleted && mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => WelcomeWidget()),
           (route) => false,
@@ -107,9 +110,9 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
   void dispose() {
     log("[HOME PAGE] dispose");
     // _webSocketSubscription?.cancel();
-    _streamController.close();
-    // _channel?.sink.close();
-    ChatWebsocketChannel().sink.close();
+    // _streamController.close();
+    _channel?.sink.close();
+    ChatWebsocketChannel().close();
     super.dispose();
   }
 
@@ -139,7 +142,7 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
       key: const Key("home"),
       body: _isSocketReady
           ? StreamBuilder(
-              stream: _streamController.stream,
+              stream: _websocketStream,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {

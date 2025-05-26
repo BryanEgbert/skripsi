@@ -36,6 +36,7 @@ func (s *TransactionServiceImpl) GetTransaction(id uint, userId uint) (*model.Tr
 		Preload("BookedSlot.Daycare.Slots.PricingType").
 		Preload("BookedSlot.Daycare.Slots.PetCategory").
 		Preload("BookedSlot.Daycare.Slots.PetCategory.SizeCategory").
+		Where("id = ? AND user_id = ?", id, userId).
 		Find(&transaction).Error; err != nil {
 		return nil, err
 	}

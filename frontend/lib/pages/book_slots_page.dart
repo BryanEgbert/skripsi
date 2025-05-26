@@ -39,6 +39,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
   bool _usePickupService = false;
 
   SavedAddress? _savedAddress;
+  int addressId = 0;
   String? _locationErrorText;
 
   void _submitForm() {
@@ -52,20 +53,17 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
     log("petID: ${_petIdValue.keys.toList()}");
 
-    ref.read(slotStateProvider.notifier).bookSlot(
-          widget.petDaycareId,
-          BookSlotRequest(
-            petId: _petIdValue.keys.toList(),
-            startDate: _startDate!,
-            endDate: _endDate!,
-            usePickupService: _usePickupService,
-            address: _savedAddress?.address,
-            location: _savedAddress?.name,
-            latitude: _savedAddress?.latitude,
-            longitude: _savedAddress?.longitude,
-            notes: _savedAddress?.notes,
-          ),
-        );
+    var request = BookSlotRequest(
+      petId: _petIdValue.keys.toList(),
+      startDate: _startDate!,
+      endDate: _endDate!,
+      usePickupService: _usePickupService,
+      addressId: _savedAddress == null ? 0 : _savedAddress!.id,
+    );
+
+    log("[BOOK SLOTS PAGE] petId: ${request.petId}");
+
+    ref.read(slotStateProvider.notifier).bookSlot(widget.petDaycareId, request);
   }
 
   @override
@@ -75,7 +73,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
     log("use pickup: $_usePickupService");
 
-    handleValue(slotState, context);
+    handleValue(slotState, this, ref.read(slotStateProvider.notifier).reset);
 
     return Scaffold(
         appBar: AppBar(
@@ -267,6 +265,12 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                           TextFormField(
                             enabled: _petIdValue.values.contains(true),
                             readOnly: true,
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                            ),
                             controller: _dateRangeController,
                             onTap: () async {
                               final slotDate = ref.read(getSlotsProvider(

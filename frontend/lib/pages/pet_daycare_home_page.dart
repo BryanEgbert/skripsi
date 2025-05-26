@@ -9,9 +9,12 @@ import 'package:frontend/pages/details/pet_daycare_details_page.dart';
 import 'package:frontend/pages/view_booked_pets_page.dart';
 import 'package:frontend/pages/view_booking_requests_page.dart';
 import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/provider/chat_tracker_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/provider/message_tracker_provider.dart';
 import 'package:frontend/provider/user_provider.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
+import 'package:frontend/utils/handle_error.dart';
 import 'package:web_socket_channel/io.dart';
 
 class PetDaycareHomePage extends ConsumerStatefulWidget {
@@ -23,28 +26,45 @@ class PetDaycareHomePage extends ConsumerStatefulWidget {
 
 class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
   int _selectedIndex = 0;
-  IOWebSocketChannel? _channel;
+  // IOWebSocketChannel? _channel;
   StreamSubscription? _webSocketSubscription;
+  Object? _error;
 
   List<ChatMessage> messages = [];
+
+  void _fetchMessages() {
+    log("fetch message");
+    final unreadChatMessages = ref.read(getUnreadChatMessagesProvider.future);
+    unreadChatMessages.then((newData) {
+      setState(() {
+        messages = newData.data;
+        log("message: ${messages.length}");
+      });
+    });
+  }
 
   void _setupWebSocket() {
     try {
       ChatWebsocketChannel().instance.then(
         (value) {
-          _channel = value;
-          _webSocketSubscription = _channel!.stream.listen(
+          // _channel = value;
+          // _websocketStream = value.stream.asBroadcastStream();
+          _webSocketSubscription = ChatWebsocketChannel().stream.listen(
             (message) {
-              final unreadChatMessages =
-                  ref.read(getUnreadChatMessagesProvider.future);
-              unreadChatMessages.then((newData) {
-                setState(() {
-                  messages = newData.data;
-                });
+              _fetchMessages();
+
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                ref.read(chatTrackerProvider.notifier).shouldReload();
               });
             },
             onError: (e) {
-              setState(() {});
+              if (e.toString() == jwtExpired ||
+                  e.toString() == userDeleted && mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => WelcomeWidget()),
+                  (route) => false,
+                );
+              }
             },
           );
         },
@@ -69,6 +89,7 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
   void initState() {
     super.initState();
     _setupWebSocket();
+    _fetchMessages();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       log("update token");
       ref.read(userStateProvider.notifier).updateDeviceToken();
@@ -78,13 +99,28 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
   @override
   void dispose() {
     _webSocketSubscription?.cancel();
-    _channel?.sink.close();
+    ChatWebsocketChannel().close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final unreadMessages = ref.watch(chatMessagesProvider());
+    // final unreadMessages = ref.watch(getUnreadChatMessagesProvider);
+    final tracker = ref.watch(petDaycareChatListTrackerProvider);
+
+    if (_error != null) {
+      handleError(
+          AsyncValue.error(_error.toString(), StackTrace.current), context);
+    }
+
+    if (tracker.value ?? false) {
+      log("[PET DAYCARE HOME PAGE] tracker: ${tracker.value}");
+      _fetchMessages();
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ref.read(petDaycareChatListTrackerProvider.notifier).reset();
+      });
+    }
+
     final List<Widget> pages = [
       ViewBookedPetsPage(messages),
       ViewBookingRequestsPage(),
@@ -107,9 +143,11 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
         items: [
           BottomNavigationBarItem(
             backgroundColor: Colors.orangeAccent,
-            icon: (messages.isNotEmpty)
-                ? Badge.count(count: messages.length, child: Icon(Icons.pets))
-                : Icon(Icons.pets),
+            icon: Badge.count(
+              count: messages.length,
+              isLabelVisible: messages.isNotEmpty,
+              child: Icon(Icons.pets),
+            ),
             label: "Bookings",
           ),
           BottomNavigationBarItem(

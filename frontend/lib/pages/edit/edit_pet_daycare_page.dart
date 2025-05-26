@@ -177,7 +177,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       });
     }
 
-    handleValue(petDaycareState, context,
+    handleValue(petDaycareState, this,
         ref.read(petDaycareStateProvider.notifier).reset);
 
     // if (petDaycareState.hasValue &&

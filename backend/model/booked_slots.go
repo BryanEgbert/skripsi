@@ -28,9 +28,5 @@ type BookSlotRequest struct {
 	PetID     []uint    `json:"petId" binding:"required"`
 	StartDate time.Time `json:"startDate" binding:"required"`
 	EndDate   time.Time `json:"endDate" binding:"required"`
-	Location  *string   `json:"location"`
-	Address   *string   `json:"address"`
-	Latitude  *float64  `json:"latitude"`
-	Longitude *float64  `json:"longitude"`
-	Notes     *string   `json:"note"`
+	AddressID uint      `json:"addressId"`
 }

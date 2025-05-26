@@ -60,7 +60,7 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
     final pet = ref.watch(getPetByIdProvider(widget.petId));
     final petState = ref.watch(petStateProvider);
 
-    handleValue(petState, context, ref.read(petStateProvider.notifier).reset);
+    handleValue(petState, this, ref.read(petStateProvider.notifier).reset);
 
     // if (petState.hasValue && !petState.isLoading) {
     //   if (petState.value == 204) {

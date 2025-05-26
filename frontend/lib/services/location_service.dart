@@ -244,6 +244,7 @@ class LocationService implements ILocationService {
           "access_token": mapboxToken,
           "session_token": sessionId,
           "country": "id",
+          "types": "poi",
         },
       );
 

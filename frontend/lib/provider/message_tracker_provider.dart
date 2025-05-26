@@ -49,3 +49,19 @@ class VetChatListTracker extends _$VetChatListTracker {
     state = const AsyncData(false);
   }
 }
+
+@riverpod
+class PetDaycareChatListTracker extends _$PetDaycareChatListTracker {
+  @override
+  Future<bool> build() async {
+    return Future.value(false);
+  }
+
+  void shouldReload() {
+    state = const AsyncData(true);
+  }
+
+  void reset() {
+    state = const AsyncData(false);
+  }
+}

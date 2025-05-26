@@ -6,21 +6,17 @@ List<Widget> petOwnerAppBarActions(int unreadMessageCount) {
   return [
     Builder(builder: (context) {
       return IconButton(
-        icon: (unreadMessageCount == 0)
-            ? Icon(
-                Icons.chat,
-                color: Colors.orange,
-              )
-            : Badge.count(
-                backgroundColor: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.red[100]
-                    : null,
-                count: unreadMessageCount,
-                child: Icon(
-                  Icons.chat,
-                  color: Colors.orange,
-                ),
-              ),
+        icon: Badge.count(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.red[100]
+              : null,
+          count: unreadMessageCount,
+          isLabelVisible: unreadMessageCount != 0,
+          child: Icon(
+            Icons.chat,
+            color: Colors.orange,
+          ),
+        ),
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => PetOwnerChatListPage(),

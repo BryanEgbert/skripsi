@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/chat_bubble.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
@@ -19,6 +20,7 @@ import 'package:frontend/provider/chat_tracker_provider.dart';
 import 'package:frontend/provider/database_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
+import 'package:frontend/utils/handle_error.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -119,7 +121,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         },
       );
     } catch (e) {
-      if (e.toString() == jwtExpired && mounted) {
+      if (e.toString() == jwtExpired ||
+          e.toString() == userDeleted && mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => WelcomeWidget()),
           (route) => false,
@@ -151,6 +154,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
     final chatMessages = ref.watch(chatMessagesProvider(widget.userId));
 
+    handleError(myInfo, context);
+
     if (chatTracker.value ?? false) {
       setState(() {
         ref.invalidate(chatMessagesProvider);
@@ -169,7 +174,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       });
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       _listScrollController
           .jumpTo(_listScrollController.position.maxScrollExtent);
     });

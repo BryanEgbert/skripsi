@@ -79,7 +79,6 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
 
   @override
   Widget build(BuildContext context) {
-    log("[Booking History View] _records: $_records");
     return Scaffold(
       appBar: AppBar(
         title: Text(

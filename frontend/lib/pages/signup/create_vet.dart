@@ -29,7 +29,7 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
     final vetSpecialties = ref.watch(vetSpecialtiesProvider);
     AsyncValue<TokenResponse?> auth = ref.watch(authProvider);
 
-    handleValue(auth, context);
+    handleValue(auth, this);
 
     if (auth.hasValue && !auth.hasError && !auth.isLoading) {
       if (auth.value != null) {

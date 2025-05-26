@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	apputils "github.com/BryanEgbert/skripsi/app_utils"
 	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"gorm.io/gorm"
@@ -301,8 +302,9 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 	var pricingType string
 	if err := s.db.
 		Model(&model.Slots{}).
-		Select("pricing_type").
-		Where("id = ? AND pet_category_id = ?", req.DaycareID, petCategoryID).
+		Select("pricing_types.name").
+		Joins("JOIN pricing_types ON pricing_types.id = pricing_type_id").
+		Where("daycare_id = ? AND pet_category_id = ?", req.DaycareID, petCategoryID).
 		Scan(&pricingType).Error; err != nil {
 		return err
 	}
@@ -321,19 +323,19 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 		slotID = append(slotID, val.ID)
 	}
 
-	var reducedSlotsCount []int64
+	// var reducedSlotsCount []int64
 
-	if err := s.db.
-		Model(&model.ReduceSlots{}).
-		Select("COALESCE(SUM(reduced_count),0) AS total").
-		Where("slot_id IN ? AND target_date BETWEEN ? AND ?", slotID, req.StartDate, req.EndDate).
-		Scan(&reducedSlotsCount).
-		Error; err != nil {
-		return err
-	}
+	// if err := s.db.
+	// 	Model(&model.ReduceSlots{}).
+	// 	Select("COALESCE(SUM(reduced_count),0) AS total").
+	// 	Where("slot_id IN ? AND target_date BETWEEN ? AND ?", slotID, req.StartDate, req.EndDate).
+	// 	Scan(&reducedSlotsCount).
+	// 	Error; err != nil {
+	// 	return err
+	// }
 
 	// TODO: loop date instead of add counts
-	for i, val := range slot {
+	for _, val := range slot {
 		var bookedSlotsCount int64
 		if err := s.db.
 			Model(&model.BookedSlot{
@@ -346,14 +348,16 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 			Error; err != nil {
 			return err
 		}
-		remainingSlots := val.MaxNumber - int(bookedSlotsCount) - int(reducedSlotsCount[i])
+		// remainingSlots := val.MaxNumber - int(bookedSlotsCount) - int(reducedSlotsCount[i])
+		remainingSlots := val.MaxNumber - int(bookedSlotsCount)
+
 		if remainingSlots <= 0 {
-			return errors.New("slots are full in between the chosen date")
+			return apputils.ErrSlotFull
 		}
 	}
 
 	if pricingType == "night" && int(req.EndDate.Sub(req.StartDate)/(24*time.Hour)) < 2 {
-		return errors.New("invalid booking: this pet daycare charges per night. a minimum of one night stay is required. please adjust your booking dates")
+		return apputils.ErrOnlyOneSlotDate
 	}
 
 	// Insert Data
@@ -365,33 +369,50 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 	}()
 
 	for _, val := range slot {
-		var address model.SavedAddress
-		var addressID *uint
-		if req.Location != nil && req.Address != nil && req.Latitude != nil && req.Longitude != nil {
-			address = model.SavedAddress{
-				Name:      *req.Location,
-				Address:   *req.Address,
-				Latitude:  *req.Latitude,
-				Longitude: *req.Latitude,
-				Notes:     req.Notes,
-			}
+		// var newBookSlot model.BookedSlot
+		// if req.AddressID == 0 {
+		// 	var address model.SavedAddress
+		// 	var addressID *uint
+		// 	if req.Location != nil && req.Address != nil && req.Latitude != nil && req.Longitude != nil {
+		// 		address = model.SavedAddress{
+		// 			Name:      *req.Location,
+		// 			Address:   *req.Address,
+		// 			Latitude:  *req.Latitude,
+		// 			Longitude: *req.Latitude,
+		// 			Notes:     req.Notes,
+		// 		}
 
-			if err := tx.Create(&address).Error; err != nil {
-				return err
-			}
+		// 		if err := tx.Create(&address).Error; err != nil {
+		// 			return err
+		// 		}
 
-			addressID = &address.ID
-		}
+		// 		addressID = &address.ID
+		// 	}
+
+		// 	newBookSlot = model.BookedSlot{
+		// 		UserID: userId,
+		// 		SlotID: val.ID,
+		// 		// DaycareID: req.DaycareID,
+		// 		StartDate: req.StartDate,
+		// 		EndDate:   req.EndDate,
+		// 		AddressID: addressID,
+		// 	}
+		// }
 		newBookSlot := model.BookedSlot{
-			UserID: userId,
-			SlotID: val.ID,
-			// DaycareID: req.DaycareID,
+			UserID:    userId,
+			SlotID:    val.ID,
+			DaycareID: req.DaycareID,
 			StartDate: req.StartDate,
 			EndDate:   req.EndDate,
-			AddressID: addressID,
+			AddressID: &req.AddressID,
+		}
+
+		if req.AddressID != 0 {
+			newBookSlot.AddressID = &req.AddressID
 		}
 
 		if err := tx.Create(&newBookSlot).Error; err != nil {
+			tx.Rollback()
 			return err
 		}
 
@@ -402,14 +423,17 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 		}
 
 		if err := tx.Create(&newTransaction).Error; err != nil {
+			tx.Rollback()
 			return err
 		}
 
 		for _, petID := range req.PetID {
-			tx.Model(&newBookSlot).
-				Where("user_id = ? AND daycare_id = ?", userId, req.DaycareID).
+			if err := tx.Model(&newBookSlot).
 				Association("Pet").
-				Append(&model.Pet{Model: gorm.Model{ID: petID}})
+				Append(&model.Pet{Model: gorm.Model{ID: petID}}); err != nil {
+				tx.Rollback()
+				return err
+			}
 
 			for d := req.StartDate; !d.After(req.EndDate); d = d.AddDate(0, 0, 1) {
 				if err := tx.Create(&model.BookedSlotsDaily{
@@ -417,6 +441,7 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 					// DaycareID: req.DaycareID,
 					Date: d,
 				}).Error; err != nil {
+					tx.Rollback()
 					return err
 				}
 			}

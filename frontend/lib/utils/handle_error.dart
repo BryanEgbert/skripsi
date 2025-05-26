@@ -35,12 +35,15 @@ void handleError(AsyncValue providerValue, BuildContext context,
   }
 }
 
-void handleValue(AsyncValue providerValue, BuildContext context,
-    [Function()? reset]) {
+void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
+  var context = state.context;
+  if (!state.mounted) return;
+
   if (providerValue.hasError &&
       (providerValue.valueOrNull == null || providerValue.valueOrNull == 0) &&
       !providerValue.isLoading) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       var snackbar = SnackBar(
         key: Key("error-message"),
         content: Text(
@@ -50,7 +53,6 @@ void handleValue(AsyncValue providerValue, BuildContext context,
         backgroundColor: Colors.red[800],
       );
 
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
       if (providerValue.error.toString() == jwtExpired ||
@@ -73,6 +75,8 @@ void handleValue(AsyncValue providerValue, BuildContext context,
     if (providerValue.value == null) return;
     if (providerValue.value >= 200 && providerValue.value <= 400) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
         var snackbar = SnackBar(
           key: Key("success-message"),
           content: Text(
@@ -84,7 +88,6 @@ void handleValue(AsyncValue providerValue, BuildContext context,
           backgroundColor: Colors.green[800],
         );
 
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
         if (Navigator.of(context).canPop()) {

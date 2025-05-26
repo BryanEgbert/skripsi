@@ -98,7 +98,7 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 			return
 		}
 
-		req.UserImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, imagePath)
+		req.UserImageUrl = fmt.Sprintf("http://%s/%s", c.Request.Host, imagePath)
 	}
 
 	createdUser, err := uc.userService.CreateUser(req.CreateUserRequest)
@@ -122,7 +122,7 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 	for _, thumbnail := range req.Thumbnails {
 		log.Printf("filename: %s", thumbnail.Filename)
 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(createdUser.UserID, filepath.Ext(thumbnail.Filename)))
-		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("%s/%s", c.Request.Host, filename))
+		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("http://%s/%s", c.Request.Host, filename))
 
 		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
 			log.Printf("Failed to save pet daycare image: %v", err)
