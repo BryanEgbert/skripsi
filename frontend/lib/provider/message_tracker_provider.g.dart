@@ -39,5 +39,22 @@ final petOwnerChatListTrackerProvider =
 );
 
 typedef _$PetOwnerChatListTracker = AutoDisposeAsyncNotifier<bool>;
+String _$vetChatListTrackerHash() =>
+    r'4e2b079dfcb96b6b61b884cfa9a7041985ddfce1';
+
+/// See also [VetChatListTracker].
+@ProviderFor(VetChatListTracker)
+final vetChatListTrackerProvider =
+    AutoDisposeAsyncNotifierProvider<VetChatListTracker, bool>.internal(
+  VetChatListTracker.new,
+  name: r'vetChatListTrackerProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$vetChatListTrackerHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$VetChatListTracker = AutoDisposeAsyncNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

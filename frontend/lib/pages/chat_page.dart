@@ -33,15 +33,12 @@ class ChatPage extends ConsumerStatefulWidget {
 }
 
 class _ChatPageState extends ConsumerState<ChatPage> {
-  // final _streamController = StreamController.broadcast();
   final _textController = TextEditingController();
-  ScrollController _listScrollController = ScrollController();
+  final _listScrollController = ScrollController();
 
   IOWebSocketChannel? channel;
-  StreamSubscription? _webSocketSubscription;
 
-  List<ChatMessage> _totalMessages = [];
-  int _messageCount = 0;
+  // List<ChatMessage> _totalMessages = [];
 
   bool _isSocketReady = false;
 
@@ -58,25 +55,26 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           .then(
             (_) => setState(
               () {
-                ref
-                    .read(chatMessagesProvider(widget.userId).future)
-                    .then((newData) {
-                  setState(() {
-                    _totalMessages = newData.data;
-                    _messageCount = _totalMessages.length;
-                  });
-                });
+                // ref
+                //     .read(chatMessagesProvider(widget.userId).future)
+                //     .then((newData) {
+                //   setState(() {
+                //     _totalMessages = newData.data;
+                //   });
+                // });
+
+                ref.invalidate(chatMessagesProvider);
               },
             ),
           );
     }
   }
 
-  void _fetchMessages() {
-    ref.read(chatMessagesProvider(widget.userId).future).then((newData) {
-      _totalMessages = newData.data;
-    });
-  }
+  // void _fetchMessages() {
+  //   ref.read(chatMessagesProvider(widget.userId).future).then((newData) {
+  //     _totalMessages = newData.data;
+  //   });
+  // }
 
   void _setupWebSocket() {
     try {
@@ -134,7 +132,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   void initState() {
     super.initState();
     _setupWebSocket();
-    _fetchMessages();
+    // _fetchMessages();
   }
 
   @override
@@ -150,9 +148,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     final receiverUser = ref.watch(getUserByIdProvider(widget.userId));
     final myInfo = ref.watch(getTokenProvider);
     final chatTracker = ref.watch(chatTrackerProvider);
+
+    final chatMessages = ref.watch(chatMessagesProvider(widget.userId));
+
     if (chatTracker.value ?? false) {
       setState(() {
-        _fetchMessages();
+        ref.invalidate(chatMessagesProvider);
         channel!.sink.add(
           jsonEncode(
             SendMessage(
@@ -167,6 +168,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         ref.read(chatTrackerProvider.notifier).reset();
       });
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _listScrollController
+          .jumpTo(_listScrollController.position.maxScrollExtent);
+    });
     // final chat = ref.watch(chatMessagesProvider(widget.userId));
 
     return switch (receiverUser) {
@@ -200,9 +206,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       ? ListView.builder(
                           controller: _listScrollController,
                           padding: EdgeInsets.all(8),
-                          itemCount: _totalMessages.length,
+                          itemCount: chatMessages.value!.data.length,
                           itemBuilder: (context, index) {
-                            var msg = _totalMessages[index];
+                            var msg = chatMessages.value!.data[index];
 
                             final dateTime =
                                 DateTime.parse(msg.createdAt).toLocal();
@@ -324,14 +330,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                               channel!.sink.add(sendMessage);
 
                               _textController.clear();
-                              ref
-                                  .read(chatMessagesProvider(widget.userId)
-                                      .future)
-                                  .then((newData) {
-                                setState(() {
-                                  _totalMessages = newData.data;
-                                });
-                              });
+                              // ref
+                              //     .read(chatMessagesProvider(widget.userId)
+                              //         .future)
+                              //     .then((newData) {
+                              //   setState(() {
+                              //     _totalMessages = newData.data;
+                              //   });
+                              // });
+                              ref.invalidate(chatMessagesProvider);
                             }
                           },
                           icon: Icon(

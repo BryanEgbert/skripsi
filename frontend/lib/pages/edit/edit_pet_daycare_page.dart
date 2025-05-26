@@ -54,7 +54,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
   double? _latitude;
   double? _longitude;
   String _locality = "";
-  String _location = "";
+
   String? _locationErrorText;
 
   final List<File?> _images = List.filled(9, null);

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -11,12 +10,11 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/user.dart';
 import 'package:frontend/pages/chat_page.dart';
 import 'package:frontend/pages/welcome.dart';
-import 'package:frontend/provider/database_provider.dart';
+
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/message_tracker_provider.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:frontend/utils/handle_error.dart';
-import 'package:web_socket_channel/io.dart';
 
 class PetOwnerChatListPage extends ConsumerStatefulWidget {
   const PetOwnerChatListPage({super.key});

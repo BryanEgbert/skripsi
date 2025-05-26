@@ -33,3 +33,19 @@ class PetOwnerChatListTracker extends _$PetOwnerChatListTracker {
     state = const AsyncData(false);
   }
 }
+
+@riverpod
+class VetChatListTracker extends _$VetChatListTracker {
+  @override
+  Future<bool> build() async {
+    return Future.value(false);
+  }
+
+  void shouldReload() {
+    state = const AsyncData(true);
+  }
+
+  void reset() {
+    state = const AsyncData(false);
+  }
+}

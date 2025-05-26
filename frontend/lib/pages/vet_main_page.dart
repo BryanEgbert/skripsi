@@ -13,7 +13,9 @@ import 'package:frontend/model/user.dart';
 import 'package:frontend/pages/chat_page.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/auth_provider.dart';
+import 'package:frontend/provider/chat_tracker_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/provider/message_tracker_provider.dart';
 import 'package:frontend/provider/user_provider.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:frontend/utils/handle_error.dart';
@@ -42,9 +44,12 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
           _channel = value;
           _webSocketSubscription = _channel!.stream.listen(
             (message) {
-              log("[VET MAIN PAGE] new message: $message");
-              setState(() {
-                _fetchData();
+              _fetchData();
+
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                ref.read(vetChatListTrackerProvider.notifier).reset();
+                ref.invalidate(getUserChatListProvider);
+                ref.read(chatTrackerProvider.notifier).shouldReload();
               });
             },
             onError: (e) {
@@ -57,7 +62,8 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
         },
       );
     } catch (e) {
-      if (e.toString() == jwtExpired && mounted) {
+      if (e.toString() == jwtExpired ||
+          e.toString() == userDeleted && mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => WelcomeWidget()),
           (route) => false,
@@ -67,14 +73,18 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
   }
 
   void _fetchData() {
-    ref.read(getUserChatListProvider.future).then((newData) {
-      log("[VET MAIN PAGE] fetchData: ${newData.data}");
+    // ref.invalidate(getUserChatListProvider);
+    // ref.read(getUserChatListProvider.future).then((newData) {
+    //   users = newData.data.toSet();
+    // }).catchError((e) {
+    //   setState(() {
+    //     _error = e;
+    //   });
+    // });
+
+    ref.read(getUnreadChatMessagesProvider.future).then((newData) {
       setState(() {
-        users = newData.data.toSet();
-      });
-    }).catchError((e) {
-      setState(() {
-        _error = e;
+        _messages = newData.data;
       });
     });
   }
@@ -99,10 +109,19 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
   @override
   Widget build(BuildContext context) {
     final chatList = ref.watch(getUserChatListProvider);
+    final tracker = ref.watch(vetChatListTrackerProvider);
 
     if (_error != null) {
       handleError(
           AsyncValue.error(_error.toString(), StackTrace.current), context);
+    }
+
+    if (tracker.value ?? false) {
+      _fetchData();
+      ref.invalidate(getUserChatListProvider);
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ref.read(vetChatListTrackerProvider.notifier).reset();
+      });
     }
 
     return Scaffold(
@@ -114,23 +133,36 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
               errorText: error.toString(),
               onRefresh: () async {
                 _fetchData();
+                return ref.refresh(getUserChatListProvider.future);
               },
             ),
           AsyncData(:final value) => (value.data.isNotEmpty)
               ? RefreshIndicator(
                   onRefresh: () async {
                     _fetchData();
+                    return ref.refresh(getUserChatListProvider.future);
                   },
                   child: ListView.builder(
                     physics: AlwaysScrollableScrollPhysics(),
-                    itemCount: users.length,
+                    itemCount: value.data.length,
                     itemBuilder: (context, index) {
-                      var item = users.elementAt(index);
+                      User item = value.data.elementAt(index);
+                      int unreadCount = _messages
+                          .where(
+                            (element) => element.senderId == item.id,
+                          )
+                          .length;
+
                       return ListTile(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
+                        onTap: () async {
+                          await Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => ChatPage(userId: item.id),
                           ));
+
+                          _fetchData();
+                          ref
+                              .read(vetChatListTrackerProvider.notifier)
+                              .shouldReload();
                         },
                         tileColor:
                             Theme.of(context).brightness == Brightness.light
@@ -144,17 +176,31 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
                             color: Constants.primaryTextColor,
                           ),
                         ),
-                        trailing: Icon(
-                          Icons.chat,
-                          color: Colors.orange,
-                        ),
+                        trailing: unreadCount == 0
+                            ? Icon(
+                                Icons.chat,
+                                color: Colors.orange,
+                              )
+                            : Badge.count(
+                                count: unreadCount,
+                                backgroundColor: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.red[100]
+                                    : null,
+                                child: Icon(
+                                  Icons.chat,
+                                  color: Colors.orange,
+                                ),
+                              ),
                       );
                     },
                   ),
                 )
               : ErrorText(
-                  errorText: "pet owners who chat you will appear here",
-                  onRefresh: () => ref.refresh(getUserChatListProvider.future),
+                  errorText: "Pet owners who message you will show up here.",
+                  onRefresh: () async {
+                    _fetchData();
+                  },
                 ),
           _ => Center(
               child: CircularProgressIndicator.adaptive(),
