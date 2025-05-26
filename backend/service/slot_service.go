@@ -164,7 +164,8 @@ func (s *SlotServiceImpl) CancelBookedSlot(slotId uint) error {
 
 func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) (*[]model.SlotsResponse, error) {
 	firstDay := time.Now()
-	lastDay := firstDay.AddDate(1, 0, -1)
+	log.Printf("first day: %v", firstDay.String())
+	lastDay := firstDay.AddDate(1, 0, 0)
 
 	var slots []model.Slots
 	if err := s.db.
@@ -190,7 +191,7 @@ func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) 
 	rows, err := s.db.
 		Model(&model.BookedSlotsDaily{}).
 		Select("date, SUM(slot_count) AS slot_count").
-		Where("slot_id IN ? AND date BETWEEN ? AND ?", slotID, firstDay, lastDay).
+		Where("slot_id IN ? AND date BETWEEN ? AND ?", slotID, firstDay.AddDate(0, 0, -1), lastDay).
 		Group("date").Rows()
 	if err != nil {
 		return nil, err
@@ -210,6 +211,7 @@ func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) 
 
 	bookedSlotsMap := make(map[string]int)
 	for _, b := range bookedSlots {
+		log.Printf("%v: %v", b.Date, b.SlotCount)
 		bookedSlotsMap[b.Date.Format("2006-01-02")] = int(b.SlotCount)
 	}
 
