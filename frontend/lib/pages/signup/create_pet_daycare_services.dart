@@ -169,11 +169,6 @@ class _CreatePetDaycareServicesState
                 child: Column(
                   children: [
                     TextFormField(
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Colors.black
-                            : Colors.white70,
-                      ),
                       controller: _dailyWalkController,
                       focusNode: _categoryFocusNode,
                       readOnly: true,
@@ -199,11 +194,6 @@ class _CreatePetDaycareServicesState
                       validator: (value) => validateNotEmpty("Input", value),
                     ),
                     TextFormField(
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Colors.black
-                            : Colors.white70,
-                      ),
                       controller: _dailyPlaytimeController,
                       focusNode: _categoryFocusNode,
                       readOnly: true,

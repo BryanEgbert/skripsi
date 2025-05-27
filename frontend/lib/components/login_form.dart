@@ -78,11 +78,6 @@ class _LoginFormState extends ConsumerState<LoginForm> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextFormField(
-            style: TextStyle(
-              color: Theme.of(context).brightness == Brightness.light
-                  ? Colors.black
-                  : Colors.white70,
-            ),
             key: Key("email-input"),
             controller: _emailEditingController,
             decoration: InputDecoration(
@@ -99,11 +94,6 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             height: 8,
           ),
           TextFormField(
-            style: TextStyle(
-              color: Theme.of(context).brightness == Brightness.light
-                  ? Colors.black
-                  : Colors.white70,
-            ),
             key: Key("password-input"),
             controller: _passwordEditingController,
             decoration: InputDecoration(

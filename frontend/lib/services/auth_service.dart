@@ -76,13 +76,13 @@ class AuthService implements IAuthService {
         },
       ));
 
-      FormData formData = FormData.fromMap({
-        ...reqBody.toMap(),
-        "userProfilePicture": reqBody.userImage != null
-            ? await MultipartFile.fromFile(reqBody.userImage!.path,
-                filename: reqBody.userImage!.path.split('/').last)
-            : null,
-      });
+      Map<String, dynamic> reqMap = reqBody.toMap();
+
+      if (reqBody.userImage != null) {
+        reqMap["userProfilePicture"] = await MultipartFile.fromFile(
+            reqBody.userImage!.path,
+            filename: reqBody.userImage!.path.split('/').last);
+      }
 
       final response = await dio.post(
         "$host/users",
@@ -91,7 +91,7 @@ class AuthService implements IAuthService {
             Headers.contentTypeHeader: Headers.multipartFormDataContentType,
           },
         ),
-        data: formData,
+        data: FormData.fromMap(reqMap),
       );
 
       return response;

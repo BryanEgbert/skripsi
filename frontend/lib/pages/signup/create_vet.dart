@@ -29,20 +29,20 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
     final vetSpecialties = ref.watch(vetSpecialtiesProvider);
     AsyncValue<TokenResponse?> auth = ref.watch(authProvider);
 
-    handleValue(auth, this);
+    handleError(auth, context, ref.read(authProvider.notifier).reset);
 
-    if (auth.hasValue && !auth.hasError && !auth.isLoading) {
-      if (auth.value != null) {
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => VetMainPage(),
-            ),
-            (route) => false,
-          );
-        });
-      }
-    }
+    // if (auth.hasValue && !auth.hasError && !auth.isLoading) {
+    //   if (auth.value != null) {
+    //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //       Navigator.of(context).pushAndRemoveUntil(
+    //         MaterialPageRoute(
+    //           builder: (context) => VetMainPage(),
+    //         ),
+    //         (route) => false,
+    //       );
+    //     });
+    //   }
+    // }
 
     return Scaffold(
         appBar: AppBar(

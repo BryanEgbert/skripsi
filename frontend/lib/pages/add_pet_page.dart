@@ -127,11 +127,6 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                     image: _petProfilePicture,
                   ),
                   TextFormField(
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white70,
-                    ),
                     controller: _nameController,
                     key: Key("name-input"),
                     decoration: InputDecoration(
@@ -143,11 +138,6 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                     validator: (value) => validateNotEmpty("Name", value),
                   ),
                   TextFormField(
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white70,
-                    ),
                     controller: _petCategoryController,
                     focusNode: _petCategoryFocusNode,
                     readOnly: true,

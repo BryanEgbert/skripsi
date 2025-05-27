@@ -53,28 +53,31 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeStateProvider);
     final tokenProvider = ref.watch(getTokenProvider);
-    final updateToken = ref.watch(userStateProvider);
+    // final updateToken = ref.watch(userStateProvider);
     Widget home = Container(color: Colors.white);
 
-    updateToken.when(
-        data: (_) {},
-        error: (_, __) {
-          home = WelcomeWidget();
-        },
-        loading: () {});
+    // updateToken.when(
+    //     data: (_) {},
+    //     error: (_, __) {
+    //       home = WelcomeWidget();
+    //     },
+    //     loading: () {});
 
     tokenProvider.when(
       data: (user) {
+        log("[MAIN PAGE] setting home page");
         if (user.roleId == 1) {
           home = HomeWidget();
         } else if (user.roleId == 2) {
           home = PetDaycareHomePage();
-        } else {
+        } else if (user.roleId == 3) {
           home = VetMainPage();
+        } else {
+          home = WelcomeWidget();
         }
       },
       loading: () {
-        home = Container(color: Colors.white);
+        // home = Container(color: Colors.white);
       },
       error: (_, __) {
         home = WelcomeWidget();
@@ -137,7 +140,11 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
           color: Colors.orange,
         )),
         textTheme: GoogleFonts.poppinsTextTheme(
-          Theme.of(context).textTheme,
+          ThemeData.dark().textTheme,
+        ),
+        colorScheme: ColorScheme.dark(
+          primary: Colors.orange,
+          onSurface: Colors.white70,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(

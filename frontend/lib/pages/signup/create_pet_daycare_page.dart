@@ -140,12 +140,6 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                     spacing: 12,
                     children: [
                       TextFormField(
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
                         controller: _nameController,
                         key: Key("name-input"),
                         decoration: InputDecoration(
@@ -160,12 +154,6 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                       _locationInput(),
                       _operationHoursInput(context),
                       TextFormField(
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
                         controller: _descriptionController,
                         key: Key("description-input"),
                         maxLines: 6,
@@ -206,11 +194,6 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
             Expanded(
               child: TextFormField(
                 readOnly: true,
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.black
-                      : Colors.white70,
-                ),
                 controller: _openingHoursController,
                 decoration: InputDecoration(
                   labelText: "Opening Hour",
@@ -237,22 +220,10 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                 },
               ),
             ),
-            Text(
-              "to",
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.black
-                    : Colors.white70,
-              ),
-            ),
+            Text("to"),
             Expanded(
               child: TextFormField(
                 readOnly: true,
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.black
-                      : Colors.white70,
-                ),
                 controller: _closingHoursController,
                 decoration: InputDecoration(
                   labelText: "Closing Hour",
@@ -290,11 +261,6 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
       searchController: _searchController,
       builder: (context, controller) {
         return TextFormField(
-          style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.light
-                ? Colors.black
-                : Colors.white70,
-          ),
           controller: controller,
           validator: (value) => validateNotEmpty("Value", value),
           decoration: InputDecoration(

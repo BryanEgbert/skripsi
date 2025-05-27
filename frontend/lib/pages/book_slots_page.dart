@@ -8,6 +8,7 @@ import 'package:frontend/components/paginated_pets_list_view.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/model/request/book_slot_request.dart';
 import 'package:frontend/model/saved_address.dart';
+import 'package:frontend/model/slot.dart';
 import 'package:frontend/pages/add_saved_address.dart';
 import 'package:frontend/pages/saved_address_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
@@ -32,6 +33,8 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
   String? _startDate;
   String? _endDate;
+
+  List<Slot> _availableDates = [];
 
   final Map<int, bool> _petIdValue = {};
   final List<int> _petCategoryIds = [];
@@ -282,16 +285,19 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                 context: context,
                                 firstDate: DateTime.now(),
                                 lastDate:
-                                    DateTime.now().add(Duration(days: 3653)),
+                                    DateTime.now().add(Duration(days: 365)),
                                 selectableDayPredicate:
                                     (day, selectedStartDay, selectedEndDay) {
+                                  log("slotDate: $slotDate");
                                   if (slotDate.hasValue) {
+                                    log("slot date has value");
                                     return !slotDate.value!.data.any(
                                       (element) {
                                         if (element.slotAmount <= 0) {
                                           DateTime disabledDate =
                                               DateTime.parse(element.date)
                                                   .toLocal();
+                                          log("disabled: ${disabledDate.toString()}");
                                           return disabledDate.year ==
                                                   day.year &&
                                               disabledDate.month == day.month &&
@@ -304,6 +310,26 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                   }
 
                                   return true;
+                                },
+                                builder: (context, child) {
+                                  final isDark = Theme.of(context).brightness ==
+                                      Brightness.dark;
+
+                                  return Theme(
+                                    data: isDark
+                                        ? ThemeData.dark().copyWith(
+                                            colorScheme: ColorScheme.dark(
+                                              primary: Colors.orange,
+                                              onSurface: Colors.white70,
+                                            ),
+                                            dialogBackgroundColor:
+                                                Colors.grey[900],
+                                            textTheme:
+                                                ThemeData.dark().textTheme,
+                                          )
+                                        : Theme.of(context),
+                                    child: child!,
+                                  );
                                 },
                               );
 

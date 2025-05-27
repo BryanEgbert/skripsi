@@ -306,12 +306,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       ),
                       Expanded(
                         child: TextField(
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.light
-                                    ? Colors.black
-                                    : Colors.white70,
-                          ),
                           controller: _textController,
                           keyboardType: TextInputType.multiline,
                           minLines: 1,

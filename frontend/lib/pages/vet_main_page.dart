@@ -33,12 +33,15 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
   late Stream _websocketStream;
   StreamSubscription? _webSocketSubscription;
 
+  bool _hasInitialized = false;
+
   Object? _error;
 
   Set<User> users = {};
   List<ChatMessage> _messages = [];
 
   void _setupWebSocket() {
+    log("[VET PAGE] setupWebSocket");
     try {
       ChatWebsocketChannel().instance.then(
         (value) {
@@ -94,7 +97,12 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
   @override
   void initState() {
     super.initState();
-    _setupWebSocket();
+    if (_hasInitialized) return;
+    _hasInitialized = true;
+
+    log("[VET PAGE] init");
+
+    if (_channel == null) _setupWebSocket();
     _fetchData();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(userStateProvider.notifier).updateDeviceToken();
@@ -103,6 +111,7 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
 
   @override
   void dispose() {
+    log("[VET PAGE] dispose");
     _webSocketSubscription?.cancel();
     _channel?.sink.close();
     ChatWebsocketChannel().close();

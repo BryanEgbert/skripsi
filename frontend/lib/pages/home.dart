@@ -36,6 +36,7 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
   late Stream _websocketStream;
   // StreamSubscription? _webSocketSubscription;
   int _messageCount = 0;
+  bool _hasInitialized = false;
 
   bool _isSocketReady = false;
   Object? _error;
@@ -98,6 +99,9 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
   @override
   void initState() {
     super.initState();
+    log("[HOME] init");
+    if (_hasInitialized) return;
+    _hasInitialized = true;
     _setupWebSocket();
     _fetchData();
     WidgetsBinding.instance.addPostFrameCallback((_) {

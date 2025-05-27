@@ -38,7 +38,7 @@ class _ErrorTextState extends State<ErrorText> {
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.light
                   ? Colors.black
-                  : Colors.white70,
+                  : Colors.white,
             ),
           ),
           IconButton(

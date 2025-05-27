@@ -101,12 +101,6 @@ class _CreateUserPageState extends State<CreateUserPage> {
                     children: [
                       profilePicturePicker(),
                       TextFormField(
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
                         key: Key("name-input"),
                         controller: _nameController,
                         decoration: InputDecoration(
@@ -118,12 +112,6 @@ class _CreateUserPageState extends State<CreateUserPage> {
                         validator: (value) => validateNotEmpty("Name", value),
                       ),
                       TextFormField(
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
                         key: Key("email-input"),
                         controller: _emailController,
                         decoration: InputDecoration(
@@ -147,12 +135,6 @@ class _CreateUserPageState extends State<CreateUserPage> {
                         },
                       ),
                       TextFormField(
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
                         key: Key("password-input"),
                         controller: _passwordController,
                         decoration: InputDecoration(

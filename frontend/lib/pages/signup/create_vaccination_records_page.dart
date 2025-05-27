@@ -8,6 +8,7 @@ import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/provider/auth_provider.dart';
+import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/validator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -54,6 +55,8 @@ class _CreateVaccinationRecordsPageState
   Widget build(BuildContext context) {
     final token = ref.watch(authProvider);
 
+    handleError(token, context);
+
     log("create_user_req: ${widget.createUserReq}, create_pet_req: ${widget.createPetReq}");
 
     if (_imageError != null) {
@@ -99,12 +102,6 @@ class _CreateVaccinationRecordsPageState
                     spacing: 8,
                     children: [
                       TextFormField(
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
                         controller: _dateAdministeredController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -136,12 +133,6 @@ class _CreateVaccinationRecordsPageState
                         validator: (value) => validateNotEmpty("value", value),
                       ),
                       TextFormField(
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
                         enabled: _isDateAdministeredFilled,
                         controller: _nextDueDateController,
                         decoration: InputDecoration(
@@ -208,9 +199,9 @@ class _CreateVaccinationRecordsPageState
                       child: const Text("Create My Account"),
                     ),
                     TextButton(
-                      onPressed: () async {
+                      onPressed: () {
                         if (!token.isLoading) {
-                          await ref.read(authProvider.notifier).createPetOwner(
+                          ref.read(authProvider.notifier).createPetOwner(
                               widget.createUserReq,
                               widget.createPetReq,
                               VaccinationRecordRequest(
@@ -253,9 +244,15 @@ class _CreateVaccinationRecordsPageState
           ? Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.grey
+                      : Colors.white60,
+                ),
                 borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.white
+                    : Colors.transparent,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -97,12 +97,6 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                         image: _petProfilePicture,
                       ),
                       TextFormField(
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
                         controller: _nameController,
                         key: Key("name-input"),
                         decoration: InputDecoration(
@@ -114,12 +108,6 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                         validator: (value) => validateNotEmpty("Name", value),
                       ),
                       TextFormField(
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
                         controller: _petCategoryController,
                         focusNode: _petCategoryFocusNode,
                         readOnly: true,
@@ -150,12 +138,6 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                           children: [
                             Text(
                               "Spayed/Neutered",
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.light
-                                    ? Colors.black
-                                    : Colors.white70,
-                              ),
                             ),
                             Checkbox(
                               value: _isNeutered,

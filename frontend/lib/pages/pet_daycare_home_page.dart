@@ -29,6 +29,7 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
   // IOWebSocketChannel? _channel;
   StreamSubscription? _webSocketSubscription;
   Object? _error;
+  bool _hasInitialized = false;
 
   List<ChatMessage> messages = [];
 
@@ -88,6 +89,9 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
   @override
   void initState() {
     super.initState();
+    log("[PET DAYCARE HOME] init");
+    if (_hasInitialized) return;
+    _hasInitialized = true;
     _setupWebSocket();
     _fetchMessages();
     WidgetsBinding.instance.addPostFrameCallback((_) {

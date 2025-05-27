@@ -8,6 +8,7 @@ import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/pages/signup/create_pet_daycare_services.dart';
 import 'package:frontend/provider/category_provider.dart';
+import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/validator.dart';
 
 class CreatePetDaycareSlots extends ConsumerStatefulWidget {
@@ -225,16 +226,17 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
     log("[INFO] prices: $_prices, pet category: $_petCategoryIds, pricingType: $_pricingTypes");
 
     if (_error != null) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        var snackbar = SnackBar(
-          key: Key("error-message"),
-          content: Text(_error!),
-          backgroundColor: Colors.red,
-        );
+      // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      //   var snackbar = SnackBar(
+      //     key: Key("error-message"),
+      //     content: Text(_error!),
+      //     backgroundColor: Colors.red,
+      //   );
 
-        ScaffoldMessenger.of(context).showSnackBar(snackbar);
-        _error = null;
-      });
+      //   ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      //   _error = null;
+      // });
+      handleError(AsyncError(_error.toString(), StackTrace.current), context);
     }
     return Scaffold(
         appBar: AppBar(

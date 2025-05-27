@@ -18,6 +18,10 @@ class Auth extends _$Auth {
     return Future.value(null);
   }
 
+  Future<void> reset() async {
+    state = AsyncData(null);
+  }
+
   Future<void> login(String email, String password) async {
     state = AsyncLoading();
 
