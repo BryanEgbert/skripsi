@@ -9,7 +9,6 @@ import 'package:frontend/constants.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/pet_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/validator.dart';

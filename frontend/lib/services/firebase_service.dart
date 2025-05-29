@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 Future<void> handleMessage(RemoteMessage? message) async {
   if (message == null) return;
@@ -6,10 +7,21 @@ Future<void> handleMessage(RemoteMessage? message) async {
 
 class FirebaseService {
   final _firebaseMessaging = FirebaseMessaging.instance;
+  final _remoteConfig = FirebaseRemoteConfig.instance;
 
   Future<void> initNotifications() async {
     await _firebaseMessaging.requestPermission();
     _firebaseMessaging.getInitialMessage().then(handleMessage);
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+  }
+
+  Future<void> initRemoteConfig() async {
+    await _remoteConfig.setConfigSettings(
+      RemoteConfigSettings(
+        fetchTimeout: Duration(hours: 1),
+        minimumFetchInterval: Duration(seconds: 10),
+      ),
+    );
+    await _remoteConfig.fetchAndActivate();
   }
 }

@@ -1,8 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_back_button.dart';
 import 'package:frontend/components/error_text.dart';
@@ -62,8 +64,10 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
   String? _errorText;
 
   final _sessionId = Uuid().v4();
-  // TODO: change this on release
-  final _locationService = MockLocationService();
+  final ILocationService _locationService =
+      FirebaseRemoteConfig.instance.getBool("mock_location_service")
+          ? MockLocationService()
+          : LocationService();
 
   final _miniatureDogPriceController = TextEditingController();
   final _miniatureDogPricingTypeController = TextEditingController(text: "day");
@@ -149,11 +153,11 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
     }
   }
 
-  void _deleteImage(int index) {
-    setState(() {
-      _images[index] = null;
-    });
-  }
+  // void _deleteImage(int index) {
+  //   setState(() {
+  //     _images[index] = null;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

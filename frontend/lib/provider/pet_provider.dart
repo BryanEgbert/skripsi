@@ -27,6 +27,7 @@ class PetState extends _$PetState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
 
     final petService = PetService();
@@ -48,6 +49,7 @@ class PetState extends _$PetState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
 
     final petService = PetService();
@@ -72,6 +74,7 @@ class PetState extends _$PetState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
 
     final petService = PetService();

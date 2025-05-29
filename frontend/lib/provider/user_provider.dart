@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/update_user_request.dart';
@@ -30,6 +28,7 @@ class UserState extends _$UserState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
 
     final userService = UserService();
@@ -52,6 +51,7 @@ class UserState extends _$UserState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
     final deviceToken = await FirebaseMessaging.instance.getToken();
 

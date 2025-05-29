@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
 import 'package:frontend/model/pet.dart';
@@ -26,7 +26,8 @@ class PetService implements IPetService {
   Future<Result<void>> createPet(String token, PetRequest petReqBody,
       VaccinationRecordRequest? vaccineReqBody) {
     return makeRequest(201, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -55,7 +56,7 @@ class PetService implements IPetService {
       FormData formData = FormData.fromMap(reqMap);
 
       final response = await dio.post(
-        "$host/pets",
+        "http://$host/pets",
         options: Options(
           headers: {
             Headers.contentTypeHeader: Headers.multipartFormDataContentType,
@@ -71,7 +72,8 @@ class PetService implements IPetService {
   @override
   Future<Result<void>> deletePet(String token, int id) {
     return makeRequest(204, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -80,7 +82,7 @@ class PetService implements IPetService {
       ));
 
       final res = await dio.delete(
-        "$host/pets/$id",
+        "http://$host/pets/$id",
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",
         }),
@@ -93,7 +95,8 @@ class PetService implements IPetService {
   @override
   Future<Result<Pet>> getById(String token, int id) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -102,7 +105,7 @@ class PetService implements IPetService {
       ));
 
       final res = await dio.get(
-        "$host/pets/$id",
+        "http://$host/pets/$id",
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",
         }),
@@ -116,7 +119,8 @@ class PetService implements IPetService {
   Future<Result<ListData<Pet>>> getPets(
       String token, CursorBasedPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -125,7 +129,7 @@ class PetService implements IPetService {
       ));
 
       final res = await dio.get(
-        "$host/pets",
+        "http://$host/pets",
         queryParameters: pagination.toMap(),
         options: Options(
           headers: {
@@ -141,7 +145,8 @@ class PetService implements IPetService {
   @override
   Future<Result<void>> updatePet(String token, int id, PetRequest reqBody) {
     return makeRequest(204, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -160,7 +165,7 @@ class PetService implements IPetService {
       FormData formData = FormData.fromMap(reqMap);
 
       final response = await dio.put(
-        "$host/pets/$id",
+        "http://$host/pets/$id",
         options: Options(
           headers: {
             Headers.contentTypeHeader: Headers.multipartFormDataContentType,
@@ -178,7 +183,8 @@ class PetService implements IPetService {
   Future<Result<ListData<Pet>>> getBookedPets(
       String token, CursorBasedPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -187,7 +193,7 @@ class PetService implements IPetService {
       ));
 
       final res = await dio.get(
-        "$host/daycare/pets",
+        "http://$host/daycare/pets",
         queryParameters: pagination.toMap(),
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",
@@ -202,7 +208,7 @@ class PetService implements IPetService {
   // Future<Result<ListData<VaccineRecord>>> getVaccineRecords(
   //     String token, int petId, OffsetPaginationQueryParams pagination) {
   //   return makeRequest(200, () async {
-  //     final String host = dotenv.env["HOST"]!;
+  //     final String host = FirebaseRemoteConfig.instance.getString("backend_host");
 
   //     final dio = Dio(BaseOptions(
   //       validateStatus: (status) {
@@ -211,7 +217,7 @@ class PetService implements IPetService {
   //     ));
 
   //     final res = await dio.get(
-  //       "$host/pets/$petId/vaccination-record",
+  //       "http://$host/pets/$petId/vaccination-record",
   //       queryParameters: pagination.toMap(),
   //       options: Options(headers: {
   //         HttpHeaders.authorizationHeader: "Bearer $token",

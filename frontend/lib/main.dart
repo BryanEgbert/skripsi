@@ -23,6 +23,7 @@ void main() async {
 
   await dotenv.load();
   await FirebaseService().initNotifications();
+  await FirebaseService().initRemoteConfig();
 
   runApp(
     ProviderScope(
@@ -53,15 +54,7 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeStateProvider);
     final tokenProvider = ref.watch(getTokenProvider);
-    // final updateToken = ref.watch(userStateProvider);
     Widget home = Container(color: Colors.white);
-
-    // updateToken.when(
-    //     data: (_) {},
-    //     error: (_, __) {
-    //       home = WelcomeWidget();
-    //     },
-    //     loading: () {});
 
     tokenProvider.when(
       data: (user) {
@@ -89,13 +82,6 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
       theme: ThemeData(
         brightness: Brightness.light,
         primarySwatch: Colors.orange,
-        // primaryColor: Colors.orange,
-        // buttonTheme: ButtonThemeData(
-        //   buttonColor: Colors.orangeAccent,
-        //   shape: RoundedRectangleBorder(
-        //     borderRadius: BorderRadius.circular(8),
-        //   ),
-        // ),
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.orange,
           primary: Color.fromARGB(255, 255, 168, 88),

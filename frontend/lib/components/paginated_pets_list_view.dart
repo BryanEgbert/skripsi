@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/provider/list_data_provider.dart';
-import 'package:frontend/provider/pet_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
 
 class PaginatedPetsListView extends ConsumerStatefulWidget {

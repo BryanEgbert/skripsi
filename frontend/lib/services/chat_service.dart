@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/response/list_response.dart';
@@ -14,7 +14,8 @@ class ChatService implements IChatService {
   @override
   Future<Result<ListData<ChatMessage>>> getUnreadChatMessages(String token) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -23,7 +24,7 @@ class ChatService implements IChatService {
       ));
 
       final res = await dio.get(
-        "$host/chat/unread",
+        "http://$host/chat/unread",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",

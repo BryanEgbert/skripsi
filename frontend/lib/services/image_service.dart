@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/response/upload_image_response.dart';
 
@@ -13,7 +13,8 @@ class ImageService implements IImageService {
   @override
   Future<Result<UploadImageResponse>> upload(String token, File image) {
     return makeRequest(201, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -29,7 +30,7 @@ class ImageService implements IImageService {
       });
 
       final res = await dio.post(
-        "$host/image",
+        "http://$host/image",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",

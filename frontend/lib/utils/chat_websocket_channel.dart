@@ -1,9 +1,8 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/utils/refresh_token.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ChatWebsocketChannel {
   static final ChatWebsocketChannel _singleton =
@@ -33,7 +32,7 @@ class ChatWebsocketChannel {
   }
 
   Future<IOWebSocketChannel> get instance async {
-    final String host = dotenv.env["WS_HOST"]!;
+    final String host = FirebaseRemoteConfig.instance.getString("backend_host");
 
     TokenResponse? token;
     try {
@@ -42,7 +41,8 @@ class ChatWebsocketChannel {
       return Future.error(jwtExpired);
     }
 
-    _instance ??= IOWebSocketChannel.connect(Uri.parse("$host/chat"), headers: {
+    _instance ??=
+        IOWebSocketChannel.connect(Uri.parse("ws://$host/chat"), headers: {
       "Authorization": "Bearer ${token.accessToken}",
     });
     return _instance!;

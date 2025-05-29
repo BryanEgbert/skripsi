@@ -26,6 +26,7 @@ class SavedAddressState extends _$SavedAddressState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
 
     final userService = UserService();
@@ -46,6 +47,7 @@ class SavedAddressState extends _$SavedAddressState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
 
     final userService = UserService();
@@ -66,6 +68,7 @@ class SavedAddressState extends _$SavedAddressState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
 
     final userService = UserService();

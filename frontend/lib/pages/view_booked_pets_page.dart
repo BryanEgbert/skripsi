@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
-import 'package:frontend/constants.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/user.dart';

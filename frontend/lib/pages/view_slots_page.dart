@@ -4,7 +4,6 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/model/reduced_slot.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/pet_daycare_provider.dart';
 import 'package:frontend/utils/formatter.dart';

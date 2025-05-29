@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -10,9 +9,7 @@ import 'package:frontend/components/chat_bubble.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
-import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
-import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/model/send_message.dart';
 import 'package:frontend/pages/send_image_page.dart';
 import 'package:frontend/pages/welcome.dart';

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
 import 'package:frontend/model/response/list_response.dart';
@@ -18,7 +18,8 @@ class TransactionService implements ITransactionService {
   Future<Result<ListData<Transaction>>> getTransactions(
       String token, OffsetPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -27,7 +28,7 @@ class TransactionService implements ITransactionService {
       ));
 
       var res = await dio.get(
-        "$host/transaction",
+        "http://$host/transaction",
         queryParameters: pagination.toMap(),
         options: Options(
           headers: {
@@ -43,7 +44,8 @@ class TransactionService implements ITransactionService {
   @override
   Future<Result<Transaction>> getTransaction(String token, int transactionId) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -52,7 +54,7 @@ class TransactionService implements ITransactionService {
       ));
 
       var res = await dio.get(
-        "$host/transaction/$transactionId",
+        "http://$host/transaction/$transactionId",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",

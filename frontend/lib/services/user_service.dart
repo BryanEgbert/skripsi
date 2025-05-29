@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
@@ -37,7 +37,8 @@ class UserService implements IUserService {
   @override
   Future<Result<void>> deleteUser(String token) async {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -46,7 +47,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.delete(
-        "$host/users",
+        "http://$host/users",
         options: Options(headers: {"Authorization": "Bearer $token"}),
       );
 
@@ -57,7 +58,8 @@ class UserService implements IUserService {
   @override
   Future<Result<User>> getUser(String token, int id) async {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -66,7 +68,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.get(
-        "$host/users/$id",
+        "http://$host/users/$id",
         options: Options(
             headers: {HttpHeaders.authorizationHeader: "Bearer $token"}),
       );
@@ -80,7 +82,8 @@ class UserService implements IUserService {
       String token, CursorBasedPaginationQueryParams pagination,
       [int specialtyId = 0]) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -94,7 +97,7 @@ class UserService implements IUserService {
       };
 
       final res = await dio.get(
-        "$host/users/vets",
+        "http://$host/users/vets",
         queryParameters: queryParams,
         options: Options(
             headers: {HttpHeaders.authorizationHeader: "Bearer $token"}),
@@ -107,7 +110,8 @@ class UserService implements IUserService {
   @override
   Future<Result<void>> updateUser(String token, UpdateUserRequest reqBody) {
     return makeRequest(204, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -126,7 +130,7 @@ class UserService implements IUserService {
       FormData formData = FormData.fromMap(reqMap);
 
       final response = await dio.put(
-        "$host/users",
+        "http://$host/users",
         options: Options(
           headers: {
             Headers.contentTypeHeader: Headers.multipartFormDataContentType,
@@ -144,7 +148,8 @@ class UserService implements IUserService {
   Future<Result<void>> addSavedAddress(
       String token, CreateSavedAddressRequest req) {
     return makeRequest(201, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -153,7 +158,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.post(
-        "$host/saved-address",
+        "http://$host/saved-address",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",
@@ -170,7 +175,8 @@ class UserService implements IUserService {
   @override
   Future<Result<void>> deleteSavedAddress(String token, int addressId) {
     return makeRequest(204, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -179,7 +185,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.delete(
-        "$host/saved-address/$addressId",
+        "http://$host/saved-address/$addressId",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",
@@ -195,7 +201,8 @@ class UserService implements IUserService {
   Future<Result<void>> editSavedAddress(
       String token, CreateSavedAddressRequest req) {
     return makeRequest(201, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -204,7 +211,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.put(
-        "$host/saved-address",
+        "http://$host/saved-address",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",
@@ -222,7 +229,8 @@ class UserService implements IUserService {
   Future<Result<ListData<SavedAddress>>> getSavedAddress(
       String token, OffsetPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -231,7 +239,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.get(
-        "$host/saved-address",
+        "http://$host/saved-address",
         queryParameters: pagination.toMap(),
         options: Options(
           headers: {
@@ -247,7 +255,8 @@ class UserService implements IUserService {
   @override
   Future<Result<ListData<User>>> getUserChatList(String token) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -256,7 +265,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.get(
-        "$host/chat/user",
+        "http://$host/chat/user",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",
@@ -272,7 +281,8 @@ class UserService implements IUserService {
   Future<Result<ListData<ChatMessage>>> getChatMessages(
       String token, int receiverId) async {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -281,7 +291,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.get(
-        "$host/chat-messages",
+        "http://$host/chat-messages",
         queryParameters: {"receiver-id": receiverId},
         options: Options(
           headers: {
@@ -297,7 +307,8 @@ class UserService implements IUserService {
   @override
   Future<Result<void>> updateChatReads(String token, int receiverId) {
     return makeRequest(204, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -306,7 +317,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.patch(
-        "$host/chat/read",
+        "http://$host/chat/read",
         queryParameters: {"receiver-id": receiverId},
         options: Options(
           headers: {
@@ -322,7 +333,8 @@ class UserService implements IUserService {
   @override
   Future<Result<void>> updateDeviceToken(String token, String? deviceToken) {
     return makeRequest(204, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -331,7 +343,7 @@ class UserService implements IUserService {
       ));
 
       final res = await dio.patch(
-        "$host/users/device-token",
+        "http://$host/users/device-token",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
@@ -9,7 +10,6 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_saved_address_request.dart';
 import 'package:frontend/model/response/mapbox/retrieve_response.dart';
 import 'package:frontend/model/response/mapbox/suggest_response.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/saved_address_provider.dart';
 import 'package:frontend/services/location_service.dart';
 import 'package:frontend/utils/handle_error.dart';
@@ -32,8 +32,11 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
   final _addressController = TextEditingController();
 
   final _searchController = SearchController();
-  // TODO: change this on release
-  final _locationService = MockLocationService();
+
+  final ILocationService _locationService =
+      FirebaseRemoteConfig.instance.getBool("mock_location_service")
+          ? MockLocationService()
+          : LocationService();
 
   double _latitude = 0.0;
   double _longitude = 0.0;
@@ -44,9 +47,10 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
     _serviceEnabled = await Geolocator.isLocationServiceEnabled();
   }
 
-  // TODO: Function won't run if _notesController is empty
   void _submitForm() {
+    log("submitting form");
     if (ref.read(savedAddressStateProvider).isLoading) return;
+    log("getting past loading");
     if (!_formKey.currentState!.validate()) return;
     ref.read(savedAddressStateProvider.notifier).addSavedAddress(
           CreateSavedAddressRequest(
@@ -63,6 +67,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
   @override
   void initState() {
     super.initState();
+
     _getLocationService();
   }
 
@@ -70,7 +75,10 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
   Widget build(BuildContext context) {
     final savedAddressState = ref.watch(savedAddressStateProvider);
 
-    handleValue(savedAddressState, this);
+    log("savedAddressState: $savedAddressState");
+    handleValue(savedAddressState, this,
+        ref.read(savedAddressStateProvider.notifier).reset);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -188,7 +196,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                         controller.openView();
                       },
                       onTapOutside: (_) {
-                        controller.closeView(controller.text);
+                        // controller.closeView(controller.text);
                       },
                     );
                   },
@@ -250,33 +258,29 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                     }
                   },
                 ),
+                if (_searchController.text.isNotEmpty)
+                  Text(
+                    "Address: ${_addressController.text}",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                // TextFormField(
+                //   controller: _addressController,
+                //   validator: (value) => validateNotEmpty("Value", value),
+                //   maxLines: 6,
+                //   keyboardType: TextInputType.multiline,
+                //   decoration: InputDecoration(
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(8),
+                //     ),
+                //     labelText: "Address",
+                //     labelStyle: TextStyle(fontSize: 12),
+                //   ),
+                // ),
                 TextFormField(
-                  style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.black
-                        : Colors.white70,
-                  ),
-                  controller: _addressController,
-                  validator: (value) => validateNotEmpty("Value", value),
-                  maxLines: 6,
-                  keyboardType: TextInputType.multiline,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    labelText: "Address",
-                    labelStyle: TextStyle(fontSize: 12),
-                  ),
-                ),
-                TextFormField(
-                  style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.black
-                        : Colors.white70,
-                  ),
                   controller: _notesController,
                   key: Key("notes-input"),
                   keyboardType: TextInputType.multiline,
+                  maxLines: 6,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -288,7 +292,10 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: _submitForm,
+                  onPressed: () {
+                    log("button pressed");
+                    _submitForm();
+                  },
                   child: (!savedAddressState.isLoading)
                       ? Text(
                           "Add Address",

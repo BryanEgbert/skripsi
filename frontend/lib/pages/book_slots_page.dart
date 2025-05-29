@@ -16,7 +16,6 @@ import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/validator.dart';
-import 'package:intl/intl.dart';
 
 class BookSlotsPage extends ConsumerStatefulWidget {
   final int petDaycareId;
@@ -34,7 +33,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
   String? _startDate;
   String? _endDate;
 
-  List<Slot> _availableDates = [];
+  final List<Slot> _availableDates = [];
 
   final Map<int, bool> _petIdValue = {};
   final List<int> _petCategoryIds = [];
@@ -42,6 +41,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
   bool _usePickupService = false;
 
   SavedAddress? _savedAddress;
+  int _addressIndex = 0;
   int addressId = 0;
   String? _locationErrorText;
 
@@ -71,10 +71,11 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
   @override
   Widget build(BuildContext context) {
+    log("[BOOK PET DAYCARE] build");
     final savedAddress = ref.watch(savedAddressProvider());
     final slotState = ref.watch(slotStateProvider);
 
-    log("use pickup: $_usePickupService");
+    log("slotState: $slotState");
 
     handleValue(slotState, this, ref.read(slotStateProvider.notifier).reset);
 
@@ -128,11 +129,13 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                     await Navigator.of(context)
                                         .push(MaterialPageRoute(
                                   builder: (context) => SavedAddressPage(
-                                    selected: 1,
+                                    selected: _addressIndex,
                                   ),
-                                )) as SavedAddress;
+                                )) as int;
 
-                                _savedAddress = pickedAddress;
+                                setState(() {
+                                  _addressIndex = pickedAddress;
+                                });
                               } else {
                                 Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => AddSavedAddress(),
@@ -169,7 +172,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                     )
                                   else
                                     Text(
-                                      value.data[0].name,
+                                      value.data[_addressIndex].name,
                                       style: TextStyle(
                                         color: _usePickupService
                                             ? Theme.of(context).brightness ==
@@ -363,7 +366,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                         if (slotState.isLoading) return;
 
                         if (value.data.isNotEmpty) {
-                          _savedAddress ??= value.data[0];
+                          _savedAddress = value.data[_addressIndex];
                         }
 
                         _submitForm();

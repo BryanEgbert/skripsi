@@ -23,6 +23,7 @@ class SlotState extends _$SlotState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
 
     final service = SlotService();
@@ -50,6 +51,7 @@ class SlotState extends _$SlotState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
 
     final service = SlotService();
@@ -72,6 +74,7 @@ class SlotState extends _$SlotState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
 
     final service = SlotService();
@@ -94,6 +97,7 @@ class SlotState extends _$SlotState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
 
     final service = SlotService();

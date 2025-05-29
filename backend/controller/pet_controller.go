@@ -285,7 +285,7 @@ func (pc *PetController) DeletePet(c *gin.Context) {
 	if err := pc.petService.DeletePet(uint(petID), userID); err != nil {
 		if errors.Is(err, apputils.ErrOnlyOnePet) {
 			c.JSON(http.StatusForbidden, model.ErrorResponse{
-				Message: "You must have at least one pet",
+				Message: "You cannot delete the last remaining pet",
 				Error:   err.Error(),
 			})
 			return

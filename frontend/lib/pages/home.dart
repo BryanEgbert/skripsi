@@ -4,7 +4,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/components/error_text.dart';
+
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/response/list_response.dart';

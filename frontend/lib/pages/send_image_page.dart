@@ -60,7 +60,7 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
     final imageState = ref.watch(imageStateProvider);
 
     if (imageState.hasError &&
-        (imageState.valueOrNull == null || imageState.valueOrNull == 0) &&
+        (imageState.valueOrNull == null) &&
         !imageState.isLoading) {
       log("send image err");
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

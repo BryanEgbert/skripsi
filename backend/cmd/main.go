@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"os"
 
 	"github.com/BryanEgbert/skripsi/seeder"
@@ -47,5 +48,7 @@ func main() {
 		}
 	}
 
-	r.Run()
+	if err := r.Run(net.JoinHostPort(os.Getenv("HOST"), os.Getenv("PORT"))); err != nil {
+		log.Fatalf("Run err: %v", err)
+	}
 }

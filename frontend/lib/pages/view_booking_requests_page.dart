@@ -6,7 +6,6 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/pages/details/booking_request_details_page.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';

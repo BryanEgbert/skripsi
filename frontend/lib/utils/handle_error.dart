@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
@@ -74,8 +76,10 @@ void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
 
   if (providerValue.hasValue && !providerValue.isLoading) {
     if (providerValue.value == null) return;
-    if (providerValue is int) {
+    log("wahoo");
+    if (providerValue.value is int) {
       if (providerValue.value >= 200 && providerValue.value <= 400) {
+        log("show snackbar");
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
@@ -98,30 +102,9 @@ void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
 
           if (reset != null) reset();
         });
+      } else {
+        return;
       }
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-        var snackbar = SnackBar(
-          key: Key("success-message"),
-          content: Text(
-            "Operation completed successfully",
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
-          backgroundColor: Colors.green[800],
-        );
-
-        ScaffoldMessenger.of(context).showSnackBar(snackbar);
-
-        if (Navigator.of(context).canPop()) {
-          Navigator.of(context).pop();
-        }
-
-        if (reset != null) reset();
-      });
     }
   }
 }

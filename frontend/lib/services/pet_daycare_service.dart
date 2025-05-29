@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/model/coordinate.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
@@ -45,7 +45,8 @@ class PetDaycareService implements IPetDaycareService {
   Future<Result<PetDaycareDetails>> getById(
       String token, int petDaycareId, Coordinate coord) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       var dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -54,7 +55,7 @@ class PetDaycareService implements IPetDaycareService {
       ));
 
       final res = await dio.get(
-        "$host/daycare/$petDaycareId",
+        "http://$host/daycare/$petDaycareId",
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",
         }),
@@ -71,13 +72,14 @@ class PetDaycareService implements IPetDaycareService {
       PetDaycareFilters filters,
       OffsetPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       var res = await Dio(BaseOptions(
         validateStatus: (status) {
           return status != null; // Accept all HTTP status codes
         },
-      )).get("$host/daycare", queryParameters: {
+      )).get("http://$host/daycare", queryParameters: {
         ...pagination.toMap(),
         ...filters.toMap(),
         ...coord.toMap(),
@@ -90,7 +92,8 @@ class PetDaycareService implements IPetDaycareService {
   @override
   Future<Result<PetDaycareDetails>> getMy(String token) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       var dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -99,7 +102,7 @@ class PetDaycareService implements IPetDaycareService {
       ));
 
       final res = await dio.get(
-        "$host/daycare/my",
+        "http://$host/daycare/my",
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",
         }),
@@ -113,7 +116,8 @@ class PetDaycareService implements IPetDaycareService {
   Future<Result<void>> updatePetDaycare(
       String token, int petDaycareId, UpdatePetDaycareRequest req) {
     return makeRequest(204, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       var dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -134,7 +138,7 @@ class PetDaycareService implements IPetDaycareService {
       FormData formData = FormData.fromMap(mapReq);
 
       final res = await dio.put(
-        "$host/daycare/$petDaycareId",
+        "http://$host/daycare/$petDaycareId",
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",
           Headers.contentTypeHeader: Headers.multipartFormDataContentType,
@@ -150,7 +154,8 @@ class PetDaycareService implements IPetDaycareService {
   Future<Result<ListData<BookingRequest>>> getBookingRequests(
       String token, OffsetPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       var dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -159,7 +164,7 @@ class PetDaycareService implements IPetDaycareService {
       ));
 
       final res = await dio.get(
-        "$host/daycare/booking-requests",
+        "http://$host/daycare/booking-requests",
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",
         }),
@@ -173,7 +178,8 @@ class PetDaycareService implements IPetDaycareService {
   Future<Result<void>> editSlotCount(
       String token, int slotId, ReduceSlotRequest req) {
     return makeRequest(201, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       var dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -181,7 +187,7 @@ class PetDaycareService implements IPetDaycareService {
         },
       ));
 
-      final res = await dio.post("$host/daycare/slot/$slotId",
+      final res = await dio.post("http://$host/daycare/slot/$slotId",
           options: Options(headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",
             HttpHeaders.contentTypeHeader: "application/json",
@@ -196,7 +202,8 @@ class PetDaycareService implements IPetDaycareService {
   Future<Result<ListData<User>>> getBookedPetOwners(
       String token, OffsetPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       var dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -205,7 +212,7 @@ class PetDaycareService implements IPetDaycareService {
       ));
 
       final res = await dio.get(
-        "$host/daycare/booked-pet-owners",
+        "http://$host/daycare/booked-pet-owners",
         queryParameters: pagination.toMap(),
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
@@ -7,8 +5,8 @@ import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/add_review_modal.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/transaction.dart';
-import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/pages/details/transaction_details_page.dart';
+import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
@@ -109,7 +107,6 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
   Widget _buildBookingHistoryList() {
     final slotState = ref.watch(slotStateProvider);
 
-    // TODO: add reset function to provider
     handleError(slotState, context, ref.read(slotStateProvider.notifier).reset);
 
     return RefreshIndicator(

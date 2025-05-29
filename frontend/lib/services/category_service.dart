@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/pet_category.dart';
@@ -18,7 +18,8 @@ class CategoryService implements ICategoryService {
   @override
   Future<Result<ListData<Lookup>>> getVetSpecialties() async {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -26,7 +27,7 @@ class CategoryService implements ICategoryService {
         },
       ));
 
-      var res = await dio.get("$host/vet-specialties");
+      var res = await dio.get("http://$host/vet-specialties");
 
       return res;
     }, (res) => ListData.fromJson(res, Lookup.fromJson));
@@ -35,7 +36,8 @@ class CategoryService implements ICategoryService {
   @override
   Future<Result<ListData<SizeCategory>>> getSizeCategories() async {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -43,7 +45,7 @@ class CategoryService implements ICategoryService {
         },
       ));
 
-      var res = await dio.get("$host/size-categories");
+      var res = await dio.get("http://$host/size-categories");
 
       return res;
     }, (res) => ListData<SizeCategory>.fromJson(res, SizeCategory.fromJson));
@@ -52,14 +54,15 @@ class CategoryService implements ICategoryService {
   @override
   Future<Result<ListData<PetCategory>>> getPetCategories() async {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
           return status != null; // Accept all HTTP status codes
         },
       ));
 
-      var res = await dio.get("$host/pet-categories");
+      var res = await dio.get("http://$host/pet-categories");
 
       return res;
     }, (res) => ListData.fromJson(res, PetCategory.fromJson));
@@ -68,7 +71,8 @@ class CategoryService implements ICategoryService {
   @override
   Future<Result<ListData<Lookup>>> getDailyPlaytime() {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -76,7 +80,7 @@ class CategoryService implements ICategoryService {
         },
       ));
 
-      var res = await dio.get("$host/daily-playtimes");
+      var res = await dio.get("http://$host/daily-playtimes");
 
       return res;
     }, (res) => ListData.fromJson(res, Lookup.fromJson));
@@ -85,7 +89,8 @@ class CategoryService implements ICategoryService {
   @override
   Future<Result<ListData<Lookup>>> getDailyWalks() {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -93,7 +98,7 @@ class CategoryService implements ICategoryService {
         },
       ));
 
-      var res = await dio.get("$host/daily-walks");
+      var res = await dio.get("http://$host/daily-walks");
 
       return res;
     }, (res) => ListData.fromJson(res, Lookup.fromJson));

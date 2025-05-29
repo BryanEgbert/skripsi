@@ -6,7 +6,6 @@ import 'package:frontend/components/app_bar_back_button.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/model/reviews.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
@@ -25,7 +24,7 @@ class RatingsPage extends ConsumerStatefulWidget {
 class _RatingsPageState extends ConsumerState<RatingsPage> {
   final int _pageSize = 10;
   final ScrollController _scrollController = ScrollController();
-  List<Reviews> _records = [];
+  final List<Reviews> _records = [];
 
   int _page = 1;
   bool _isFetching = false;

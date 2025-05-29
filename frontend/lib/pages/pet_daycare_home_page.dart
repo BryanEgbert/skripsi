@@ -15,7 +15,6 @@ import 'package:frontend/provider/message_tracker_provider.dart';
 import 'package:frontend/provider/user_provider.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:frontend/utils/handle_error.dart';
-import 'package:web_socket_channel/io.dart';
 
 class PetDaycareHomePage extends ConsumerStatefulWidget {
   const PetDaycareHomePage({super.key});

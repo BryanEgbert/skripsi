@@ -1,5 +1,7 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
@@ -21,7 +23,9 @@ class AuthService implements IAuthService {
   @override
   Future<Result<TokenResponse>> login(String email, String password) async {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
+      log("host: $host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -30,7 +34,7 @@ class AuthService implements IAuthService {
       ));
 
       var res = await dio.post(
-        "$host/login",
+        "http://$host/login",
         options: Options(contentType: Headers.jsonContentType),
         data: {
           "email": email,
@@ -45,7 +49,8 @@ class AuthService implements IAuthService {
   @override
   Future<Result<TokenResponse>> refreshToken(String refreshToken) async {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -54,7 +59,7 @@ class AuthService implements IAuthService {
       ));
 
       var res = await dio.post(
-        "$host/refresh",
+        "http://$host/refresh",
         options: Options(
           contentType: Headers.jsonContentType,
         ),
@@ -68,7 +73,8 @@ class AuthService implements IAuthService {
   @override
   Future<Result<TokenResponse>> register(CreateUserRequest reqBody) async {
     return makeRequest(201, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -85,7 +91,7 @@ class AuthService implements IAuthService {
       }
 
       final response = await dio.post(
-        "$host/users",
+        "http://$host/users",
         options: Options(
           headers: {
             Headers.contentTypeHeader: Headers.multipartFormDataContentType,
@@ -102,7 +108,8 @@ class AuthService implements IAuthService {
   Future<Result<TokenResponse>> createPetOwner(CreateUserRequest userReq,
       PetRequest petReq, VaccinationRecordRequest vaccineReq) {
     return makeRequest(201, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -137,7 +144,7 @@ class AuthService implements IAuthService {
       FormData formData = FormData.fromMap(req);
 
       final response = await dio.post(
-        "$host/pet-owner",
+        "http://$host/pet-owner",
         options: Options(
           headers: {
             Headers.contentTypeHeader: Headers.multipartFormDataContentType,
@@ -154,7 +161,8 @@ class AuthService implements IAuthService {
   Future<Result<TokenResponse>> createPetDaycareProvider(
       CreateUserRequest userReq, CreatePetDaycareRequest petDaycareReq) {
     return makeRequest(201, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -176,7 +184,7 @@ class AuthService implements IAuthService {
       FormData formData = FormData.fromMap(req);
 
       final response = await dio.post(
-        "$host/pet-daycare-provider",
+        "http://$host/pet-daycare-provider",
         options: Options(
           headers: {
             Headers.contentTypeHeader: Headers.multipartFormDataContentType,

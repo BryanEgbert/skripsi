@@ -210,10 +210,6 @@ class _TransactionDetailsPageState
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.light
-                                          ? Colors.black
-                                          : Colors.white70,
                                     ),
                                   ),
                                   Text(

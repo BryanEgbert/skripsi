@@ -39,7 +39,7 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
 
     setState(() => _isFetching = true);
 
-    ref.read(savedAddressProvider(_page, 10).future).then((newData) {
+    ref.read(savedAddressProvider(_page, 100).future).then((newData) {
       if (newData.data.isNotEmpty) {
         setState(() {
           _records.addAll(newData.data);
@@ -58,7 +58,7 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
   @override
   void initState() {
     super.initState();
-    _selectedIndex = widget.selected == null ? 0 : widget.selected! - 1;
+    _selectedIndex = widget.selected == null ? 0 : widget.selected!;
     _scrollController.addListener(_onScroll);
     _fetchMoreData();
   }
@@ -93,7 +93,7 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pop(_records[_selectedIndex]);
+              Navigator.of(context).pop(_selectedIndex);
             },
             icon: Icon(
               Icons.save,
@@ -146,8 +146,8 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
                                   ? Theme.of(context).brightness ==
                                           Brightness.light
                                       ? Constants.secondaryBackgroundColor
-                                      : null
-                                  : Colors.white,
+                                      : Colors.deepOrange[900]
+                                  : null,
                               child: Padding(
                                 padding: const EdgeInsets.all(12.0),
                                 child: Column(
@@ -184,9 +184,13 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
                                           Text(
                                             "Selected",
                                             style: TextStyle(
-                                                fontSize: 12,
-                                                color:
-                                                    Constants.primaryTextColor),
+                                              fontSize: 12,
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.light
+                                                  ? Constants.primaryTextColor
+                                                  : Colors.orange[50],
+                                            ),
                                           )
                                         ],
                                       ),

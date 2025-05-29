@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/signup_guide_text.dart';
@@ -40,8 +41,10 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
   String? _error;
 
   final _sessionId = Uuid().v4();
-  // TODO: change this on release
-  final _locationService = MockLocationService();
+  final ILocationService _locationService =
+      FirebaseRemoteConfig.instance.getBool("mock_location_service")
+          ? MockLocationService()
+          : LocationService();
 
   String _addLeadingZeroIfNeeded(int value) {
     if (value < 10) {

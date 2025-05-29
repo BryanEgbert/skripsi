@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/pagination_query_params.dart';
 import 'package:frontend/model/request/create_review_request.dart';
@@ -21,7 +21,8 @@ class ReviewService implements IReviewService {
   Future<Result<void>> createReview(
       String token, int petDaycareId, CreateReviewRequest reqBody) {
     return makeRequest(201, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -30,7 +31,7 @@ class ReviewService implements IReviewService {
       ));
 
       var res = await dio.post(
-        "$host/$petDaycareId/reviews",
+        "http://$host/$petDaycareId/reviews",
         options: Options(
           headers: {
             "Content-Type": "application/json; charset=UTF-8",
@@ -47,7 +48,8 @@ class ReviewService implements IReviewService {
   @override
   Future<void> deleteReview(String token, int petDaycareId) {
     return makeRequest(204, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -56,7 +58,7 @@ class ReviewService implements IReviewService {
       ));
 
       var res = await dio.delete(
-        "$host/$petDaycareId/reviews",
+        "http://$host/$petDaycareId/reviews",
         options: Options(
           headers: {"Authorization": "Bearer $token"},
         ),
@@ -70,7 +72,8 @@ class ReviewService implements IReviewService {
   Future<Result<ListData<Reviews>>> getReviews(
       String token, int petDaycareId, OffsetPaginationQueryParams pagination) {
     return makeRequest(200, () async {
-      final String host = dotenv.env["HOST"]!;
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
 
       var dio = Dio(BaseOptions(
         validateStatus: (status) {
@@ -79,7 +82,7 @@ class ReviewService implements IReviewService {
       ));
 
       final res = await dio.get(
-        "$host/daycare/$petDaycareId/review",
+        "http://$host/daycare/$petDaycareId/review",
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",

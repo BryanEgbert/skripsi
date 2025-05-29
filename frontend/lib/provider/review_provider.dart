@@ -26,6 +26,7 @@ class ReviewState extends _$ReviewState {
       token = await refreshToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
+      return;
     }
 
     final service = ReviewService();
