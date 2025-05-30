@@ -31,7 +31,8 @@ class _AddVaccinationRecordPageState
   String? _imageError;
 
   Future<void> _pickImage() async {
-    final photo = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final photo = await ImagePicker().pickImage(
+        source: ImageSource.gallery, preferredCameraDevice: CameraDevice.rear);
 
     if (photo != null) {
       setState(() {

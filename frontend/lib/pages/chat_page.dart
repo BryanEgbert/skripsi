@@ -16,6 +16,7 @@ import 'package:frontend/provider/database_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:frontend/utils/handle_error.dart';
+import 'package:frontend/utils/permission.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:web_socket_channel/io.dart';
@@ -39,6 +40,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   bool _isSocketReady = false;
 
   Future<void> _pickImage(ImageSource source) async {
+    if (source == ImageSource.camera) {
+      bool isAccessGranted = await ensureCameraPermission();
+      if (!isAccessGranted) {
+        return;
+      }
+    }
     final photo = await ImagePicker().pickImage(source: source);
     if (mounted) {
       Navigator.of(context)

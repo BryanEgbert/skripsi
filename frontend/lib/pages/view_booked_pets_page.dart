@@ -14,6 +14,7 @@ import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/pages/send_image_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/message_tracker_provider.dart';
+import 'package:frontend/utils/permission.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ViewBookedPetsPage extends ConsumerStatefulWidget {
@@ -334,15 +335,18 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
           itemBuilder: (context) {
             return [
               PopupMenuItem(
-                child: Text("Log activity"),
+                child: Text("Log Pet Activity"),
                 onTap: () async {
+                  bool isAccessGranted = await ensureCameraPermission();
+                  if (!isAccessGranted) {
+                    return;
+                  }
                   final photo =
                       await ImagePicker().pickImage(source: ImageSource.camera);
                   if (mounted) {
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => SendImagePage(
                         image: File(photo!.path),
-                        // channel: widget.channel,
                         receiverId: item.owner.id,
                       ),
                     ));
