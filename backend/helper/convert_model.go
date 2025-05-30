@@ -186,6 +186,14 @@ func ConvertTransactionToTransactionDTO(val model.BookedSlot) model.BookedSlotDT
 		EndDate:    val.EndDate.Format(time.RFC3339),
 		// BookedPet:  ConvertPetsToDto(val.Pet),
 		BookedSlot: ConvertBookedSlotToBookingRequest(val),
+		IsReviewed: false,
+	}
+
+	for _, review := range val.Daycare.Reviews {
+		if review.UserID == val.UserID {
+			transactionDTO.IsReviewed = true
+			break
+		}
 	}
 
 	if val.Address.Address != "" {
@@ -217,6 +225,14 @@ func ConvertTransactionsToTransactionDTO(transactions []model.BookedSlot) []mode
 			EndDate:    val.EndDate.Format(time.RFC3339),
 			// BookedPet:  ConvertPetsToDto(val.Pet),
 			BookedSlot: ConvertBookedSlotToBookingRequest(val),
+			IsReviewed: false,
+		}
+
+		for _, review := range val.Daycare.Reviews {
+			if review.UserID == val.UserID {
+				transactionDTO.IsReviewed = true
+				break
+			}
 		}
 
 		if val.Address.Address != "" {

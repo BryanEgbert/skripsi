@@ -218,11 +218,22 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                             child: PaginatedPetsListView(
                               pageSize: Constants.pageSize,
                               buildBody: (pet) {
+                                bool isPetVaccinated = true;
+                                // widget.petDaycare.mustBeVaccinated &&
+                                //     pet.isVaccinated;
+                                if (widget.petDaycare.mustBeVaccinated) {
+                                  isPetVaccinated = pet.isVaccinated;
+                                }
+                                bool isPetCategoryMatching = false;
+                                for (var price in widget.petDaycare.pricings) {
+                                  if (price.petCategory.id == pet.id) {
+                                    isPetCategoryMatching = true;
+                                  }
+                                }
                                 return CheckboxListTile(
-                                  enabled:
-                                      (widget.petDaycare.mustBeVaccinated &&
-                                              pet.isVaccinated) ||
-                                          true,
+                                  enabled: (isPetVaccinated &&
+                                          isPetCategoryMatching) ||
+                                      true,
                                   value: _petIdValue[pet.id] ?? false,
                                   onChanged: (value) {
                                     setState(() {
@@ -292,6 +303,8 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
                               final dateRange = await showDateRangePicker(
                                 context: context,
+                                helpText:
+                                    "Please select the available date range",
                                 firstDate: DateTime.now(),
                                 lastDate:
                                     DateTime.now().add(Duration(days: 365)),
@@ -374,7 +387,9 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                         _submitForm();
                       },
                       child: (slotState.isLoading)
-                          ? CircularProgressIndicator()
+                          ? CircularProgressIndicator(
+                              color: Colors.white,
+                            )
                           : Text(
                               "Book Slot",
                               style: TextStyle(color: Colors.white),
@@ -385,9 +400,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
               ),
             ),
           _ => Center(
-              child: CircularProgressIndicator(
-                color: Constants.primaryTextColor,
-              ),
+              child: CircularProgressIndicator.adaptive(),
             )
         });
   }

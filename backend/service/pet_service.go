@@ -94,11 +94,14 @@ func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 	petDTO := model.PetDTO{
 		ID:          pet.ID,
 		Name:        pet.Name,
-		ImageUrl:    *pet.ImageUrl,
 		Status:      pet.Status,
 		Neutered:    pet.Neutered,
 		PetCategory: helper.ConvertPetCategoryToDTO(pet.PetCategory),
 		Owner:       helper.ConvertUserToDTO(pet.Owner),
+	}
+
+	if pet.ImageUrl != nil {
+		petDTO.ImageUrl = *pet.ImageUrl
 	}
 
 	return &petDTO, nil

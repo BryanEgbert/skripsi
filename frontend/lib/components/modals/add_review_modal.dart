@@ -100,7 +100,7 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
           errorText: error.toString(),
           onRefresh: () => ref.refresh(getMyUserProvider.future),
         ),
-      AsyncData(:final value) => Padding(
+      AsyncData() => Padding(
           padding: const EdgeInsets.fromLTRB(12.0, 24, 12, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
   bool _isDateAdministeredFilled = false;
   DateTime _dateAdministered = DateTime.now();
 
-  Future<void> _pickImage() async {
+  Future<void> _pickPetImage() async {
     final photo = await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (photo != null) {
@@ -49,7 +50,18 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
     }
   }
 
+  Future<void> _pickVaccinationRecordImage() async {
+    final photo = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (photo != null) {
+      setState(() {
+        _vaccinationPhoto = File(photo.path);
+      });
+    }
+  }
+
   void _submitForm() {
+    if (ref.read(petStateProvider).isLoading) return;
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -70,6 +82,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
   @override
   Widget build(BuildContext context) {
     final petState = ref.watch(petStateProvider);
+    log("petState: $petState");
 
     handleValue(petState, this, ref.read(petStateProvider.notifier).reset);
 
@@ -121,7 +134,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                     ),
                   ),
                   ProfileImagePicker(
-                    onTap: _pickImage,
+                    onTap: _pickPetImage,
                     image: _petProfilePicture,
                   ),
                   TextFormField(
@@ -257,7 +270,11 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                   ),
                   ElevatedButton(
                     onPressed: _submitForm,
-                    child: const Text("Add Pet"),
+                    child: (!ref.read(petStateProvider).isLoading)
+                        ? Text("Add Pet")
+                        : CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
                   ),
                 ],
               ),
@@ -270,14 +287,20 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
 
   Widget _vaccineRecordImagePicker() {
     return GestureDetector(
-      onTap: _pickImage,
+      onTap: _pickVaccinationRecordImage,
       child: _vaccinationPhoto == null
           ? Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.grey
+                      : Colors.white60,
+                ),
                 borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.white
+                    : Colors.transparent,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

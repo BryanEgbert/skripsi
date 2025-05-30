@@ -18,6 +18,7 @@ class Transaction with _$Transaction {
     required String endDate,
     required BookingRequest bookedSlot,
     required BookedSlotAddress? addressInfo,
+    required bool isReviewed,
   }) = _Transaction;
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>

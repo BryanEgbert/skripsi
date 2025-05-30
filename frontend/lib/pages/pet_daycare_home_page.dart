@@ -130,6 +130,7 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
       // ViewSlotsPage(),
       PetDaycareDetailsPage.my(),
     ];
+
     return Scaffold(
       key: const Key("home"),
       body: pages[_selectedIndex],

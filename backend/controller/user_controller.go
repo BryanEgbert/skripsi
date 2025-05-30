@@ -145,7 +145,7 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, model.TokenResponse{
 		UserID:       createdUser.UserID,
-		RoleID:       createdUser.RoleID,
+		RoleID:       2,
 		AccessToken:  createdUser.AccessToken,
 		RefreshToken: createdUser.RefreshToken,
 		ExpiryDate:   createdUser.ExpiryDate,

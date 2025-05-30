@@ -441,7 +441,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
             validator: (value) => validatePriceInput(enabled, value),
           ),
         ),
-        Text("/"),
+        Text("per"),
         Expanded(
             child: TextFormField(
           style: TextStyle(

@@ -20,6 +20,7 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
           ? null
           : BookedSlotAddress.fromJson(
               json['addressInfo'] as Map<String, dynamic>),
+      isReviewed: json['isReviewed'] as bool,
     );
 
 Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
@@ -31,4 +32,5 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'endDate': instance.endDate,
       'bookedSlot': instance.bookedSlot,
       'addressInfo': instance.addressInfo,
+      'isReviewed': instance.isReviewed,
     };

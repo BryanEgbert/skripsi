@@ -119,6 +119,7 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
 
   @override
   Widget build(BuildContext context) {
+    log("[VET PAGE] build");
     final chatList = ref.watch(getUserChatListProvider);
     final tracker = ref.watch(vetChatListTrackerProvider);
 
@@ -155,9 +156,9 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
                   },
                   child: ListView.builder(
                     physics: AlwaysScrollableScrollPhysics(),
-                    itemCount: value.data.length,
+                    itemCount: value.data.toSet().toList().length,
                     itemBuilder: (context, index) {
-                      User item = value.data.elementAt(index);
+                      User item = value.data.toSet().toList().elementAt(index);
                       int unreadCount = _messages
                           .where(
                             (element) => element.senderId == item.id,

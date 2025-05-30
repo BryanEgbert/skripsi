@@ -291,7 +291,8 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                       style: TextStyle(fontSize: 12),
                                     ),
                                   )
-                                else if (_records[index].status.id == 4)
+                                else if (_records[index].status.id == 4 &&
+                                    !_records[index].isReviewed)
                                   FilledButton(
                                     onPressed: () async {
                                       await showModalBottomSheet(

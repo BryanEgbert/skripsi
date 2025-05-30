@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
+import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
@@ -152,79 +153,100 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
           ? Center(
               child: CircularProgressIndicator.adaptive(),
             )
-          : RefreshIndicator.adaptive(
-              onRefresh: () async {
-                ref.read(getUserChatListProvider.future).then((newData) {
-                  setState(() {
-                    users = newData.data.toSet();
-                  });
-                }).catchError((e) {
-                  setState(() {
-                    _error = e;
-                  });
-                  // if (!mounted) return;
-                  // handleError(
-                  //   AsyncValue.error(_error.toString(), StackTrace.current),
-                  //   context,
-                  // );
-                });
-              },
-              child: ListView.builder(
-                physics: AlwaysScrollableScrollPhysics(),
-                itemCount: users.length,
-                itemBuilder: (context, index) {
-                  log("[PET OWNER CHAT PAGE] unreadMessages: ${_unreadMessages.length}");
-                  var item = users.elementAt(index);
-                  var unreadCount = _unreadMessages
-                      .where(
-                        (element) => element.senderId == item.id,
-                      )
-                      .length;
+          : (users.length == 0)
+              ? ErrorText(
+                  errorText: "Chat history will appear here",
+                  onRefresh: () async {
+                    ref.read(getUserChatListProvider.future).then((newData) {
+                      setState(() {
+                        users = newData.data.toSet();
+                      });
+                    }).catchError((e) {
+                      setState(() {
+                        _error = e;
+                      });
+                      // if (!mounted) return;
+                      // handleError(
+                      //   AsyncValue.error(_error.toString(), StackTrace.current),
+                      //   context,
+                      // );
+                    });
+                  })
+              : RefreshIndicator.adaptive(
+                  onRefresh: () async {
+                    ref.read(getUserChatListProvider.future).then((newData) {
+                      setState(() {
+                        users = newData.data.toSet();
+                      });
+                    }).catchError((e) {
+                      setState(() {
+                        _error = e;
+                      });
+                      // if (!mounted) return;
+                      // handleError(
+                      //   AsyncValue.error(_error.toString(), StackTrace.current),
+                      //   context,
+                      // );
+                    });
+                  },
+                  child: ListView.builder(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      log("[PET OWNER CHAT PAGE] unreadMessages: ${_unreadMessages.length}");
+                      var item = users.elementAt(index);
+                      var unreadCount = _unreadMessages
+                          .where(
+                            (element) => element.senderId == item.id,
+                          )
+                          .length;
 
-                  return ListTile(
-                    onTap: () async {
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ChatPage(userId: item.id),
+                      return ListTile(
+                        onTap: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ChatPage(userId: item.id),
+                            ),
+                          );
+
+                          ref
+                              .read(getUnreadChatMessagesProvider.future)
+                              .then((newData) {
+                            setState(() {
+                              _unreadMessages = newData.data;
+                            });
+                          });
+                          ref
+                              .read(messageTrackerProvider.notifier)
+                              .shouldReload();
+                          ref
+                              .read(petOwnerChatListTrackerProvider.notifier)
+                              .shouldReload();
+                        },
+                        leading: DefaultCircleAvatar(imageUrl: item.imageUrl),
+                        title: Text(
+                          item.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Constants.primaryTextColor,
+                          ),
+                        ),
+                        trailing: Badge.count(
+                          count: unreadCount,
+                          isLabelVisible: unreadCount != 0,
+                          backgroundColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.red[100]
+                                  : null,
+                          child: Icon(
+                            Icons.chat,
+                            color: Colors.orange,
+                          ),
                         ),
                       );
-
-                      ref
-                          .read(getUnreadChatMessagesProvider.future)
-                          .then((newData) {
-                        setState(() {
-                          _unreadMessages = newData.data;
-                        });
-                      });
-                      ref.read(messageTrackerProvider.notifier).shouldReload();
-                      ref
-                          .read(petOwnerChatListTrackerProvider.notifier)
-                          .shouldReload();
                     },
-                    leading: DefaultCircleAvatar(imageUrl: item.imageUrl),
-                    title: Text(
-                      item.name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Constants.primaryTextColor,
-                      ),
-                    ),
-                    trailing: Badge.count(
-                      count: unreadCount,
-                      isLabelVisible: unreadCount != 0,
-                      backgroundColor:
-                          Theme.of(context).brightness == Brightness.dark
-                              ? Colors.red[100]
-                              : null,
-                      child: Icon(
-                        Icons.chat,
-                        color: Colors.orange,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+                  ),
+                ),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/response/token_response.dart';
+import 'package:frontend/pages/vet_main_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/category_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
@@ -30,18 +31,18 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
 
     handleError(auth, context, ref.read(authProvider.notifier).reset);
 
-    // if (auth.hasValue && !auth.hasError && !auth.isLoading) {
-    //   if (auth.value != null) {
-    //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //       Navigator.of(context).pushAndRemoveUntil(
-    //         MaterialPageRoute(
-    //           builder: (context) => VetMainPage(),
-    //         ),
-    //         (route) => false,
-    //       );
-    //     });
-    //   }
-    // }
+    if (auth.hasValue && !auth.hasError && !auth.isLoading) {
+      if (auth.value != null) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => VetMainPage(),
+            ),
+            (route) => false,
+          );
+        });
+      }
+    }
 
     return Scaffold(
         appBar: AppBar(

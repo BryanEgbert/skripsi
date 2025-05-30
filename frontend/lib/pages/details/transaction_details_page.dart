@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/components/modals/add_review_modal.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/model/transaction.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
@@ -77,12 +79,7 @@ class _TransactionDetailsPageState
                 chipColor = Color(0XFFFFD7D7);
               }
 
-              for (var pet in value.bookedSlot.petCount) {
-                var pricing = value.petDaycare.pricings
-                    .where((e) => e.petCategory.id == pet.petCategory.id)
-                    .first;
-                totalPrice += pricing.price * pet.total;
-              }
+              totalPrice = _calculatePrice(value, totalPrice);
               return SafeArea(
                 child: Column(
                   spacing: 8,
@@ -375,6 +372,28 @@ class _TransactionDetailsPageState
                             ),
                           ),
                         ],
+                      )
+                    else if (value.status.id == 4 && !value.isReviewed)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  await showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) =>
+                                        AddReviewModal(value.petDaycare.id),
+                                  );
+                                },
+                                child: Text(
+                                  "Give Review",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              )),
+                        ],
                       ),
                   ],
                 ),
@@ -382,5 +401,22 @@ class _TransactionDetailsPageState
             }),
           _ => Center(child: CircularProgressIndicator.adaptive()),
         });
+  }
+
+  double _calculatePrice(Transaction value, double totalPrice) {
+    for (var pet in value.bookedSlot.petCount) {
+      var pricing = value.petDaycare.pricings
+          .where((e) => e.petCategory.id == pet.petCategory.id)
+          .first;
+      DateTime startDate = DateTime.parse(value.startDate);
+      DateTime endDate = DateTime.parse(value.endDate);
+
+      Duration difference = endDate.difference(startDate);
+
+      totalPrice += pricing.price *
+          pet.total *
+          (difference.inDays - (pricing.pricingType == "day" ? 0 : 1));
+    }
+    return totalPrice;
   }
 }

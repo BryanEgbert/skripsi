@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
@@ -9,7 +10,7 @@ import (
 )
 
 type ReviewService interface {
-	GetReviews(petDaycareId uint, page int, pageSize int) (*[]model.ReviewsDTO, error)
+	GetReviews(userId uint, petDaycareId uint, page int, pageSize int) (*[]model.ReviewsDTO, error)
 	CreateReview(petDaycareId uint, userId uint, req model.CreateReviewRequest) error
 	DeleteReview(petDaycareId uint, userId uint) error
 }
@@ -22,13 +23,13 @@ func NewReviewService(db *gorm.DB) *ReviewServiceImpl {
 	return &ReviewServiceImpl{db: db}
 }
 
-func (r *ReviewServiceImpl) GetReviews(petDaycareId uint, page int, pageSize int) (*[]model.ReviewsDTO, error) {
+func (r *ReviewServiceImpl) GetReviews(userId uint, petDaycareId uint, page int, pageSize int) (*[]model.ReviewsDTO, error) {
 	var reviews []model.Reviews
 	if err := r.db.
 		Preload("User").
 		Preload("User.Role").
 		Where("daycare_id = ?", petDaycareId).
-		Order("created_at DESC").
+		Order(fmt.Sprintf("CASE WHEN user_id = %d THEN 0 ELSE 1 END, created_at DESC", userId)).
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
 		Find(&reviews).Error; err != nil {

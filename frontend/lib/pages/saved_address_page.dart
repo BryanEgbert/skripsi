@@ -5,6 +5,7 @@ import 'package:frontend/constants.dart';
 import 'package:frontend/model/saved_address.dart';
 import 'package:frontend/pages/add_saved_address.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/provider/saved_address_provider.dart';
 
 class SavedAddressPage extends ConsumerStatefulWidget {
   final int? selected;
@@ -71,13 +72,25 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
 
   @override
   Widget build(BuildContext context) {
+    final savedAddressState = ref.watch(savedAddressStateProvider);
     if (_error != null) {
       return ErrorText(
           errorText: _error.toString(),
           onRefresh: () async {
             _records = [];
+            _hasMoreData = true;
+            _page = 1;
             _fetchMoreData();
           });
+    }
+
+    if (savedAddressState.hasValue) {
+      if (savedAddressState.value! == 201 || savedAddressState.value! == 204) {
+        _records = [];
+        _hasMoreData = true;
+        _page = 1;
+        _fetchMoreData();
+      }
     }
 
     return Scaffold(
@@ -123,6 +136,7 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
               ? RefreshIndicator.adaptive(
                   onRefresh: () async {
                     _records = [];
+                    _hasMoreData = true;
                     _page = 1;
                     _fetchMoreData();
                   },

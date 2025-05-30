@@ -77,6 +77,22 @@ func (pdc *PetDaycareController) GetBookingRequests(ctx *gin.Context) {
 }
 
 func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
 	petDaycareID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
@@ -115,7 +131,7 @@ func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
 	}
 
 	// Fetch reviews using the service
-	reviews, err := pdc.reviewService.GetReviews(uint(petDaycareID), int(page), pageSize)
+	reviews, err := pdc.reviewService.GetReviews(userID, uint(petDaycareID), int(page), pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to retrieve reviews",
@@ -825,12 +841,14 @@ func (pdc *PetDaycareController) BookSlot(c *gin.Context) {
 	req.DaycareID = uint(daycareId)
 
 	if err := pdc.slotService.BookSlots(userID, req); err != nil {
-		if errors.Is(err, apputils.ErrOnlyOneSlotDate) || errors.Is(err, apputils.ErrSlotFull) {
+		if errors.Is(err, apputils.ErrOnlyOneSlotDate) || errors.Is(err, apputils.ErrSlotFull) || errors.Is(err, apputils.ErrPetAlreadyBooked) {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: err.Error(),
 			})
 			return
 		}
+
+		log.Printf("Book Slots err: %v", err)
 
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to book slots",

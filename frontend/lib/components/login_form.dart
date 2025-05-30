@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/response/token_response.dart';
+import 'package:frontend/pages/home.dart';
 import 'package:frontend/pages/pet_daycare_home_page.dart';
 import 'package:frontend/pages/vet_main_page.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/utils/validator.dart';
-import 'package:frontend/pages/home.dart';
 
 class LoginForm extends ConsumerStatefulWidget {
   const LoginForm({super.key});
@@ -37,37 +37,41 @@ class _LoginFormState extends ConsumerState<LoginForm> {
         );
 
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
+        ref.read(authProvider.notifier).reset();
       });
     }
 
     if (auth.value != null && !auth.isLoading) {
       if (auth.value!.roleId == 1) {
-        WidgetsBinding.instance.addPostFrameCallback(
-          (timeStamp) => Navigator.of(context).pushAndRemoveUntil(
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => HomeWidget(),
             ),
             (route) => false,
-          ),
-        );
+          );
+          ref.read(authProvider.notifier).reset();
+        });
       } else if (auth.value!.roleId == 2) {
-        WidgetsBinding.instance.addPostFrameCallback(
-          (timeStamp) => Navigator.of(context).pushAndRemoveUntil(
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => PetDaycareHomePage(),
             ),
             (route) => false,
-          ),
-        );
-      } else {
-        WidgetsBinding.instance.addPostFrameCallback(
-          (timeStamp) => Navigator.of(context).pushAndRemoveUntil(
+          );
+          ref.read(authProvider.notifier).reset();
+        });
+      } else if (auth.value!.roleId == 3) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => VetMainPage(),
             ),
             (route) => false,
-          ),
-        );
+          );
+          ref.read(authProvider.notifier).reset();
+        });
       }
     }
 

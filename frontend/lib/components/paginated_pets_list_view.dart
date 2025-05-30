@@ -85,6 +85,39 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
 
     handleValue(petState, this, ref.read(petStateProvider.notifier).reset);
 
+    if (petState.hasValue && !petState.isLoading) {
+      if (petState.value != null) {
+        if (petState.value is int) {
+          if (petState.value! >= 200 && petState.value! <= 400) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+              var snackbar = SnackBar(
+                key: Key("success-message"),
+                content: Text(
+                  "Operation completed successfully",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                backgroundColor: Colors.green[800],
+              );
+
+              ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+              setState(() {
+                _records = [];
+                _lastId = 0;
+                _fetchMoreData();
+              });
+
+              ref.read(petStateProvider.notifier).reset();
+            });
+          }
+        }
+      }
+    }
+
     return RefreshIndicator.adaptive(
       onRefresh: () async {
         _records = [];

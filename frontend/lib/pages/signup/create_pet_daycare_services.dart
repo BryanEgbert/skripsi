@@ -40,6 +40,7 @@ class _CreatePetDaycareServicesState
   int _dailyPlaytimeId = 0;
 
   void _submitForm() {
+    if (ref.read(authProvider).isLoading) return;
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -225,10 +226,14 @@ class _CreatePetDaycareServicesState
             SizedBox(height: 24),
             ElevatedButton(
               onPressed: _submitForm,
-              child: Text(
-                "Create My Account",
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
+              child: !auth.isLoading
+                  ? Text(
+                      "Create My Account",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    )
+                  : CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
             ),
           ],
         ),

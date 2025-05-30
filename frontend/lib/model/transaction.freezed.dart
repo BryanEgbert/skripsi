@@ -28,6 +28,7 @@ mixin _$Transaction {
   String get endDate => throw _privateConstructorUsedError;
   BookingRequest get bookedSlot => throw _privateConstructorUsedError;
   BookedSlotAddress? get addressInfo => throw _privateConstructorUsedError;
+  bool get isReviewed => throw _privateConstructorUsedError;
 
   /// Serializes this Transaction to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,7 +53,8 @@ abstract class $TransactionCopyWith<$Res> {
       String startDate,
       String endDate,
       BookingRequest bookedSlot,
-      BookedSlotAddress? addressInfo});
+      BookedSlotAddress? addressInfo,
+      bool isReviewed});
 
   $LookupCopyWith<$Res> get status;
   $PetDaycareDetailsCopyWith<$Res> get petDaycare;
@@ -82,6 +84,7 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? endDate = null,
     Object? bookedSlot = null,
     Object? addressInfo = freezed,
+    Object? isReviewed = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -112,6 +115,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.addressInfo
           : addressInfo // ignore: cast_nullable_to_non_nullable
               as BookedSlotAddress?,
+      isReviewed: null == isReviewed
+          ? _value.isReviewed
+          : isReviewed // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -175,7 +182,8 @@ abstract class _$$TransactionImplCopyWith<$Res>
       String startDate,
       String endDate,
       BookingRequest bookedSlot,
-      BookedSlotAddress? addressInfo});
+      BookedSlotAddress? addressInfo,
+      bool isReviewed});
 
   @override
   $LookupCopyWith<$Res> get status;
@@ -207,6 +215,7 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? endDate = null,
     Object? bookedSlot = null,
     Object? addressInfo = freezed,
+    Object? isReviewed = null,
   }) {
     return _then(_$TransactionImpl(
       id: null == id
@@ -237,6 +246,10 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value.addressInfo
           : addressInfo // ignore: cast_nullable_to_non_nullable
               as BookedSlotAddress?,
+      isReviewed: null == isReviewed
+          ? _value.isReviewed
+          : isReviewed // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -251,7 +264,8 @@ class _$TransactionImpl implements _Transaction {
       required this.startDate,
       required this.endDate,
       required this.bookedSlot,
-      required this.addressInfo});
+      required this.addressInfo,
+      required this.isReviewed});
 
   factory _$TransactionImpl.fromJson(Map<String, dynamic> json) =>
       _$$TransactionImplFromJson(json);
@@ -271,10 +285,12 @@ class _$TransactionImpl implements _Transaction {
   final BookingRequest bookedSlot;
   @override
   final BookedSlotAddress? addressInfo;
+  @override
+  final bool isReviewed;
 
   @override
   String toString() {
-    return 'Transaction(id: $id, status: $status, petDaycare: $petDaycare, startDate: $startDate, endDate: $endDate, bookedSlot: $bookedSlot, addressInfo: $addressInfo)';
+    return 'Transaction(id: $id, status: $status, petDaycare: $petDaycare, startDate: $startDate, endDate: $endDate, bookedSlot: $bookedSlot, addressInfo: $addressInfo, isReviewed: $isReviewed)';
   }
 
   @override
@@ -292,13 +308,15 @@ class _$TransactionImpl implements _Transaction {
             (identical(other.bookedSlot, bookedSlot) ||
                 other.bookedSlot == bookedSlot) &&
             (identical(other.addressInfo, addressInfo) ||
-                other.addressInfo == addressInfo));
+                other.addressInfo == addressInfo) &&
+            (identical(other.isReviewed, isReviewed) ||
+                other.isReviewed == isReviewed));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, status, petDaycare,
-      startDate, endDate, bookedSlot, addressInfo);
+      startDate, endDate, bookedSlot, addressInfo, isReviewed);
 
   /// Create a copy of Transaction
   /// with the given fields replaced by the non-null parameter values.
@@ -324,7 +342,8 @@ abstract class _Transaction implements Transaction {
       required final String startDate,
       required final String endDate,
       required final BookingRequest bookedSlot,
-      required final BookedSlotAddress? addressInfo}) = _$TransactionImpl;
+      required final BookedSlotAddress? addressInfo,
+      required final bool isReviewed}) = _$TransactionImpl;
 
   factory _Transaction.fromJson(Map<String, dynamic> json) =
       _$TransactionImpl.fromJson;
@@ -343,6 +362,8 @@ abstract class _Transaction implements Transaction {
   BookingRequest get bookedSlot;
   @override
   BookedSlotAddress? get addressInfo;
+  @override
+  bool get isReviewed;
 
   /// Create a copy of Transaction
   /// with the given fields replaced by the non-null parameter values.

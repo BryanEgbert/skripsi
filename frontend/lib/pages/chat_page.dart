@@ -9,16 +9,13 @@ import 'package:frontend/components/chat_bubble.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
-import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/send_message.dart';
 import 'package:frontend/pages/send_image_page.dart';
-import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/chat_tracker_provider.dart';
 import 'package:frontend/provider/database_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:frontend/utils/handle_error.dart';
-
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:web_socket_channel/io.dart';
@@ -118,13 +115,13 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         },
       );
     } catch (e) {
-      if (e.toString() == jwtExpired ||
-          e.toString() == userDeleted && mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => WelcomeWidget()),
-          (route) => false,
-        );
-      }
+      // if (e.toString() == jwtExpired ||
+      //     e.toString() == userDeleted && mounted) {
+      //   Navigator.of(context).pushAndRemoveUntil(
+      //     MaterialPageRoute(builder: (context) => WelcomeWidget()),
+      //     (route) => false,
+      //   );
+      // }
     }
   }
 

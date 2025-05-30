@@ -146,6 +146,7 @@ class _AddPetDaycareThumbnailsState extends State<AddPetDaycareThumbnails> {
                 );
               },
             ),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _submitForm,
               child: const Text("Next"),

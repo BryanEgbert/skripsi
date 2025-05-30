@@ -258,24 +258,24 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                     }
                   },
                 ),
-                if (_searchController.text.isNotEmpty)
-                  Text(
-                    "Address: ${_addressController.text}",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                // TextFormField(
-                //   controller: _addressController,
-                //   validator: (value) => validateNotEmpty("Value", value),
-                //   maxLines: 6,
-                //   keyboardType: TextInputType.multiline,
-                //   decoration: InputDecoration(
-                //     border: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(8),
-                //     ),
-                //     labelText: "Address",
-                //     labelStyle: TextStyle(fontSize: 12),
+                // if (_searchController.text.isNotEmpty)
+                //   Text(
+                //     "Address: ${_addressController.text}",
+                //     style: TextStyle(fontSize: 14),
                 //   ),
-                // ),
+                TextFormField(
+                  controller: _addressController,
+                  validator: (value) => validateNotEmpty("Value", value),
+                  maxLines: 6,
+                  keyboardType: TextInputType.multiline,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    labelText: "Address",
+                    labelStyle: TextStyle(fontSize: 12),
+                  ),
+                ),
                 TextFormField(
                   controller: _notesController,
                   key: Key("notes-input"),
@@ -302,7 +302,9 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         )
                       : Center(
-                          child: CircularProgressIndicator(),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
                         ),
                 ),
               ],

@@ -46,8 +46,9 @@ class PetService implements IPetService {
       if (vaccineReqBody != null) {
         if (vaccineReqBody.vaccineRecordImage != null) {
           reqMap["vaccineRecordImage"] = await MultipartFile.fromFile(
-              petReqBody.petImage!.path,
-              filename: petReqBody.petImage!.path.split('/').last);
+              vaccineReqBody.vaccineRecordImage!.path,
+              filename:
+                  vaccineReqBody.vaccineRecordImage!.path.split('/').last);
         }
 
         reqMap = {...reqMap, ...vaccineReqBody.toMap()};

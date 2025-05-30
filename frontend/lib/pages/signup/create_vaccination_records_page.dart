@@ -196,7 +196,9 @@ class _CreateVaccinationRecordsPageState
                               );
                         }
                       },
-                      child: const Text("Create My Account"),
+                      child: !token.isLoading
+                          ? Text("Create My Account")
+                          : CircularProgressIndicator(color: Colors.white),
                     ),
                     TextButton(
                       onPressed: () {

@@ -3,12 +3,13 @@ import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/components/profile_image_picker.dart';
 import 'package:frontend/components/signup_guide_text.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/pages/signup/create_pet_daycare_page.dart';
 import 'package:frontend/pages/signup/create_vet.dart';
-import 'package:frontend/utils/validator.dart';
 import 'package:frontend/pages/signup/enter_pet_details_page.dart';
+import 'package:frontend/utils/validator.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CreateUserPage extends StatefulWidget {
@@ -27,6 +28,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
   final _passwordController = TextEditingController();
 
   File? _userProfilePicture;
+  bool _revealPassword = false;
 
   Future<void> _pickImage() async {
     final photo = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -99,7 +101,10 @@ class _CreateUserPageState extends State<CreateUserPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     spacing: 12,
                     children: [
-                      profilePicturePicker(),
+                      ProfileImagePicker(
+                        onTap: _pickImage,
+                        image: _userProfilePicture,
+                      ),
                       TextFormField(
                         key: Key("name-input"),
                         controller: _nameController,
@@ -141,6 +146,18 @@ class _CreateUserPageState extends State<CreateUserPage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
+                          suffix: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _revealPassword =
+                                    _revealPassword ? false : true;
+                              });
+                            },
+                            child: (!_revealPassword)
+                                ? Icon(Icons.visibility, color: Colors.orange)
+                                : Icon(Icons.visibility_off,
+                                    color: Colors.orange),
+                          ),
                           labelText: "Password",
                           helper: Text(
                             "Must contain at least 8 characters",
@@ -153,7 +170,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                             ),
                           ),
                         ),
-                        obscureText: true,
+                        obscureText: !_revealPassword,
                         enableSuggestions: false,
                         autocorrect: false,
                         validator: (value) {

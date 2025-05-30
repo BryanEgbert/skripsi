@@ -72,6 +72,8 @@ func (s *SlotServiceImpl) GetBookedSlots(userId uint, page int, pageSize int) (*
 		Preload("Address").
 		Preload("Daycare").
 		Preload("Daycare.Slots").
+		Preload("Daycare.Reviews").
+		Preload("Daycare.Reviews.User").
 		Preload("Daycare.Slots.PricingType").
 		Preload("Daycare.Slots.PetCategory").
 		Preload("Daycare.Slots.PetCategory.SizeCategory").
@@ -347,6 +349,7 @@ func (s *SlotServiceImpl) EditSlotCount(userId uint, slotId uint, req model.Redu
 func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) error {
 	var count int64
 	if err := s.db.
+		Model(&model.BookedSlot{}).
 		Joins("JOIN pet_booked_slots pbs ON pbs.booked_slot_id = booked_slots.id").
 		Where("pbs.pet_id IN ? AND booked_slots.status_id IN ?", req.PetID, []uint{1, 2, 4}).
 		Count(&count).
@@ -387,10 +390,10 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 
 	log.Printf("slot length: %d", len(slot))
 
-	slotID := []uint{}
-	for _, val := range slot {
-		slotID = append(slotID, val.ID)
-	}
+	// slotID := []uint{}
+	// for _, val := range slot {
+	// 	slotID = append(slotID, val.ID)
+	// }
 
 	// var reducedSlotsCount []int64
 
