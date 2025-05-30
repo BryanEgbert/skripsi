@@ -31,7 +31,7 @@ class PetState extends _$PetState {
     }
 
     final petService = PetService();
-    final res = await petService.deletePet(token!.accessToken, petId);
+    final res = await petService.deletePet(token.accessToken, petId);
 
     switch (res) {
       case Ok<void>():
@@ -53,7 +53,7 @@ class PetState extends _$PetState {
     }
 
     final petService = PetService();
-    final res = await petService.updatePet(token!.accessToken, petId, req);
+    final res = await petService.updatePet(token.accessToken, petId, req);
 
     switch (res) {
       case Ok<void>():
@@ -79,7 +79,7 @@ class PetState extends _$PetState {
 
     final petService = PetService();
     final res =
-        await petService.createPet(token!.accessToken, petReq, vaccineReq);
+        await petService.createPet(token.accessToken, petReq, vaccineReq);
 
     switch (res) {
       case Ok<void>():

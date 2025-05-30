@@ -148,7 +148,7 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
               },
             ),
           AsyncData(:final value) => (value.data.isNotEmpty)
-              ? RefreshIndicator(
+              ? RefreshIndicator.adaptive(
                   onRefresh: () async {
                     _fetchData();
                     return ref.refresh(getUserChatListProvider.future);

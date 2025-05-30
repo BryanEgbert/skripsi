@@ -11,6 +11,7 @@ _$PetImpl _$$PetImplFromJson(Map<String, dynamic> json) => _$PetImpl(
       name: json['name'] as String,
       imageUrl: json['imageUrl'] as String?,
       status: json['status'] as String,
+      isVaccinated: json['isVaccinated'] as bool,
       owner: User.fromJson(json['owner'] as Map<String, dynamic>),
       neutered: json['neutered'] as bool,
       petCategory:
@@ -22,6 +23,7 @@ Map<String, dynamic> _$$PetImplToJson(_$PetImpl instance) => <String, dynamic>{
       'name': instance.name,
       'imageUrl': instance.imageUrl,
       'status': instance.status,
+      'isVaccinated': instance.isVaccinated,
       'owner': instance.owner,
       'neutered': instance.neutered,
       'petCategory': instance.petCategory,

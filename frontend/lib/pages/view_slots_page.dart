@@ -120,7 +120,7 @@ class _ViewSlotsPageState extends ConsumerState<ViewSlotsPage> {
   }
 
   Widget _buildListView() {
-    return RefreshIndicator(
+    return RefreshIndicator.adaptive(
       onRefresh: () async {
         _refresh();
       },

@@ -39,6 +39,90 @@ func (s *SlotController) AcceptBookedSlot(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
+func (tc *SlotController) GetBookedSlot(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	transactionID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid transaction ID",
+		})
+		return
+	}
+
+	out, err := tc.slotService.GetBookedSlot(uint(transactionID), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to fetch booking history",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, out)
+}
+
+func (tc *SlotController) GetBookedSlots(c *gin.Context) {
+	userIDRaw, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDRaw.(uint)
+	if !ok {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid user ID",
+		})
+		return
+	}
+
+	page, err := strconv.ParseInt(c.DefaultQuery("page", "1"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid last ID",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	pageSize, err := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid page size",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	out, err := tc.slotService.GetBookedSlots(userID, int(page), pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Failed to fetch booking histories",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, model.ListData[model.BookedSlotDTO]{Data: *out})
+}
+
 func (s *SlotController) RejectBookedSlot(c *gin.Context) {
 	slotID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {

@@ -24,7 +24,7 @@ class RatingsPage extends ConsumerStatefulWidget {
 class _RatingsPageState extends ConsumerState<RatingsPage> {
   final int _pageSize = 10;
   final ScrollController _scrollController = ScrollController();
-  final List<Reviews> _records = [];
+  List<Reviews> _records = [];
 
   int _page = 1;
   bool _isFetching = false;
@@ -102,63 +102,58 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
           : (_error == null)
               ? Column(
                   children: [
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Constants.secondaryBackgroundColor
-                          : null,
-                      child: Row(
-                        children: [
-                          Icon(Icons.star, color: Colors.amber, size: 40),
-                          SizedBox(width: 8),
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: widget.ratingsAvg.toString(),
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.light
-                                        ? Colors.black
-                                        : Colors.white70,
+                    SafeArea(
+                      child: Container(
+                        padding: EdgeInsets.all(16),
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.secondaryBackgroundColor
+                            : null,
+                        child: Row(
+                          children: [
+                            Icon(Icons.star, color: Colors.amber, size: 40),
+                            SizedBox(width: 8),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: widget.ratingsAvg.toStringAsFixed(1),
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                TextSpan(
-                                  text: '/5',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.light
-                                        ? Colors.black
-                                        : Colors.white70,
+                                  TextSpan(
+                                    text: '/5',
+                                    style: TextStyle(fontSize: 18),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          Spacer(),
-                          Text(
-                            '${widget.ratingsCount} Reviews',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
+                            Spacer(),
+                            Text(
+                              '${formatNumber(widget.ratingsCount)} Reviews',
+                              style: TextStyle(fontSize: 16),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     Expanded(
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        padding: EdgeInsets.only(top: 8),
-                        itemCount: _records.length,
-                        itemBuilder: (context, index) =>
-                            _buildReviewCard(_records[index]),
+                      child: RefreshIndicator.adaptive(
+                        onRefresh: () async {
+                          _records = [];
+                          _hasMoreData = true;
+                          _page = 1;
+                          _fetchMoreData();
+                        },
+                        child: ListView.builder(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          controller: _scrollController,
+                          padding: EdgeInsets.only(top: 8),
+                          itemCount: _records.length,
+                          itemBuilder: (context, index) =>
+                              _buildReviewCard(_records[index]),
+                        ),
                       ),
                     ),
                   ],

@@ -31,7 +31,7 @@ class ReviewState extends _$ReviewState {
 
     final service = ReviewService();
     final res =
-        await service.createReview(token!.accessToken, petDaycareId, req);
+        await service.createReview(token.accessToken, petDaycareId, req);
 
     switch (res) {
       case Ok():

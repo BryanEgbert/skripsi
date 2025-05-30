@@ -21,13 +21,14 @@ type Pet struct {
 }
 
 type PetDTO struct {
-	ID          uint           `json:"id"`
-	Name        string         `json:"name"`
-	ImageUrl    string         `json:"imageUrl"`
-	Status      string         `json:"status"`
-	Neutered    bool           `json:"neutered"`
-	Owner       UserDTO        `json:"owner"`
-	PetCategory PetCategoryDTO `json:"petCategory"`
+	ID           uint           `json:"id"`
+	Name         string         `json:"name"`
+	ImageUrl     string         `json:"imageUrl"`
+	Status       string         `json:"status"`
+	Neutered     bool           `json:"neutered"`
+	Owner        UserDTO        `json:"owner"`
+	PetCategory  PetCategoryDTO `json:"petCategory"`
+	IsVaccinated bool           `json:"isVaccinated"`
 }
 
 type GetBookedPetsResponse struct {

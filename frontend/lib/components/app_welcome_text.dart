@@ -18,13 +18,13 @@ class AppWelcomeText extends StatelessWidget {
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
-                // color: Theme.of(context).brightness == Brightness.light
-                //     ? Colors.black
-                //     : Colors.white,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.black
+                    : Colors.white,
               ),
               children: [
                 TextSpan(
-                  text: "AppName\n",
+                  text: "PawConnect\n",
                   style: TextStyle(
                     color: Colors.orange,
                     fontWeight: FontWeight.bold,

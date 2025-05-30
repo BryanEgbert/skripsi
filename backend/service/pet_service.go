@@ -113,6 +113,9 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 		Joins("PetCategory.SizeCategory").
 		Joins("Owner").
 		Joins("Owner.Role").
+		Preload("VaccineRecords", func(db *gorm.DB) *gorm.DB {
+			return db.Order("vaccine_records.next_due_date DESC")
+		}).
 		Where("owner_id = ?", ownerID).
 		Order("id ASC").
 		Limit(pageSize)
@@ -128,13 +131,19 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 
 	var petDTOs []model.PetDTO
 	for _, pet := range pets {
+		isVaccinated, err := helper.PetIsVaccinated(pet)
+		if err != nil {
+			return nil, err
+		}
+
 		dto := model.PetDTO{
-			ID:          pet.ID,
-			Name:        pet.Name,
-			Status:      pet.Status,
-			Neutered:    pet.Neutered,
-			PetCategory: helper.ConvertPetCategoryToDTO(pet.PetCategory),
-			Owner:       helper.ConvertUserToDTO(pet.Owner),
+			ID:           pet.ID,
+			Name:         pet.Name,
+			Status:       pet.Status,
+			Neutered:     pet.Neutered,
+			PetCategory:  helper.ConvertPetCategoryToDTO(pet.PetCategory),
+			Owner:        helper.ConvertUserToDTO(pet.Owner),
+			IsVaccinated: isVaccinated,
 		}
 
 		if pet.ImageUrl != nil {

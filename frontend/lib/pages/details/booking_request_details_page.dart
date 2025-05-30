@@ -5,7 +5,6 @@ import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';

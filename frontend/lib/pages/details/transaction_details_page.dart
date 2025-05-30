@@ -5,36 +5,35 @@ import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/show_confirmation_dialog.dart';
 
-class TransactionDetailsPage extends ConsumerStatefulWidget {
-  final int transactionId;
-  const TransactionDetailsPage(this.transactionId, {super.key});
+class BookingHistoryDetailsPage extends ConsumerStatefulWidget {
+  final int bookedSlotId;
+  const BookingHistoryDetailsPage(this.bookedSlotId, {super.key});
 
   @override
-  ConsumerState<TransactionDetailsPage> createState() =>
+  ConsumerState<BookingHistoryDetailsPage> createState() =>
       _TransactionDetailsPageState();
 }
 
 class _TransactionDetailsPageState
-    extends ConsumerState<TransactionDetailsPage> {
+    extends ConsumerState<BookingHistoryDetailsPage> {
   void _cancelBooking(int bookedSlotId) {
     showCancelBookingConfirmationDialog(context,
         "Are you sure you want to cancel this booking? This action cannot be undone.",
         () {
       ref.read(slotStateProvider.notifier).cancelSlot(bookedSlotId);
-      ref.invalidate(getTransactionProvider(widget.transactionId));
+      ref.invalidate(getBookedSlotProvider(widget.bookedSlotId));
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final transaction = ref.watch(getTransactionProvider(widget.transactionId));
+    final transaction = ref.watch(getBookedSlotProvider(widget.bookedSlotId));
     final slotState = ref.watch(slotStateProvider);
 
     handleValue(slotState, this);
@@ -64,8 +63,8 @@ class _TransactionDetailsPageState
         body: switch (transaction) {
           AsyncError(:final error) => ErrorText(
               errorText: error.toString(),
-              onRefresh: () => ref.refresh(
-                  getTransactionProvider(widget.transactionId).future)),
+              onRefresh: () => ref
+                  .refresh(getBookedSlotProvider(widget.bookedSlotId).future)),
           AsyncData(:final value) => Builder(builder: (context) {
               if (value.status.id == 1) {
                 statusColor = Colors.deepOrange;

@@ -6,7 +6,7 @@ part of 'pet_daycare_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$petDaycareStateHash() => r'9a3dffbc852c773539eff8f100bc7b4013c3625c';
+String _$petDaycareStateHash() => r'ac3c9bae84e5318a677a859135448241a272c65a';
 
 /// See also [PetDaycareState].
 @ProviderFor(PetDaycareState)

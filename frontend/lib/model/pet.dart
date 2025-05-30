@@ -12,6 +12,7 @@ class Pet with _$Pet {
     required String name,
     required String? imageUrl,
     required String status,
+    required bool isVaccinated,
     required User owner,
     required bool neutered,
     required PetCategory petCategory,

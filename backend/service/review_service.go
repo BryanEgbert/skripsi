@@ -44,7 +44,6 @@ func (r *ReviewServiceImpl) CreateReview(petDaycareId uint, userId uint, req mod
 	review := model.Reviews{
 		DaycareID:   petDaycareId,
 		UserID:      userId,
-		Name:        req.Title, // Title corresponds to Name
 		Rate:        req.Rating,
 		Description: req.Description,
 	}

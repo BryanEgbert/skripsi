@@ -31,7 +31,7 @@ class ReviewService implements IReviewService {
       ));
 
       var res = await dio.post(
-        "http://$host/$petDaycareId/reviews",
+        "http://$host/daycare/$petDaycareId/review",
         options: Options(
           headers: {
             "Content-Type": "application/json; charset=UTF-8",
@@ -58,7 +58,7 @@ class ReviewService implements IReviewService {
       ));
 
       var res = await dio.delete(
-        "http://$host/$petDaycareId/reviews",
+        "http://$host/daycare/$petDaycareId/review",
         options: Options(
           headers: {"Authorization": "Bearer $token"},
         ),

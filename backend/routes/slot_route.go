@@ -9,6 +9,9 @@ import (
 func RegisterSlotRoute(r *gin.Engine, slotController *controller.SlotController) *gin.Engine {
 	slotGroup := r.Group("/slots")
 
+	slotGroup.GET("/booked", middleware.JWTAuth(), slotController.GetBookedSlots)
+	slotGroup.GET("/booked/:id", middleware.JWTAuth(), slotController.GetBookedSlot)
+
 	slotGroup.PATCH("/:id/accept", middleware.JWTAuth(), slotController.AcceptBookedSlot)
 	slotGroup.PATCH("/:id/reject", middleware.JWTAuth(), slotController.RejectBookedSlot)
 	slotGroup.PATCH("/:id/cancel", middleware.JWTAuth(), slotController.CancelBookedSlot)

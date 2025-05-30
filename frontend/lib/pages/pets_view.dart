@@ -10,7 +10,6 @@ import 'package:frontend/pages/add_pet_page.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/pages/edit/edit_pet_details_page.dart';
 import 'package:frontend/provider/pet_provider.dart';
-import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class PetsView extends ConsumerStatefulWidget {
@@ -38,8 +37,11 @@ class _PetsViewState extends ConsumerState<PetsView> {
 
   @override
   Widget build(BuildContext context) {
-    final petState = ref.watch(petStateProvider);
-    handleValue(petState, this, ref.read(petStateProvider.notifier).reset);
+    // final petState = ref.watch(petStateProvider);
+    // handleValue(petState, this, () {
+    //   ref.read(petStateProvider.notifier).reset();
+    // });
+
     // if (_error != null) {
     //   handleError(AsyncValue.error(_error!, StackTrace.current), context);
     //   _error = null;

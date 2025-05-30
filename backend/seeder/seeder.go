@@ -184,10 +184,11 @@ func SeedTable(db *gorm.DB) error {
 			OpeningHour: model.CustomTime{Time: time.Now()},
 			ClosingHour: model.CustomTime{Time: time.Now().Add(1 * time.Hour)},
 			// Price:         100000.0,
-			OwnerID:       users[5].ID,
-			DailyWalks:    dailyWalks[1],
-			DailyPlaytime: dailyPlaytimes[1],
-			BookedNum:     2,
+			OwnerID:          users[5].ID,
+			DailyWalks:       dailyWalks[1],
+			DailyPlaytime:    dailyPlaytimes[1],
+			MustBeVaccinated: true,
+			BookedNum:        2,
 		},
 	}
 
@@ -225,7 +226,7 @@ func SeedTable(db *gorm.DB) error {
 	vaccineRecords := []model.VaccineRecord{
 		{
 			DateAdministered: "2024-01-20",
-			NextDueDate:      "2025-01-20",
+			NextDueDate:      "2025-10-20",
 			ImageURL:         vaccineRecordImgUrl,
 			PetID:            pet[0].ID,
 		},
@@ -377,6 +378,7 @@ func SeedTable(db *gorm.DB) error {
 
 	var waitingConfirmation uint = 1
 	var confirmed uint = 2
+	var done uint = 4
 	bookedSlot := []model.BookedSlot{
 		{
 			UserID:    users[0].ID,
@@ -412,6 +414,16 @@ func SeedTable(db *gorm.DB) error {
 			StartDate: time.Date(2025, time.May, 27, 0, 0, 0, 0, time.Local),
 			EndDate:   time.Date(2025, time.May, 30, 0, 0, 0, 0, time.Local),
 			StatusID:  &confirmed,
+			AddressID: &savedAddress[0].ID,
+		},
+		{
+			UserID:    users[0].ID,
+			SlotID:    slots[1].ID,
+			DaycareID: daycare[2].ID,
+			Pet:       []model.Pet{pet[1], pet[0]},
+			StartDate: time.Date(2025, time.April, 27, 0, 0, 0, 0, time.Local),
+			EndDate:   time.Date(2025, time.April, 30, 0, 0, 0, 0, time.Local),
+			StatusID:  &done,
 			AddressID: &savedAddress[0].ID,
 		},
 	}
@@ -455,43 +467,43 @@ func SeedTable(db *gorm.DB) error {
 			// DaycareID: daycare[0].ID,
 			SlotID:    slots[3].ID,
 			SlotCount: 1,
-			Date:      time.Date(2025, time.May, 27, 0, 0, 0, 0, time.Local),
-		},
-		{
-			// DaycareID: daycare[0].ID,
-			SlotID:    slots[3].ID,
-			SlotCount: 1,
-			Date:      time.Date(2025, time.May, 28, 0, 0, 0, 0, time.Local),
-		},
-		{
-			// DaycareID: daycare[0].ID,
-			SlotID:    slots[3].ID,
-			SlotCount: 1,
-			Date:      time.Date(2025, time.May, 28, 0, 0, 0, 0, time.Local),
-		},
-		{
-			// DaycareID: daycare[0].ID,
-			SlotID:    slots[3].ID,
-			SlotCount: 1,
-			Date:      time.Date(2025, time.May, 29, 0, 0, 0, 0, time.Local),
-		},
-		{
-			// DaycareID: daycare[0].ID,
-			SlotID:    slots[3].ID,
-			SlotCount: 1,
-			Date:      time.Date(2025, time.May, 29, 0, 0, 0, 0, time.Local),
-		},
-		{
-			// DaycareID: daycare[0].ID,
-			SlotID:    slots[3].ID,
-			SlotCount: 1,
 			Date:      time.Date(2025, time.May, 30, 0, 0, 0, 0, time.Local),
 		},
 		{
 			// DaycareID: daycare[0].ID,
 			SlotID:    slots[3].ID,
 			SlotCount: 1,
-			Date:      time.Date(2025, time.May, 30, 0, 0, 0, 0, time.Local),
+			Date:      time.Date(2025, time.May, 31, 0, 0, 0, 0, time.Local),
+		},
+		{
+			// DaycareID: daycare[0].ID,
+			SlotID:    slots[3].ID,
+			SlotCount: 1,
+			Date:      time.Date(2025, time.May, 31, 0, 0, 0, 0, time.Local),
+		},
+		{
+			// DaycareID: daycare[0].ID,
+			SlotID:    slots[3].ID,
+			SlotCount: 1,
+			Date:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.Local),
+		},
+		{
+			// DaycareID: daycare[0].ID,
+			SlotID:    slots[3].ID,
+			SlotCount: 1,
+			Date:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.Local),
+		},
+		{
+			// DaycareID: daycare[0].ID,
+			SlotID:    slots[3].ID,
+			SlotCount: 1,
+			Date:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.Local),
+		},
+		{
+			// DaycareID: daycare[0].ID,
+			SlotID:    slots[3].ID,
+			SlotCount: 1,
+			Date:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.Local),
 		},
 	}
 
@@ -501,13 +513,13 @@ func SeedTable(db *gorm.DB) error {
 
 	review := []model.Reviews{
 		{
-			DaycareID: daycare[0].ID, UserID: users[0].ID, Name: "John Doe", Rate: 5, Description: "Great daycare!",
+			DaycareID: daycare[0].ID, UserID: users[0].ID, Rate: 5, Description: "Great daycare!",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[0].ID, Name: "Nice", Rate: 5, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[0].ID, Rate: 5, Description: "Great daycare!",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Name: "Nice", Rate: 4, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 4, Description: "Great daycare!",
 		},
 	}
 
@@ -529,16 +541,6 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	if err := db.Create(&thumbnails).Error; err != nil {
-		return err
-	}
-
-	transaction := model.Transaction{
-		UserID: users[0].ID,
-		// PetDaycareID: daycare[0].ID,
-		BookedSlot: bookedSlot[0],
-	}
-
-	if err := db.Create(&transaction).Error; err != nil {
 		return err
 	}
 

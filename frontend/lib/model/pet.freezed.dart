@@ -24,6 +24,7 @@ mixin _$Pet {
   String get name => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
+  bool get isVaccinated => throw _privateConstructorUsedError;
   User get owner => throw _privateConstructorUsedError;
   bool get neutered => throw _privateConstructorUsedError;
   PetCategory get petCategory => throw _privateConstructorUsedError;
@@ -47,6 +48,7 @@ abstract class $PetCopyWith<$Res> {
       String name,
       String? imageUrl,
       String status,
+      bool isVaccinated,
       User owner,
       bool neutered,
       PetCategory petCategory});
@@ -73,6 +75,7 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
     Object? name = null,
     Object? imageUrl = freezed,
     Object? status = null,
+    Object? isVaccinated = null,
     Object? owner = null,
     Object? neutered = null,
     Object? petCategory = null,
@@ -94,6 +97,10 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String,
+      isVaccinated: null == isVaccinated
+          ? _value.isVaccinated
+          : isVaccinated // ignore: cast_nullable_to_non_nullable
+              as bool,
       owner: null == owner
           ? _value.owner
           : owner // ignore: cast_nullable_to_non_nullable
@@ -141,6 +148,7 @@ abstract class _$$PetImplCopyWith<$Res> implements $PetCopyWith<$Res> {
       String name,
       String? imageUrl,
       String status,
+      bool isVaccinated,
       User owner,
       bool neutered,
       PetCategory petCategory});
@@ -166,6 +174,7 @@ class __$$PetImplCopyWithImpl<$Res> extends _$PetCopyWithImpl<$Res, _$PetImpl>
     Object? name = null,
     Object? imageUrl = freezed,
     Object? status = null,
+    Object? isVaccinated = null,
     Object? owner = null,
     Object? neutered = null,
     Object? petCategory = null,
@@ -187,6 +196,10 @@ class __$$PetImplCopyWithImpl<$Res> extends _$PetCopyWithImpl<$Res, _$PetImpl>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String,
+      isVaccinated: null == isVaccinated
+          ? _value.isVaccinated
+          : isVaccinated // ignore: cast_nullable_to_non_nullable
+              as bool,
       owner: null == owner
           ? _value.owner
           : owner // ignore: cast_nullable_to_non_nullable
@@ -211,6 +224,7 @@ class _$PetImpl implements _Pet {
       required this.name,
       required this.imageUrl,
       required this.status,
+      required this.isVaccinated,
       required this.owner,
       required this.neutered,
       required this.petCategory});
@@ -227,6 +241,8 @@ class _$PetImpl implements _Pet {
   @override
   final String status;
   @override
+  final bool isVaccinated;
+  @override
   final User owner;
   @override
   final bool neutered;
@@ -235,7 +251,7 @@ class _$PetImpl implements _Pet {
 
   @override
   String toString() {
-    return 'Pet(id: $id, name: $name, imageUrl: $imageUrl, status: $status, owner: $owner, neutered: $neutered, petCategory: $petCategory)';
+    return 'Pet(id: $id, name: $name, imageUrl: $imageUrl, status: $status, isVaccinated: $isVaccinated, owner: $owner, neutered: $neutered, petCategory: $petCategory)';
   }
 
   @override
@@ -248,6 +264,8 @@ class _$PetImpl implements _Pet {
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
             (identical(other.status, status) || other.status == status) &&
+            (identical(other.isVaccinated, isVaccinated) ||
+                other.isVaccinated == isVaccinated) &&
             (identical(other.owner, owner) || other.owner == owner) &&
             (identical(other.neutered, neutered) ||
                 other.neutered == neutered) &&
@@ -257,8 +275,8 @@ class _$PetImpl implements _Pet {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, name, imageUrl, status, owner, neutered, petCategory);
+  int get hashCode => Object.hash(runtimeType, id, name, imageUrl, status,
+      isVaccinated, owner, neutered, petCategory);
 
   /// Create a copy of Pet
   /// with the given fields replaced by the non-null parameter values.
@@ -282,6 +300,7 @@ abstract class _Pet implements Pet {
       required final String name,
       required final String? imageUrl,
       required final String status,
+      required final bool isVaccinated,
       required final User owner,
       required final bool neutered,
       required final PetCategory petCategory}) = _$PetImpl;
@@ -296,6 +315,8 @@ abstract class _Pet implements Pet {
   String? get imageUrl;
   @override
   String get status;
+  @override
+  bool get isVaccinated;
   @override
   User get owner;
   @override

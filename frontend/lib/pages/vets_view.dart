@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
+import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/user.dart';
@@ -81,6 +84,7 @@ class _VetsViewState extends ConsumerState<VetsView> {
       }
     }).catchError((e) {
       _error = e;
+      log("error: $e");
     }).whenComplete(() => setState(() => _isFetching = false));
   }
 
@@ -100,24 +104,14 @@ class _VetsViewState extends ConsumerState<VetsView> {
   @override
   Widget build(BuildContext context) {
     if (_error != null) {
-      handleValue(
-          AsyncValue.error(_error.toString(), StackTrace.current), this);
+      handleError(AsyncError(_error!, StackTrace.current), context);
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            suffixIcon: Icon(
-              Icons.search_rounded,
-            ),
-            labelStyle: TextStyle(fontSize: 12),
-            isDense: true,
-            labelText: "Search vets",
-          ),
+        title: Text(
+          "Vets",
+          style: TextStyle(color: Colors.orange),
         ),
         actions: [
           Builder(builder: (context) {
@@ -206,44 +200,55 @@ class _VetsViewState extends ConsumerState<VetsView> {
           ),
         ),
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          _records = [];
-          _lastId = 0;
-          _fetchMoreData();
-        },
-        child: ListView.builder(
-          itemCount: _records.length,
-          itemBuilder: (context, index) {
-            List<String> vetSpecialtyNames = [];
-            for (var val in _records[index].vetSpecialties) {
-              vetSpecialtyNames.add(val.name);
-            }
-            return ListTile(
-              tileColor: Theme.of(context).brightness == Brightness.light
-                  ? Constants.secondaryBackgroundColor
-                  : null,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ChatPage(userId: _records[index].id),
-                  ),
-                );
+      body: (_error != null)
+          ? ErrorText(
+              errorText: _error.toString(),
+              onRefresh: () async {
+                _records = [];
+                _lastId = 0;
+                _hasMoreData = true;
+                _fetchMoreData();
+              })
+          : RefreshIndicator.adaptive(
+              onRefresh: () async {
+                _records = [];
+                _lastId = 0;
+                _fetchMoreData();
               },
-              leading: DefaultCircleAvatar(
-                imageUrl: _records[index].imageUrl,
-                iconSize: 56,
+              child: ListView.builder(
+                itemCount: _records.length,
+                itemBuilder: (context, index) {
+                  List<String> vetSpecialtyNames = [];
+                  for (var val in _records[index].vetSpecialties) {
+                    vetSpecialtyNames.add(val.name);
+                  }
+                  return ListTile(
+                    tileColor: Theme.of(context).brightness == Brightness.light
+                        ? Constants.secondaryBackgroundColor
+                        : null,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ChatPage(userId: _records[index].id),
+                        ),
+                      );
+                    },
+                    leading: DefaultCircleAvatar(
+                      imageUrl: _records[index].imageUrl,
+                      iconSize: 56,
+                    ),
+                    title: Text(
+                      _records[index].name,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.orange),
+                    ),
+                    subtitle:
+                        Text("Specialties: ${vetSpecialtyNames.join(", ")}"),
+                  );
+                },
               ),
-              title: Text(
-                _records[index].name,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.orange),
-              ),
-              subtitle: Text("Specialties: ${vetSpecialtyNames.join(", ")}"),
-            );
-          },
-        ),
-      ),
+            ),
     );
   }
 }

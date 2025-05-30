@@ -27,7 +27,7 @@ class SlotState extends _$SlotState {
     }
 
     final service = SlotService();
-    final res = await service.acceptSlot(token!.accessToken, slotId);
+    final res = await service.acceptSlot(token.accessToken, slotId);
 
     switch (res) {
       case Ok<void>():
@@ -55,7 +55,7 @@ class SlotState extends _$SlotState {
     }
 
     final service = SlotService();
-    final res = await service.rejectSlot(token!.accessToken, slotId);
+    final res = await service.rejectSlot(token.accessToken, slotId);
 
     switch (res) {
       case Ok<void>():
@@ -78,7 +78,7 @@ class SlotState extends _$SlotState {
     }
 
     final service = SlotService();
-    final res = await service.cancelSlot(token!.accessToken, slotId);
+    final res = await service.cancelSlot(token.accessToken, slotId);
 
     switch (res) {
       case Ok<void>():
@@ -101,7 +101,7 @@ class SlotState extends _$SlotState {
     }
 
     final service = SlotService();
-    final res = await service.bookSlot(token!.accessToken, petDaycareId, req);
+    final res = await service.bookSlot(token.accessToken, petDaycareId, req);
 
     switch (res) {
       case Ok<void>():

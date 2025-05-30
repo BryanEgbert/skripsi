@@ -22,7 +22,6 @@ Reviews _$ReviewsFromJson(Map<String, dynamic> json) {
 mixin _$Reviews {
   int get id => throw _privateConstructorUsedError;
   int get rating => throw _privateConstructorUsedError;
-  String get title => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   User get user => throw _privateConstructorUsedError;
   String get createdAt => throw _privateConstructorUsedError;
@@ -42,12 +41,7 @@ abstract class $ReviewsCopyWith<$Res> {
       _$ReviewsCopyWithImpl<$Res, Reviews>;
   @useResult
   $Res call(
-      {int id,
-      int rating,
-      String title,
-      String description,
-      User user,
-      String createdAt});
+      {int id, int rating, String description, User user, String createdAt});
 
   $UserCopyWith<$Res> get user;
 }
@@ -69,7 +63,6 @@ class _$ReviewsCopyWithImpl<$Res, $Val extends Reviews>
   $Res call({
     Object? id = null,
     Object? rating = null,
-    Object? title = null,
     Object? description = null,
     Object? user = null,
     Object? createdAt = null,
@@ -83,10 +76,6 @@ class _$ReviewsCopyWithImpl<$Res, $Val extends Reviews>
           ? _value.rating
           : rating // ignore: cast_nullable_to_non_nullable
               as int,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -121,12 +110,7 @@ abstract class _$$ReviewsImplCopyWith<$Res> implements $ReviewsCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {int id,
-      int rating,
-      String title,
-      String description,
-      User user,
-      String createdAt});
+      {int id, int rating, String description, User user, String createdAt});
 
   @override
   $UserCopyWith<$Res> get user;
@@ -147,7 +131,6 @@ class __$$ReviewsImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? rating = null,
-    Object? title = null,
     Object? description = null,
     Object? user = null,
     Object? createdAt = null,
@@ -161,10 +144,6 @@ class __$$ReviewsImplCopyWithImpl<$Res>
           ? _value.rating
           : rating // ignore: cast_nullable_to_non_nullable
               as int,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -187,7 +166,6 @@ class _$ReviewsImpl implements _Reviews {
   const _$ReviewsImpl(
       {required this.id,
       required this.rating,
-      required this.title,
       required this.description,
       required this.user,
       required this.createdAt});
@@ -200,8 +178,6 @@ class _$ReviewsImpl implements _Reviews {
   @override
   final int rating;
   @override
-  final String title;
-  @override
   final String description;
   @override
   final User user;
@@ -210,7 +186,7 @@ class _$ReviewsImpl implements _Reviews {
 
   @override
   String toString() {
-    return 'Reviews(id: $id, rating: $rating, title: $title, description: $description, user: $user, createdAt: $createdAt)';
+    return 'Reviews(id: $id, rating: $rating, description: $description, user: $user, createdAt: $createdAt)';
   }
 
   @override
@@ -220,7 +196,6 @@ class _$ReviewsImpl implements _Reviews {
             other is _$ReviewsImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.rating, rating) || other.rating == rating) &&
-            (identical(other.title, title) || other.title == title) &&
             (identical(other.description, description) ||
                 other.description == description) &&
             (identical(other.user, user) || other.user == user) &&
@@ -231,7 +206,7 @@ class _$ReviewsImpl implements _Reviews {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, rating, title, description, user, createdAt);
+      Object.hash(runtimeType, id, rating, description, user, createdAt);
 
   /// Create a copy of Reviews
   /// with the given fields replaced by the non-null parameter values.
@@ -253,7 +228,6 @@ abstract class _Reviews implements Reviews {
   const factory _Reviews(
       {required final int id,
       required final int rating,
-      required final String title,
       required final String description,
       required final User user,
       required final String createdAt}) = _$ReviewsImpl;
@@ -264,8 +238,6 @@ abstract class _Reviews implements Reviews {
   int get id;
   @override
   int get rating;
-  @override
-  String get title;
   @override
   String get description;
   @override

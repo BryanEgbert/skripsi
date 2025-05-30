@@ -10,7 +10,6 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/user.dart';
 import 'package:frontend/pages/chat_page.dart';
 import 'package:frontend/pages/welcome.dart';
-
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/message_tracker_provider.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
@@ -153,7 +152,7 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
           ? Center(
               child: CircularProgressIndicator.adaptive(),
             )
-          : RefreshIndicator(
+          : RefreshIndicator.adaptive(
               onRefresh: () async {
                 ref.read(getUserChatListProvider.future).then((newData) {
                   setState(() {

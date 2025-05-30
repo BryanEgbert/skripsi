@@ -59,6 +59,7 @@ class PetService implements IPetService {
         "http://$host/pets",
         options: Options(
           headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
             Headers.contentTypeHeader: Headers.multipartFormDataContentType,
           },
         ),

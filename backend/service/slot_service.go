@@ -21,6 +21,8 @@ type SlotService interface {
 	RejectBookedSlot(slotId uint) error
 	CancelBookedSlot(slotId uint) error
 	GetBookingRequests(userID uint, page int, pageSize int) (model.ListData[model.BookingRequest], error)
+	GetBookedSlot(id uint, userId uint) (*model.BookedSlotDTO, error)
+	GetBookedSlots(userId uint, page int, pageSize int) (*[]model.BookedSlotDTO, error)
 }
 
 type SlotServiceImpl struct {
@@ -29,6 +31,60 @@ type SlotServiceImpl struct {
 
 func NewSlotService(db *gorm.DB) *SlotServiceImpl {
 	return &SlotServiceImpl{db: db}
+}
+
+func (s *SlotServiceImpl) GetBookedSlot(id uint, userId uint) (*model.BookedSlotDTO, error) {
+	var transaction model.BookedSlot
+
+	if err := s.db.
+		Model(&model.BookedSlot{}).
+		Preload("User").
+		Preload("Status").
+		Preload("Pet").
+		Preload("Pet.PetCategory").
+		Preload("Pet.PetCategory.SizeCategory").
+		Preload("Address").
+		Preload("Daycare").
+		Preload("Daycare.Slots").
+		Preload("Daycare.Slots.PricingType").
+		Preload("Daycare.Slots.PetCategory").
+		Preload("Daycare.Slots.PetCategory.SizeCategory").
+		Where("id = ? AND user_id = ?", id, userId).
+		Find(&transaction).Error; err != nil {
+		return nil, err
+	}
+
+	out := helper.ConvertTransactionToTransactionDTO(transaction)
+
+	return &out, nil
+}
+
+func (s *SlotServiceImpl) GetBookedSlots(userId uint, page int, pageSize int) (*[]model.BookedSlotDTO, error) {
+	var transactions []model.BookedSlot
+
+	if err := s.db.
+		Model(&model.BookedSlot{}).
+		Preload("User").
+		Preload("Status").
+		Preload("Pet").
+		Preload("Pet.PetCategory").
+		Preload("Pet.PetCategory.SizeCategory").
+		Preload("Address").
+		Preload("Daycare").
+		Preload("Daycare.Slots").
+		Preload("Daycare.Slots.PricingType").
+		Preload("Daycare.Slots.PetCategory").
+		Preload("Daycare.Slots.PetCategory.SizeCategory").
+		Where("user_id = ?", userId).
+		Offset((page - 1) * pageSize).
+		Limit(pageSize).
+		Find(&transactions).Error; err != nil {
+		return nil, err
+	}
+
+	out := helper.ConvertTransactionsToTransactionDTO(transactions)
+
+	return &out, nil
 }
 
 func (s *SlotServiceImpl) GetBookingRequests(userID uint, page int, pageSize int) (model.ListData[model.BookingRequest], error) {
@@ -164,7 +220,7 @@ func (s *SlotServiceImpl) CancelBookedSlot(slotId uint) error {
 
 func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) (*[]model.SlotsResponse, error) {
 	firstDay := time.Now()
-	log.Printf("first day: %v", firstDay.String())
+
 	lastDay := firstDay.AddDate(1, 0, 0)
 
 	var slots []model.Slots
@@ -211,7 +267,6 @@ func (s *SlotServiceImpl) GetSlots(petDaycareId uint, req model.GetSlotRequest) 
 
 	bookedSlotsMap := make(map[string]int)
 	for _, b := range bookedSlots {
-		log.Printf("%v: %v", b.Date, b.SlotCount)
 		bookedSlotsMap[b.Date.Format("2006-01-02")] = int(b.SlotCount)
 	}
 
@@ -289,8 +344,20 @@ func (s *SlotServiceImpl) EditSlotCount(userId uint, slotId uint, req model.Redu
 	return nil
 }
 
-// TODO: update book slots to support multiple pet ID
 func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) error {
+	var count int64
+	if err := s.db.
+		Joins("JOIN pet_booked_slots pbs ON pbs.booked_slot_id = booked_slots.id").
+		Where("pbs.pet_id IN ? AND booked_slots.status_id IN ?", req.PetID, []uint{1, 2, 4}).
+		Count(&count).
+		Error; err != nil {
+		return err
+	}
+
+	if count > 0 {
+		return apputils.ErrPetAlreadyBooked
+	}
+
 	var petCategoryID []uint
 	if err := s.db.
 		Table("pets").
@@ -418,16 +485,16 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 			return err
 		}
 
-		newTransaction := model.Transaction{
-			// PetDaycareID: req.DaycareID,
-			BookedSlot: newBookSlot,
-			UserID:     userId,
-		}
+		// newTransaction := model.Transaction{
+		// 	// PetDaycareID: req.DaycareID,
+		// 	BookedSlot: newBookSlot,
+		// 	UserID:     userId,
+		// }
 
-		if err := tx.Create(&newTransaction).Error; err != nil {
-			tx.Rollback()
-			return err
-		}
+		// if err := tx.Create(&newTransaction).Error; err != nil {
+		// 	tx.Rollback()
+		// 	return err
+		// }
 
 		for _, petID := range req.PetID {
 			if err := tx.Model(&newBookSlot).

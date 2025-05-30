@@ -131,7 +131,7 @@ class _ViewBookingRequestsPageState
 
     handleValue(slotState, this, ref.read(slotStateProvider.notifier).reset);
 
-    return RefreshIndicator(
+    return RefreshIndicator.adaptive(
       onRefresh: () async {
         _records = [];
         _page = 1;

@@ -120,7 +120,7 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
               color: Colors.orange,
             ))
           : (_error == null)
-              ? RefreshIndicator(
+              ? RefreshIndicator.adaptive(
                   onRefresh: () async {
                     _records = [];
                     _page = 1;

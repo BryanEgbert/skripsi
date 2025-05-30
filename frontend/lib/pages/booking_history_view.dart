@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/add_review_modal.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/transaction.dart';
 import 'package:frontend/pages/details/transaction_details_page.dart';
@@ -46,7 +49,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
       _error = null;
     });
 
-    ref.read(getTransactionsProvider(_page, _pageSize).future).then((newData) {
+    ref.read(getBookedSlotsProvider(_page, _pageSize).future).then((newData) {
       if (newData.data.isNotEmpty) {
         setState(() {
           _records.addAll(newData.data);
@@ -96,9 +99,12 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                       ? _error.toString()
                       : "Your booking history shows here",
                   onRefresh: () async {
-                    _records = [];
-                    _page = 1;
-                    _fetchMoreData();
+                    setState(() {
+                      _records = [];
+                      _page = 1;
+                      _hasMoreData = true;
+                      _fetchMoreData();
+                    });
                   })
               : _buildBookingHistoryList(),
     );
@@ -106,10 +112,25 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
 
   Widget _buildBookingHistoryList() {
     final slotState = ref.watch(slotStateProvider);
+    log("slotState: $slotState");
 
-    handleError(slotState, context, ref.read(slotStateProvider.notifier).reset);
+    if (_error != null) {
+      handleError(AsyncError(_error!, StackTrace.current), context);
+    }
 
-    return RefreshIndicator(
+    handleError(slotState, context);
+    if (slotState.hasValue && !slotState.isLoading) {
+      if (slotState.value == 204) {
+        setState(() {
+          _records = [];
+          _page = 1;
+          _fetchMoreData();
+          ref.read(slotStateProvider.notifier).reset();
+        });
+      }
+    }
+
+    return RefreshIndicator.adaptive(
       onRefresh: () async {
         _records = [];
         _page = 1;
@@ -158,11 +179,11 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                     chipColor = Color(0xFFFFF080);
                   } else if (_records[index].status.id == 2 ||
                       _records[index].status.id == 4) {
-                    statusColor = Colors.green;
+                    statusColor = Colors.green[900]!;
                     chipColor = Color(0xFFCAFFC7);
                   } else if (_records[index].status.id == 3 ||
                       _records[index].status.id == 5) {
-                    statusColor = Colors.red;
+                    statusColor = Colors.red[900]!;
                     chipColor = Color(0XFFFFD7D7);
                   }
 
@@ -170,10 +191,13 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
-                            TransactionDetailsPage(_records[index].id),
+                            BookingHistoryDetailsPage(_records[index].id),
                       ));
                     },
                     child: Card(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.orange[900]?.withAlpha(50)
+                          : null,
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 4.0),
                         child: Column(
@@ -188,8 +212,11 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                     Text(
                                       _records[index].petDaycare.name,
                                       style: TextStyle(
-                                        color: Colors.orange,
-                                        fontWeight: FontWeight.w800,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.light
+                                            ? Constants.primaryTextColor
+                                            : Colors.orange,
+                                        fontWeight: FontWeight.w900,
                                         fontSize: 12,
                                       ),
                                     ),
@@ -250,12 +277,6 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                               .cancelSlot(_records[index]
                                                   .bookedSlot
                                                   .id);
-
-                                          setState(() {
-                                            _records = [];
-                                            _page = 1;
-                                            _fetchMoreData();
-                                          });
                                         },
                                       );
                                     },

@@ -3,7 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location service to find the nearest pet daycare and saving address information</string>
+	<string>This app needs access to location service to find the nearest pet daycare from your current location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location service to find the nearest pet daycare from your current location</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

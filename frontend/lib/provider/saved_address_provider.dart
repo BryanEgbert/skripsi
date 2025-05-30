@@ -30,7 +30,7 @@ class SavedAddressState extends _$SavedAddressState {
     }
 
     final userService = UserService();
-    final res = await userService.addSavedAddress(token!.accessToken, req);
+    final res = await userService.addSavedAddress(token.accessToken, req);
     switch (res) {
       case Ok<void>():
         state = AsyncData(201);
@@ -51,7 +51,7 @@ class SavedAddressState extends _$SavedAddressState {
     }
 
     final userService = UserService();
-    final res = await userService.editSavedAddress(token!.accessToken, req);
+    final res = await userService.editSavedAddress(token.accessToken, req);
     switch (res) {
       case Ok<void>():
         state = AsyncData(204);
@@ -73,7 +73,7 @@ class SavedAddressState extends _$SavedAddressState {
 
     final userService = UserService();
     final res =
-        await userService.deleteSavedAddress(token!.accessToken, addressId);
+        await userService.deleteSavedAddress(token.accessToken, addressId);
     switch (res) {
       case Ok<void>():
         state = AsyncData(204);

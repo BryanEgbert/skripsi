@@ -6,9 +6,9 @@ import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/paginated_pets_list_view.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/model/pet_daycare.dart';
 import 'package:frontend/model/request/book_slot_request.dart';
 import 'package:frontend/model/saved_address.dart';
-import 'package:frontend/model/slot.dart';
 import 'package:frontend/pages/add_saved_address.dart';
 import 'package:frontend/pages/saved_address_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
@@ -18,8 +18,9 @@ import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/validator.dart';
 
 class BookSlotsPage extends ConsumerStatefulWidget {
-  final int petDaycareId;
-  const BookSlotsPage(this.petDaycareId, {super.key});
+  // final int petDaycareId;
+  final PetDaycareDetails petDaycare;
+  const BookSlotsPage(this.petDaycare, {super.key});
 
   @override
   ConsumerState<BookSlotsPage> createState() => _BookSlotsPageState();
@@ -33,8 +34,6 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
   String? _startDate;
   String? _endDate;
 
-  final List<Slot> _availableDates = [];
-
   final Map<int, bool> _petIdValue = {};
   final List<int> _petCategoryIds = [];
 
@@ -43,7 +42,6 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
   SavedAddress? _savedAddress;
   int _addressIndex = 0;
   int addressId = 0;
-  String? _locationErrorText;
 
   void _submitForm() {
     if (_petIdValue.keys.isEmpty) {
@@ -66,7 +64,9 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
     log("[BOOK SLOTS PAGE] petId: ${request.petId}");
 
-    ref.read(slotStateProvider.notifier).bookSlot(widget.petDaycareId, request);
+    ref
+        .read(slotStateProvider.notifier)
+        .bookSlot(widget.petDaycare.id, request);
   }
 
   @override
@@ -219,6 +219,10 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                               pageSize: Constants.pageSize,
                               buildBody: (pet) {
                                 return CheckboxListTile(
+                                  enabled:
+                                      (widget.petDaycare.mustBeVaccinated &&
+                                              pet.isVaccinated) ||
+                                          true,
                                   value: _petIdValue[pet.id] ?? false,
                                   onChanged: (value) {
                                     setState(() {
@@ -279,10 +283,12 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                             ),
                             controller: _dateRangeController,
                             onTap: () async {
-                              final slotDate = ref.read(getSlotsProvider(
-                                widget.petDaycareId,
+                              final slotDate = await ref.read(getSlotsProvider(
+                                widget.petDaycare.id,
                                 _petCategoryIds.toSet().toList(),
-                              ));
+                              ).future);
+
+                              // if (!mounted) return;
 
                               final dateRange = await showDateRangePicker(
                                 context: context,
@@ -291,28 +297,24 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                     DateTime.now().add(Duration(days: 365)),
                                 selectableDayPredicate:
                                     (day, selectedStartDay, selectedEndDay) {
-                                  log("slotDate: $slotDate");
-                                  if (slotDate.hasValue) {
-                                    log("slot date has value");
-                                    return !slotDate.value!.data.any(
-                                      (element) {
-                                        if (element.slotAmount <= 0) {
-                                          DateTime disabledDate =
-                                              DateTime.parse(element.date)
-                                                  .toLocal();
-                                          log("disabled: ${disabledDate.toString()}");
-                                          return disabledDate.year ==
-                                                  day.year &&
-                                              disabledDate.month == day.month &&
-                                              disabledDate.day == day.day;
-                                        }
+                                  int selectedPetCount = _petIdValue.values
+                                      .where((value) => value)
+                                      .length;
+                                  return !slotDate.data.any(
+                                    (element) {
+                                      if (element.slotAmount <
+                                          selectedPetCount) {
+                                        DateTime disabledDate =
+                                            DateTime.parse(element.date)
+                                                .toLocal();
+                                        return disabledDate.year == day.year &&
+                                            disabledDate.month == day.month &&
+                                            disabledDate.day == day.day;
+                                      }
 
-                                        return true;
-                                      },
-                                    );
-                                  }
-
-                                  return true;
+                                      return false;
+                                    },
+                                  );
                                 },
                                 builder: (context, child) {
                                   final isDark = Theme.of(context).brightness ==

@@ -21,7 +21,6 @@ import 'package:frontend/services/pet_daycare_service.dart';
 import 'package:frontend/services/pet_service.dart';
 import 'package:frontend/services/review_service.dart';
 import 'package:frontend/services/slot_service.dart';
-import 'package:frontend/services/transaction_service.dart';
 import 'package:frontend/services/user_service.dart';
 import 'package:frontend/services/vaccination_record_service.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
@@ -507,7 +506,7 @@ Future<ListData<BookingRequest>> getBookingRequests(Ref ref,
 }
 
 @riverpod
-Future<Transaction> getTransaction(Ref ref, int transactionId) async {
+Future<Transaction> getBookedSlot(Ref ref, int transactionId) async {
   TokenResponse? token;
   try {
     token = await refreshToken();
@@ -515,8 +514,8 @@ Future<Transaction> getTransaction(Ref ref, int transactionId) async {
     return Future.error(e.toString());
   }
 
-  final service = TransactionService();
-  final res = await service.getTransaction(token.accessToken, transactionId);
+  final service = SlotService();
+  final res = await service.getBookedSlot(token.accessToken, transactionId);
 
   switch (res) {
     case Ok():
@@ -527,7 +526,7 @@ Future<Transaction> getTransaction(Ref ref, int transactionId) async {
 }
 
 @riverpod
-Future<ListData<Transaction>> getTransactions(Ref ref,
+Future<ListData<Transaction>> getBookedSlots(Ref ref,
     [int page = 1, int pageSize = 10]) async {
   TokenResponse? token;
   try {
@@ -536,8 +535,8 @@ Future<ListData<Transaction>> getTransactions(Ref ref,
     return Future.error(e.toString());
   }
 
-  final service = TransactionService();
-  final res = await service.getTransactions(
+  final service = SlotService();
+  final res = await service.getBookedSlots(
     token.accessToken,
     OffsetPaginationQueryParams(page: page, pageSize: pageSize),
   );

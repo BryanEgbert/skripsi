@@ -64,7 +64,6 @@ func SetupTest(t *testing.T) *gorm.DB {
 		&model.Role{},
 		&model.Reviews{},
 		&model.RefreshToken{},
-		&model.Transaction{},
 		&model.DailyWalks{},
 		&model.DailyPlaytime{},
 		&model.ReduceSlots{},
@@ -73,7 +72,7 @@ func SetupTest(t *testing.T) *gorm.DB {
 		&model.PricingType{},
 	)
 
-	if err := db.Exec("TRUNCATE TABLE users, vet_specialties, user_vet_specialties, pet_daycares, pets, size_categories, roles, slots, booked_slots, thumbnails, pet_categories, reviews, refresh_tokens, transactions, daily_walks, daily_playtimes, reduce_slots, booked_slots_dailies, pricing_types RESTART IDENTITY CASCADE;").Error; err != nil {
+	if err := db.Exec("TRUNCATE TABLE users, vet_specialties, user_vet_specialties, pet_daycares, pets, size_categories, roles, slots, booked_slots, thumbnails, pet_categories, reviews, refresh_tokens, daily_walks, daily_playtimes, reduce_slots, booked_slots_dailies, pricing_types RESTART IDENTITY CASCADE;").Error; err != nil {
 		t.Fatalf("Truncate err: %v", err)
 	}
 
@@ -104,7 +103,6 @@ func Setup(db *gorm.DB) *gin.Engine {
 		&model.Role{},
 		&model.Reviews{},
 		&model.RefreshToken{},
-		&model.Transaction{},
 		&model.DailyWalks{},
 		&model.DailyPlaytime{},
 		&model.ReduceSlots{},
@@ -152,8 +150,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	vaccineRecordController := controller.NewVaccineRecordController(vaccineRecordService)
 
-	transactionService := service.NewTransactionService(db)
-	transactionController := controller.NewTransactionController(transactionService)
+	// transactionService := service.NewTransactionService(db)
+	// transactionController := controller.NewTransactionController(transactionService)
 
 	slotController := controller.NewSlotController(slotService)
 
@@ -173,7 +171,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	r = routes.RegisterPetDaycareRoutes(r, petDaycareController)
 	r = routes.RegisterCategoryRoutes(r, categoryController)
 	r = routes.RegisterVaccineRecordRoute(r, vaccineRecordController)
-	r = routes.RegisterTransactionRoute(r, transactionController)
+	// r = routes.RegisterTransactionRoute(r, transactionController)
 	r = routes.RegisterSlotRoute(r, slotController)
 	r = routes.RegisterChatRoute(r, chatController)
 	r = routes.RegisterImageRoute(r, imageController)

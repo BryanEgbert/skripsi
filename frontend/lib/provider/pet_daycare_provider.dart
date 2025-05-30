@@ -34,7 +34,7 @@ class PetDaycareState extends _$PetDaycareState {
 
     final service = PetDaycareService();
     final res =
-        await service.updatePetDaycare(token!.accessToken, petDaycareId, req);
+        await service.updatePetDaycare(token.accessToken, petDaycareId, req);
 
     switch (res) {
       case Ok<void>():
@@ -58,7 +58,7 @@ class PetDaycareState extends _$PetDaycareState {
 
     final service = SlotService();
     final res = await service.deleteReduceSlot(
-      token!.accessToken,
+      token.accessToken,
       slotId,
     );
 
@@ -83,7 +83,7 @@ class PetDaycareState extends _$PetDaycareState {
 
     final service = PetDaycareService();
     final res = await service.editSlotCount(
-      token!.accessToken,
+      token.accessToken,
       petDaycareId,
       ReduceSlotRequest(reducedCount: reducedCount, targetDate: targetDate),
     );

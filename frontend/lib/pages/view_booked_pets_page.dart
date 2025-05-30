@@ -178,7 +178,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
   }
 
   Widget _buildViewByPetOwners(List<ChatMessage> messages) {
-    return RefreshIndicator(
+    return RefreshIndicator.adaptive(
       onRefresh: () async {
         _bookedPetRecords = [];
         _page = 1;
@@ -253,7 +253,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
   }
 
   Widget _buildViewByPets(List<ChatMessage> messages) {
-    return RefreshIndicator(
+    return RefreshIndicator.adaptive(
       onRefresh: () async {
         _petRecords = [];
         _lastId = 0;

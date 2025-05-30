@@ -9,7 +9,6 @@ class Reviews with _$Reviews {
   const factory Reviews({
     required int id,
     required int rating,
-    required String title,
     required String description,
     required User user,
     required String createdAt,

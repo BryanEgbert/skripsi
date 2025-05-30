@@ -280,7 +280,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 	}
 
 	if req.MustBeVaccinated != nil {
-		query = query.Where("address_id IS NOT NULL")
+		query = query.Where("must_be_vaccinated = ?", req.MustBeVaccinated)
 	}
 
 	if len(req.Facilities) > 0 {

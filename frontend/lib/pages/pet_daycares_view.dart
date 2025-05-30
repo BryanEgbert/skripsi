@@ -10,6 +10,7 @@ import 'package:frontend/model/pet_daycare.dart';
 import 'package:frontend/model/request/pet_daycare_filters.dart';
 import 'package:frontend/pages/details/pet_daycare_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/utils/handle_error.dart';
 import 'package:geolocator/geolocator.dart';
 
 final locationEnabledProvider = StateProvider<bool>((ref) => false);
@@ -50,10 +51,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
   }
 
   void _fetchMoreData() {
-    log("running fetch data");
     if (!_hasMoreData) return; // Stop fetching if no more data
-
-    log("hasMoreData");
 
     setState(() => _isFetching = true);
 
@@ -132,32 +130,13 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
   @override
   Widget build(BuildContext context) {
     log("filter: $_filters");
+
     if (_error != null) {
-      return ErrorText(
-          errorText: _error.toString(),
-          onRefresh: () async {
-            _records = [];
-            _page = 1;
-            _hasMoreData = true;
-            _fetchMoreData();
-          });
+      handleError(AsyncError(_error!, StackTrace.current), context);
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            suffixIcon: Icon(
-              Icons.search_rounded,
-            ),
-            labelStyle: TextStyle(fontSize: 12),
-            isDense: true,
-            labelText: "Search pet daycares",
-          ),
-        ),
         actions: [
           Builder(builder: (context) {
             return IconButton(
@@ -208,23 +187,34 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                         color: Constants.primaryTextColor,
                       ),
                     ),
-                    FilterChip(
-                      label: Text(
-                        "Require Pet Vaccination",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      selected: _filters.mustBeVaccinated ?? false,
-                      onSelected: (value) {
-                        if (value == true) {
-                          setState(() {
-                            _filters.mustBeVaccinated = value;
-                          });
-                        } else {
-                          setState(() {
-                            _filters.mustBeVaccinated = null;
-                          });
-                        }
-                      },
+                    Wrap(
+                      spacing: 4,
+                      children: [
+                        FilterChip(
+                          label: Text(
+                            "Requires Vaccination",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          selected: _filters.mustBeVaccinated == true,
+                          onSelected: (value) {
+                            setState(() {
+                              _filters.mustBeVaccinated = value ? true : null;
+                            });
+                          },
+                        ),
+                        FilterChip(
+                          label: Text(
+                            "Doesn't Require Vaccination",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          selected: _filters.mustBeVaccinated == false,
+                          onSelected: (value) {
+                            setState(() {
+                              _filters.mustBeVaccinated = value ? false : null;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -519,42 +509,51 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
           ),
         ),
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          _records = [];
-          _page = 1;
-          _hasMoreData = true;
-          _fetchMoreData();
-        },
-        child: (_isFetching && _records.isEmpty)
-            ? Center(
-                child: CircularProgressIndicator(
-                color: Colors.orange,
-              ))
-            : GridView.builder(
-                itemCount: _records.length + 1,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 0.0,
-                  crossAxisSpacing: 0.0,
-                  mainAxisExtent: 250,
-                ),
-                itemBuilder: (context, index) {
-                  if (index < _records.length) {
-                    return _buildCard(context, _records[index]);
-                  } else {
-                    if (_isFetching) {
-                      return Center(
-                          child: CircularProgressIndicator(
-                        color: Colors.orange,
-                      ));
-                    }
+      body: (_error != null)
+          ? ErrorText(
+              errorText: _error.toString(),
+              onRefresh: () async {
+                _records = [];
+                _page = 1;
+                _hasMoreData = true;
+                _fetchMoreData();
+              })
+          : RefreshIndicator.adaptive(
+              onRefresh: () async {
+                _records = [];
+                _page = 1;
+                _hasMoreData = true;
+                _fetchMoreData();
+              },
+              child: (_isFetching && _records.isEmpty)
+                  ? Center(
+                      child: CircularProgressIndicator(
+                      color: Colors.orange,
+                    ))
+                  : GridView.builder(
+                      itemCount: _records.length + 1,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 0.0,
+                        crossAxisSpacing: 0.0,
+                        mainAxisExtent: 250,
+                      ),
+                      itemBuilder: (context, index) {
+                        if (index < _records.length) {
+                          return _buildCard(context, _records[index]);
+                        } else {
+                          if (_isFetching) {
+                            return Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.orange,
+                            ));
+                          }
 
-                    return SizedBox();
-                  }
-                },
-              ),
-      ),
+                          return SizedBox();
+                        }
+                      },
+                    ),
+            ),
       bottomSheet: _serviceEnabled == false
           ? Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -625,6 +624,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                 item.name,
                 style: TextStyle(
                   fontSize: 12,
+                  fontWeight: FontWeight.w900,
                   color: Theme.of(context).brightness == Brightness.light
                       ? Constants.primaryTextColor
                       : Colors.orange,
@@ -711,7 +711,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
           size: 16,
         ),
         Text(
-          "${item.averageRating}/5 (${item.ratingCount})",
+          "${item.averageRating.toStringAsFixed(1)}/5 (${item.ratingCount})",
           style: TextStyle(
             fontSize: 10,
             color: Theme.of(context).brightness == Brightness.light

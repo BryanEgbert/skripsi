@@ -128,7 +128,7 @@ class _PaginatedListViewState
       }
     }
 
-    return RefreshIndicator(
+    return RefreshIndicator.adaptive(
       onRefresh: () async {
         _records = [];
         _page = 1;

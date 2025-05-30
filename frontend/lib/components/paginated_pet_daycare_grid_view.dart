@@ -88,7 +88,7 @@ class _PaginatedPetDaycareGridViewState
           });
     }
 
-    return RefreshIndicator(
+    return RefreshIndicator.adaptive(
       onRefresh: () async {
         _records = [];
         _lastId = 0;

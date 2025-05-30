@@ -49,7 +49,7 @@ class PetDaycareFilters {
 
   @override
   String toString() {
-    return "PetDaycareFilters(minDistance: $minDistance, maxDistance: $maxDistance, facilities: $facilities, minPrice: $minPrice, maxPrice: $maxPrice, dailyWalks: $dailyWalks, dailyPlaytime: $dailyPlaytime)";
+    return "PetDaycareFilters(minDistance: $minDistance, maxDistance: $maxDistance, facilities: $facilities, minPrice: $minPrice, maxPrice: $maxPrice, dailyWalks: $dailyWalks, dailyPlaytime: $dailyPlaytime, mustBeVaccinated: $mustBeVaccinated)";
   }
 
   @override

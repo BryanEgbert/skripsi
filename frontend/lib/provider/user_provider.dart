@@ -32,7 +32,7 @@ class UserState extends _$UserState {
     }
 
     final userService = UserService();
-    final res = await userService.updateUser(token!.accessToken, req);
+    final res = await userService.updateUser(token.accessToken, req);
 
     switch (res) {
       case Ok<void>():
@@ -57,7 +57,7 @@ class UserState extends _$UserState {
 
     final userService = UserService();
     final res =
-        await userService.updateDeviceToken(token!.accessToken, deviceToken);
+        await userService.updateDeviceToken(token.accessToken, deviceToken);
 
     switch (res) {
       case Ok<void>():

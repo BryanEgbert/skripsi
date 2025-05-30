@@ -10,8 +10,8 @@ import 'package:frontend/pages/book_slots_page.dart';
 import 'package:frontend/pages/chat_page.dart';
 import 'package:frontend/pages/edit/edit_pet_daycare_page.dart';
 import 'package:frontend/pages/ratings_page.dart';
-import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/utils/formatter.dart';
 import 'package:readmore/readmore.dart';
 
 class PetDaycareDetailsPage extends ConsumerStatefulWidget {
@@ -142,24 +142,14 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       widget.petDaycareId != 0) ...[
                     Text(
                       "${(value.distance.toDouble() / 1000).toStringAsFixed(2)}km away",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Colors.black
-                            : Colors.white70,
-                      ),
+                      style: TextStyle(fontSize: 12),
                       maxLines: 2,
                     ),
                     SizedBox(height: 4),
                   ],
                   Text(
                     value.address,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white70,
-                    ),
+                    style: TextStyle(fontSize: 12),
                     maxLines: 2,
                   ),
                   const SizedBox(height: 4),
@@ -168,37 +158,19 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       Icon(Icons.star, color: Colors.orange, size: 16),
                       SizedBox(width: 4),
                       Text(
-                        "${value.averageRating}/5 (${value.ratingCount})",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
+                        "${value.averageRating.toStringAsFixed(1)}/5 (${value.ratingCount})",
+                        style: TextStyle(fontSize: 12),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         "|",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
+                        style: TextStyle(fontSize: 12),
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        "${value.bookedNum} ",
+                        "${formatNumber(value.bookedNum)} ",
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
+                            fontWeight: FontWeight.bold, fontSize: 12),
                       ),
                       Text(
                         "slots booked",
@@ -224,7 +196,10 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                         value.owner.name,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Constants.primaryTextColor,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Constants.primaryTextColor
+                                  : Colors.orange,
                         ),
                       ),
                       trailing: Icon(
@@ -453,7 +428,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => BookSlotsPage(value.id),
+                      builder: (context) => BookSlotsPage(value),
                     ));
                   },
                   child: Text("Book A Slot"),

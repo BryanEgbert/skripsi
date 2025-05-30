@@ -10,6 +10,23 @@ import (
 // 	return 0.0
 // }
 
+func PetIsVaccinated(pet model.Pet) (bool, error) {
+	if len(pet.VaccineRecords) == 0 {
+		return false, nil
+	}
+
+	parsedTime, err := time.Parse(time.RFC3339, pet.VaccineRecords[0].NextDueDate)
+	if err != nil {
+		return false, err
+	}
+
+	if parsedTime.In(time.Local).Compare(time.Now()) < 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
 func ConvertUserToDTO(user model.User) model.UserDTO {
 	dto := model.UserDTO{
 		ID:           user.ID,
@@ -149,7 +166,6 @@ func ConvertReviewsToDto(reviews []model.Reviews) []model.ReviewsDTO {
 			User:        ConvertUserToDTO(val.User),
 			Description: val.Description,
 			CreatedAt:   val.CreatedAt.Format(time.RFC3339),
-			Title:       val.Name,
 		}
 
 		out = append(out, review)
@@ -158,59 +174,59 @@ func ConvertReviewsToDto(reviews []model.Reviews) []model.ReviewsDTO {
 	return out
 }
 
-func ConvertTransactionToTransactionDTO(val model.Transaction) model.TransactionDTO {
-	transactionDTO := model.TransactionDTO{
+func ConvertTransactionToTransactionDTO(val model.BookedSlot) model.BookedSlotDTO {
+	transactionDTO := model.BookedSlotDTO{
 		ID: val.ID,
 		Status: model.BookedSlotStatus{
-			ID:   val.BookedSlot.Status.ID,
-			Name: val.BookedSlot.Status.Name,
+			ID:   val.Status.ID,
+			Name: val.Status.Name,
 		},
-		PetDaycare: ConvertPetDaycareToDetailResponse(val.BookedSlot.Daycare, 0),
-		StartDate:  val.BookedSlot.StartDate.Format(time.RFC3339),
-		EndDate:    val.BookedSlot.EndDate.Format(time.RFC3339),
-		// BookedPet:  ConvertPetsToDto(val.BookedSlot.Pet),
-		BookedSlot: ConvertBookedSlotToBookingRequest(val.BookedSlot),
+		PetDaycare: ConvertPetDaycareToDetailResponse(val.Daycare, 0),
+		StartDate:  val.StartDate.Format(time.RFC3339),
+		EndDate:    val.EndDate.Format(time.RFC3339),
+		// BookedPet:  ConvertPetsToDto(val.Pet),
+		BookedSlot: ConvertBookedSlotToBookingRequest(val),
 	}
 
-	if val.BookedSlot.Address.Address != "" {
+	if val.Address.Address != "" {
 		transactionDTO.AddressInfo = &model.SavedAddressDTO{
-			ID:        val.BookedSlot.Address.ID,
-			Name:      val.BookedSlot.Address.Name,
-			Address:   val.BookedSlot.Address.Address,
-			Latitude:  val.BookedSlot.Address.Latitude,
-			Longitude: val.BookedSlot.Daycare.Longitude,
-			Notes:     val.BookedSlot.Address.Notes,
+			ID:        val.Address.ID,
+			Name:      val.Address.Name,
+			Address:   val.Address.Address,
+			Latitude:  val.Address.Latitude,
+			Longitude: val.Daycare.Longitude,
+			Notes:     val.Address.Notes,
 		}
 	}
 
 	return transactionDTO
 }
 
-func ConvertTransactionsToTransactionDTO(transactions []model.Transaction) []model.TransactionDTO {
-	out := []model.TransactionDTO{}
+func ConvertTransactionsToTransactionDTO(transactions []model.BookedSlot) []model.BookedSlotDTO {
+	out := []model.BookedSlotDTO{}
 
 	for _, val := range transactions {
-		transactionDTO := model.TransactionDTO{
+		transactionDTO := model.BookedSlotDTO{
 			ID: val.ID,
 			Status: model.BookedSlotStatus{
-				ID:   val.BookedSlot.Status.ID,
-				Name: val.BookedSlot.Status.Name,
+				ID:   val.Status.ID,
+				Name: val.Status.Name,
 			},
-			PetDaycare: ConvertPetDaycareToDetailResponse(val.BookedSlot.Daycare, 0),
-			StartDate:  val.BookedSlot.StartDate.Format(time.RFC3339),
-			EndDate:    val.BookedSlot.EndDate.Format(time.RFC3339),
-			// BookedPet:  ConvertPetsToDto(val.BookedSlot.Pet),
-			BookedSlot: ConvertBookedSlotToBookingRequest(val.BookedSlot),
+			PetDaycare: ConvertPetDaycareToDetailResponse(val.Daycare, 0),
+			StartDate:  val.StartDate.Format(time.RFC3339),
+			EndDate:    val.EndDate.Format(time.RFC3339),
+			// BookedPet:  ConvertPetsToDto(val.Pet),
+			BookedSlot: ConvertBookedSlotToBookingRequest(val),
 		}
 
-		if val.BookedSlot.Address.Address != "" {
+		if val.Address.Address != "" {
 			transactionDTO.AddressInfo = &model.SavedAddressDTO{
-				ID:        val.BookedSlot.Address.ID,
-				Name:      val.BookedSlot.Address.Name,
-				Address:   val.BookedSlot.Address.Address,
-				Latitude:  val.BookedSlot.Address.Latitude,
-				Longitude: val.BookedSlot.Daycare.Longitude,
-				Notes:     val.BookedSlot.Address.Notes,
+				ID:        val.Address.ID,
+				Name:      val.Address.Name,
+				Address:   val.Address.Address,
+				Latitude:  val.Address.Latitude,
+				Longitude: val.Daycare.Longitude,
+				Notes:     val.Address.Notes,
 			}
 		}
 

@@ -30,3 +30,15 @@ type BookSlotRequest struct {
 	EndDate   time.Time `json:"endDate" binding:"required"`
 	AddressID uint      `json:"addressId"`
 }
+
+type BookedSlotDTO struct {
+	ID          uint                        `json:"id"`
+	Status      BookedSlotStatus            `json:"status"`
+	PetDaycare  GetPetDaycareDetailResponse `json:"petDaycare"`
+	BookedSlot  BookingRequest              `json:"bookedSlot"`
+	AddressInfo *SavedAddressDTO            `json:"addressInfo"`
+	StartDate   string                      `json:"startDate"`
+	EndDate     string                      `json:"endDate"`
+	IsReviewed  bool                        `json:"isReviewed"`
+	// BookedPet   []PetDTO                    `json:"bookedPet"`
+}

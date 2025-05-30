@@ -22,6 +22,10 @@ class FirebaseService {
         minimumFetchInterval: Duration(seconds: 10),
       ),
     );
+    await _remoteConfig.setDefaults({
+      "backend_host": "10.0.2.2:8080",
+      "mock_location_service": true,
+    });
     await _remoteConfig.fetchAndActivate();
   }
 }

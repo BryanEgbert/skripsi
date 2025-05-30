@@ -2648,29 +2648,29 @@ class _GetBookingRequestsProviderElement
   int get pageSize => (origin as GetBookingRequestsProvider).pageSize;
 }
 
-String _$getTransactionHash() => r'cc7a38272599754817ba4a9fddef7a9460054726';
+String _$getBookedSlotHash() => r'04eed0e06495d30f38b5a42d32bfeb640e81ed32';
 
-/// See also [getTransaction].
-@ProviderFor(getTransaction)
-const getTransactionProvider = GetTransactionFamily();
+/// See also [getBookedSlot].
+@ProviderFor(getBookedSlot)
+const getBookedSlotProvider = GetBookedSlotFamily();
 
-/// See also [getTransaction].
-class GetTransactionFamily extends Family<AsyncValue<Transaction>> {
-  /// See also [getTransaction].
-  const GetTransactionFamily();
+/// See also [getBookedSlot].
+class GetBookedSlotFamily extends Family<AsyncValue<Transaction>> {
+  /// See also [getBookedSlot].
+  const GetBookedSlotFamily();
 
-  /// See also [getTransaction].
-  GetTransactionProvider call(
+  /// See also [getBookedSlot].
+  GetBookedSlotProvider call(
     int transactionId,
   ) {
-    return GetTransactionProvider(
+    return GetBookedSlotProvider(
       transactionId,
     );
   }
 
   @override
-  GetTransactionProvider getProviderOverride(
-    covariant GetTransactionProvider provider,
+  GetBookedSlotProvider getProviderOverride(
+    covariant GetBookedSlotProvider provider,
   ) {
     return call(
       provider.transactionId,
@@ -2689,32 +2689,32 @@ class GetTransactionFamily extends Family<AsyncValue<Transaction>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'getTransactionProvider';
+  String? get name => r'getBookedSlotProvider';
 }
 
-/// See also [getTransaction].
-class GetTransactionProvider extends AutoDisposeFutureProvider<Transaction> {
-  /// See also [getTransaction].
-  GetTransactionProvider(
+/// See also [getBookedSlot].
+class GetBookedSlotProvider extends AutoDisposeFutureProvider<Transaction> {
+  /// See also [getBookedSlot].
+  GetBookedSlotProvider(
     int transactionId,
   ) : this._internal(
-          (ref) => getTransaction(
-            ref as GetTransactionRef,
+          (ref) => getBookedSlot(
+            ref as GetBookedSlotRef,
             transactionId,
           ),
-          from: getTransactionProvider,
-          name: r'getTransactionProvider',
+          from: getBookedSlotProvider,
+          name: r'getBookedSlotProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$getTransactionHash,
-          dependencies: GetTransactionFamily._dependencies,
+                  : _$getBookedSlotHash,
+          dependencies: GetBookedSlotFamily._dependencies,
           allTransitiveDependencies:
-              GetTransactionFamily._allTransitiveDependencies,
+              GetBookedSlotFamily._allTransitiveDependencies,
           transactionId: transactionId,
         );
 
-  GetTransactionProvider._internal(
+  GetBookedSlotProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -2728,12 +2728,12 @@ class GetTransactionProvider extends AutoDisposeFutureProvider<Transaction> {
 
   @override
   Override overrideWith(
-    FutureOr<Transaction> Function(GetTransactionRef provider) create,
+    FutureOr<Transaction> Function(GetBookedSlotRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: GetTransactionProvider._internal(
-        (ref) => create(ref as GetTransactionRef),
+      override: GetBookedSlotProvider._internal(
+        (ref) => create(ref as GetBookedSlotRef),
         from: from,
         name: null,
         dependencies: null,
@@ -2746,12 +2746,12 @@ class GetTransactionProvider extends AutoDisposeFutureProvider<Transaction> {
 
   @override
   AutoDisposeFutureProviderElement<Transaction> createElement() {
-    return _GetTransactionProviderElement(this);
+    return _GetBookedSlotProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is GetTransactionProvider &&
+    return other is GetBookedSlotProvider &&
         other.transactionId == transactionId;
   }
 
@@ -2766,45 +2766,45 @@ class GetTransactionProvider extends AutoDisposeFutureProvider<Transaction> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin GetTransactionRef on AutoDisposeFutureProviderRef<Transaction> {
+mixin GetBookedSlotRef on AutoDisposeFutureProviderRef<Transaction> {
   /// The parameter `transactionId` of this provider.
   int get transactionId;
 }
 
-class _GetTransactionProviderElement
+class _GetBookedSlotProviderElement
     extends AutoDisposeFutureProviderElement<Transaction>
-    with GetTransactionRef {
-  _GetTransactionProviderElement(super.provider);
+    with GetBookedSlotRef {
+  _GetBookedSlotProviderElement(super.provider);
 
   @override
-  int get transactionId => (origin as GetTransactionProvider).transactionId;
+  int get transactionId => (origin as GetBookedSlotProvider).transactionId;
 }
 
-String _$getTransactionsHash() => r'ee85aa24056cade231802008cfb7860591666a63';
+String _$getBookedSlotsHash() => r'460f08097e962d0f1e4879c794a86a08b6137efb';
 
-/// See also [getTransactions].
-@ProviderFor(getTransactions)
-const getTransactionsProvider = GetTransactionsFamily();
+/// See also [getBookedSlots].
+@ProviderFor(getBookedSlots)
+const getBookedSlotsProvider = GetBookedSlotsFamily();
 
-/// See also [getTransactions].
-class GetTransactionsFamily extends Family<AsyncValue<ListData<Transaction>>> {
-  /// See also [getTransactions].
-  const GetTransactionsFamily();
+/// See also [getBookedSlots].
+class GetBookedSlotsFamily extends Family<AsyncValue<ListData<Transaction>>> {
+  /// See also [getBookedSlots].
+  const GetBookedSlotsFamily();
 
-  /// See also [getTransactions].
-  GetTransactionsProvider call([
+  /// See also [getBookedSlots].
+  GetBookedSlotsProvider call([
     int page = 1,
     int pageSize = 10,
   ]) {
-    return GetTransactionsProvider(
+    return GetBookedSlotsProvider(
       page,
       pageSize,
     );
   }
 
   @override
-  GetTransactionsProvider getProviderOverride(
-    covariant GetTransactionsProvider provider,
+  GetBookedSlotsProvider getProviderOverride(
+    covariant GetBookedSlotsProvider provider,
   ) {
     return call(
       provider.page,
@@ -2824,36 +2824,36 @@ class GetTransactionsFamily extends Family<AsyncValue<ListData<Transaction>>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'getTransactionsProvider';
+  String? get name => r'getBookedSlotsProvider';
 }
 
-/// See also [getTransactions].
-class GetTransactionsProvider
+/// See also [getBookedSlots].
+class GetBookedSlotsProvider
     extends AutoDisposeFutureProvider<ListData<Transaction>> {
-  /// See also [getTransactions].
-  GetTransactionsProvider([
+  /// See also [getBookedSlots].
+  GetBookedSlotsProvider([
     int page = 1,
     int pageSize = 10,
   ]) : this._internal(
-          (ref) => getTransactions(
-            ref as GetTransactionsRef,
+          (ref) => getBookedSlots(
+            ref as GetBookedSlotsRef,
             page,
             pageSize,
           ),
-          from: getTransactionsProvider,
-          name: r'getTransactionsProvider',
+          from: getBookedSlotsProvider,
+          name: r'getBookedSlotsProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$getTransactionsHash,
-          dependencies: GetTransactionsFamily._dependencies,
+                  : _$getBookedSlotsHash,
+          dependencies: GetBookedSlotsFamily._dependencies,
           allTransitiveDependencies:
-              GetTransactionsFamily._allTransitiveDependencies,
+              GetBookedSlotsFamily._allTransitiveDependencies,
           page: page,
           pageSize: pageSize,
         );
 
-  GetTransactionsProvider._internal(
+  GetBookedSlotsProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -2869,13 +2869,12 @@ class GetTransactionsProvider
 
   @override
   Override overrideWith(
-    FutureOr<ListData<Transaction>> Function(GetTransactionsRef provider)
-        create,
+    FutureOr<ListData<Transaction>> Function(GetBookedSlotsRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: GetTransactionsProvider._internal(
-        (ref) => create(ref as GetTransactionsRef),
+      override: GetBookedSlotsProvider._internal(
+        (ref) => create(ref as GetBookedSlotsRef),
         from: from,
         name: null,
         dependencies: null,
@@ -2889,12 +2888,12 @@ class GetTransactionsProvider
 
   @override
   AutoDisposeFutureProviderElement<ListData<Transaction>> createElement() {
-    return _GetTransactionsProviderElement(this);
+    return _GetBookedSlotsProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is GetTransactionsProvider &&
+    return other is GetBookedSlotsProvider &&
         other.page == page &&
         other.pageSize == pageSize;
   }
@@ -2911,8 +2910,7 @@ class GetTransactionsProvider
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin GetTransactionsRef
-    on AutoDisposeFutureProviderRef<ListData<Transaction>> {
+mixin GetBookedSlotsRef on AutoDisposeFutureProviderRef<ListData<Transaction>> {
   /// The parameter `page` of this provider.
   int get page;
 
@@ -2920,15 +2918,15 @@ mixin GetTransactionsRef
   int get pageSize;
 }
 
-class _GetTransactionsProviderElement
+class _GetBookedSlotsProviderElement
     extends AutoDisposeFutureProviderElement<ListData<Transaction>>
-    with GetTransactionsRef {
-  _GetTransactionsProviderElement(super.provider);
+    with GetBookedSlotsRef {
+  _GetBookedSlotsProviderElement(super.provider);
 
   @override
-  int get page => (origin as GetTransactionsProvider).page;
+  int get page => (origin as GetBookedSlotsProvider).page;
   @override
-  int get pageSize => (origin as GetTransactionsProvider).pageSize;
+  int get pageSize => (origin as GetBookedSlotsProvider).pageSize;
 }
 
 String _$getReviewsHash() => r'cda720c799e0fb287a3c8a475926e2cf6dfc1895';

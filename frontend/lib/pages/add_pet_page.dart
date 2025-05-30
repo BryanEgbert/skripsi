@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/modals/select_pet_type_modal.dart';
 import 'package:frontend/components/profile_image_picker.dart';
-import 'package:frontend/constants.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
@@ -72,23 +71,23 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
   Widget build(BuildContext context) {
     final petState = ref.watch(petStateProvider);
 
-    handleValue(petState, this);
+    handleValue(petState, this, ref.read(petStateProvider.notifier).reset);
 
-    if (petState.hasValue && !petState.isLoading) {
-      if (petState.value == 201) {
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          var snackbar = SnackBar(
-            key: Key("error-message"),
-            content: Text("Pet added successfully"),
-            backgroundColor: Constants.successSnackbarColor,
-          );
+    // if (petState.hasValue && !petState.isLoading) {
+    //   if (petState.value == 201) {
+    //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //       var snackbar = SnackBar(
+    //         key: Key("error-message"),
+    //         content: Text("Pet added successfully"),
+    //         backgroundColor: Constants.successSnackbarColor,
+    //       );
 
-          ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    //       ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
-          Navigator.of(context).pop();
-        });
-      }
-    }
+    //       Navigator.of(context).pop();
+    //     });
+    //   }
+    // }
 
     return Scaffold(
       appBar: AppBar(
@@ -258,7 +257,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                   ),
                   ElevatedButton(
                     onPressed: _submitForm,
-                    child: const Text("Next"),
+                    child: const Text("Add Pet"),
                   ),
                 ],
               ),

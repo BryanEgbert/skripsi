@@ -89,7 +89,7 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
           tertiary: Color.fromARGB(255, 253, 247, 242),
         ),
         textTheme: GoogleFonts.poppinsTextTheme(
-          Theme.of(context).textTheme,
+          ThemeData.light().textTheme,
         ),
         appBarTheme: AppBarTheme(
             iconTheme: IconThemeData(
