@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/model/booking_request.dart';
+import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/pages/details/booking_request_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
@@ -13,7 +14,8 @@ import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class ViewBookingRequestsPage extends ConsumerStatefulWidget {
-  const ViewBookingRequestsPage({super.key});
+  final List<ChatMessage> messages;
+  const ViewBookingRequestsPage(this.messages, {super.key});
 
   @override
   ConsumerState<ViewBookingRequestsPage> createState() =>
@@ -86,7 +88,7 @@ class _ViewBookingRequestsPageState
           'Booking Requests',
           style: TextStyle(color: Colors.orange),
         ),
-        actions: appBarActions(),
+        actions: petOwnerAppBarActions(widget.messages.length),
       ),
       body: (_isFetching && _records.isEmpty)
           ? Center(

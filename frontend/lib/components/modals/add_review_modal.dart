@@ -152,11 +152,7 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       )
-                    : Text(
-                        "Adding Review...",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
+                    : CircularProgressIndicator(color: Colors.white),
               ),
             ],
           ),

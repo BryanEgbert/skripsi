@@ -16,6 +16,7 @@ class _ImageSliderState extends State<ImageSlider> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+        if (widget.images.isEmpty) return;
         showGeneralDialog(
           context: context,
           barrierColor: Colors.black.withValues(alpha: 0.5),
@@ -50,6 +51,9 @@ class _ImageSliderState extends State<ImageSlider> {
                 widget.images[index],
                 fit: BoxFit.cover,
                 width: double.infinity,
+                loadingBuilder: (context, child, loadingProgress) {
+                  return Center(child: child);
+                },
               ),
             ),
           ),

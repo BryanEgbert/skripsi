@@ -124,9 +124,9 @@ class _LoginFormState extends ConsumerState<LoginForm> {
                 }
               }
             },
-            child: Text(
-              (auth.isLoading) ? "Logging In..." : "Login",
-            ),
+            child: !auth.isLoading
+                ? Text("Login")
+                : CircularProgressIndicator(color: Colors.white),
           ),
         ],
       ),

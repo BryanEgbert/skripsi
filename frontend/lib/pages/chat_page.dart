@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -155,6 +156,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
     final chatMessages = ref.watch(chatMessagesProvider(widget.userId));
 
+    log("muInfo: $myInfo");
+
     handleError(myInfo, context);
 
     if (chatTracker.value ?? false) {
@@ -199,7 +202,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 DefaultCircleAvatar(imageUrl: value.imageUrl),
                 Text(
                   value.name,
-                  style: TextStyle(color: Constants.primaryTextColor),
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Constants.primaryTextColor
+                        : Colors.orange,
+                  ),
                 ),
               ],
             ),
@@ -215,6 +222,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           itemCount: chatMessages.value!.data.length,
                           itemBuilder: (context, index) {
                             var msg = chatMessages.value!.data[index];
+                            log("message: $msg");
 
                             final dateTime =
                                 DateTime.parse(msg.createdAt).toLocal();
@@ -289,7 +297,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       PopupMenuButton(
-                        icon: Icon(Icons.more_vert_rounded),
+                        icon: Icon(Icons.add),
                         itemBuilder: (context) => [
                           PopupMenuItem(
                             child: Text("Take Photo"),
@@ -320,31 +328,37 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                         ),
                       ),
                       IconButton(
-                          onPressed: () {
-                            if (_textController.text.isNotEmpty) {
-                              var sendMessage = jsonEncode(SendMessage(
-                                receiverId: widget.userId,
-                                message: _textController.text,
-                              ).toJson());
+                        onPressed: () {
+                          if (chatMessages.isLoading) return;
+                          if (_textController.text.isNotEmpty) {
+                            var sendMessage = jsonEncode(SendMessage(
+                              receiverId: widget.userId,
+                              message: _textController.text,
+                            ).toJson());
 
-                              channel!.sink.add(sendMessage);
+                            channel!.sink.add(sendMessage);
 
-                              _textController.clear();
-                              // ref
-                              //     .read(chatMessagesProvider(widget.userId)
-                              //         .future)
-                              //     .then((newData) {
-                              //   setState(() {
-                              //     _totalMessages = newData.data;
-                              //   });
-                              // });
-                              ref.invalidate(chatMessagesProvider);
-                            }
-                          },
-                          icon: Icon(
-                            Icons.send_rounded,
-                            color: Colors.orange[800],
-                          )),
+                            _textController.clear();
+                            // ref
+                            //     .read(chatMessagesProvider(widget.userId)
+                            //         .future)
+                            //     .then((newData) {
+                            //   setState(() {
+                            //     _totalMessages = newData.data;
+                            //   });
+                            // });
+                            ref.invalidate(chatMessagesProvider);
+                          }
+                        },
+                        icon: !chatMessages.isLoading
+                            ? Icon(
+                                Icons.send_rounded,
+                                color: Colors.orange[800],
+                              )
+                            : CircularProgressIndicator(
+                                semanticsLabel: "sending message",
+                              ),
+                      ),
                     ],
                   ),
                 ),

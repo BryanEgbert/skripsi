@@ -280,7 +280,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
             controller.openView();
           },
           onTapOutside: (_) {
-            controller.closeView(controller.text);
+            // controller.closeView(controller.text);
           },
         );
       },

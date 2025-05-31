@@ -4,7 +4,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/response/list_response.dart';
@@ -74,7 +73,6 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
         });
       }).catchError((e) {
         log("[_setupWebSocket] err: $e");
-        // handleError(AsyncError(e, StackTrace.current), context);
         setState(() {
           _error = e;
         });
@@ -113,8 +111,7 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
   @override
   void dispose() {
     log("[HOME PAGE] dispose");
-    // _webSocketSubscription?.cancel();
-    // _streamController.close();
+
     _channel?.sink.close();
     ChatWebsocketChannel().close();
     super.dispose();
@@ -131,9 +128,7 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
       _error = null;
     }
 
-    log("[HOME PAGE] messageTracker: $messageTracker");
     if (messageTracker.value ?? false) {
-      log("[HOME PAGE] running message tracker");
       _fetchData();
       _messageCount = 0;
 
@@ -158,7 +153,6 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
                       .data
                       .where((e) => !e.isRead);
 
-                  log("[INFO] append unread message count, unread msg: ${unreadMsg.length}, message count: $_messageCount");
                   if (unreadMsg.length > _messageCount) {
                     _messageCount = unreadMsg.length;
                     final unreadChatMessages =
@@ -182,9 +176,14 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
               })
           : Center(child: CircularProgressIndicator.adaptive()),
       bottomNavigationBar: BottomNavigationBar(
-        // type: BottomNavigationBarType.fixed,
+        type: BottomNavigationBarType.fixed,
         // backgroundColor: Colors.orange,
-        selectedItemColor: Colors.white,
+        backgroundColor: Theme.of(context).brightness == Brightness.light
+            ? Colors.orange
+            : null,
+        selectedItemColor: Theme.of(context).brightness == Brightness.light
+            ? Colors.white
+            : Colors.orange,
 
         unselectedItemColor: Colors.white,
         items: [
@@ -195,8 +194,8 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
           ),
           BottomNavigationBarItem(
             backgroundColor: Colors.orangeAccent,
-            icon: Icon(Icons.house),
-            label: "Pet Daycares",
+            icon: Icon(Icons.explore),
+            label: "Explore",
           ),
           BottomNavigationBarItem(
             backgroundColor: Colors.orangeAccent,
@@ -206,7 +205,7 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
           BottomNavigationBarItem(
             backgroundColor: Colors.orangeAccent,
             icon: Icon(Icons.menu_book_rounded),
-            label: "Booking History",
+            label: "Bookings",
           ),
         ],
         currentIndex: _selectedIndex,

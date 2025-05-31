@@ -100,13 +100,13 @@ Map<String, dynamic> _$CountryToJson(Country instance) => <String, dynamic>{
 Address _$AddressFromJson(Map<String, dynamic> json) => Address(
       json['id'] as String?,
       json['name'] as String,
-      json['address_number'] as String,
-      json['street_name'] as String,
+      json['address_number'] as String?,
+      json['street_name'] as String?,
     );
 
 Map<String, dynamic> _$AddressToJson(Address instance) => <String, dynamic>{
       if (instance.id case final value?) 'id': value,
       'name': instance.name,
-      'address_number': instance.addressNumber,
-      'street_name': instance.streetName,
+      if (instance.addressNumber case final value?) 'address_number': value,
+      if (instance.streetName case final value?) 'street_name': value,
     };

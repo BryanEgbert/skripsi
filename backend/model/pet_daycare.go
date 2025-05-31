@@ -146,7 +146,6 @@ type UpdatePetDaycareRequest struct {
 	FoodBrand         string                  `form:"foodBrand"`
 	DailyWalksID      uint                    `form:"dailyWalksId" binding:"required"`
 	DailyPlaytimeID   uint                    `form:"dailyPlaytimeId" binding:"required"`
-	ThumbnailIndex    []int                   `form:"thumbnailIndex[]"`
 	Thumbnails        []*multipart.FileHeader `form:"thumbnails[]"`
 	PetCategoryID     []uint                  `form:"petCategoryId[]" binding:"required"`
 	MaxNumber         []int                   `form:"maxNumber[]" binding:"required"`

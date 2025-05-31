@@ -37,4 +37,9 @@ class ChatMessage {
     if (identical(this, other)) return true;
     return other is ChatMessage && other.senderId == senderId;
   }
+
+  @override
+  String toString() {
+    return "ChatMessage(id: $id, senderId: $senderId, receiverId: $receiverId)";
+  }
 }

@@ -74,10 +74,10 @@ class Geometry {
 @JsonSerializable(fieldRename: FieldRename.snake, includeIfNull: false)
 class Country {
   final String? id;
-  final String name;
-  final String countryCode;
+  final String? name;
+  final String? countryCode;
   @JsonKey(name: "country_code_alpha_3")
-  final String countryCodeAlpha3;
+  final String? countryCodeAlpha3;
 
   Country(this.id, this.name, this.countryCode, this.countryCodeAlpha3);
 
@@ -90,9 +90,9 @@ class Country {
 @JsonSerializable(fieldRename: FieldRename.snake, includeIfNull: false)
 class Address {
   final String? id;
-  final String name;
-  final String addressNumber;
-  final String streetName;
+  final String? name;
+  final String? addressNumber;
+  final String? streetName;
 
   Address(this.id, this.name, this.addressNumber, this.streetName);
 

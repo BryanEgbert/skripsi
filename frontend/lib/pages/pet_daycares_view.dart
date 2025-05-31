@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
@@ -12,6 +13,7 @@ import 'package:frontend/pages/details/pet_daycare_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 
 final locationEnabledProvider = StateProvider<bool>((ref) => false);
 
@@ -24,19 +26,33 @@ class PetDaycaresView extends ConsumerStatefulWidget {
 }
 
 class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
+  final ScrollController _scrollController = ScrollController();
+  final List<String> _serviceFeatures = [];
+
+  final _minDistanceController = TextEditingController();
+  final _maxDistanceController = TextEditingController();
+
+  final _minPriceController = TextEditingController();
+  final _maxPriceController = TextEditingController();
+
+  final rupiahFormat =
+      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
+
   double? _latitude, _longitude;
 
-  final ScrollController _scrollController = ScrollController();
   List<PetDaycare> _records = [];
 
   int _page = 1;
   bool _isFetching = false;
   bool _hasMoreData = true;
 
+  String? _minDistanceError;
+  String? _maxDistanceError;
+  String? _minPriceError;
+  String? _maxPriceError;
+
   bool _serviceEnabled = false;
   LocationPermission _permission = LocationPermission.denied;
-
-  final List<String> _serviceFeatures = [];
 
   final PetDaycareFilters _filters = PetDaycareFilters();
 
@@ -93,6 +109,12 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
     _getLocation();
     _scrollController.addListener(_onScroll);
     _fetchMoreData();
+
+    _minDistanceController.text = _filters.minDistance.toInt().toString();
+    _maxDistanceController.text = _filters.maxDistance.toInt().toString();
+
+    _minPriceController.text = rupiahFormat.format(_filters.minPrice);
+    _maxPriceController.text = rupiahFormat.format(_filters.maxPrice);
   }
 
   @override
@@ -154,359 +176,580 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
         color: Theme.of(context).brightness == Brightness.light
             ? Constants.secondaryBackgroundColor
             : Constants.darkBackgroundColor,
-        child: SingleChildScrollView(
-          child: SafeArea(
-            child: Column(
-              spacing: 4,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      icon: Icon(
-                        Icons.navigate_before,
-                        color: Constants.primaryTextColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: SafeArea(
+                  child: Column(
+                    spacing: 4,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: Icon(
+                              Icons.navigate_before,
+                              color: Constants.primaryTextColor,
+                            ),
+                          ),
+                          Text(
+                            "Back",
+                            style: TextStyle(color: Constants.primaryTextColor),
+                          )
+                        ],
                       ),
-                    ),
-                    Text(
-                      "Back",
-                      style: TextStyle(color: Constants.primaryTextColor),
-                    )
-                  ],
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Pet Vaccination",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Constants.primaryTextColor,
+                            ),
+                          ),
+                          Wrap(
+                            spacing: 4,
+                            children: [
+                              FilterChip(
+                                label: Text(
+                                  "Requires Vaccination",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                selected: _filters.mustBeVaccinated == true,
+                                onSelected: (value) {
+                                  setState(() {
+                                    _filters.mustBeVaccinated =
+                                        value ? true : null;
+                                  });
+                                },
+                              ),
+                              FilterChip(
+                                label: Text(
+                                  "Doesn't Require Vaccination",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                selected: _filters.mustBeVaccinated == false,
+                                onSelected: (value) {
+                                  setState(() {
+                                    _filters.mustBeVaccinated =
+                                        value ? false : null;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Distance in kilometer (GPS must be turned on)",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Constants.primaryTextColor,
+                            ),
+                          ),
+                          Text(
+                            "To disable filter by distance, set slider to 0",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.grey[700]
+                                  : Colors.white70,
+                            ),
+                          ),
+                          RangeSlider(
+                            max: 500,
+                            min: 0,
+                            divisions: 500,
+                            labels: RangeLabels(
+                              "${_filters.minDistance.round()} km",
+                              "${_filters.maxDistance.round()} km",
+                            ),
+                            values: RangeValues(
+                                _filters.minDistance, _filters.maxDistance),
+                            onChanged: _serviceEnabled
+                                ? (value) {
+                                    setState(() {
+                                      _filters.minDistance = value.start;
+                                      _filters.maxDistance = value.end;
+                                      _minDistanceController.text =
+                                          value.start.toInt().toString();
+                                      _maxDistanceController.text =
+                                          value.end.toInt().toString();
+                                    });
+                                  }
+                                : null,
+                            activeColor: Constants.primaryTextColor,
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            spacing: 8,
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _minDistanceController,
+                                  decoration: InputDecoration(
+                                    labelText: "min distance",
+                                    labelStyle: TextStyle(fontSize: 14),
+                                    suffixText: "km",
+                                    suffixStyle: TextStyle(fontSize: 14),
+                                    errorText: _minDistanceError,
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  onChanged: (value) {
+                                    _minDistanceError = null;
+                                    if (value.isEmpty) {
+                                      _minDistanceController.text = "0";
+                                    } else {
+                                      _minDistanceController.text =
+                                          int.parse(value).toString();
+                                    }
+                                    double parsed =
+                                        int.parse(_minDistanceController.text)
+                                            .toDouble();
+                                    if (parsed < 0) {
+                                      _minDistanceController.text = "0";
+                                    }
+
+                                    if (parsed > _filters.maxDistance) {
+                                      _minDistanceController.text =
+                                          _filters.maxDistance.toString();
+                                    }
+
+                                    if (parsed > 500) {
+                                      _minDistanceController.text = "500";
+                                    }
+                                    setState(() {
+                                      _filters.minDistance =
+                                          int.parse(_minDistanceController.text)
+                                              .toDouble();
+                                    });
+                                  },
+                                ),
+                              ),
+                              Text("-"),
+                              Expanded(
+                                child: TextField(
+                                  controller: _maxDistanceController,
+                                  decoration: InputDecoration(
+                                      labelText: "max distance",
+                                      labelStyle: TextStyle(fontSize: 14),
+                                      suffixText: "km",
+                                      suffixStyle: TextStyle(fontSize: 14),
+                                      errorText: _maxDistanceError),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  onChanged: (value) {
+                                    _maxDistanceError = null;
+                                    if (value.isEmpty) {
+                                      _maxDistanceController.text = "0";
+                                    } else {
+                                      _maxDistanceController.text =
+                                          int.parse(value).toString();
+                                    }
+
+                                    double parsed =
+                                        int.parse(_maxDistanceController.text)
+                                            .toDouble();
+                                    if (parsed < 0) {
+                                      _maxDistanceController.text = "0";
+                                    }
+                                    if (parsed < _filters.minDistance) {
+                                      _maxDistanceController.text = _filters
+                                          .minDistance
+                                          .round()
+                                          .toString();
+                                    }
+                                    if (parsed > 500) {
+                                      _maxDistanceController.text = "500";
+                                    }
+                                    setState(() {
+                                      _filters.maxDistance =
+                                          int.parse(_maxDistanceController.text)
+                                              .toDouble();
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Price Range",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Constants.primaryTextColor,
+                            ),
+                          ),
+                          Text(
+                            "To disable price range filter, set slider to 0",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.grey[700]
+                                  : Colors.white70,
+                            ),
+                          ),
+                          RangeSlider(
+                            max: 1000000,
+                            min: 0,
+                            divisions: 100000,
+                            labels: RangeLabels(
+                              rupiahFormat.format(_filters.minPrice),
+                              rupiahFormat.format(_filters.maxPrice),
+                            ),
+                            values: RangeValues(
+                                _filters.minPrice, _filters.maxPrice),
+                            onChanged: (value) {
+                              setState(() {
+                                _filters.minPrice = value.start;
+                                _filters.maxPrice = value.end;
+                                _minPriceController.text =
+                                    rupiahFormat.format(value.start);
+                                _maxPriceController.text =
+                                    rupiahFormat.format(value.end);
+                              });
+                            },
+                            activeColor: Constants.primaryTextColor,
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            spacing: 8,
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _minPriceController,
+                                  decoration: InputDecoration(
+                                      labelText: "min price",
+                                      labelStyle: TextStyle(fontSize: 14),
+                                      errorText: _minPriceError),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  onChanged: (value) {
+                                    _minPriceError = null;
+
+                                    String digitsOnly =
+                                        value.replaceAll(RegExp(r'[^0-9]'), '');
+                                    if (digitsOnly.isEmpty) digitsOnly = '0';
+
+                                    if (digitsOnly.isEmpty) {
+                                      _minPriceController.text =
+                                          rupiahFormat.format(0);
+                                    }
+
+                                    double parsed =
+                                        int.parse(_minPriceController.text)
+                                            .toDouble();
+                                    _minPriceController.text =
+                                        rupiahFormat.format(parsed);
+
+                                    if (parsed < 0) {
+                                      _minPriceController.text =
+                                          rupiahFormat.format(0);
+                                    }
+
+                                    if (parsed > _filters.maxPrice) {
+                                      _minPriceController.text = rupiahFormat
+                                          .format(_filters.maxPrice);
+                                    }
+                                    if (parsed > 1000000) {
+                                      _minPriceController.text =
+                                          rupiahFormat.format(1000000);
+                                    }
+                                    setState(() {
+                                      String digitsOnly = value.replaceAll(
+                                          RegExp(r'[^0-9]'), '');
+                                      _filters.minPrice =
+                                          int.parse(digitsOnly).toDouble();
+                                      log("change: ${_filters.minPrice}");
+                                    });
+                                  },
+                                ),
+                              ),
+                              Text("-"),
+                              Expanded(
+                                child: TextField(
+                                  controller: _maxPriceController,
+                                  decoration: InputDecoration(
+                                    labelText: "max price",
+                                    labelStyle: TextStyle(fontSize: 14),
+                                    errorText: _maxPriceError,
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  onChanged: (value) {
+                                    _maxPriceError = null;
+                                    String digitsOnly =
+                                        value.replaceAll(RegExp(r'[^0-9]'), '');
+                                    if (digitsOnly.isEmpty) digitsOnly = '0';
+
+                                    if (digitsOnly.isEmpty) {
+                                      _maxPriceController.text =
+                                          rupiahFormat.format(0);
+                                    }
+                                    double parsed =
+                                        int.parse(digitsOnly).toDouble();
+                                    _maxPriceController.text =
+                                        rupiahFormat.format(parsed);
+
+                                    if (parsed < 0) {
+                                      _maxPriceController.text =
+                                          rupiahFormat.format(0);
+                                    }
+                                    if (parsed < _filters.minPrice) {
+                                      _maxPriceController.text = rupiahFormat
+                                          .format(_filters.minPrice);
+                                    }
+                                    if (parsed > 1000000) {
+                                      _maxPriceController.text =
+                                          rupiahFormat.format(1000000);
+                                    }
+                                    setState(() {
+                                      String digitsOnly = _maxPriceController
+                                          .text
+                                          .replaceAll(RegExp(r'[^0-9]'), '');
+                                      _filters.maxPrice =
+                                          int.parse(digitsOnly).toDouble();
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Facilities",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Constants.primaryTextColor,
+                            ),
+                          ),
+                          Wrap(
+                            spacing: 4,
+                            children: [
+                              FilterChip(
+                                selected: _serviceFeatures.contains("pickup"),
+                                label: Text(
+                                  "Pick-Up Service Provided",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                onSelected: (value) {
+                                  if (value == true) {
+                                    setState(() {
+                                      _serviceFeatures.add("pickup");
+                                    });
+                                  } else {
+                                    setState(() {
+                                      _serviceFeatures.remove("pickup");
+                                    });
+                                  }
+                                },
+                              ),
+                              FilterChip(
+                                selected: _serviceFeatures.contains("food"),
+                                label: Text(
+                                  "In-House Food Provided",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                onSelected: (value) {
+                                  setState(() {
+                                    if (value == true) {
+                                      _serviceFeatures.add("food");
+                                    } else {
+                                      _serviceFeatures.remove("food");
+                                    }
+                                  });
+                                },
+                              ),
+                              FilterChip(
+                                selected: _serviceFeatures.contains("grooming"),
+                                label: Text(
+                                  "Grooming Service Provided",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                onSelected: (value) {
+                                  setState(() {
+                                    if (value == true) {
+                                      _serviceFeatures.add("grooming");
+                                    } else {
+                                      _serviceFeatures.remove("grooming");
+                                    }
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Daily Walks",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Constants.primaryTextColor,
+                            ),
+                          ),
+                          Wrap(
+                            spacing: 4,
+                            children: [
+                              FilterChip(
+                                selected: _filters.dailyWalks == 1,
+                                label: Text(
+                                  "No Walks Provided",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                onSelected: (value) {
+                                  setState(() {
+                                    _filters.dailyWalks = value ? 1 : 0;
+                                  });
+                                },
+                              ),
+                              FilterChip(
+                                selected: _filters.dailyWalks == 2,
+                                label: Text(
+                                  "One Walk a Day",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                onSelected: (value) {
+                                  setState(() {
+                                    _filters.dailyWalks = value ? 2 : 0;
+                                  });
+                                },
+                              ),
+                              FilterChip(
+                                selected: _filters.dailyWalks == 3,
+                                label: Text(
+                                  "Two Walks a Day",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                onSelected: (value) {
+                                  setState(() {
+                                    _filters.dailyWalks = value ? 3 : 0;
+                                  });
+                                },
+                              ),
+                              FilterChip(
+                                selected: _filters.dailyWalks == 4,
+                                label: Text(
+                                  "More Than Two Walks a Day",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                onSelected: (value) {
+                                  setState(() {
+                                    _filters.dailyWalks = value ? 4 : 0;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Daily Playtime",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Constants.primaryTextColor,
+                            ),
+                          ),
+                          Wrap(
+                            spacing: 4,
+                            children: [
+                              FilterChip(
+                                selected: _filters.dailyPlaytime == 1,
+                                label: Text(
+                                  "No Playtime Provided",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                onSelected: (value) {
+                                  setState(() {
+                                    _filters.dailyPlaytime = value ? 1 : 0;
+                                  });
+                                },
+                              ),
+                              FilterChip(
+                                selected: _filters.dailyPlaytime == 2,
+                                label: Text(
+                                  "One Play Session a Day",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                onSelected: (value) {
+                                  setState(() {
+                                    _filters.dailyPlaytime = value ? 2 : 0;
+                                  });
+                                },
+                              ),
+                              FilterChip(
+                                selected: _filters.dailyPlaytime == 3,
+                                label: Text(
+                                  "Two Play Session a Day",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                onSelected: (value) {
+                                  setState(() {
+                                    _filters.dailyPlaytime = value ? 3 : 0;
+                                  });
+                                },
+                              ),
+                              FilterChip(
+                                selected: _filters.dailyPlaytime == 4,
+                                label: Text(
+                                  "More Than Two Play Session a Day",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                onSelected: (value) {
+                                  setState(() {
+                                    _filters.dailyPlaytime = value ? 4 : 0;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      // const SizedBox(height: 12),
+                    ],
+                  ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Pet Vaccination",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Constants.primaryTextColor,
-                      ),
-                    ),
-                    Wrap(
-                      spacing: 4,
-                      children: [
-                        FilterChip(
-                          label: Text(
-                            "Requires Vaccination",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          selected: _filters.mustBeVaccinated == true,
-                          onSelected: (value) {
-                            setState(() {
-                              _filters.mustBeVaccinated = value ? true : null;
-                            });
-                          },
-                        ),
-                        FilterChip(
-                          label: Text(
-                            "Doesn't Require Vaccination",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          selected: _filters.mustBeVaccinated == false,
-                          onSelected: (value) {
-                            setState(() {
-                              _filters.mustBeVaccinated = value ? false : null;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Distance in kilometer (GPS must be turned on)",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Constants.primaryTextColor,
-                      ),
-                    ),
-                    Text(
-                      "To disable filter by distance, set slider to 0",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Colors.grey[700]
-                            : Colors.white70,
-                      ),
-                    ),
-                    RangeSlider(
-                      max: 500,
-                      min: 0,
-                      divisions: 500,
-                      labels: RangeLabels(
-                        "${_filters.minDistance.round()} km",
-                        "${_filters.maxDistance.round()} km",
-                      ),
-                      values: RangeValues(
-                          _filters.minDistance, _filters.maxDistance),
-                      onChanged: _serviceEnabled
-                          ? (value) {
-                              setState(() {
-                                _filters.minDistance = value.start;
-                                _filters.maxDistance = value.end;
-                              });
-                            }
-                          : null,
-                      activeColor: Constants.primaryTextColor,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Price Range",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Constants.primaryTextColor,
-                      ),
-                    ),
-                    Text(
-                      "To disable price range filter, set slider to 0",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Colors.grey[700]
-                            : Colors.white70,
-                      ),
-                    ),
-                    RangeSlider(
-                      max: 1000000,
-                      min: 0,
-                      divisions: 100000,
-                      labels: RangeLabels(
-                        "Rp${_filters.minPrice.round()}",
-                        "Rp${_filters.maxPrice.round()}",
-                      ),
-                      values: RangeValues(_filters.minPrice, _filters.maxPrice),
-                      onChanged: (value) {
-                        setState(() {
-                          _filters.minPrice = value.start;
-                          _filters.maxPrice = value.end;
-                        });
-                      },
-                      activeColor: Constants.primaryTextColor,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Facilities",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Constants.primaryTextColor,
-                      ),
-                    ),
-                    Wrap(
-                      spacing: 4,
-                      children: [
-                        FilterChip(
-                          selected: _serviceFeatures.contains("pickup"),
-                          label: Text(
-                            "Pick-Up Service Provided",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          onSelected: (value) {
-                            if (value == true) {
-                              setState(() {
-                                _serviceFeatures.add("pickup");
-                              });
-                            } else {
-                              setState(() {
-                                _serviceFeatures.remove("pickup");
-                              });
-                            }
-                          },
-                        ),
-                        FilterChip(
-                          selected: _serviceFeatures.contains("food"),
-                          label: Text(
-                            "Food Provided",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          onSelected: (value) {
-                            setState(() {
-                              if (value == true) {
-                                _serviceFeatures.add("food");
-                              } else {
-                                _serviceFeatures.remove("food");
-                              }
-                            });
-                          },
-                        ),
-                        FilterChip(
-                          selected: _serviceFeatures.contains("grooming"),
-                          label: Text(
-                            "Grooming Service Provided",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          onSelected: (value) {
-                            setState(() {
-                              if (value == true) {
-                                _serviceFeatures.add("grooming");
-                              } else {
-                                _serviceFeatures.remove("grooming");
-                              }
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Daily Walks",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Constants.primaryTextColor,
-                      ),
-                    ),
-                    Wrap(
-                      spacing: 4,
-                      children: [
-                        FilterChip(
-                          selected: _filters.dailyWalks == 1,
-                          label: Text(
-                            "No Walks Provided",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          onSelected: (value) {
-                            if (value == true) {
-                              setState(() {
-                                _filters.dailyWalks = 1;
-                              });
-                            }
-                          },
-                        ),
-                        FilterChip(
-                          selected: _filters.dailyWalks == 2,
-                          label: Text(
-                            "One Walk a Day",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          onSelected: (value) {
-                            if (value == true) {
-                              setState(() {
-                                _filters.dailyWalks = 2;
-                              });
-                            }
-                          },
-                        ),
-                        FilterChip(
-                          selected: _filters.dailyWalks == 3,
-                          label: Text(
-                            "Two Walks a Day",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          onSelected: (value) {
-                            if (value == true) {
-                              setState(() {
-                                _filters.dailyWalks = 3;
-                              });
-                            }
-                          },
-                        ),
-                        FilterChip(
-                          selected: _filters.dailyWalks == 4,
-                          label: Text(
-                            "More Than Two Walks a Day",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          onSelected: (value) {
-                            if (value == true) {
-                              setState(() {
-                                _filters.dailyWalks = 4;
-                              });
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Daily Playtime",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Constants.primaryTextColor,
-                      ),
-                    ),
-                    Wrap(
-                      spacing: 4,
-                      children: [
-                        FilterChip(
-                          selected: _filters.dailyPlaytime == 1,
-                          label: Text(
-                            "No Playtime Provided",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          onSelected: (value) {
-                            if (value == true) {
-                              setState(() {
-                                _filters.dailyPlaytime = 1;
-                              });
-                            }
-                          },
-                        ),
-                        FilterChip(
-                          selected: _filters.dailyPlaytime == 2,
-                          label: Text(
-                            "One Play Session a Day",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          onSelected: (value) {
-                            if (value == true) {
-                              _filters.dailyPlaytime = 2;
-                            }
-                          },
-                        ),
-                        FilterChip(
-                          selected: _filters.dailyPlaytime == 3,
-                          label: Text(
-                            "Two Play Session a Day",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          onSelected: (value) {
-                            if (value == true) {
-                              setState(() {
-                                _filters.dailyPlaytime = 3;
-                              });
-                            }
-                          },
-                        ),
-                        FilterChip(
-                          selected: _filters.dailyPlaytime == 4,
-                          label: Text(
-                            "More Than Two Play Session a Day",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          onSelected: (value) {
-                            if (value == true) {
-                              setState(() {
-                                _filters.dailyPlaytime = 4;
-                              });
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _records = [];
-                      _page = 1;
-                      _hasMoreData = true;
-                      _fetchMoreData();
-                    });
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                      textStyle:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                  child: Text("Apply Filter"),
-                )
-              ],
+              ),
             ),
-          ),
+            if (_minDistanceError == null &&
+                _maxDistanceError == null &&
+                _minPriceError == null &&
+                _maxPriceError == null)
+              ElevatedButton(
+                onPressed: () {
+                  if (_minDistanceError != null ||
+                      _maxDistanceError != null ||
+                      _minPriceError != null ||
+                      _maxPriceError != null) {
+                    return;
+                  }
+                  setState(() {
+                    _records = [];
+                    _page = 1;
+                    _hasMoreData = true;
+                    _fetchMoreData();
+                  });
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                    textStyle:
+                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                child: Text("Apply Filter"),
+              )
+          ],
         ),
       ),
       body: (_error != null)
@@ -689,7 +932,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
           ),
         ),
         Text(
-          "Rp. ${price.price}/${price.pricingType}",
+          "${rupiahFormat.format(price.price)}/${price.pricingType}",
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.bold,

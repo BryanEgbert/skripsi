@@ -17,9 +17,9 @@ import 'package:frontend/model/response/mapbox/suggest_response.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/pet_daycare_provider.dart';
 import 'package:frontend/services/location_service.dart';
-import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/validator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 class EditPetDaycarePage extends ConsumerStatefulWidget {
@@ -31,6 +31,9 @@ class EditPetDaycarePage extends ConsumerStatefulWidget {
 }
 
 class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
+  final rupiahFormat =
+      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
+
   final defaultTextStyle = TextStyle(
     color: Colors.orange,
     fontWeight: FontWeight.bold,
@@ -106,7 +109,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
   final List<double> _prices = [];
   final List<int> _pricingTypes = [];
   final List<int> _maxNumbers = [];
-  final List<int> _thumbnailIndex = [];
 
   final List<int> _existingPetCategoryId = [];
 
@@ -141,9 +143,9 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      if (!_thumbnailIndex.contains(index + 1)) {
-        _thumbnailIndex.add(index + 1);
-      }
+      // if (!_thumbnailIndex.contains(index + 1)) {
+      //   _thumbnailIndex.add(index + 1);
+      // }
 
       setState(() {
         _images[index] = File(pickedFile.path);
@@ -180,18 +182,21 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       });
     }
 
-    handleValue(petDaycareState, this,
-        ref.read(petDaycareStateProvider.notifier).reset);
+    if (petDaycareState.hasValue &&
+        !petDaycareState.hasError &&
+        !petDaycareState.isLoading) {
+      if (petDaycareState.value == 204) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          ref.invalidate(getMyPetDaycareProvider);
+          ref.read(petDaycareStateProvider.notifier).reset();
 
-    // if (petDaycareState.hasValue &&
-    //     !petDaycareState.hasError &&
-    //     !petDaycareState.isLoading) {
-    //   if (petDaycareState.value == 204) {
-    //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //       Navigator.of(context).pop();
-    //     });
-    //   }
-    // }
+          Navigator.of(context).pop(true);
+        });
+      }
+    }
+    // handleValue(petDaycareState, this,
+    //     ref.read(petDaycareStateProvider.notifier).reset);
+
     return switch (petDaycare) {
       AsyncError(:final error) => Scaffold(
           appBar: AppBar(
@@ -275,7 +280,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                         thumbnails: _images.whereType<File>().toList(),
                         petCategoryId: _petCategoryIds,
                         maxNumber: _maxNumbers,
-                        thumbnailIndex: _thumbnailIndex,
+                        // thumbnailIndex: _thumbnailIndex,
                       );
 
                       // updatePetDaycareReq.thumbnails =
@@ -293,7 +298,9 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                           .read(petDaycareStateProvider.notifier)
                           .updatePetDaycare(value.id, updatePetDaycareReq);
                     },
-                    child: Text("SAVE", style: defaultTextStyle),
+                    child: !petDaycareState.isLoading
+                        ? Text("SAVE", style: defaultTextStyle)
+                        : CircularProgressIndicator(),
                   )
                 ],
                 bottom: TabBar(tabs: [
@@ -361,7 +368,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
       if (pricing.petCategory.id == _miniatureDogID) {
         _acceptMiniatureDog = true;
-        _miniatureDogPriceController.text = pricing.price.toInt().toString();
+        _miniatureDogPriceController.text = rupiahFormat.format(pricing.price);
         _miniatureDogPricingTypeController.text = pricing.pricingType;
         _miniatureDogSlotController.text =
             pricing.petCategory.slotAmount.toString();
@@ -369,28 +376,28 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
       if (pricing.petCategory.id == _smallDogID) {
         _acceptSmallDog = true;
-        _smallDogPriceController.text = pricing.price.toInt().toString();
+        _smallDogPriceController.text = rupiahFormat.format(pricing.price);
         _smallDogPricingTypeController.text = pricing.pricingType;
         _smallDogSlotController.text =
             pricing.petCategory.slotAmount.toString();
       }
       if (pricing.petCategory.id == _mediumDogID) {
         _acceptMediumDog = true;
-        _mediumDogPriceController.text = pricing.price.toInt().toString();
+        _mediumDogPriceController.text = rupiahFormat.format(pricing.price);
         _mediumDogPricingTypeController.text = pricing.pricingType;
         _mediumDogSlotController.text =
             pricing.petCategory.slotAmount.toString();
       }
       if (pricing.petCategory.id == _largeDogID) {
         _acceptLargeDog = true;
-        _largeDogPriceController.text = pricing.price.toInt().toString();
+        _largeDogPriceController.text = rupiahFormat.format(pricing.price);
         _largeDogPricingTypeController.text = pricing.pricingType;
         _largeDogSlotController.text =
             pricing.petCategory.slotAmount.toString();
       }
       if (pricing.petCategory.id == _giantDogID) {
         _acceptGiantDog = true;
-        _giantDogPriceController.text = pricing.price.toInt().toString();
+        _giantDogPriceController.text = rupiahFormat.format(pricing.price);
         _giantDogPricingTypeController.text = pricing.pricingType;
         _giantDogSlotController.text =
             pricing.petCategory.slotAmount.toString();
@@ -398,14 +405,14 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
       if (pricing.petCategory.id == 6) {
         _acceptCats = true;
-        _catsPriceController.text = pricing.price.toInt().toString();
+        _catsPriceController.text = rupiahFormat.format(pricing.price);
         _catsPricingTypeController.text = pricing.pricingType;
         _catsSlotController.text = pricing.petCategory.slotAmount.toString();
       }
 
       if (pricing.petCategory.id == 7) {
         _acceptBunnies = true;
-        _bunniesPriceController.text = pricing.price.toInt().toString();
+        _bunniesPriceController.text = rupiahFormat.format(pricing.price);
         _bunniesPricingTypeController.text = pricing.pricingType;
         _bunniesSlotController.text = pricing.petCategory.slotAmount.toString();
       }
@@ -429,11 +436,15 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
   void _updatePrice() {
     if (_acceptMiniatureDog) {
-      _petCategoryIds.add(_miniatureDogID);
-      _prices.add(double.tryParse(_miniatureDogPriceController.text) ?? 0.0);
-      _pricingTypes
-          .add(_miniatureDogPricingTypeController.text == "day" ? 1 : 2);
-      _maxNumbers.add(int.tryParse(_miniatureDogSlotController.text) ?? 0);
+      if (!_petCategoryIds.contains(_miniatureDogID)) {
+        _petCategoryIds.add(_miniatureDogID);
+        _prices.add(double.tryParse(_miniatureDogPriceController.text
+                .replaceAll(RegExp(r'[^0-9]'), '')) ??
+            0.0);
+        _pricingTypes
+            .add(_miniatureDogPricingTypeController.text == "day" ? 1 : 2);
+        _maxNumbers.add(int.tryParse(_miniatureDogSlotController.text) ?? 0);
+      }
     } else {
       int index = _petCategoryIds.indexOf(_miniatureDogID);
       if (index != -1) {
@@ -445,10 +456,14 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
     }
 
     if (_acceptSmallDog) {
-      _petCategoryIds.add(_smallDogID);
-      _prices.add(double.tryParse(_smallDogPriceController.text) ?? 0.0);
-      _pricingTypes.add(_smallDogPricingTypeController.text == "day" ? 1 : 2);
-      _maxNumbers.add(int.tryParse(_smallDogSlotController.text) ?? 0);
+      if (!_petCategoryIds.contains(_smallDogID)) {
+        _petCategoryIds.add(_smallDogID);
+        _prices.add(double.tryParse(_smallDogPriceController.text
+                .replaceAll(RegExp(r'[^0-9]'), '')) ??
+            0.0);
+        _pricingTypes.add(_smallDogPricingTypeController.text == "day" ? 1 : 2);
+        _maxNumbers.add(int.tryParse(_smallDogSlotController.text) ?? 0);
+      }
     } else {
       int index = _petCategoryIds.indexOf(_smallDogID);
       if (index != -1) {
@@ -460,10 +475,15 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
     }
 
     if (_acceptMediumDog) {
-      _petCategoryIds.add(_mediumDogID);
-      _prices.add(double.tryParse(_mediumDogPriceController.text) ?? 0.0);
-      _pricingTypes.add(_mediumDogPricingTypeController.text == "day" ? 1 : 2);
-      _maxNumbers.add(int.tryParse(_mediumDogSlotController.text) ?? 0);
+      if (!_petCategoryIds.contains(_mediumDogID)) {
+        _petCategoryIds.add(_mediumDogID);
+        _prices.add(double.tryParse(_mediumDogPriceController.text
+                .replaceAll(RegExp(r'[^0-9]'), '')) ??
+            0.0);
+        _pricingTypes
+            .add(_mediumDogPricingTypeController.text == "day" ? 1 : 2);
+        _maxNumbers.add(int.tryParse(_mediumDogSlotController.text) ?? 0);
+      }
     } else {
       int index = _petCategoryIds.indexOf(_mediumDogID);
       if (index != -1) {
@@ -475,10 +495,14 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
     }
 
     if (_acceptLargeDog) {
-      _petCategoryIds.add(_largeDogID);
-      _prices.add(double.tryParse(_largeDogPriceController.text) ?? 0.0);
-      _pricingTypes.add(_largeDogPricingTypeController.text == "day" ? 1 : 2);
-      _maxNumbers.add(int.tryParse(_largeDogSlotController.text) ?? 0);
+      if (!_petCategoryIds.contains(_largeDogID)) {
+        _petCategoryIds.add(_largeDogID);
+        _prices.add(double.tryParse(_largeDogPriceController.text
+                .replaceAll(RegExp(r'[^0-9]'), '')) ??
+            0.0);
+        _pricingTypes.add(_largeDogPricingTypeController.text == "day" ? 1 : 2);
+        _maxNumbers.add(int.tryParse(_largeDogSlotController.text) ?? 0);
+      }
     } else {
       int index = _petCategoryIds.indexOf(_largeDogID);
       if (index != -1) {
@@ -490,10 +514,14 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
     }
 
     if (_acceptGiantDog) {
-      _petCategoryIds.add(_giantDogID);
-      _prices.add(double.tryParse(_giantDogPriceController.text) ?? 0.0);
-      _pricingTypes.add(_giantDogPricingTypeController.text == "day" ? 1 : 2);
-      _maxNumbers.add(int.tryParse(_giantDogSlotController.text) ?? 0);
+      if (!_petCategoryIds.contains(_giantDogID)) {
+        _petCategoryIds.add(_giantDogID);
+        _prices.add(double.tryParse(_giantDogPriceController.text
+                .replaceAll(RegExp(r'[^0-9]'), '')) ??
+            0.0);
+        _pricingTypes.add(_giantDogPricingTypeController.text == "day" ? 1 : 2);
+        _maxNumbers.add(int.tryParse(_giantDogSlotController.text) ?? 0);
+      }
     } else {
       int index = _petCategoryIds.indexOf(_giantDogID);
       if (index != -1) {
@@ -504,10 +532,14 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       }
     }
     if (_acceptCats) {
-      _petCategoryIds.add(6);
-      _prices.add(double.tryParse(_catsPriceController.text) ?? 0.0);
-      _pricingTypes.add(_catsPricingTypeController.text == "day" ? 1 : 2);
-      _maxNumbers.add(int.tryParse(_catsSlotController.text) ?? 0);
+      if (!_petCategoryIds.contains(6)) {
+        _petCategoryIds.add(6);
+        _prices.add(double.tryParse(
+                _catsPriceController.text.replaceAll(RegExp(r'[^0-9]'), '')) ??
+            0.0);
+        _pricingTypes.add(_catsPricingTypeController.text == "day" ? 1 : 2);
+        _maxNumbers.add(int.tryParse(_catsSlotController.text) ?? 0);
+      }
     } else {
       int index = _petCategoryIds.indexOf(6);
       if (index != -1) {
@@ -519,10 +551,14 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
     }
 
     if (_acceptBunnies) {
-      _petCategoryIds.add(7);
-      _prices.add(double.tryParse(_bunniesPriceController.text) ?? 0.0);
-      _pricingTypes.add(_bunniesPricingTypeController.text == "day" ? 1 : 2);
-      _maxNumbers.add(int.tryParse(_bunniesSlotController.text) ?? 0);
+      if (!_petCategoryIds.contains(7)) {
+        _petCategoryIds.add(7);
+        _prices.add(double.tryParse(_bunniesPriceController.text
+                .replaceAll(RegExp(r'[^0-9]'), '')) ??
+            0.0);
+        _pricingTypes.add(_bunniesPricingTypeController.text == "day" ? 1 : 2);
+        _maxNumbers.add(int.tryParse(_bunniesSlotController.text) ?? 0);
+      }
     } else {
       int index = _petCategoryIds.indexOf(7);
       if (index != -1) {
@@ -558,7 +594,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             },
           ),
           Text(
-            "Core Services",
+            "Additional Services",
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -584,21 +620,13 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             },
           ),
           CheckboxListTile(
-            title: Text("Food Provided"),
+            title: Text("In-House Food Provided"),
             value: _foodProvided,
             onChanged: (value) {
               setState(() {
                 _foodProvided = value ?? false;
               });
             },
-          ),
-          Text(
-            "Additional Services",
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.orange,
-            ),
           ),
           Form(
             key: _petDaycareServiceFormKey,
@@ -957,6 +985,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                       ? Colors.black
                       : Colors.white70,
                 ),
+                readOnly: true,
                 controller: _openingHoursController,
                 decoration: InputDecoration(
                   labelText: "Opening Hour",
@@ -991,6 +1020,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                       ? Colors.black
                       : Colors.white70,
                 ),
+                readOnly: true,
                 controller: _closingHoursController,
                 decoration: InputDecoration(
                   labelText: "Closing Hour",
@@ -1119,7 +1149,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       mainAxisSize: MainAxisSize.min,
       spacing: 8,
       children: [
-        Text("Rp."),
         Expanded(
           child: TextFormField(
             style: TextStyle(
@@ -1134,6 +1163,11 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
               labelText: "Price",
             ),
             keyboardType: TextInputType.number,
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                priceController.text = rupiahFormat.format(int.parse(value));
+              }
+            },
             validator: (value) => validatePriceInput(enabled, value),
           ),
         ),

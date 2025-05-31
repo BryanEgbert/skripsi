@@ -364,7 +364,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 			return
 		}
 
-		req.UserImageUrl = fmt.Sprintf("%s/%s", c.Request.Host, imagePath)
+		req.UserImageUrl = fmt.Sprintf("http://%s/%s", c.Request.Host, imagePath)
 	}
 
 	createdUser, err := uc.userService.CreateUser(req)
@@ -445,7 +445,8 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 			return
 		}
 
-		req.ImageUrl = imagePath
+		// req.ImageUrl = fmt.Sprintf("http://%simagePath
+		req.ImageUrl = fmt.Sprintf("http://%s/%s", c.Request.Host, imagePath)
 	}
 
 	if err := uc.userService.UpdateUserProfile(&req); err != nil {

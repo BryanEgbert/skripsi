@@ -130,74 +130,80 @@ class _VetsViewState extends ConsumerState<VetsView> {
         color: Theme.of(context).brightness == Brightness.light
             ? Constants.secondaryBackgroundColor
             : Constants.darkBackgroundColor,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      icon: Icon(
-                        Icons.navigate_before,
-                        color: Constants.primaryTextColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: SafeArea(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: Icon(
+                              Icons.navigate_before,
+                              color: Constants.primaryTextColor,
+                            ),
+                          ),
+                          Text(
+                            "Back",
+                            style: TextStyle(
+                              color: Constants.primaryTextColor,
+                            ),
+                          )
+                        ],
                       ),
-                    ),
-                    Text(
-                      "Back",
-                      style: TextStyle(
-                        color: Constants.primaryTextColor,
+                      Text(
+                        "Vet Specialties",
+                        style: TextStyle(
+                          color: Constants.primaryTextColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    )
-                  ],
-                ),
-                Text(
-                  "Vet Specialties",
-                  style: TextStyle(
-                    color: Constants.primaryTextColor,
-                    fontWeight: FontWeight.bold,
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8.0,
+                        children: vetSpecialties.map((specialty) {
+                          final int id = specialty['id'];
+                          final String name = specialty['name'];
+                          return FilterChip(
+                            label: Text(name),
+                            selected: _vetSpecialtyId == id,
+                            onSelected: (bool selected) {
+                              setState(() {
+                                _vetSpecialtyId = selected ? id : 0;
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8.0,
-                  children: vetSpecialties.map((specialty) {
-                    final int id = specialty['id'];
-                    final String name = specialty['name'];
-                    return FilterChip(
-                      label: Text(name),
-                      selected: _vetSpecialtyId == id,
-                      onSelected: (bool selected) {
-                        setState(() {
-                          _vetSpecialtyId = selected ? id : 0;
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _records = [];
-                      _lastId = 0;
-                      _hasMoreData = true;
-                      _fetchMoreData();
-                    });
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                      textStyle:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                  child: Text("Apply Filter"),
-                ),
-              ],
+              ),
             ),
-          ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _records = [];
+                  _lastId = 0;
+                  _hasMoreData = true;
+                  _fetchMoreData();
+                });
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                  textStyle:
+                      TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              child: Text("Apply Filter"),
+            ),
+          ],
         ),
       ),
       body: (_error != null)

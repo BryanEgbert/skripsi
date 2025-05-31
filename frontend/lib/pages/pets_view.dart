@@ -86,7 +86,7 @@ class _PetsViewState extends ConsumerState<PetsView> {
         ),
       ),
       subtitle: Text(
-        "Pet category: ${item.petCategory.name}\nStatus: ${item.status}",
+        "Pet category: ${item.petCategory.name}",
         style: TextStyle(
           color: Theme.of(context).brightness == Brightness.light
               ? Colors.black

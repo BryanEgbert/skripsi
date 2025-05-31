@@ -18,10 +18,10 @@ Future<TokenResponse> refreshToken() async {
     final refreshRes = await authService.refreshToken(token.refreshToken);
     switch (refreshRes) {
       case Ok<TokenResponse>():
+        await dbService.insert(token);
         token = refreshRes.value!;
         return token;
       case Error<TokenResponse>():
-        log("session expired");
         return Future.error(jwtExpired);
     }
   } else {

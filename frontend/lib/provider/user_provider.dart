@@ -26,6 +26,7 @@ class UserState extends _$UserState {
     TokenResponse? token;
     try {
       token = await refreshToken();
+      ref.invalidate(getMyUserProvider);
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
       return;

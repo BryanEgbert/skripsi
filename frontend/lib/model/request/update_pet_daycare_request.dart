@@ -22,7 +22,6 @@ class UpdatePetDaycareRequest {
   List<File> thumbnails;
   List<int> petCategoryId;
   List<int> maxNumber;
-  List<int> thumbnailIndex;
 
   UpdatePetDaycareRequest({
     required this.petDaycareName,
@@ -46,7 +45,6 @@ class UpdatePetDaycareRequest {
     required this.thumbnails,
     required this.petCategoryId,
     required this.maxNumber,
-    required this.thumbnailIndex,
   });
 
   Map<String, dynamic> toMap() {
@@ -71,7 +69,6 @@ class UpdatePetDaycareRequest {
       'dailyPlaytimeId': dailyPlaytimeId.toString(),
       'petCategoryId[]': petCategoryId.map((e) => e.toString()).toList(),
       'maxNumber[]': maxNumber.map((e) => e.toString()).toList(),
-      'thumbnailIndex[]': maxNumber.map((e) => e.toString()).toList(),
     };
 
     return map;
@@ -100,7 +97,7 @@ class UpdatePetDaycareRequest {
     dailyPlaytimeId: $dailyPlaytimeId, 
     thumbnails: $thumbnails, 
     petCategoryId: $petCategoryId, 
-    maxNumber: $maxNumber
+    maxNumber: $maxNumber,
   )""";
   }
 }

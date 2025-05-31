@@ -85,7 +85,7 @@ func SeedTable(db *gorm.DB) error {
 
 	five := float32(5.0)
 	ten := float32(10)
-	twelve := float32(12)
+	// twelve := float32(12)
 	twentyFive := float32(25)
 	fortyFive := float32(45)
 
@@ -96,8 +96,8 @@ func SeedTable(db *gorm.DB) error {
 		{Name: "medium", MinWeight: 10, MaxWeight: &twentyFive},
 		{Name: "large", MinWeight: 25, MaxWeight: &fortyFive},
 		{Name: "giant", MinWeight: 45},
-		{Name: "cat", MinWeight: 1, MaxWeight: &twelve},
-		{Name: "rabbit", MinWeight: 1, MaxWeight: &ten},
+		{Name: "cat", MinWeight: 1},
+		{Name: "bunnies", MinWeight: 1},
 	}
 	if err := db.Create(&sizeCategories).Error; err != nil {
 		return err
@@ -110,8 +110,8 @@ func SeedTable(db *gorm.DB) error {
 		{Name: "medium dogs", SizeCategory: sizeCategories[2]},
 		{Name: "large dogs", SizeCategory: sizeCategories[3]},
 		{Name: "giant dogs", SizeCategory: sizeCategories[4]},
-		{Name: "cats"},
-		{Name: "rabbits"},
+		{Name: "cats", SizeCategory: sizeCategories[5]},
+		{Name: "bunnies", SizeCategory: sizeCategories[6]},
 	}
 	if err := db.Create(&petCategory).Error; err != nil {
 		return err
@@ -199,6 +199,7 @@ func SeedTable(db *gorm.DB) error {
 	slots := []model.Slots{
 		{DaycareID: daycare[0].ID, PricingTypeID: 1, PetCategoryID: 1, MaxNumber: 5, Price: 100000.0},
 		{DaycareID: daycare[0].ID, PricingTypeID: 1, PetCategoryID: 2, MaxNumber: 8, Price: 100000.0},
+		{DaycareID: daycare[0].ID, PricingTypeID: 1, PetCategoryID: petCategory[5].ID, MaxNumber: 8, Price: 100000.0},
 		{DaycareID: daycare[1].ID, PricingTypeID: 1, PetCategoryID: 1, MaxNumber: 20, Price: 100000.0},
 		{DaycareID: daycare[2].ID, PricingTypeID: 2, PetCategoryID: 1, MaxNumber: 2, Price: 100000.0},
 	}

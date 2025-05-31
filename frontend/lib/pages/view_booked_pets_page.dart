@@ -18,7 +18,6 @@ import 'package:frontend/utils/permission.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ViewBookedPetsPage extends ConsumerStatefulWidget {
-  // final IOWebSocketChannel channel;
   final List<ChatMessage> messages;
   const ViewBookedPetsPage(this.messages, {super.key});
 
@@ -158,7 +157,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
             "Booked Pets",
             style: TextStyle(color: Colors.orange),
           ),
-          actions: appBarActions(),
+          actions: petOwnerAppBarActions(widget.messages.length),
           bottom: TabBar(tabs: [
             Tab(
               icon: Icon(Icons.pets_rounded),

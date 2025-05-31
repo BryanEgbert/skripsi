@@ -176,14 +176,6 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
                           : Colors.white,
                     ),
                   ),
-                  Text(
-                    "status: ${petValue.status}",
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white,
-                    ),
-                  ),
                   if (!widget.isOwner)
                     Text(
                       "owner: ${petValue.owner.name}",

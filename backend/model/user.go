@@ -70,7 +70,7 @@ type UpdateUserRequest struct {
 	Email          string                `form:"email" binding:"email"`
 	RoleID         uint                  `form:"roleId"`
 	VetSpecialtyID *[]uint               `form:"vetSpecialtyId[]"`
-	Image          *multipart.FileHeader `form:"image"`
+	Image          *multipart.FileHeader `form:"userProfilePicture"`
 	ImageUrl       string
 }
 

@@ -121,7 +121,7 @@ class _CreatePetDaycareServicesState
               },
             ),
             Text(
-              "Core Services",
+              "Additional Services",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -147,21 +147,13 @@ class _CreatePetDaycareServicesState
               },
             ),
             CheckboxListTile(
-              title: Text("Food Provided"),
+              title: Text("In-House Food Provided"),
               value: _foodProvided,
               onChanged: (value) {
                 setState(() {
                   _foodProvided = value ?? false;
                 });
               },
-            ),
-            Text(
-              "Additional Services",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.orange,
-              ),
             ),
             Form(
               key: _formKey,

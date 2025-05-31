@@ -10,6 +10,7 @@ import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/transaction.dart';
 import 'package:frontend/pages/details/transaction_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/provider/review_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
@@ -112,6 +113,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
 
   Widget _buildBookingHistoryList() {
     final slotState = ref.watch(slotStateProvider);
+    final reviewState = ref.watch(reviewStateProvider);
     log("slotState: $slotState");
 
     if (_error != null) {
@@ -121,6 +123,18 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
     handleError(slotState, context);
     if (slotState.hasValue && !slotState.isLoading) {
       if (slotState.value == 204) {
+        setState(() {
+          _records = [];
+          _page = 1;
+          _hasMoreData = true;
+          _fetchMoreData();
+          ref.read(slotStateProvider.notifier).reset();
+        });
+      }
+    }
+
+    if (reviewState.hasValue && !reviewState.isLoading) {
+      if (reviewState.value == 201) {
         setState(() {
           _records = [];
           _page = 1;
@@ -134,6 +148,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
       onRefresh: () async {
         _records = [];
         _page = 1;
+        _hasMoreData = true;
         _fetchMoreData();
       },
       child: Padding(
@@ -298,7 +313,8 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                       await showModalBottomSheet(
                                         context: context,
                                         builder: (context) => AddReviewModal(
-                                            _records[index].petDaycare.id),
+                                          _records[index].petDaycare.id,
+                                        ),
                                       );
                                     },
                                     style: FilledButton.styleFrom(

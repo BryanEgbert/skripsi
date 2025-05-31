@@ -40,12 +40,12 @@ void handleError(AsyncValue providerValue, BuildContext context,
 
 void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
   var context = state.context;
-  if (!state.mounted) return;
 
   if (providerValue.hasError &&
       (providerValue.valueOrNull == null || providerValue.valueOrNull == 0) &&
       !providerValue.isLoading) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (!state.mounted) return;
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       var snackbar = SnackBar(
         key: Key("error-message"),
@@ -81,6 +81,7 @@ void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
       if (providerValue.value >= 200 && providerValue.value <= 400) {
         log("show snackbar");
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          if (!state.mounted) return;
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
           var snackbar = SnackBar(

@@ -12,6 +12,7 @@ import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/show_confirmation_dialog.dart';
+import 'package:intl/intl.dart';
 
 class BookingHistoryDetailsPage extends ConsumerStatefulWidget {
   final int bookedSlotId;
@@ -24,6 +25,9 @@ class BookingHistoryDetailsPage extends ConsumerStatefulWidget {
 
 class _TransactionDetailsPageState
     extends ConsumerState<BookingHistoryDetailsPage> {
+  final rupiahFormat =
+      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
+
   void _cancelBooking(int bookedSlotId) {
     showCancelBookingConfirmationDialog(context,
         "Are you sure you want to cancel this booking? This action cannot be undone.",
@@ -72,10 +76,10 @@ class _TransactionDetailsPageState
                 statusColor = Colors.deepOrange;
                 chipColor = Color(0xFFFFF080);
               } else if (value.status.id == 2 || value.status.id == 4) {
-                statusColor = Colors.green;
+                statusColor = Colors.green[900]!;
                 chipColor = Color(0xFFCAFFC7);
               } else if (value.status.id == 3 || value.status.id == 5) {
-                statusColor = Colors.red;
+                statusColor = Colors.red[900]!;
                 chipColor = Color(0XFFFFD7D7);
               }
 
@@ -91,31 +95,67 @@ class _TransactionDetailsPageState
                           : null,
                       padding: EdgeInsets.all(12),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "Status: ",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: chipColor,
-                            ),
-                            child: Text(
-                              value.status.name,
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: statusColor,
-                                fontWeight: FontWeight.w900,
+                          Row(
+                            children: [
+                              Text(
+                                "Status: ",
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.black
+                                      : Colors.white70,
+                                ),
                               ),
-                            ),
+                              Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: chipColor,
+                                ),
+                                child: Text(
+                                  value.status.name,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: statusColor,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
+                          if (value.status.id == 1)
+                            TextButton(
+                              onPressed: () =>
+                                  _cancelBooking(value.bookedSlot.id),
+                              child: Text(
+                                "Cancel Booking",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            )
+                          else if (value.status.id == 4 && !value.isReviewed)
+                            TextButton(
+                                onPressed: () async {
+                                  await showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) =>
+                                        AddReviewModal(value.petDaycare.id),
+                                  );
+
+                                  setState(() {
+                                    ref.invalidate(getBookedSlotProvider(
+                                        widget.bookedSlotId));
+                                  });
+                                },
+                                child: Text(
+                                  "Give Review",
+                                  style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.light
+                                          ? Constants.primaryTextColor
+                                          : Colors.orange),
+                                ))
                         ],
                       ),
                     ),
@@ -266,7 +306,7 @@ class _TransactionDetailsPageState
                                     ),
                                   ),
                                   Text(
-                                    "Rp. ${pricing.price * item.total}/${pricing.pricingType}",
+                                    "${rupiahFormat.format(pricing.price * item.total)}/${pricing.pricingType}",
                                     style: TextStyle(
                                       color: Theme.of(context).brightness ==
                                               Brightness.light
@@ -292,7 +332,7 @@ class _TransactionDetailsPageState
                                 ),
                               ),
                               Text(
-                                "Rp. $totalPrice",
+                                rupiahFormat.format(totalPrice),
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).brightness ==
@@ -353,48 +393,6 @@ class _TransactionDetailsPageState
                         ),
                       ),
                     ),
-                    if (value.status.id == 1)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: ElevatedButton(
-                              onPressed: () =>
-                                  _cancelBooking(value.bookedSlot.id),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                              ),
-                              child: Text(
-                                "Cancel Booking",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    else if (value.status.id == 4 && !value.isReviewed)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  await showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) =>
-                                        AddReviewModal(value.petDaycare.id),
-                                  );
-                                },
-                                child: Text(
-                                  "Give Review",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              )),
-                        ],
-                      ),
                   ],
                 ),
               );

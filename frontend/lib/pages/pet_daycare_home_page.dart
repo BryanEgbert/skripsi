@@ -126,7 +126,7 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
 
     final List<Widget> pages = [
       ViewBookedPetsPage(messages),
-      ViewBookingRequestsPage(),
+      ViewBookingRequestsPage(messages),
       // ViewSlotsPage(),
       PetDaycareDetailsPage.my(),
     ];
@@ -147,11 +147,7 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
         items: [
           BottomNavigationBarItem(
             backgroundColor: Colors.orangeAccent,
-            icon: Badge.count(
-              count: messages.length,
-              isLabelVisible: messages.isNotEmpty,
-              child: Icon(Icons.pets),
-            ),
+            icon: Icon(Icons.pets),
             label: "Bookings",
           ),
           BottomNavigationBarItem(

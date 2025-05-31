@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/model/response/token_response.dart';
+import 'package:frontend/provider/database_provider.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/database_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -33,6 +36,8 @@ class Auth extends _$Auth {
       case Ok():
         await dbService.insert(tokenRes.value!);
         state = AsyncData(tokenRes.value);
+        ref.invalidate(getTokenProvider);
+
         break;
       case Error():
         state = AsyncError(tokenRes.error, StackTrace.current);
@@ -51,6 +56,7 @@ class Auth extends _$Auth {
       case Ok():
         await dbService.insert(tokenRes.value!);
         state = AsyncData(tokenRes.value);
+        ref.invalidate(getTokenProvider);
         break;
       case Error():
         state = AsyncError(tokenRes.error, StackTrace.current);
@@ -68,8 +74,11 @@ class Auth extends _$Auth {
 
     switch (tokenRes) {
       case Ok():
+        log("[USER CREATED] ${tokenRes.value!}");
         await dbService.insert(tokenRes.value!);
         state = AsyncData(tokenRes.value);
+        ref.invalidate(getTokenProvider);
+
         break;
       case Error():
         state = AsyncError(tokenRes.error, StackTrace.current);
@@ -90,6 +99,7 @@ class Auth extends _$Auth {
       case Ok():
         await dbService.insert(tokenRes.value!);
         state = AsyncData(tokenRes.value);
+        ref.invalidate(getTokenProvider);
         break;
       case Error():
         state = AsyncError(tokenRes.error, StackTrace.current);
@@ -103,6 +113,7 @@ class Auth extends _$Auth {
     final dbService = DatabaseService();
     // final userService = UserService();
     await dbService.delete();
+    ref.invalidate(getTokenProvider);
 
     state = AsyncData(null);
   }
@@ -118,6 +129,7 @@ class Auth extends _$Auth {
       case Ok():
         await dbService.insert(tokenRes.value!);
         state = AsyncData(tokenRes.value);
+        ref.invalidate(getTokenProvider);
         break;
       case Error():
         state = AsyncError(tokenRes.error, StackTrace.current);

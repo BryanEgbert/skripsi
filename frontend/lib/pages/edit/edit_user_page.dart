@@ -25,6 +25,8 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
   final _nameController = TextEditingController();
   File? _userProfilePicture;
 
+  bool _isLoaded = false;
+
   Future<void> _pickImage() async {
     final photo = await ImagePicker().pickImage(source: ImageSource.gallery);
 
@@ -36,7 +38,7 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
     }
   }
 
-  void _submitForm(UserState userState, User value) {
+  void _submitForm(User value) {
     final updateUserReq = UpdateUserRequest(
       name: _nameController.text,
       image: _userProfilePicture,
@@ -47,7 +49,7 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
           : [],
     );
 
-    userState.editUser(updateUserReq);
+    ref.read(userStateProvider.notifier).editUser(updateUserReq);
   }
 
   @override
@@ -73,7 +75,10 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
               onRefresh: () => ref.refresh(getMyUserProvider.future)),
           AsyncData(:final value) => SafeArea(
               child: Builder(builder: (context) {
-                _nameController.text = value.name;
+                if (!_isLoaded) {
+                  _nameController.text = value.name;
+                  _isLoaded = true;
+                }
 
                 return SingleChildScrollView(
                   child: Container(
@@ -113,11 +118,13 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
                           ElevatedButton(
                             onPressed: () async {
                               _submitForm(
-                                ref.read(userStateProvider.notifier),
                                 value,
                               );
                             },
-                            child: const Text("Save"),
+                            child: !userState.isLoading
+                                ? const Text("Save")
+                                : CircularProgressIndicator(
+                                    color: Colors.white),
                           ),
                         ],
                       ),

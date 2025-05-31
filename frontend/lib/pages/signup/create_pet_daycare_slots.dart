@@ -10,6 +10,7 @@ import 'package:frontend/pages/signup/create_pet_daycare_services.dart';
 import 'package:frontend/provider/category_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/validator.dart';
+import 'package:intl/intl.dart';
 
 class CreatePetDaycareSlots extends ConsumerStatefulWidget {
   final CreateUserRequest createUserReq;
@@ -26,6 +27,9 @@ class CreatePetDaycareSlots extends ConsumerStatefulWidget {
 }
 
 class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
+  final rupiahFormat =
+      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
+
   static const _miniatureDogID = 1;
   static const _smallDogID = 2;
   static const _mediumDogID = 3;
@@ -102,7 +106,9 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
 
     if (_acceptMiniatureDog) {
       _petCategoryIds.add(_miniatureDogID);
-      _prices.add(double.tryParse(_miniatureDogPriceController.text) ?? 0.0);
+      _prices.add(double.tryParse(_miniatureDogPriceController.text
+              .replaceAll(RegExp(r'[^0-9]'), '')) ??
+          0.0);
       _pricingTypes
           .add(_miniatureDogPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_miniatureDogSlotController.text) ?? 0);
@@ -117,7 +123,9 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
     }
     if (_acceptSmallDog) {
       _petCategoryIds.add(_smallDogID);
-      _prices.add(double.tryParse(_smallDogPriceController.text) ?? 0.0);
+      _prices.add(double.tryParse(_smallDogPriceController.text
+              .replaceAll(RegExp(r'[^0-9]'), '')) ??
+          0.0);
       _pricingTypes.add(_smallDogPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_smallDogSlotController.text) ?? 0);
     } else {
@@ -132,7 +140,9 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
 
     if (_acceptMediumDog) {
       _petCategoryIds.add(_mediumDogID);
-      _prices.add(double.tryParse(_mediumDogPriceController.text) ?? 0.0);
+      _prices.add(double.tryParse(_mediumDogPriceController.text
+              .replaceAll(RegExp(r'[^0-9]'), '')) ??
+          0.0);
       _pricingTypes.add(_mediumDogPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_mediumDogSlotController.text) ?? 0);
     } else {
@@ -147,7 +157,9 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
 
     if (_acceptLargeDog) {
       _petCategoryIds.add(_largeDogID);
-      _prices.add(double.tryParse(_largeDogPriceController.text) ?? 0.0);
+      _prices.add(double.tryParse(_largeDogPriceController.text
+              .replaceAll(RegExp(r'[^0-9]'), '')) ??
+          0.0);
       _pricingTypes.add(_largeDogPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_largeDogSlotController.text) ?? 0);
     } else {
@@ -162,7 +174,9 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
 
     if (_acceptGiantDog) {
       _petCategoryIds.add(_giantDogID);
-      _prices.add(double.tryParse(_giantDogPriceController.text) ?? 0.0);
+      _prices.add(double.tryParse(_giantDogPriceController.text
+              .replaceAll(RegExp(r'[^0-9]'), '')) ??
+          0.0);
       _pricingTypes.add(_giantDogPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_giantDogSlotController.text) ?? 0);
     } else {
@@ -176,7 +190,9 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
     }
     if (_acceptCats) {
       _petCategoryIds.add(6);
-      _prices.add(double.tryParse(_catsPriceController.text) ?? 0.0);
+      _prices.add(double.tryParse(
+              _catsPriceController.text.replaceAll(RegExp(r'[^0-9]'), '')) ??
+          0.0);
       _pricingTypes.add(_catsPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_catsSlotController.text) ?? 0);
     } else {
@@ -191,7 +207,9 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
 
     if (_acceptBunnies) {
       _petCategoryIds.add(7);
-      _prices.add(double.tryParse(_bunniesPriceController.text) ?? 0.0);
+      _prices.add(double.tryParse(
+              _bunniesPriceController.text.replaceAll(RegExp(r'[^0-9]'), '')) ??
+          0.0);
       _pricingTypes.add(_bunniesPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_bunniesSlotController.text) ?? 0);
     } else {
@@ -423,7 +441,6 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       mainAxisSize: MainAxisSize.min,
       spacing: 8,
       children: [
-        Text("Rp."),
         Expanded(
           child: TextFormField(
             style: TextStyle(
@@ -438,6 +455,11 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
               labelText: "Price",
             ),
             keyboardType: TextInputType.number,
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                priceController.text = rupiahFormat.format(int.parse(value));
+              }
+            },
             validator: (value) => validatePriceInput(enabled, value),
           ),
         ),

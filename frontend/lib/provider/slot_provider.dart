@@ -107,6 +107,7 @@ class SlotState extends _$SlotState {
       case Ok<void>():
         state = AsyncData(201);
         ref.invalidate(getBookingRequestsProvider(token.userId));
+        ref.invalidate(getPetDaycareByIdProvider(petDaycareId, null, null));
       case Error():
         state = AsyncError(res.error, StackTrace.current);
     }

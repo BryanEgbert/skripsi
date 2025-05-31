@@ -219,6 +219,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                               pageSize: Constants.pageSize,
                               buildBody: (pet) {
                                 bool isPetVaccinated = true;
+                                String? disabledReason;
                                 // widget.petDaycare.mustBeVaccinated &&
                                 //     pet.isVaccinated;
                                 if (widget.petDaycare.mustBeVaccinated) {
@@ -226,14 +227,21 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                 }
                                 bool isPetCategoryMatching = false;
                                 for (var price in widget.petDaycare.pricings) {
-                                  if (price.petCategory.id == pet.id) {
+                                  if (price.petCategory.id ==
+                                      pet.petCategory.id) {
                                     isPetCategoryMatching = true;
                                   }
                                 }
+
+                                if (!isPetVaccinated) {
+                                  disabledReason =
+                                      "Pet must have a valid and up-to-date vaccination record";
+                                } else if (!isPetCategoryMatching) {
+                                  disabledReason = "Pet category not supported";
+                                }
                                 return CheckboxListTile(
-                                  enabled: (isPetVaccinated &&
-                                          isPetCategoryMatching) ||
-                                      true,
+                                  enabled:
+                                      isPetVaccinated && isPetCategoryMatching,
                                   value: _petIdValue[pet.id] ?? false,
                                   onChanged: (value) {
                                     setState(() {
@@ -254,9 +262,11 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                   title: Text(pet.name),
                                   secondary: DefaultCircleAvatar(
                                       imageUrl: pet.imageUrl ?? ""),
-                                  subtitle: Text(
-                                    "Pet Category: ${pet.petCategory.name}",
-                                  ),
+                                  subtitle: disabledReason != null
+                                      ? Text(
+                                          disabledReason,
+                                        )
+                                      : null,
                                 );
                               },
                             ),

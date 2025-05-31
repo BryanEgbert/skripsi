@@ -153,7 +153,7 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
           ? Center(
               child: CircularProgressIndicator.adaptive(),
             )
-          : (users.length == 0)
+          : (users.isEmpty)
               ? ErrorText(
                   errorText: "Chat history will appear here",
                   onRefresh: () async {
@@ -193,7 +193,6 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
                     physics: AlwaysScrollableScrollPhysics(),
                     itemCount: users.length,
                     itemBuilder: (context, index) {
-                      log("[PET OWNER CHAT PAGE] unreadMessages: ${_unreadMessages.length}");
                       var item = users.elementAt(index);
                       var unreadCount = _unreadMessages
                           .where(
@@ -228,7 +227,10 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
                           item.name,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Constants.primaryTextColor,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                           ),
                         ),
                         trailing: Badge.count(

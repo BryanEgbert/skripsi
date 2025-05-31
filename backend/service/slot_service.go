@@ -45,6 +45,8 @@ func (s *SlotServiceImpl) GetBookedSlot(id uint, userId uint) (*model.BookedSlot
 		Preload("Pet.PetCategory.SizeCategory").
 		Preload("Address").
 		Preload("Daycare").
+		Preload("Daycare.Reviews").
+		Preload("Daycare.Reviews.User").
 		Preload("Daycare.Slots").
 		Preload("Daycare.Slots.PricingType").
 		Preload("Daycare.Slots.PetCategory").
@@ -80,6 +82,7 @@ func (s *SlotServiceImpl) GetBookedSlots(userId uint, page int, pageSize int) (*
 		Where("user_id = ?", userId).
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
+		Order("created_at DESC").
 		Find(&transactions).Error; err != nil {
 		return nil, err
 	}
@@ -376,7 +379,7 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 		Model(&model.Slots{}).
 		Select("pricing_types.name").
 		Joins("JOIN pricing_types ON pricing_types.id = pricing_type_id").
-		Where("daycare_id = ? AND pet_category_id = ?", req.DaycareID, petCategoryID).
+		Where("daycare_id = ? AND pet_category_id IN ?", req.DaycareID, petCategoryID).
 		Scan(&pricingType).Error; err != nil {
 		return err
 	}

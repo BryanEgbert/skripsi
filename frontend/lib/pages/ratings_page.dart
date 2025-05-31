@@ -120,6 +120,10 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                                     style: TextStyle(
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.light
+                                          ? Colors.black
+                                          : Colors.white,
                                     ),
                                   ),
                                   TextSpan(

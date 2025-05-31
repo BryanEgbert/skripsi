@@ -28,7 +28,7 @@ class DatabaseService {
   Future<TokenResponse> getToken() async {
     final db = await getDatabase();
 
-    List<Map<String, Object?>> tokenMaps = await db.query(_tableName, limit: 1);
+    List<Map<String, Object?>> tokenMaps = await db.query(_tableName);
 
     if (tokenMaps.isEmpty) {
       return Future.error("Session expired");
