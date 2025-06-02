@@ -48,9 +48,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
   }
 
   void _submitForm() {
-    log("submitting form");
     if (ref.read(savedAddressStateProvider).isLoading) return;
-    log("getting past loading");
     if (!_formKey.currentState!.validate()) return;
     ref.read(savedAddressStateProvider.notifier).addSavedAddress(
           CreateSavedAddressRequest(
@@ -75,7 +73,6 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
   Widget build(BuildContext context) {
     final savedAddressState = ref.watch(savedAddressStateProvider);
 
-    log("savedAddressState: $savedAddressState");
     handleValue(savedAddressState, this,
         ref.read(savedAddressStateProvider.notifier).reset);
 
@@ -105,7 +102,8 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                     var permission = await Geolocator.checkPermission();
                     if (permission == LocationPermission.denied) {
                       permission = await Geolocator.requestPermission();
-                      if (permission == LocationPermission.denied) {
+                      if (permission == LocationPermission.denied ||
+                          permission == LocationPermission.deniedForever) {
                         var snackbar = SnackBar(
                           key: Key("error-message"),
                           content: Text(
@@ -117,6 +115,27 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
 
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                        }
+                      }
+                    } else if (permission == LocationPermission.deniedForever) {
+                      if (!await Geolocator.openAppSettings()) return;
+                      if (permission == LocationPermission.denied) {
+                        permission = await Geolocator.requestPermission();
+                        if (permission == LocationPermission.denied ||
+                            permission == LocationPermission.deniedForever) {
+                          var snackbar = SnackBar(
+                            key: Key("error-message"),
+                            content: Text(
+                              "Location request denied.",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red[800],
+                          );
+
+                          if (mounted) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackbar);
+                          }
                         }
                       }
                     }

@@ -152,6 +152,7 @@ class AuthService implements IAuthService {
         ),
         data: formData,
       );
+      log("response: ${response.data}");
 
       return response;
     }, (res) => TokenResponse.fromJson(res));

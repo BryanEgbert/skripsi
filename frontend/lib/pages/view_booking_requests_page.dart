@@ -100,7 +100,7 @@ class _ViewBookingRequestsPageState
                   errorText: _error != null
                       ? _error.toString()
                       : "No pet owners are booking your service",
-                  onRefresh: () => _fetchMoreData(),
+                  onRefresh: () => _refresh(),
                 )
               : Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -135,9 +135,7 @@ class _ViewBookingRequestsPageState
 
     return RefreshIndicator.adaptive(
       onRefresh: () async {
-        _records = [];
-        _page = 1;
-        _fetchMoreData();
+        _refresh();
       },
       child: ListView.builder(
         physics: AlwaysScrollableScrollPhysics(),
@@ -280,5 +278,14 @@ class _ViewBookingRequestsPageState
         },
       ),
     );
+  }
+
+  void _refresh() {
+    setState(() {
+      _records = [];
+      _page = 1;
+      _hasMoreData = true;
+      _fetchMoreData();
+    });
   }
 }

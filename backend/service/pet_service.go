@@ -32,8 +32,8 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, startID uint, pageSize int) 
 
 	// TODO: add condition when status is confirmed
 	rows, err := s.db.
-		Model(&model.Pet{}).
-		Select("pets.id,pets.name,pets.image_url,pets.status,pet_categories.id, pet_categories.name, size_categories.*, users.id, users.name, users.email, users.image_url, roles.id, roles.name, users.created_at").
+		Table("pets").
+		Select("pets.id, pets.name, pets.image_url, pets.status,pet_categories.id, pet_categories.name, size_categories.*, users.id, users.name, users.email, users.image_url, roles.id, roles.name, users.created_at").
 		Joins("JOIN pet_booked_slots on pet_booked_slots.pet_id = pets.id").
 		Joins("JOIN booked_slots on pet_booked_slots.booked_slot_id = booked_slots.id").
 		Joins("JOIN pet_categories ON pet_categories.id = pets.pet_category_id").
@@ -50,10 +50,11 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, startID uint, pageSize int) 
 
 	for rows.Next() {
 		var petDto model.PetDTO
+		var imageUrl *string
 		rows.Scan(
 			&petDto.ID,
 			&petDto.Name,
-			&petDto.ImageUrl,
+			&imageUrl,
 			&petDto.Status,
 			&petDto.PetCategory.ID,
 			&petDto.PetCategory.Name,
@@ -72,8 +73,54 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, startID uint, pageSize int) 
 
 		petDto.Owner.VetSpecialty = []model.VetSpecialty{}
 
+		if imageUrl != nil {
+			petDto.ImageUrl = *imageUrl
+		}
+
 		petDtos = append(petDtos, petDto)
 	}
+
+	// var pets []model.Pet
+
+	// if err := s.db.Model(&model.Pet{}).
+	// 	Joins("PetCategory").
+	// 	Joins("Owner").
+	// 	Joins("Owner.Role").
+	// 	Joins("PetCategory.SizeCategory").
+	// 	Preload("BookedSlots").
+	// 	Preload("BookedSlots.Daycare").
+	// 	Where("pets.id > ?", startID).
+	// 	Limit(pageSize).
+	// 	Find(&pets).Error; err != nil {
+	// 	return nil, err
+	// }
+
+	// out := []model.PetDTO{}
+	// for _, val := range pets {
+	// 	for _, bookedSlot := range val.BookedSlots {
+	// 		log.Printf("daycareID: %d, statusID: %d", bookedSlot.DaycareID, *bookedSlot.StatusID)
+	// 		if bookedSlot.StatusID == nil || bookedSlot.Daycare.OwnerID != userId {
+	// 			continue
+	// 		}
+	// 		if *bookedSlot.StatusID == 2 {
+	// 			pet := model.PetDTO{
+	// 				ID:          val.ID,
+	// 				Name:        val.Name,
+	// 				Status:      val.Status,
+	// 				Neutered:    val.Neutered,
+	// 				Owner:       helper.ConvertUserToDTO(val.Owner),
+	// 				PetCategory: helper.ConvertPetCategoryToDTO(val.PetCategory),
+	// 			}
+
+	// 			if val.ImageUrl != nil {
+	// 				pet.ImageUrl = *val.ImageUrl
+	// 			}
+
+	// 			out = append(out, pet)
+	// 		}
+	// 	}
+
+	// }
 
 	return &petDtos, nil
 }

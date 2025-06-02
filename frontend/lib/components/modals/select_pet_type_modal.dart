@@ -55,7 +55,19 @@ class _SelectPetTypeModalState extends ConsumerState<SelectPetTypeModal> {
       AsyncError() => SizedBox(
           height: double.infinity,
           width: double.infinity,
-          child: Center(child: const Text("Something's wrong")),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Something's wrong"),
+              IconButton(
+                onPressed: () => ref.refresh(petCategoryProvider.future),
+                icon: Icon(
+                  Icons.refresh,
+                  color: Colors.orange,
+                ),
+              )
+            ],
+          ),
         ),
       _ => SizedBox(
           height: double.infinity,

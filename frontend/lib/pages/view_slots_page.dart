@@ -28,9 +28,12 @@ class _ViewSlotsPageState extends ConsumerState<ViewSlotsPage> {
   Object? _error;
 
   void _refresh() {
-    _records = [];
-    _page = 1;
-    _fetchMoreData();
+    setState(() {
+      _records = [];
+      _page = 1;
+      _hasMoreData = true;
+      _fetchMoreData();
+    });
   }
 
   void _onScroll() {
@@ -109,12 +112,12 @@ class _ViewSlotsPageState extends ConsumerState<ViewSlotsPage> {
               ? (_records.isEmpty)
                   ? ErrorText(
                       errorText: "The list is empty",
-                      onRefresh: () => _fetchMoreData(),
+                      onRefresh: () => _refresh(),
                     )
                   : _buildListView()
               : ErrorText(
                   errorText: _error.toString(),
-                  onRefresh: () => _fetchMoreData(),
+                  onRefresh: () => _refresh(),
                 ),
     );
   }

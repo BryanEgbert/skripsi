@@ -142,6 +142,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
   @override
   void dispose() {
     _scrollPetController.dispose();
+    _scrollPetOwnerController.dispose();
     // _channel?.sink.close();
     super.dispose();
   }
@@ -180,22 +181,26 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
   Widget _buildViewByPetOwners(List<ChatMessage> messages) {
     return RefreshIndicator.adaptive(
       onRefresh: () async {
-        _bookedPetRecords = [];
-        _page = 1;
-        _fetchMoreData(1);
+        setState(() {
+          _bookedPetRecords = [];
+          _page = 1;
+          _hasMoreData = true;
+          _fetchMoreData(1);
+        });
       },
-      child: (_isFetching && _petRecords.isEmpty)
+      child: (_isFetching && _bookedPetRecords.isEmpty)
           ? Center(
               child: CircularProgressIndicator(
               color: Colors.orange,
             ))
           : (_error == null)
-              ? (_petRecords.isEmpty)
+              ? (_bookedPetRecords.isEmpty)
                   ? ErrorText(
                       errorText: "There are no booked pet owners",
                       onRefresh: () async {
                         _bookedPetRecords = [];
                         _page = 1;
+                        _hasMoreData = true;
                         _fetchMoreData(1);
                       },
                     )
@@ -246,6 +251,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                   onRefresh: () async {
                     _bookedPetRecords = [];
                     _page = 1;
+                    _hasMoreData = true;
                     _fetchMoreData(1);
                   },
                 ),
@@ -255,9 +261,13 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
   Widget _buildViewByPets(List<ChatMessage> messages) {
     return RefreshIndicator.adaptive(
       onRefresh: () async {
-        _petRecords = [];
-        _lastId = 0;
-        _fetchMoreData(0);
+        setState(() {
+          _petRecords = [];
+          _lastId = 0;
+          _hasMoreData = true;
+          _fetchMoreData(0);
+        });
+        // setState(() {});
       },
       child: (_isFetching && _petRecords.isEmpty)
           ? Center(
@@ -271,6 +281,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                       onRefresh: () async {
                         _petRecords = [];
                         _lastId = 0;
+                        _hasMoreData = true;
                         _fetchMoreData(0);
                       },
                     )
@@ -280,6 +291,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                   onRefresh: () async {
                     _petRecords = [];
                     _lastId = 0;
+                    _hasMoreData = true;
                     _fetchMoreData(0);
                   },
                 ),
@@ -314,7 +326,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
       leading: DefaultCircleAvatar(imageUrl: item.imageUrl ?? ""),
       title: Text(item.name),
       subtitle: Text(
-        "Pet category: ${item.petCategory.name}\nStatus: ${item.status}\nOwner: ${item.owner.name}",
+        "Pet category: ${item.petCategory.name}\nOwner: ${item.owner.name}",
         style: TextStyle(
           color: Theme.of(context).brightness == Brightness.light
               ? Colors.black
@@ -334,7 +346,17 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
           itemBuilder: (context) {
             return [
               PopupMenuItem(
-                child: Text("Log Pet Activity"),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
+                  children: [
+                    Icon(
+                      Icons.add_a_photo,
+                      color: Colors.orange,
+                    ),
+                    Text("Send Photo To Pet Owner"),
+                  ],
+                ),
                 onTap: () async {
                   bool isAccessGranted = await ensureCameraPermission();
                   if (!isAccessGranted) {
@@ -359,7 +381,17 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                 child: Badge(
                   label: Text("!"),
                   isLabelVisible: messages.isNotEmpty,
-                  child: Text("Chat pet's owner"),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 8,
+                    children: [
+                      Icon(
+                        Icons.chat_rounded,
+                        color: Colors.orange,
+                      ),
+                      Text("Chat pet's owner"),
+                    ],
+                  ),
                 ),
               ),
             ];

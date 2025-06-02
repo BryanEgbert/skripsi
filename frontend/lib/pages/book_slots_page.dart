@@ -51,8 +51,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-
-    log("petID: ${_petIdValue.keys.toList()}");
+    _petIdValue.removeWhere((key, value) => value == false);
 
     var request = BookSlotRequest(
       petId: _petIdValue.keys.toList(),
@@ -74,8 +73,8 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
     log("[BOOK PET DAYCARE] build");
     final savedAddress = ref.watch(savedAddressProvider());
     final slotState = ref.watch(slotStateProvider);
-
     log("slotState: $slotState");
+    log("petIdValues: $_petIdValue");
 
     handleValue(slotState, this, ref.read(slotStateProvider.notifier).reset);
 
@@ -244,10 +243,12 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                       isPetVaccinated && isPetCategoryMatching,
                                   value: _petIdValue[pet.id] ?? false,
                                   onChanged: (value) {
+                                    ref
+                                        .read(slotStateProvider.notifier)
+                                        .reset();
                                     setState(() {
                                       if (value != null) {
                                         _petIdValue[pet.id] = value;
-                                        ref.invalidate(slotStateProvider);
 
                                         if (value) {
                                           _petCategoryIds
@@ -350,10 +351,11 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                               primary: Colors.orange,
                                               onSurface: Colors.white70,
                                             ),
-                                            dialogBackgroundColor:
-                                                Colors.grey[900],
                                             textTheme:
                                                 ThemeData.dark().textTheme,
+                                            dialogTheme: DialogThemeData(
+                                                backgroundColor:
+                                                    Colors.grey[900]),
                                           )
                                         : Theme.of(context),
                                     child: child!,

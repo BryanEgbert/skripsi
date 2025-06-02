@@ -33,21 +33,20 @@ func NewPetDaycareService(db *gorm.DB) *PetDaycareServiceImpl {
 func (s *PetDaycareServiceImpl) GetBookedPetOwners(userId uint, page int, pageSize int) (model.ListData[model.UserDTO], error) {
 	daycare := model.PetDaycare{OwnerID: userId}
 
-	if err := s.db.First(&daycare).Error; err != nil {
+	if err := s.db.Where("owner_id = ?", userId).First(&daycare).Error; err != nil {
 		return model.ListData[model.UserDTO]{}, err
 	}
+
+	log.Printf("daycareID: %d", daycare.ID)
 
 	bookedSlots := []model.BookedSlot{}
 
 	if err := s.db.
 		Model(&model.BookedSlot{}).
-		Where("daycare_id = ?", daycare.ID).
-		Joins("User").
-		Joins("User.Role").
-		Preload("User.VetSpecialty").
+		Distinct("user_id").
+		Where("daycare_id = ? AND status_id = ?", daycare.ID, 2).
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
-		Where("status_id = 2").
 		Find(&bookedSlots).Error; err != nil {
 		return model.ListData[model.UserDTO]{}, err
 	}
@@ -55,9 +54,21 @@ func (s *PetDaycareServiceImpl) GetBookedPetOwners(userId uint, page int, pageSi
 	out := []model.UserDTO{}
 
 	for _, val := range bookedSlots {
-		user := helper.ConvertUserToDTO(val.User)
-		out = append(out, user)
+		user := model.User{}
+		if err := s.db.Model(&model.User{}).
+			Joins("Role").
+			First(&user, val.UserID).Error; err != nil {
+			return model.ListData[model.UserDTO]{}, err
+		}
+
+		dto := helper.ConvertUserToDTO(user)
+		out = append(out, dto)
 	}
+
+	// for _, val := range users {
+	// 	user := helper.ConvertUserToDTO(val)
+	// 	out = append(out, user)
+	// }
 
 	return model.ListData[model.UserDTO]{Data: out}, nil
 }

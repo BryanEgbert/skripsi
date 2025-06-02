@@ -350,89 +350,9 @@ func (s *SlotServiceImpl) EditSlotCount(userId uint, slotId uint, req model.Redu
 }
 
 func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) error {
-	var count int64
-	if err := s.db.
-		Model(&model.BookedSlot{}).
-		Joins("JOIN pet_booked_slots pbs ON pbs.booked_slot_id = booked_slots.id").
-		Where("pbs.pet_id IN ? AND booked_slots.status_id IN ?", req.PetID, []uint{1, 2, 4}).
-		Count(&count).
-		Error; err != nil {
+	slot, shouldReturn, err := s.validateSlots(req)
+	if shouldReturn {
 		return err
-	}
-
-	if count > 0 {
-		return apputils.ErrPetAlreadyBooked
-	}
-
-	var petCategoryID []uint
-	if err := s.db.
-		Table("pets").
-		Select("DISTINCT(pet_category_id) AS petCategoryId").
-		Where("id IN ?", req.PetID).
-		Scan(&petCategoryID).
-		Error; err != nil {
-		return err
-	}
-
-	var pricingType string
-	if err := s.db.
-		Model(&model.Slots{}).
-		Select("pricing_types.name").
-		Joins("JOIN pricing_types ON pricing_types.id = pricing_type_id").
-		Where("daycare_id = ? AND pet_category_id IN ?", req.DaycareID, petCategoryID).
-		Scan(&pricingType).Error; err != nil {
-		return err
-	}
-
-	var slot []model.Slots
-	if err := s.db.
-		Where("daycare_id = ? AND pet_category_id IN ?", req.DaycareID, petCategoryID).
-		Find(&slot).Error; err != nil {
-		return err
-	}
-
-	log.Printf("slot length: %d", len(slot))
-
-	// slotID := []uint{}
-	// for _, val := range slot {
-	// 	slotID = append(slotID, val.ID)
-	// }
-
-	// var reducedSlotsCount []int64
-
-	// if err := s.db.
-	// 	Model(&model.ReduceSlots{}).
-	// 	Select("COALESCE(SUM(reduced_count),0) AS total").
-	// 	Where("slot_id IN ? AND target_date BETWEEN ? AND ?", slotID, req.StartDate, req.EndDate).
-	// 	Scan(&reducedSlotsCount).
-	// 	Error; err != nil {
-	// 	return err
-	// }
-
-	// TODO: loop date instead of add counts
-	for _, val := range slot {
-		var bookedSlotsCount int64
-		if err := s.db.
-			Model(&model.BookedSlot{
-				// DaycareID: req.DaycareID,
-				SlotID:    val.ID,
-				StartDate: req.StartDate,
-				EndDate:   req.EndDate,
-			}).
-			Count(&bookedSlotsCount).
-			Error; err != nil {
-			return err
-		}
-		// remainingSlots := val.MaxNumber - int(bookedSlotsCount) - int(reducedSlotsCount[i])
-		remainingSlots := val.MaxNumber - int(bookedSlotsCount)
-
-		if remainingSlots <= 0 {
-			return apputils.ErrSlotFull
-		}
-	}
-
-	if pricingType == "night" && int(req.EndDate.Sub(req.StartDate)/(24*time.Hour)) < 2 {
-		return apputils.ErrOnlyOneSlotDate
 	}
 
 	// Insert Data
@@ -479,7 +399,6 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 			DaycareID: req.DaycareID,
 			StartDate: req.StartDate,
 			EndDate:   req.EndDate,
-			AddressID: &req.AddressID,
 		}
 
 		if req.AddressID != 0 {
@@ -525,4 +444,88 @@ func (s *SlotServiceImpl) BookSlots(userId uint, req model.BookSlotRequest) erro
 	}
 
 	return tx.Commit().Error
+}
+
+func (s *SlotServiceImpl) validateSlots(req model.BookSlotRequest) ([]model.Slots, bool, error) {
+	var count int64
+	if err := s.db.
+		Model(&model.BookedSlot{}).
+		Joins("JOIN pet_booked_slots pbs ON pbs.booked_slot_id = booked_slots.id").
+		Where("pbs.pet_id IN ? AND booked_slots.status_id IN ?", req.PetID, []uint{1, 2, 4}).
+		Count(&count).
+		Error; err != nil {
+		return nil, true, err
+	}
+
+	if count > 0 {
+		return nil, true, apputils.ErrPetAlreadyBooked
+	}
+
+	var petCategoryID []uint
+	if err := s.db.
+		Table("pets").
+		Select("DISTINCT(pet_category_id) AS petCategoryId").
+		Where("id IN ?", req.PetID).
+		Scan(&petCategoryID).
+		Error; err != nil {
+		return nil, true, err
+	}
+
+	var pricingType string
+	if err := s.db.
+		Model(&model.Slots{}).
+		Select("pricing_types.name").
+		Joins("JOIN pricing_types ON pricing_types.id = pricing_type_id").
+		Where("daycare_id = ? AND pet_category_id IN ?", req.DaycareID, petCategoryID).
+		Scan(&pricingType).Error; err != nil {
+		return nil, true, err
+	}
+
+	var slot []model.Slots
+	if err := s.db.
+		Where("daycare_id = ? AND pet_category_id IN ?", req.DaycareID, petCategoryID).
+		Find(&slot).Error; err != nil {
+		return nil, true, err
+	}
+
+	log.Printf("slot length: %d", len(slot))
+
+	// slotID := []uint{}
+	// for _, val := range slot {
+	// 	slotID = append(slotID, val.ID)
+	// }
+
+	// var reducedSlotsCount []int64
+
+	// if err := s.db.
+	// 	Model(&model.ReduceSlots{}).
+	// 	Select("COALESCE(SUM(reduced_count),0) AS total").
+	// 	Where("slot_id IN ? AND target_date BETWEEN ? AND ?", slotID, req.StartDate, req.EndDate).
+	// 	Scan(&reducedSlotsCount).
+	// 	Error; err != nil {
+	// 	return err
+	// }
+
+	// TODO: loop date instead of add counts
+	for _, val := range slot {
+		bookedSlotsCount := int64(0)
+		if err := s.db.
+			Model(&model.BookedSlot{}).
+			Where("daycare_id = ? AND slot_id = ? AND start_date >= ? AND end_date <= ?", req.DaycareID, val.ID, req.StartDate, req.EndDate).
+			Count(&bookedSlotsCount).
+			Error; err != nil {
+			return nil, true, err
+		}
+		// remainingSlots := val.MaxNumber - int(bookedSlotsCount) - int(reducedSlotsCount[i])
+		remainingSlots := val.MaxNumber - int(bookedSlotsCount)
+
+		if remainingSlots <= 0 {
+			return nil, true, apputils.ErrSlotFull
+		}
+	}
+
+	if pricingType == "night" && int(req.EndDate.Sub(req.StartDate)/(24*time.Hour)) < 2 {
+		return nil, true, apputils.ErrOnlyOneSlotDate
+	}
+	return slot, false, nil
 }

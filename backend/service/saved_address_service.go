@@ -69,9 +69,10 @@ func (s *SavedAddressServiceImpl) AddSavedAddress(userID uint, req model.CreateS
 func (s *SavedAddressServiceImpl) GetSavedAddress(id uint, page int, pageSize int) ([]model.SavedAddressDTO, error) {
 	var savedAddresses []model.SavedAddress
 	if err := s.db.
-		Model(&model.SavedAddress{UserID: id}).
-		Offset(pageSize * (page - 1)).
+		Model(&model.SavedAddress{}).
+		Offset(pageSize*(page-1)).
 		Limit(pageSize).
+		Where("user_id = ?", id).
 		Find(&savedAddresses).Error; err != nil {
 		return nil, err
 	}

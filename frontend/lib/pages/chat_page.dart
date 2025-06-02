@@ -41,6 +41,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   bool _isSocketReady = false;
 
   Future<void> _pickImage(ImageSource source) async {
+    if (!mounted) return;
+
     if (source == ImageSource.camera) {
       bool isAccessGranted = await ensureCameraPermission();
       if (!isAccessGranted) {
@@ -48,30 +50,21 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       }
     }
     final photo = await ImagePicker().pickImage(source: source);
-    if (mounted) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(
-            builder: (context) => SendImagePage(
-              image: File(photo!.path),
-              receiverId: widget.userId,
-            ),
-          ))
-          .then(
-            (_) => setState(
-              () {
-                // ref
-                //     .read(chatMessagesProvider(widget.userId).future)
-                //     .then((newData) {
-                //   setState(() {
-                //     _totalMessages = newData.data;
-                //   });
-                // });
-
-                ref.invalidate(chatMessagesProvider);
-              },
-            ),
-          );
-    }
+    if (photo == null) return;
+    Navigator.of(context)
+        .push(MaterialPageRoute(
+          builder: (context) => SendImagePage(
+            image: File(photo.path),
+            receiverId: widget.userId,
+          ),
+        ))
+        .then(
+          (_) => setState(
+            () {
+              ref.invalidate(chatMessagesProvider);
+            },
+          ),
+        );
   }
 
   // void _fetchMessages() {
@@ -222,7 +215,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           itemCount: chatMessages.value!.data.length,
                           itemBuilder: (context, index) {
                             var msg = chatMessages.value!.data[index];
-                            log("message: $msg");
 
                             final dateTime =
                                 DateTime.parse(msg.createdAt).toLocal();

@@ -1,19 +1,25 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
 
 	"github.com/BryanEgbert/skripsi/seeder"
 	"github.com/BryanEgbert/skripsi/setup"
 	"github.com/joho/godotenv"
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func main() {
+	ctx := context.Background()
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -48,7 +54,24 @@ func main() {
 		}
 	}
 
-	if err := r.Run(net.JoinHostPort(os.Getenv("HOST"), os.Getenv("PORT"))); err != nil {
-		log.Fatalf("Run err: %v", err)
+	if os.Getenv("USE_NGROK") == "1" {
+		listener, err := ngrok.Listen(ctx,
+			config.HTTPEndpoint(config.WithScheme(config.SchemeHTTP)),
+			ngrok.WithAuthtokenFromEnv(),
+		)
+
+		if err != nil {
+			log.Fatalf("ngrok.Listen err: %v", err)
+		}
+
+		log.Println("App URL", listener.URL())
+		if err := http.Serve(listener, r); err != nil {
+			log.Fatalf("Run err: %v", err)
+		}
+	} else {
+		if err := r.Run(net.JoinHostPort(os.Getenv("HOST"), os.Getenv("PORT"))); err != nil {
+			log.Fatalf("Run err: %v", err)
+		}
 	}
+
 }

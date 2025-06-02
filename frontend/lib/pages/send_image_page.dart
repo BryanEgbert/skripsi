@@ -126,14 +126,10 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
                 children: [
                   Expanded(
                     child: TextField(
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Colors.black
-                            : Colors.white70,
-                      ),
+                      minLines: 1,
+                      maxLines: 3,
                       controller: _textController,
                       keyboardType: TextInputType.multiline,
-                      // maxLines: 3,
                       decoration: InputDecoration(
                         enabled: imageState.isLoading == false,
                         border: OutlineInputBorder(

@@ -242,7 +242,6 @@ class _VetsViewState extends ConsumerState<VetsView> {
                     },
                     leading: DefaultCircleAvatar(
                       imageUrl: _records[index].imageUrl,
-                      iconSize: 56,
                     ),
                     title: Text(
                       _records[index].name,

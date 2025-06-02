@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
@@ -76,6 +78,7 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
   @override
   Widget build(BuildContext context) {
     final petState = ref.watch(petStateProvider);
+    log("petState: $petState");
     if (_error != null) {
       handleValue(AsyncValue.error(_error.toString(), StackTrace.current), this,
           () {
@@ -105,11 +108,7 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
 
               ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
-              setState(() {
-                _records = [];
-                _lastId = 0;
-                _fetchMoreData();
-              });
+              _refresh();
 
               ref.read(petStateProvider.notifier).reset();
             });
@@ -120,9 +119,7 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
 
     return RefreshIndicator.adaptive(
       onRefresh: () async {
-        _records = [];
-        _lastId = 0;
-        _fetchMoreData();
+        _refresh();
       },
       child: (_isFetching && _records.isEmpty)
           ? Center(
@@ -151,8 +148,17 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
                 )
               : ErrorText(
                   errorText: _error!.toString(),
-                  onRefresh: () => _fetchMoreData(),
+                  onRefresh: () => _refresh(),
                 ),
     );
+  }
+
+  void _refresh() {
+    setState(() {
+      _records = [];
+      _lastId = 0;
+      _hasMoreData = true;
+      _fetchMoreData();
+    });
   }
 }

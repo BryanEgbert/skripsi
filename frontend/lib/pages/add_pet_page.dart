@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -68,9 +67,11 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
 
     ref.read(petStateProvider.notifier).addPet(
           PetRequest(
-              name: _nameController.text,
-              petCategoryId: _petCategoryId,
-              neutered: _isNeutered),
+            name: _nameController.text,
+            petCategoryId: _petCategoryId,
+            neutered: _isNeutered,
+            petImage: _petProfilePicture,
+          ),
           VaccinationRecordRequest(
             vaccineRecordImage: _vaccinationPhoto,
             dateAdministered: _dateAdministeredController.text,
@@ -82,7 +83,6 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
   @override
   Widget build(BuildContext context) {
     final petState = ref.watch(petStateProvider);
-    log("petState: $petState");
 
     handleValue(petState, this, ref.read(petStateProvider.notifier).reset);
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:frontend/model/response/error_response.dart';
@@ -73,7 +74,7 @@ Future<Result<T>> makeRequest<T>(
     [T Function(dynamic)? parse]) async {
   try {
     final res = await reqFunc();
-    if (res.statusCode == successStatusCode) {
+    if (res.statusCode! < 400) {
       T? resp;
       if (parse != null) {
         resp = parse(res.data);
@@ -81,6 +82,7 @@ Future<Result<T>> makeRequest<T>(
 
       return Result.ok(resp);
     } else {
+      log("exception: ${res.statusCode}");
       switch (res.statusCode) {
         case 400:
           ErrorResponse errorRes = ErrorResponse.fromJson(res.data);
@@ -98,6 +100,7 @@ Future<Result<T>> makeRequest<T>(
         case 404:
           return Result.notFoundErr("URL doesn't exists");
         case 500:
+          log("exception: ${res.data}");
           if (res.data != null) {
             ErrorResponse errorRes = ErrorResponse.fromJson(res.data);
             return Result.internalServerErr(errorRes.message);
@@ -106,10 +109,11 @@ Future<Result<T>> makeRequest<T>(
                 "Something's wrong, please try again later");
           }
         default:
-          return Result.err(unknownErr);
+          return Result.err("Error: ${res.statusCode} status code");
       }
     }
   } on DioException catch (e) {
+    log("exception: ${e.toString()}");
     return switch (e.type) {
       DioExceptionType.connectionTimeout => Result.timeoutErr(),
       DioExceptionType.sendTimeout => Result.timeoutErr(),

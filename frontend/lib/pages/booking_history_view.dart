@@ -66,6 +66,15 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
     }).whenComplete(() => setState(() => _isFetching = false));
   }
 
+  void _refresh() {
+    setState(() {
+      _records = [];
+      _page = 1;
+      _hasMoreData = true;
+      _fetchMoreData();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -81,6 +90,10 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
 
   @override
   Widget build(BuildContext context) {
+    if (_error != null) {
+      handleError(AsyncError(_error.toString(), StackTrace.current), context);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -100,12 +113,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                       ? _error.toString()
                       : "Your booking history shows here",
                   onRefresh: () async {
-                    setState(() {
-                      _records = [];
-                      _page = 1;
-                      _hasMoreData = true;
-                      _fetchMoreData();
-                    });
+                    _refresh();
                   })
               : _buildBookingHistoryList(),
     );
@@ -123,12 +131,14 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
     handleError(slotState, context);
     if (slotState.hasValue && !slotState.isLoading) {
       if (slotState.value == 204) {
-        setState(() {
-          _records = [];
-          _page = 1;
-          _hasMoreData = true;
-          _fetchMoreData();
-          ref.read(slotStateProvider.notifier).reset();
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          setState(() {
+            _records = [];
+            _page = 1;
+            _hasMoreData = true;
+            _fetchMoreData();
+            ref.read(slotStateProvider.notifier).reset();
+          });
         });
       }
     }
@@ -146,10 +156,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
 
     return RefreshIndicator.adaptive(
       onRefresh: () async {
-        _records = [];
-        _page = 1;
-        _hasMoreData = true;
-        _fetchMoreData();
+        _refresh();
       },
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -316,6 +323,8 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                           _records[index].petDaycare.id,
                                         ),
                                       );
+
+                                      _refresh();
                                     },
                                     style: FilledButton.styleFrom(
                                       padding: EdgeInsets.symmetric(

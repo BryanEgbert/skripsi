@@ -166,7 +166,7 @@ class _TransactionDetailsPageState
                       padding: EdgeInsets.all(12),
                       child: Column(
                         spacing: 4,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
                             value.petDaycare.name,
@@ -234,7 +234,7 @@ class _TransactionDetailsPageState
                               decoration: BoxDecoration(
                                 color: Theme.of(context).brightness ==
                                         Brightness.light
-                                    ? Constants.secondaryBackgroundColor
+                                    ? const Color.fromARGB(255, 255, 226, 193)
                                     : Colors.black87,
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -413,7 +413,7 @@ class _TransactionDetailsPageState
 
       totalPrice += pricing.price *
           pet.total *
-          (difference.inDays - (pricing.pricingType == "day" ? 0 : 1));
+          (difference.inDays + (pricing.pricingType == "day" ? 1 : 0));
     }
     return totalPrice;
   }

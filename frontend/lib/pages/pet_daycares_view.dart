@@ -246,7 +246,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            "Distance in kilometer (GPS must be turned on)",
+                            "Distance in kilometer (GPS and location permission must be enabled)",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Constants.primaryTextColor,
@@ -272,7 +272,10 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                             ),
                             values: RangeValues(
                                 _filters.minDistance, _filters.maxDistance),
-                            onChanged: _serviceEnabled
+                            onChanged: _serviceEnabled &&
+                                    (_permission == LocationPermission.always ||
+                                        _permission ==
+                                            LocationPermission.whileInUse)
                                 ? (value) {
                                     setState(() {
                                       _filters.minDistance = value.start;
@@ -756,17 +759,11 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
           ? ErrorText(
               errorText: _error.toString(),
               onRefresh: () async {
-                _records = [];
-                _page = 1;
-                _hasMoreData = true;
-                _fetchMoreData();
+                _refresh();
               })
           : RefreshIndicator.adaptive(
               onRefresh: () async {
-                _records = [];
-                _page = 1;
-                _hasMoreData = true;
-                _fetchMoreData();
+                _refresh();
               },
               child: (_isFetching && _records.isEmpty)
                   ? Center(
@@ -826,7 +823,11 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                   ),
                   TextButton(
                     onPressed: () async {
-                      await Geolocator.openLocationSettings();
+                      if (_permission == LocationPermission.denied) {
+                        await Geolocator.openLocationSettings();
+                      } else {
+                        await Geolocator.openAppSettings();
+                      }
                     },
                     child: Text(
                       "Turn On",
@@ -844,6 +845,15 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
     );
   }
 
+  void _refresh() {
+    setState(() {
+      _records = [];
+      _page = 1;
+      _hasMoreData = true;
+      _fetchMoreData();
+    });
+  }
+
   Widget _buildCard(BuildContext context, PetDaycare item) {
     return Card(
       elevation: 0,
@@ -857,37 +867,45 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
             builder: (context) => PetDaycareDetailsPage(item.id),
           ));
         },
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              thumbnail(item),
-              SizedBox(height: 4),
-              Text(
-                item.name,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Constants.primaryTextColor
-                      : Colors.orange,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            thumbnail(item),
+            SizedBox(height: 4),
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      item.name,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.primaryTextColor
+                            : Colors.orange,
+                      ),
+                    ),
+                    Text(
+                      "${item.locality} (${(item.distance.toDouble() / 1000).toStringAsFixed(2)}km away)",
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white70,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    avgRatingWidget(item),
+                    SizedBox(height: 4),
+                    for (var price in item.prices) priceWidget(price),
+                  ],
                 ),
               ),
-              Text(
-                "${item.locality} (${(item.distance.toDouble() / 1000).toStringAsFixed(2)}km away)",
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.black
-                      : Colors.white70,
-                ),
-              ),
-              SizedBox(height: 2),
-              avgRatingWidget(item),
-              SizedBox(height: 4),
-              for (var price in item.prices) priceWidget(price),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

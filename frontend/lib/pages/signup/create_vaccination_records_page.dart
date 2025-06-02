@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/signup_guide_text.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
-import 'package:frontend/utils/validator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -55,9 +55,7 @@ class _CreateVaccinationRecordsPageState
   Widget build(BuildContext context) {
     final token = ref.watch(authProvider);
 
-    handleError(token, context);
-
-    log("create_user_req: ${widget.createUserReq}, create_pet_req: ${widget.createPetReq}");
+    handleError(token, context, ref.read(authProvider.notifier).reset);
 
     if (_imageError != null) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -130,7 +128,7 @@ class _CreateVaccinationRecordsPageState
                             _isDateAdministeredFilled = false;
                           }
                         },
-                        validator: (value) => validateNotEmpty("value", value),
+                        // validator: (value) => validateNotEmpty("value", value),
                       ),
                       TextFormField(
                         enabled: _isDateAdministeredFilled,
@@ -161,76 +159,88 @@ class _CreateVaccinationRecordsPageState
                             });
                           }
                         },
-                        validator: (value) => validateNotEmpty("value", value),
+                        // validator: (value) => validateNotEmpty("value", value),
                       ),
                     ],
                   ),
                 ),
                 SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        if (!token.isLoading) {
-                          if (_vaccinationPhoto == null) {
-                            setState(() {
-                              _imageError = "Image must not be empty";
-                            });
-                            return;
-                          }
-                          if (!_formKey.currentState!.validate()) {
-                            return;
-                          }
-                          VaccinationRecordRequest req =
-                              VaccinationRecordRequest(
-                            vaccineRecordImage: _vaccinationPhoto,
-                            dateAdministered: _dateAdministeredController.text,
-                            nextDueDate: _nextDueDateController.text,
-                          );
+                if (!token.isLoading)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          if (!token.isLoading) {
+                            // if (_vaccinationPhoto == null) {
+                            //   setState(() {
+                            //     _imageError = "Image must not be empty";
+                            //   });
+                            //   return;
+                            // }
+                            if (!_formKey.currentState!.validate()) {
+                              return;
+                            }
+                            VaccinationRecordRequest req =
+                                VaccinationRecordRequest(
+                              vaccineRecordImage: _vaccinationPhoto,
+                              dateAdministered:
+                                  _dateAdministeredController.text,
+                              nextDueDate: _nextDueDateController.text,
+                            );
 
-                          ref.read(authProvider.notifier).createPetOwner(
+                            ref.read(authProvider.notifier).createPetOwner(
+                                  widget.createUserReq,
+                                  widget.createPetReq,
+                                  req,
+                                );
+                          }
+                        },
+                        child: !token.isLoading
+                            ? Text("Create My Account")
+                            : CircularProgressIndicator(color: Colors.white),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          if (!token.isLoading) {
+                            ref.read(authProvider.notifier).createPetOwner(
                                 widget.createUserReq,
                                 widget.createPetReq,
-                                req,
-                              );
-                        }
-                      },
-                      child: !token.isLoading
-                          ? Text("Create My Account")
-                          : CircularProgressIndicator(color: Colors.white),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        if (!token.isLoading) {
-                          ref.read(authProvider.notifier).createPetOwner(
-                              widget.createUserReq,
-                              widget.createPetReq,
-                              VaccinationRecordRequest(
-                                vaccineRecordImage: null,
-                                dateAdministered: "",
-                                nextDueDate: "",
-                              ));
-                        }
-                      },
-                      style: TextButton.styleFrom(
-                        textStyle: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[700],
+                                VaccinationRecordRequest(
+                                  vaccineRecordImage: null,
+                                  dateAdministered: "",
+                                  nextDueDate: "",
+                                ));
+                          }
+                        },
+                        style: TextButton.styleFrom(
+                          textStyle: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        child: Text("Skip"),
+                      ),
+                    ],
+                  )
+                else
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 8,
+                    children: [
+                      Text(
+                        "Creating Your Account",
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Constants.primaryTextColor
+                                  : Colors.orange,
                         ),
                       ),
-                      child: (!token.isLoading)
-                          ? Text("Skip")
-                          : Row(
-                              children: [
-                                Text("Skip"),
-                                CircularProgressIndicator(),
-                              ],
-                            ),
-                    ),
-                  ],
-                ),
+                      CircularProgressIndicator(),
+                    ],
+                  )
               ],
             ),
           ),

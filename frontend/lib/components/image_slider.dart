@@ -28,7 +28,38 @@ class _ImageSliderState extends State<ImageSlider> {
                   Navigator.of(context).pop();
                 },
                 child: InteractiveViewer(
-                  child: Image.network(widget.images[_currentIndex]),
+                  child: Image.network(
+                    widget.images[_currentIndex],
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      return Center(child: child);
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.transparent,
+                        height: 20,
+                        width: 20,
+                        child: Column(
+                          spacing: 8,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.image_not_supported,
+                              size: 32,
+                              semanticLabel: "Fail to load image",
+                            ),
+                            Text(
+                              "Failed to load image",
+                              style: TextStyle(
+                                fontSize: 16,
+                                decoration: TextDecoration.none,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             );
@@ -53,6 +84,14 @@ class _ImageSliderState extends State<ImageSlider> {
                 width: double.infinity,
                 loadingBuilder: (context, child, loadingProgress) {
                   return Center(child: child);
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey,
+                    child: Center(
+                      child: Icon(Icons.image_not_supported),
+                    ),
+                  );
                 },
               ),
             ),

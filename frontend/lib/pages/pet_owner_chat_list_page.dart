@@ -221,6 +221,9 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
                           ref
                               .read(petOwnerChatListTrackerProvider.notifier)
                               .shouldReload();
+                          ref
+                              .read(petDaycareChatListTrackerProvider.notifier)
+                              .shouldReload();
                         },
                         leading: DefaultCircleAvatar(imageUrl: item.imageUrl),
                         title: Text(
