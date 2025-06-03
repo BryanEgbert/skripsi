@@ -420,7 +420,7 @@ func ConvertPetDaycareToDetailResponse(daycare model.PetDaycare, distance float6
 				SlotAmount:   slot.MaxNumber,
 			},
 			Price:       slot.Price,
-			PricingType: slot.PricingType.Name,
+			PricingType: slot.PricingType,
 		})
 	}
 

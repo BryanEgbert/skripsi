@@ -111,12 +111,21 @@ class _VetsViewState extends ConsumerState<VetsView> {
       appBar: AppBar(
         title: Text(
           "Vets",
-          style: TextStyle(color: Colors.orange),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         actions: [
           Builder(builder: (context) {
             return IconButton(
-              icon: Icon(Icons.tune_rounded),
+              icon: Icon(
+                Icons.tune_rounded,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Constants.primaryTextColor
+                    : Colors.orange,
+              ),
               onPressed: () {
                 Scaffold.of(context).openEndDrawer();
               },
@@ -246,7 +255,11 @@ class _VetsViewState extends ConsumerState<VetsView> {
                     title: Text(
                       _records[index].name,
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.orange),
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.primaryTextColor
+                            : Colors.orange,
+                      ),
                     ),
                     subtitle:
                         Text("Specialties: ${vetSpecialtyNames.join(", ")}"),

@@ -82,11 +82,20 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
         appBar: AppBar(
           leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.arrow_back_ios),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            ),
           ),
           title: Text(
             "Book Slots",
-            style: TextStyle(color: Colors.orange),
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            ),
           ),
         ),
         body: switch (savedAddress) {
@@ -210,7 +219,10 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                           Text(
                             "Pick Pets",
                             style: TextStyle(
-                                color: Colors.orange,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                                 fontWeight: FontWeight.bold),
                           ),
                           Expanded(

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/pages/vet_main_page.dart';
@@ -47,11 +48,21 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(Icons.arrow_back_ios)),
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            ),
+          ),
           title: Text(
             "Choose Vet Specialties",
-            style: TextStyle(color: Colors.orange),
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            ),
           ),
           centerTitle: false,
           actions: [
@@ -77,7 +88,12 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
                       .register(widget.reqBody);
                 }
               },
-              icon: Icon(Icons.check_rounded),
+              icon: Icon(
+                Icons.check_rounded,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Constants.primaryTextColor
+                    : Colors.orange,
+              ),
             )
           ],
         ),

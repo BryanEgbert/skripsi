@@ -139,9 +139,9 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
         backgroundColor: Theme.of(context).brightness == Brightness.light
             ? Colors.orange
             : null,
-        selectedItemColor: Theme.of(context).brightness == Brightness.light
-            ? Colors.white
-            : Colors.orange,
+        selectedItemColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.orange
+            : null,
 
         unselectedItemColor: Colors.white,
         items: [

@@ -101,8 +101,6 @@ func (pc *PetController) GetPets(c *gin.Context) {
 		return
 	}
 
-	log.Printf("pets: %v", *pets)
-
 	c.JSON(http.StatusOK, model.ListData[model.PetDTO]{Data: *pets})
 }
 

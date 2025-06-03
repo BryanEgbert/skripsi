@@ -20,6 +20,7 @@ import 'package:frontend/services/chat_service.dart';
 import 'package:frontend/services/pet_daycare_service.dart';
 import 'package:frontend/services/pet_service.dart';
 import 'package:frontend/services/review_service.dart';
+import 'package:frontend/services/saved_address_service.dart';
 import 'package:frontend/services/slot_service.dart';
 import 'package:frontend/services/user_service.dart';
 import 'package:frontend/services/vaccination_record_service.dart';
@@ -48,7 +49,7 @@ Future<ListData<PetDaycare>> petDaycares(
 ]) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(jwtExpired, StackTrace.current);
   }
@@ -84,7 +85,7 @@ Future<ListData<PetDaycare>> petDaycares(
 Future<ListData<ChatMessage>> getUnreadChatMessages(Ref ref) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(jwtExpired, StackTrace.current);
   }
@@ -104,7 +105,7 @@ Future<ListData<ChatMessage>> getUnreadChatMessages(Ref ref) async {
 Future<ListData<User>> getUserChatList(Ref ref) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e, StackTrace.current);
   }
@@ -125,7 +126,7 @@ Future<ListData<Slot>> getSlots(
     Ref ref, int petDaycareId, List<int> petCategoryIds) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(jwtExpired, StackTrace.current);
   }
@@ -147,7 +148,7 @@ Future<ListData<ReducedSlot>> reducedSlots(Ref ref,
     [int page = 1, int pageSize = 10]) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(jwtExpired, StackTrace.current);
   }
@@ -174,7 +175,7 @@ Future<ListData<ReducedSlot>> reducedSlots(Ref ref,
 Future<Pet> pet(Ref ref, int petId) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(jwtExpired, StackTrace.current);
   }
@@ -195,7 +196,7 @@ Future<ListData<VaccineRecord>> vaccineRecords(Ref ref, int petId,
     [int page = 1, int pageSize = 10]) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(jwtExpired, StackTrace.current);
   }
@@ -217,14 +218,35 @@ Future<ListData<SavedAddress>> savedAddress(Ref ref,
     [int page = 1, int pageSize = 10]) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(jwtExpired, StackTrace.current);
   }
 
-  final userService = UserService();
+  final userService = SavedAddressService();
   final res = await userService.getSavedAddress(token.accessToken,
       OffsetPaginationQueryParams(page: page, pageSize: pageSize));
+
+  switch (res) {
+    case Ok():
+      return res.value!;
+    case Error():
+      return Future.error(res.error);
+  }
+}
+
+@riverpod
+Future<SavedAddress> savedAddressById(Ref ref, int addressId) async {
+  TokenResponse? token;
+  try {
+    token = await refreshAccessToken();
+  } catch (e) {
+    return Future.error(jwtExpired, StackTrace.current);
+  }
+
+  final userService = SavedAddressService();
+  final res =
+      await userService.getSavedAddressById(token.accessToken, addressId);
 
   switch (res) {
     case Ok():
@@ -239,7 +261,7 @@ Future<VaccineRecord> getVaccinationRecordById(
     Ref ref, int vaccinationRecordId) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(jwtExpired, StackTrace.current);
   }
@@ -271,7 +293,7 @@ Future<ListData<Pet>> petList(Ref ref,
     [int lastId = 0, int pageSize = 10]) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -294,7 +316,7 @@ Future<ListData<User>> bookedPetOwner(Ref ref,
     [int page = 1, int pageSize = 10]) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -316,7 +338,7 @@ Future<ListData<Pet>> bookedPets(Ref ref,
     [int lastId = 0, int pageSize = 10]) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -338,7 +360,7 @@ Future<ListData<Pet>> bookedPets(Ref ref,
 Future<Pet?> getPetById(Ref ref, int petId) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -358,7 +380,7 @@ Future<Pet?> getPetById(Ref ref, int petId) async {
 Future<User> getUserById(Ref ref, int userId) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -378,7 +400,7 @@ Future<User> getUserById(Ref ref, int userId) async {
 Future<ListData<ChatMessage>> chatMessages(Ref ref, int receiverId) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -399,7 +421,7 @@ Future<ListData<User>> getVets(Ref ref,
     [int lastId = 0, int pageSize = 10, int vetSpecialtyId = 0]) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -423,7 +445,7 @@ Future<ListData<User>> getVets(Ref ref,
 Future<User> getMyUser(Ref ref) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -443,7 +465,7 @@ Future<User> getMyUser(Ref ref) async {
 Future<PetDaycareDetails> getMyPetDaycare(Ref ref) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -464,7 +486,7 @@ Future<PetDaycareDetails> getPetDaycareById(
     Ref ref, int petDaycareId, double? lat, double? long) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -486,7 +508,7 @@ Future<ListData<BookingRequest>> getBookingRequests(Ref ref,
     [int page = 1, int pageSize = 10]) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -509,7 +531,7 @@ Future<ListData<BookingRequest>> getBookingRequests(Ref ref,
 Future<Transaction> getBookedSlot(Ref ref, int transactionId) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -530,7 +552,7 @@ Future<ListData<Transaction>> getBookedSlots(Ref ref,
     [int page = 1, int pageSize = 10]) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }
@@ -554,7 +576,7 @@ Future<ListData<Reviews>> getReviews(Ref ref, int petDaycareId,
     [int page = 1, int pageSize = 10]) async {
   TokenResponse? token;
   try {
-    token = await refreshToken();
+    token = await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }

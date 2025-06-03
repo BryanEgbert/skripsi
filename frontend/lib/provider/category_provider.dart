@@ -61,6 +61,19 @@ Future<List<PetCategory>> petCategory(Ref ref) async {
 }
 
 @riverpod
+Future<List<Lookup>> pricingType(Ref ref) async {
+  CategoryService categoryService = CategoryService();
+  final res = await categoryService.getPricingTypes();
+
+  switch (res) {
+    case Ok():
+      return res.value!.data;
+    case Error():
+      return Future.error(res.error);
+  }
+}
+
+@riverpod
 Future<List<SizeCategory>> sizeCategories(Ref ref) async {
   CategoryService categoryService = CategoryService();
   final res = await categoryService.getSizeCategories();

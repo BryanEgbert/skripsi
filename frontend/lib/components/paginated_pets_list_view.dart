@@ -57,6 +57,7 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
       }
     }).catchError((e) {
       setState(() {
+        log("paginated pet list err: $e");
         _error = e;
       });
     }).whenComplete(() => setState(() => _isFetching = false));
@@ -80,10 +81,11 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
     final petState = ref.watch(petStateProvider);
     log("petState: $petState");
     if (_error != null) {
-      handleValue(AsyncValue.error(_error.toString(), StackTrace.current), this,
-          () {
-        ref.read(petStateProvider.notifier).reset();
-      });
+      handleValue(
+        AsyncValue.error(_error.toString(), StackTrace.current),
+        this,
+      );
+      _error = null;
     }
 
     handleValue(petState, this, ref.read(petStateProvider.notifier).reset);
@@ -122,10 +124,7 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
         _refresh();
       },
       child: (_isFetching && _records.isEmpty)
-          ? Center(
-              child: CircularProgressIndicator(
-              color: Colors.orange,
-            ))
+          ? Center(child: CircularProgressIndicator.adaptive())
           : (_error == null)
               ? ListView.builder(
                   physics: AlwaysScrollableScrollPhysics(),
@@ -137,9 +136,7 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
                     } else {
                       if (_isFetching) {
                         return Center(
-                            child: CircularProgressIndicator(
-                          color: Colors.orange,
-                        ));
+                            child: CircularProgressIndicator.adaptive());
                       }
 
                       return SizedBox();

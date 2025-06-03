@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/vaccine_record.dart';
 import 'package:frontend/pages/edit/edit_vaccination_record_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
@@ -69,8 +68,6 @@ class _PaginatedListViewState
     }).catchError((e) {
       _error = e;
     }).whenComplete(() => setState(() => _isFetching = false));
-
-    log("[INFO] _records: ${_records.length}");
   }
 
   @override
@@ -183,7 +180,9 @@ class _PaginatedListViewState
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                     ),
                   ),
                   Text(
@@ -199,7 +198,9 @@ class _PaginatedListViewState
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                     ),
                   ),
                   Text(
@@ -234,11 +235,19 @@ class _PaginatedListViewState
                         },
                       );
                     },
-                    icon: Icon(Icons.image, color: Colors.orange),
+                    icon: Icon(
+                      Icons.image,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
+                    ),
                   ),
                   if (widget.isOwner)
                     PopupMenuButton(
-                      iconColor: Colors.orange,
+                      iconColor:
+                          Theme.of(context).brightness == Brightness.light
+                              ? Constants.primaryTextColor
+                              : Colors.orange,
                       itemBuilder: (context) => [
                         PopupMenuItem(
                           value: "edit",

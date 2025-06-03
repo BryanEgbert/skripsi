@@ -481,24 +481,24 @@ func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 		return
 	}
 
-	var thumbnailURLs []string
-	for _, thumbnail := range request.Thumbnails {
-		if thumbnail != nil {
-			filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(thumbnail.Filename)))
-			// TODO: change url scheme?
-			thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("http://%s/%s", c.Request.Host, filename))
+	// var thumbnailURLs []string
+	// for _, thumbnail := range request.Thumbnails {
+	// 	if thumbnail != nil {
+	// 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(thumbnail.Filename)))
+	// 		// TODO: change url scheme?
+	// 		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("http://%s/%s", c.Request.Host, filename))
 
-			if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
-				c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-					Message: "Failed to save image",
-					Error:   err.Error(),
-				})
-				return
-			}
-		}
-	}
-	request.ThumbnailURLs = thumbnailURLs
-
+	// 		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
+	// 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+	// 				Message: "Failed to save image",
+	// 				Error:   err.Error(),
+	// 			})
+	// 			return
+	// 		}
+	// 	}
+	// }
+	// request.ThumbnailURLs = thumbnailURLs
+	log.Printf("thumbnail: %d", len(request.ThumbnailURLs))
 	_, err = pdc.petDaycareService.UpdatePetDaycare(uint(petDaycareID), userID, request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
@@ -678,7 +678,9 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 		filters.MaxPrice = value
 	}
 	if pricingType := c.Query("pricing-type"); pricingType != "" {
-		filters.PricingType = &pricingType
+		value, _ := strconv.ParseUint(pricingType, 10, 64)
+		valueUint := uint(value)
+		filters.PricingType = &valueUint
 	}
 
 	if dailyWalksId := c.DefaultQuery("daily-walks", "0"); dailyWalksId != "" {

@@ -20,7 +20,7 @@ class SlotState extends _$SlotState {
 
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
       return;
@@ -33,7 +33,6 @@ class SlotState extends _$SlotState {
       case Ok<void>():
         state = AsyncData(204);
         ref.invalidate(getBookingRequestsProvider());
-
       case Error():
         state = AsyncError(res.error, StackTrace.current);
     }
@@ -48,7 +47,7 @@ class SlotState extends _$SlotState {
 
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
       return;
@@ -61,6 +60,7 @@ class SlotState extends _$SlotState {
       case Ok<void>():
         state = AsyncData(204);
         ref.invalidate(getBookingRequestsProvider(token.userId));
+
       case Error():
         state = AsyncError(res.error, StackTrace.current);
     }
@@ -71,7 +71,7 @@ class SlotState extends _$SlotState {
 
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
       return;
@@ -84,6 +84,7 @@ class SlotState extends _$SlotState {
       case Ok<void>():
         state = AsyncData(204);
         ref.invalidate(getBookingRequestsProvider(token.userId));
+
       case Error():
         state = AsyncError(res.error, StackTrace.current);
     }
@@ -94,7 +95,7 @@ class SlotState extends _$SlotState {
 
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
       return;
@@ -108,6 +109,7 @@ class SlotState extends _$SlotState {
         state = AsyncData(201);
         ref.invalidate(getBookingRequestsProvider(token.userId));
         ref.invalidate(getPetDaycareByIdProvider(petDaycareId, null, null));
+
       case Error():
         state = AsyncError(res.error, StackTrace.current);
     }

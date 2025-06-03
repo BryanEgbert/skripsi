@@ -9,6 +9,7 @@ import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/provider/database_provider.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/database_service.dart';
+import 'package:frontend/utils/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_provider.g.dart';
@@ -111,11 +112,26 @@ class Auth extends _$Auth {
     state = AsyncLoading();
 
     final dbService = DatabaseService();
-    // final userService = UserService();
-    await dbService.delete();
-    ref.invalidate(getTokenProvider);
+    final authService = AuthService();
 
-    state = AsyncData(null);
+    TokenResponse? token;
+    try {
+      token = await refreshAccessToken();
+    } catch (e) {
+      return Future.error(jwtExpired, StackTrace.current);
+    }
+
+    var tokenRes = await authService.logout(token.accessToken);
+    switch (tokenRes) {
+      case Ok():
+        await dbService.delete();
+        ref.invalidate(getTokenProvider);
+        state = AsyncData(null);
+        break;
+      case Error():
+        state = AsyncError(tokenRes.error, StackTrace.current);
+        break;
+    }
   }
 
   Future<void> refreshToken(String refreshToken) async {

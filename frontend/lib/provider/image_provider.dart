@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:frontend/model/error_handler/error_handler.dart';
@@ -16,12 +17,16 @@ class ImageState extends _$ImageState {
     return Future.value(null);
   }
 
+  Future<void> reset() async {
+    state = AsyncData(null);
+  }
+
   Future<void> upload(File image) async {
     state = AsyncLoading();
 
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       return Future.error(jwtExpired, StackTrace.current);
     }
@@ -33,6 +38,7 @@ class ImageState extends _$ImageState {
       case Ok():
         state = AsyncData(res.value);
       case Error():
+        log("upload err: ${res.error}");
         return Future.error(res.error);
     }
   }

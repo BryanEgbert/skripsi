@@ -8,15 +8,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_back_button.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/select_lookup_modal.dart';
+import 'package:frontend/components/modals/select_pricing_type_modal.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/pet_daycare.dart';
 import 'package:frontend/model/request/update_pet_daycare_request.dart';
 import 'package:frontend/model/response/mapbox/retrieve_response.dart';
 import 'package:frontend/model/response/mapbox/suggest_response.dart';
+import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/provider/image_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/pet_daycare_provider.dart';
 import 'package:frontend/services/location_service.dart';
+import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/validator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -33,11 +38,6 @@ class EditPetDaycarePage extends ConsumerStatefulWidget {
 class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
   final rupiahFormat =
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
-
-  final defaultTextStyle = TextStyle(
-    color: Colors.orange,
-    fontWeight: FontWeight.bold,
-  );
 
   static const _miniatureDogID = 1;
   static const _smallDogID = 2;
@@ -61,8 +61,8 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
   String? _locationErrorText;
 
-  final List<File?> _images = List.filled(9, null);
-  List<String> _imageUrls = [];
+  // final List<File?> _images = List.filled(9, null);
+  List<String?> _imageUrls = [];
   String? _errorText;
 
   final _sessionId = Uuid().v4();
@@ -71,32 +71,27 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
           ? MockLocationService()
           : LocationService();
 
+  final _pricingTypeController = TextEditingController(text: "day");
+
   final _miniatureDogPriceController = TextEditingController();
-  final _miniatureDogPricingTypeController = TextEditingController(text: "day");
   final _miniatureDogSlotController = TextEditingController();
 
   final _smallDogPriceController = TextEditingController();
-  final _smallDogPricingTypeController = TextEditingController(text: "day");
   final _smallDogSlotController = TextEditingController();
 
   final _mediumDogPriceController = TextEditingController();
-  final _mediumDogPricingTypeController = TextEditingController(text: "day");
   final _mediumDogSlotController = TextEditingController();
 
   final _largeDogPriceController = TextEditingController();
-  final _largeDogPricingTypeController = TextEditingController(text: "day");
   final _largeDogSlotController = TextEditingController();
 
   final _giantDogPriceController = TextEditingController();
-  final _giantDogPricingTypeController = TextEditingController(text: "day");
   final _giantDogSlotController = TextEditingController();
 
   final _catsPriceController = TextEditingController();
-  final _catsPricingTypeController = TextEditingController(text: "day");
   final _catsSlotController = TextEditingController();
 
   final _bunniesPriceController = TextEditingController();
-  final _bunniesPricingTypeController = TextEditingController(text: "day");
   final _bunniesSlotController = TextEditingController();
 
   bool _acceptMiniatureDog = false;
@@ -107,7 +102,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
   final List<int> _petCategoryIds = [];
   final List<double> _prices = [];
-  final List<int> _pricingTypes = [];
   final List<int> _maxNumbers = [];
 
   final List<int> _existingPetCategoryId = [];
@@ -129,8 +123,19 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
   int _dailyWalksId = 0;
   int _dailyPlaytimeId = 0;
+  int _pricingType = 1;
+  String _pricingTypeName = "day";
 
   bool _isLoaded = false;
+
+  TextStyle _defaultTextStyle(BuildContext context) {
+    return TextStyle(
+      color: Theme.of(context).brightness == Brightness.light
+          ? Constants.primaryTextColor
+          : Colors.orange,
+      fontWeight: FontWeight.bold,
+    );
+  }
 
   String _addLeadingZeroIfNeeded(int value) {
     if (value < 10) {
@@ -147,18 +152,20 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       //   _thumbnailIndex.add(index + 1);
       // }
 
+      await ref.read(imageStateProvider.notifier).upload(File(pickedFile.path));
       setState(() {
-        _images[index] = File(pickedFile.path);
-        log("[pickImage] index: $index, file: ${pickedFile.path}");
+        // _images[index] = File(pickedFile.path);
+        _imageUrls[index] = ref.read(imageStateProvider).value?.imageUrl;
       });
     }
   }
 
-  // void _deleteImage(int index) {
-  //   setState(() {
-  //     _images[index] = null;
-  //   });
-  // }
+  void _deleteImage(int index) {
+    setState(() {
+      // _images[index] = null;
+      _imageUrls[index] = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,6 +173,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
     final petDaycare = ref.watch(getMyPetDaycareProvider);
     final petDaycareState = ref.watch(petDaycareStateProvider);
+    final imageState = ref.watch(imageStateProvider);
 
     log("[EDIT PET DAYCARE PAGE] petDaycareState: $petDaycareState");
 
@@ -179,6 +187,40 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
         _errorText = null;
+      });
+    }
+
+    handleError(petDaycareState, context,
+        ref.read(petDaycareStateProvider.notifier).reset);
+    if (imageState.hasError &&
+        (imageState.valueOrNull == null || imageState.valueOrNull == 0) &&
+        !imageState.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        var snackbar = SnackBar(
+          key: Key("error-message"),
+          content: Text(
+            imageState.error.toString(),
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red[800],
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+        if (imageState.error.toString() == jwtExpired ||
+            imageState.error.toString() == userDeleted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => WelcomeWidget(),
+            ),
+            (route) => false,
+          );
+        }
+
+        Navigator.of(context).pop();
+
+        ref.read(imageStateProvider.notifier).reset();
       });
     }
 
@@ -203,7 +245,11 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             leading: appBarBackButton(context),
             title: Text(
               "Edit Pet Daycare",
-              style: TextStyle(color: Colors.orange),
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Constants.primaryTextColor
+                    : Colors.orange,
+              ),
             ),
             centerTitle: false,
           ),
@@ -225,12 +271,17 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 leading: appBarBackButton(context),
                 title: Text(
                   "Edit Pet Daycare",
-                  style: TextStyle(color: Colors.orange),
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Constants.primaryTextColor
+                        : Colors.orange,
+                  ),
                 ),
                 centerTitle: false,
                 actions: [
                   TextButton(
                     onPressed: () {
+                      if (imageState.isLoading) return;
                       if (_latitude == null && _longitude == null) {
                         setState(() {
                           _errorText = "Invalid location";
@@ -270,17 +321,16 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                         openingHour: _openingHoursController.text,
                         closingHour: _closingHoursController.text,
                         price: _prices,
-                        pricingType: _pricingTypes,
+                        pricingType: _pricingType,
                         hasPickupService: _pickupServiceProvided,
                         mustBeVaccinated: _petVaccinationRequired,
                         groomingAvailable: _groomingServiceProvided,
                         foodProvided: _foodProvided,
                         dailyWalksId: _dailyWalksId,
                         dailyPlaytimeId: _dailyPlaytimeId,
-                        thumbnails: _images.whereType<File>().toList(),
+                        thumbnails: _imageUrls.whereType<String>().toList(),
                         petCategoryId: _petCategoryIds,
                         maxNumber: _maxNumbers,
-                        // thumbnailIndex: _thumbnailIndex,
                       );
 
                       // updatePetDaycareReq.thumbnails =
@@ -299,31 +349,33 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                           .updatePetDaycare(value.id, updatePetDaycareReq);
                     },
                     child: !petDaycareState.isLoading
-                        ? Text("SAVE", style: defaultTextStyle)
+                        ? Text("SAVE", style: _defaultTextStyle(context))
                         : CircularProgressIndicator(),
                   )
                 ],
                 bottom: TabBar(tabs: [
                   Tab(
-                    child: Text("Details", style: defaultTextStyle),
+                    child: Text("Details", style: _defaultTextStyle(context)),
                   ),
                   Tab(
-                    child: Text("Images", style: defaultTextStyle),
+                    child: Text("Images", style: _defaultTextStyle(context)),
                   ),
                   Tab(
-                    child: Text("Slots", style: defaultTextStyle),
+                    child: Text("Slots", style: _defaultTextStyle(context)),
                   ),
                   Tab(
-                    child: Text("Services", style: defaultTextStyle),
+                    child: Text("Services", style: _defaultTextStyle(context)),
                   ),
                 ]),
               ),
-              body: TabBarView(children: [
-                _buildPetDaycareDetailsForm(context, value),
-                _buildPetDaycareImagesForm(),
-                _buildPetDaycareSlotsForm(context),
-                _buildPetDaycareServiceForm(context),
-              ]),
+              body: SafeArea(
+                child: TabBarView(children: [
+                  _buildPetDaycareDetailsForm(context, value),
+                  _buildPetDaycareImagesForm(),
+                  _buildPetDaycareSlotsForm(context),
+                  _buildPetDaycareServiceForm(context),
+                ]),
+              ),
             ),
           );
         }),
@@ -356,9 +408,16 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
     _latitude = value.latitude;
     _searchController.text = value.location;
 
+    _imageUrls = List<String?>.from(_imageUrls)
+      ..addAll(List<String?>.filled(9 - _imageUrls.length, null));
+
     for (var pricing in value.pricings) {
       _existingPetCategoryId.add(pricing.petCategory.id);
     }
+
+    _pricingType = value.pricings[0].pricingType.id;
+    _pricingTypeName = value.pricings[0].pricingType.name;
+    _pricingTypeController.text = _pricingTypeName;
 
     for (var pricing in value.pricings) {
       // _petCategoryIds.add(pricing.petCategory.id);
@@ -369,7 +428,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       if (pricing.petCategory.id == _miniatureDogID) {
         _acceptMiniatureDog = true;
         _miniatureDogPriceController.text = rupiahFormat.format(pricing.price);
-        _miniatureDogPricingTypeController.text = pricing.pricingType;
+        // _miniatureDogPricingTypeController.text = pricing.pricingType.name;
         _miniatureDogSlotController.text =
             pricing.petCategory.slotAmount.toString();
       }
@@ -377,28 +436,28 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       if (pricing.petCategory.id == _smallDogID) {
         _acceptSmallDog = true;
         _smallDogPriceController.text = rupiahFormat.format(pricing.price);
-        _smallDogPricingTypeController.text = pricing.pricingType;
+        // _smallDogPricingTypeController.text = pricing.pricingType.name;
         _smallDogSlotController.text =
             pricing.petCategory.slotAmount.toString();
       }
       if (pricing.petCategory.id == _mediumDogID) {
         _acceptMediumDog = true;
         _mediumDogPriceController.text = rupiahFormat.format(pricing.price);
-        _mediumDogPricingTypeController.text = pricing.pricingType;
+        // _mediumDogPricingTypeController.text = pricing.pricingType.name;
         _mediumDogSlotController.text =
             pricing.petCategory.slotAmount.toString();
       }
       if (pricing.petCategory.id == _largeDogID) {
         _acceptLargeDog = true;
         _largeDogPriceController.text = rupiahFormat.format(pricing.price);
-        _largeDogPricingTypeController.text = pricing.pricingType;
+        // _largeDogPricingTypeController.text = pricing.pricingType.name;
         _largeDogSlotController.text =
             pricing.petCategory.slotAmount.toString();
       }
       if (pricing.petCategory.id == _giantDogID) {
         _acceptGiantDog = true;
         _giantDogPriceController.text = rupiahFormat.format(pricing.price);
-        _giantDogPricingTypeController.text = pricing.pricingType;
+        // _giantDogPricingTypeController.text = pricing.pricingType.name;
         _giantDogSlotController.text =
             pricing.petCategory.slotAmount.toString();
       }
@@ -406,14 +465,14 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       if (pricing.petCategory.id == 6) {
         _acceptCats = true;
         _catsPriceController.text = rupiahFormat.format(pricing.price);
-        _catsPricingTypeController.text = pricing.pricingType;
+        // _catsPricingTypeController.text = pricing.pricingType.name;
         _catsSlotController.text = pricing.petCategory.slotAmount.toString();
       }
 
       if (pricing.petCategory.id == 7) {
         _acceptBunnies = true;
         _bunniesPriceController.text = rupiahFormat.format(pricing.price);
-        _bunniesPricingTypeController.text = pricing.pricingType;
+        // _bunniesPricingTypeController.text = pricing.pricingType.name;
         _bunniesSlotController.text = pricing.petCategory.slotAmount.toString();
       }
     }
@@ -441,8 +500,8 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
         _prices.add(double.tryParse(_miniatureDogPriceController.text
                 .replaceAll(RegExp(r'[^0-9]'), '')) ??
             0.0);
-        _pricingTypes
-            .add(_miniatureDogPricingTypeController.text == "day" ? 1 : 2);
+        // _pricingTypes
+        // .add(_miniatureDogPricingTypeController.text == "day" ? 1 : 2);
         _maxNumbers.add(int.tryParse(_miniatureDogSlotController.text) ?? 0);
       }
     } else {
@@ -450,7 +509,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -461,7 +520,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
         _prices.add(double.tryParse(_smallDogPriceController.text
                 .replaceAll(RegExp(r'[^0-9]'), '')) ??
             0.0);
-        _pricingTypes.add(_smallDogPricingTypeController.text == "day" ? 1 : 2);
+        // _pricingTypes.add(_smallDogPricingTypeController.text == "day" ? 1 : 2);
         _maxNumbers.add(int.tryParse(_smallDogSlotController.text) ?? 0);
       }
     } else {
@@ -469,7 +528,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -480,8 +539,8 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
         _prices.add(double.tryParse(_mediumDogPriceController.text
                 .replaceAll(RegExp(r'[^0-9]'), '')) ??
             0.0);
-        _pricingTypes
-            .add(_mediumDogPricingTypeController.text == "day" ? 1 : 2);
+        // _pricingTypes
+        // .add(_mediumDogPricingTypeController.text == "day" ? 1 : 2);
         _maxNumbers.add(int.tryParse(_mediumDogSlotController.text) ?? 0);
       }
     } else {
@@ -489,7 +548,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -500,7 +559,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
         _prices.add(double.tryParse(_largeDogPriceController.text
                 .replaceAll(RegExp(r'[^0-9]'), '')) ??
             0.0);
-        _pricingTypes.add(_largeDogPricingTypeController.text == "day" ? 1 : 2);
+        // _pricingTypes.add(_largeDogPricingTypeController.text == "day" ? 1 : 2);
         _maxNumbers.add(int.tryParse(_largeDogSlotController.text) ?? 0);
       }
     } else {
@@ -508,7 +567,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -519,7 +578,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
         _prices.add(double.tryParse(_giantDogPriceController.text
                 .replaceAll(RegExp(r'[^0-9]'), '')) ??
             0.0);
-        _pricingTypes.add(_giantDogPricingTypeController.text == "day" ? 1 : 2);
+        // _pricingTypes.add(_giantDogPricingTypeController.text == "day" ? 1 : 2);
         _maxNumbers.add(int.tryParse(_giantDogSlotController.text) ?? 0);
       }
     } else {
@@ -527,7 +586,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -537,7 +596,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
         _prices.add(double.tryParse(
                 _catsPriceController.text.replaceAll(RegExp(r'[^0-9]'), '')) ??
             0.0);
-        _pricingTypes.add(_catsPricingTypeController.text == "day" ? 1 : 2);
+        // _pricingTypes.add(_catsPricingTypeController.text == "day" ? 1 : 2);
         _maxNumbers.add(int.tryParse(_catsSlotController.text) ?? 0);
       }
     } else {
@@ -545,7 +604,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -556,7 +615,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
         _prices.add(double.tryParse(_bunniesPriceController.text
                 .replaceAll(RegExp(r'[^0-9]'), '')) ??
             0.0);
-        _pricingTypes.add(_bunniesPricingTypeController.text == "day" ? 1 : 2);
+        // _pricingTypes.add(_bunniesPricingTypeController.text == "day" ? 1 : 2);
         _maxNumbers.add(int.tryParse(_bunniesSlotController.text) ?? 0);
       }
     } else {
@@ -564,7 +623,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -581,7 +640,9 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.orange,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
             ),
           ),
           CheckboxListTile(
@@ -598,7 +659,9 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.orange,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
             ),
           ),
           CheckboxListTile(
@@ -714,11 +777,48 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
+                "Pricing Type",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Constants.primaryTextColor
+                      : Colors.orange,
+                ),
+              ),
+              TextField(
+                controller: _pricingTypeController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: "",
+                  suffixIcon: Icon(Icons.navigate_next),
+                ),
+                onTap: () async {
+                  var out = await showModalBottomSheet<Lookup>(
+                    context: context,
+                    builder: (context) => SelectPricingTypeModal(),
+                  );
+
+                  if (out == null) {
+                    return;
+                  }
+
+                  setState(() {
+                    _pricingTypeController.text = out.name;
+                    _pricingTypeName = out.name;
+                  });
+                  _pricingType = out.id;
+                },
+              ),
+              const SizedBox(height: 20),
+              Text(
                 "Dogs",
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.orange,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Constants.primaryTextColor
+                      : Colors.orange,
                 ),
               ),
               _buildSizedCheckbox(
@@ -735,7 +835,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 context,
                 _acceptMiniatureDog,
                 _miniatureDogPriceController,
-                _miniatureDogPricingTypeController,
                 _miniatureDogSlotController,
               ),
               _buildSizedCheckbox(
@@ -752,7 +851,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 context,
                 _acceptSmallDog,
                 _smallDogPriceController,
-                _smallDogPricingTypeController,
                 _smallDogSlotController,
               ),
               _buildSizedCheckbox(
@@ -769,7 +867,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 context,
                 _acceptMediumDog,
                 _mediumDogPriceController,
-                _mediumDogPricingTypeController,
                 _mediumDogSlotController,
               ),
               _buildSizedCheckbox(
@@ -786,7 +883,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 context,
                 _acceptLargeDog,
                 _largeDogPriceController,
-                _largeDogPricingTypeController,
                 _largeDogSlotController,
               ),
               _buildSizedCheckbox(
@@ -803,15 +899,19 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 context,
                 _acceptGiantDog,
                 _giantDogPriceController,
-                _giantDogPricingTypeController,
                 _giantDogSlotController,
               ),
               SizedBox(height: 20),
-              Text("Others",
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange)),
+              Text(
+                "Others",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Constants.primaryTextColor
+                      : Colors.orange,
+                ),
+              ),
               _buildCheckboxTile("Accept cats?", _acceptCats, (value) {
                 setState(() {
                   _acceptCats = value!;
@@ -821,7 +921,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 context,
                 _acceptCats,
                 _catsPriceController,
-                _catsPricingTypeController,
                 _catsSlotController,
               ),
               _buildCheckboxTile("Accept bunnies?", _acceptBunnies, (value) {
@@ -833,7 +932,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 context,
                 _acceptBunnies,
                 _bunniesPriceController,
-                _bunniesPricingTypeController,
                 _bunniesSlotController,
               ),
             ],
@@ -866,19 +964,14 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     color: Colors.grey[300],
-                    image: (_images[index] != null)
+                    image: (_imageUrls[index] != null)
                         ? DecorationImage(
-                            image: FileImage(_images[index]!),
+                            image: NetworkImage(_imageUrls[index]!),
                             fit: BoxFit.cover,
                           )
-                        : (index < _imageUrls.length)
-                            ? DecorationImage(
-                                image: NetworkImage(_imageUrls[index]),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
+                        : null,
                   ),
-                  child: (_images[index] == null && _imageUrls.isEmpty)
+                  child: (_imageUrls.isEmpty)
                       ? Icon(Icons.image, color: Colors.black54, size: 32)
                       : Stack(
                           alignment: Alignment.center,
@@ -890,16 +983,20 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                               ),
                               child: IconButton(
                                 icon: Icon(
-                                  Icons.edit,
+                                  (index == 0)
+                                      ? Icons.edit
+                                      : (_imageUrls[index] != null)
+                                          ? Icons.delete
+                                          : Icons.edit,
                                   color: Colors.white,
                                 ),
                                 onPressed: () {
-                                  // if (index == 0) {
-                                  //   _pickImage(index); // Edit first image
-                                  // } else {
-                                  //   _deleteImage(index); // Delete other images
-                                  // }
-                                  _pickImage(index);
+                                  if (index == 0 || _imageUrls[index] == null) {
+                                    _pickImage(index); // Edit first image
+                                  } else {
+                                    _deleteImage(index); // Delete other images
+                                  }
+                                  // _pickImage(index);
                                 },
                               ),
                             ),
@@ -973,18 +1070,13 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       children: [
         Text(
           "Operating Hours",
-          style: TextStyle(color: Colors.orange),
+          style: _defaultTextStyle(context),
         ),
         Row(
           spacing: 8,
           children: [
             Expanded(
               child: TextFormField(
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.black
-                      : Colors.white70,
-                ),
                 readOnly: true,
                 controller: _openingHoursController,
                 decoration: InputDecoration(
@@ -992,7 +1084,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                   labelStyle: TextStyle(fontSize: 12),
                   suffixIcon: Icon(
                     Icons.navigate_next,
-                    color: Colors.orange,
                     size: 20,
                   ),
                 ),
@@ -1015,11 +1106,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             Text("to"),
             Expanded(
               child: TextFormField(
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.black
-                      : Colors.white70,
-                ),
                 readOnly: true,
                 controller: _closingHoursController,
                 decoration: InputDecoration(
@@ -1027,7 +1113,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                   labelStyle: TextStyle(fontSize: 12),
                   suffixIcon: Icon(
                     Icons.navigate_next,
-                    color: Colors.orange,
                     size: 20,
                   ),
                 ),
@@ -1143,7 +1228,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       BuildContext context,
       bool enabled,
       TextEditingController priceController,
-      TextEditingController pricingTypeController,
       TextEditingController slotController) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -1171,59 +1255,59 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             validator: (value) => validatePriceInput(enabled, value),
           ),
         ),
-        Text("/"),
-        Expanded(
-            child: TextFormField(
-          style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.light
-                ? Colors.black
-                : Colors.white70,
-          ),
-          controller: pricingTypeController,
-          enabled: enabled,
-          readOnly: true,
-          decoration: InputDecoration(
-            labelText: "",
-            suffixIcon: Icon(Icons.navigate_next),
-          ),
-          onTap: () async {
-            pricingTypeController.text = await showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                return Container(
-                  margin: EdgeInsets.fromLTRB(12, 12, 12, 32),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "Choose Pricing Type",
-                        style: TextStyle(color: Colors.orange[600]),
-                      ),
-                      ListTile(
-                        title: const Text("Day"),
-                        onTap: () {
-                          setState(() {
-                            pricingTypeController.text = "day";
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                      ListTile(
-                        title: const Text("Night"),
-                        onTap: () {
-                          setState(() {
-                            pricingTypeController.text = "night";
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        )),
+        Text("per $_pricingTypeName"),
+        // Expanded(
+        //     child: TextFormField(
+        //   style: TextStyle(
+        //     color: Theme.of(context).brightness == Brightness.light
+        //         ? Colors.black
+        //         : Colors.white70,
+        //   ),
+        //   controller: pricingTypeController,
+        //   enabled: enabled,
+        //   readOnly: true,
+        //   decoration: InputDecoration(
+        //     labelText: "",
+        //     suffixIcon: Icon(Icons.navigate_next),
+        //   ),
+        //   onTap: () async {
+        //     pricingTypeController.text = await showModalBottomSheet(
+        //       context: context,
+        //       builder: (context) {
+        //         return Container(
+        //           margin: EdgeInsets.fromLTRB(12, 12, 12, 32),
+        //           child: Column(
+        //             mainAxisSize: MainAxisSize.min,
+        //             children: [
+        //               Text(
+        //                 "Choose Pricing Type",
+        //                 style: TextStyle(color: Colors.orange[600]),
+        //               ),
+        //               ListTile(
+        //                 title: const Text("Day"),
+        //                 onTap: () {
+        //                   setState(() {
+        //                     pricingTypeController.text = "day";
+        //                   });
+        //                   Navigator.pop(context);
+        //                 },
+        //               ),
+        //               ListTile(
+        //                 title: const Text("Night"),
+        //                 onTap: () {
+        //                   setState(() {
+        //                     pricingTypeController.text = "night";
+        //                   });
+        //                   Navigator.pop(context);
+        //                 },
+        //               ),
+        //             ],
+        //           ),
+        //         );
+        //       },
+        //     );
+        //   },
+        // )),
         Expanded(
           child: TextFormField(
             style: TextStyle(

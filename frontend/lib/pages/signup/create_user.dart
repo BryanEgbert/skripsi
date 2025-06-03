@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/profile_image_picker.dart';
 import 'package:frontend/components/signup_guide_text.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/pages/signup/create_pet_daycare_page.dart';
 import 'package:frontend/pages/signup/create_vet.dart';
@@ -79,8 +80,14 @@ class _CreateUserPageState extends State<CreateUserPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.arrow_back_ios)),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -154,9 +161,20 @@ class _CreateUserPageState extends State<CreateUserPage> {
                               });
                             },
                             child: (!_revealPassword)
-                                ? Icon(Icons.visibility, color: Colors.orange)
-                                : Icon(Icons.visibility_off,
-                                    color: Colors.orange),
+                                ? Icon(
+                                    Icons.visibility,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Constants.primaryTextColor
+                                        : Colors.orange,
+                                  )
+                                : Icon(
+                                    Icons.visibility_off,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Constants.primaryTextColor
+                                        : Colors.orange,
+                                  ),
                           ),
                           labelText: "Password",
                           helper: Text(

@@ -11,7 +11,7 @@ part 'database_provider.g.dart';
 @riverpod
 Future<TokenResponse> getToken(Ref ref) async {
   try {
-    await refreshToken();
+    await refreshAccessToken();
   } catch (e) {
     return Future.error(e.toString());
   }

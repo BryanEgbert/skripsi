@@ -25,7 +25,7 @@ class UserState extends _$UserState {
 
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
       ref.invalidate(getMyUserProvider);
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
@@ -39,6 +39,7 @@ class UserState extends _$UserState {
       case Ok<void>():
         state = AsyncData(204);
         ref.invalidate(getUserByIdProvider(token.userId));
+
       case Error():
         state = AsyncError(res.error, StackTrace.current);
     }
@@ -49,7 +50,7 @@ class UserState extends _$UserState {
 
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
       return;
@@ -63,6 +64,7 @@ class UserState extends _$UserState {
     switch (res) {
       case Ok<void>():
         state = AsyncData(204);
+
       case Error():
         state = AsyncError(res.error, StackTrace.current);
     }

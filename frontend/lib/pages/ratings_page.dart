@@ -194,7 +194,11 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                     Text(
                       value.user.name,
                       style: TextStyle(
-                          color: Colors.orange, fontWeight: FontWeight.bold),
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.primaryTextColor
+                            : Colors.orange,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Row(
                       spacing: 6,
@@ -202,9 +206,15 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                         StarRating(
                           rating: value.rating.toDouble(),
                           allowHalfRating: false,
+                          color: Colors.amber,
                         ),
-                        Text(formatDateStr(value.createdAt),
-                            style: TextStyle(fontSize: 12, color: Colors.grey)),
+                        Text(
+                          formatDateStr(value.createdAt),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[900],
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -219,7 +229,7 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                 height: 1.5,
                 color: Theme.of(context).brightness == Brightness.light
                     ? Colors.black
-                    : Colors.white70,
+                    : Colors.white,
               ),
             ),
           ],

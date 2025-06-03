@@ -50,11 +50,20 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
           // backgroundColor: Constants.secondaryBackgroundColor,
           leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.arrow_back_ios),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            ),
           ),
           title: Text(
             "Pet Details",
-            style: TextStyle(color: Colors.orange),
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            ),
           ),
           actions: (widget.isOwner)
               ? [
@@ -103,7 +112,9 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                     ),
                   ),
                 ),
@@ -117,7 +128,9 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
                     },
                     icon: Icon(
                       Icons.add,
-                      color: Colors.orange,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                     ),
                   )
               ],
@@ -165,7 +178,9 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                     ),
                   ),
                   Text(
@@ -200,7 +215,9 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
               },
               icon: Icon(
                 Icons.edit,
-                color: Colors.orange,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Constants.primaryTextColor
+                    : Colors.orange,
               ),
             ),
         ],

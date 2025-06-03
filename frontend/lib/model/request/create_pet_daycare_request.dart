@@ -11,7 +11,7 @@ class CreatePetDaycareRequest {
   String openingHour;
   String closingHour;
   List<double> price;
-  List<int> pricingType;
+  int pricingType;
   bool hasPickupService;
   bool mustBeVaccinated;
   bool groomingAvailable;
@@ -59,7 +59,7 @@ class CreatePetDaycareRequest {
       'longitude': longitude,
       "latitude": latitude,
       'price[]': price.map((e) => e.toString()).toList(),
-      'pricingType[]': pricingType,
+      'pricingType': pricingType,
       'hasPickupService': hasPickupService.toString(),
       'mustBeVaccinated': mustBeVaccinated.toString(),
       'groomingAvailable': groomingAvailable.toString(),

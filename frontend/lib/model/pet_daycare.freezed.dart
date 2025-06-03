@@ -1103,7 +1103,7 @@ Price _$PriceFromJson(Map<String, dynamic> json) {
 mixin _$Price {
   PetCategory get petCategory => throw _privateConstructorUsedError;
   double get price => throw _privateConstructorUsedError;
-  String get pricingType => throw _privateConstructorUsedError;
+  Lookup get pricingType => throw _privateConstructorUsedError;
 
   /// Serializes this Price to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1119,9 +1119,10 @@ abstract class $PriceCopyWith<$Res> {
   factory $PriceCopyWith(Price value, $Res Function(Price) then) =
       _$PriceCopyWithImpl<$Res, Price>;
   @useResult
-  $Res call({PetCategory petCategory, double price, String pricingType});
+  $Res call({PetCategory petCategory, double price, Lookup pricingType});
 
   $PetCategoryCopyWith<$Res> get petCategory;
+  $LookupCopyWith<$Res> get pricingType;
 }
 
 /// @nodoc
@@ -1155,7 +1156,7 @@ class _$PriceCopyWithImpl<$Res, $Val extends Price>
       pricingType: null == pricingType
           ? _value.pricingType
           : pricingType // ignore: cast_nullable_to_non_nullable
-              as String,
+              as Lookup,
     ) as $Val);
   }
 
@@ -1168,6 +1169,16 @@ class _$PriceCopyWithImpl<$Res, $Val extends Price>
       return _then(_value.copyWith(petCategory: value) as $Val);
     });
   }
+
+  /// Create a copy of Price
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $LookupCopyWith<$Res> get pricingType {
+    return $LookupCopyWith<$Res>(_value.pricingType, (value) {
+      return _then(_value.copyWith(pricingType: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -1177,10 +1188,12 @@ abstract class _$$PriceImplCopyWith<$Res> implements $PriceCopyWith<$Res> {
       __$$PriceImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({PetCategory petCategory, double price, String pricingType});
+  $Res call({PetCategory petCategory, double price, Lookup pricingType});
 
   @override
   $PetCategoryCopyWith<$Res> get petCategory;
+  @override
+  $LookupCopyWith<$Res> get pricingType;
 }
 
 /// @nodoc
@@ -1212,7 +1225,7 @@ class __$$PriceImplCopyWithImpl<$Res>
       pricingType: null == pricingType
           ? _value.pricingType
           : pricingType // ignore: cast_nullable_to_non_nullable
-              as String,
+              as Lookup,
     ));
   }
 }
@@ -1233,7 +1246,7 @@ class _$PriceImpl implements _Price {
   @override
   final double price;
   @override
-  final String pricingType;
+  final Lookup pricingType;
 
   @override
   String toString() {
@@ -1276,7 +1289,7 @@ abstract class _Price implements Price {
   factory _Price(
       {required final PetCategory petCategory,
       required final double price,
-      required final String pricingType}) = _$PriceImpl;
+      required final Lookup pricingType}) = _$PriceImpl;
 
   factory _Price.fromJson(Map<String, dynamic> json) = _$PriceImpl.fromJson;
 
@@ -1285,7 +1298,7 @@ abstract class _Price implements Price {
   @override
   double get price;
   @override
-  String get pricingType;
+  Lookup get pricingType;
 
   /// Create a copy of Price
   /// with the given fields replaced by the non-null parameter values.

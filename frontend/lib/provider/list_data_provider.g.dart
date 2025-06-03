@@ -6,7 +6,7 @@ part of 'list_data_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$petDaycaresHash() => r'943e575868429b74ba71eb7568f3cb40947a4d99';
+String _$petDaycaresHash() => r'a842982c379670d32ff51a9a3401b37949605652';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -354,7 +354,7 @@ class _PetDaycaresProviderElement
 }
 
 String _$getUnreadChatMessagesHash() =>
-    r'c013cbf729ae629f9af718f46980382897c9c12e';
+    r'648d09192a5fea758195be96ff55deb2c9f12f52';
 
 /// See also [getUnreadChatMessages].
 @ProviderFor(getUnreadChatMessages)
@@ -373,7 +373,7 @@ final getUnreadChatMessagesProvider =
 // ignore: unused_element
 typedef GetUnreadChatMessagesRef
     = AutoDisposeFutureProviderRef<ListData<ChatMessage>>;
-String _$getUserChatListHash() => r'f1ed53f4e5190700e3f5edd912ad8d382bc6e6cc';
+String _$getUserChatListHash() => r'd04b895be4294c5fccab5dee2f95e4672baee72d';
 
 /// See also [getUserChatList].
 @ProviderFor(getUserChatList)
@@ -391,7 +391,7 @@ final getUserChatListProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GetUserChatListRef = AutoDisposeFutureProviderRef<ListData<User>>;
-String _$getSlotsHash() => r'82529f18c957b7af727a2bdca1ea0b07b05db63b';
+String _$getSlotsHash() => r'32f861e1169f77554d21d3a583123ac2e85745f3';
 
 /// See also [getSlots].
 @ProviderFor(getSlots)
@@ -537,7 +537,7 @@ class _GetSlotsProviderElement
   List<int> get petCategoryIds => (origin as GetSlotsProvider).petCategoryIds;
 }
 
-String _$reducedSlotsHash() => r'7a7321901eb4ad089bb4adafb9dfc4f893b8e9d6';
+String _$reducedSlotsHash() => r'6cdaec271737b00acf473685a75f3c2952750675';
 
 /// See also [reducedSlots].
 @ProviderFor(reducedSlots)
@@ -686,7 +686,7 @@ class _ReducedSlotsProviderElement
   int get pageSize => (origin as ReducedSlotsProvider).pageSize;
 }
 
-String _$petHash() => r'bc89e0fff1d2594ebf58cb63ae4bcd25c6aa658b';
+String _$petHash() => r'66eea8b69eb3995f93a82722d004ebe719782782';
 
 /// See also [pet].
 @ProviderFor(pet)
@@ -813,7 +813,7 @@ class _PetProviderElement extends AutoDisposeFutureProviderElement<Pet>
   int get petId => (origin as PetProvider).petId;
 }
 
-String _$vaccineRecordsHash() => r'7f17126183b311575491ccb534bb77db12371685';
+String _$vaccineRecordsHash() => r'28dc9ef9fa5e4dcaae7a3609e123dca807e3a6d0';
 
 /// See also [vaccineRecords].
 @ProviderFor(vaccineRecords)
@@ -980,7 +980,7 @@ class _VaccineRecordsProviderElement
   int get pageSize => (origin as VaccineRecordsProvider).pageSize;
 }
 
-String _$savedAddressHash() => r'573a5fa950c23a824ed323bec23b61ef0d44b850';
+String _$savedAddressHash() => r'a7836c88284762f3b752d9834489d18962a9ff72';
 
 /// See also [savedAddress].
 @ProviderFor(savedAddress)
@@ -1129,8 +1129,139 @@ class _SavedAddressProviderElement
   int get pageSize => (origin as SavedAddressProvider).pageSize;
 }
 
+String _$savedAddressByIdHash() => r'ca69aeb849f3d0698103ceb821f9c38c88153cc8';
+
+/// See also [savedAddressById].
+@ProviderFor(savedAddressById)
+const savedAddressByIdProvider = SavedAddressByIdFamily();
+
+/// See also [savedAddressById].
+class SavedAddressByIdFamily extends Family<AsyncValue<SavedAddress>> {
+  /// See also [savedAddressById].
+  const SavedAddressByIdFamily();
+
+  /// See also [savedAddressById].
+  SavedAddressByIdProvider call(
+    int addressId,
+  ) {
+    return SavedAddressByIdProvider(
+      addressId,
+    );
+  }
+
+  @override
+  SavedAddressByIdProvider getProviderOverride(
+    covariant SavedAddressByIdProvider provider,
+  ) {
+    return call(
+      provider.addressId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'savedAddressByIdProvider';
+}
+
+/// See also [savedAddressById].
+class SavedAddressByIdProvider extends AutoDisposeFutureProvider<SavedAddress> {
+  /// See also [savedAddressById].
+  SavedAddressByIdProvider(
+    int addressId,
+  ) : this._internal(
+          (ref) => savedAddressById(
+            ref as SavedAddressByIdRef,
+            addressId,
+          ),
+          from: savedAddressByIdProvider,
+          name: r'savedAddressByIdProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$savedAddressByIdHash,
+          dependencies: SavedAddressByIdFamily._dependencies,
+          allTransitiveDependencies:
+              SavedAddressByIdFamily._allTransitiveDependencies,
+          addressId: addressId,
+        );
+
+  SavedAddressByIdProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.addressId,
+  }) : super.internal();
+
+  final int addressId;
+
+  @override
+  Override overrideWith(
+    FutureOr<SavedAddress> Function(SavedAddressByIdRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: SavedAddressByIdProvider._internal(
+        (ref) => create(ref as SavedAddressByIdRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        addressId: addressId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<SavedAddress> createElement() {
+    return _SavedAddressByIdProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SavedAddressByIdProvider && other.addressId == addressId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, addressId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin SavedAddressByIdRef on AutoDisposeFutureProviderRef<SavedAddress> {
+  /// The parameter `addressId` of this provider.
+  int get addressId;
+}
+
+class _SavedAddressByIdProviderElement
+    extends AutoDisposeFutureProviderElement<SavedAddress>
+    with SavedAddressByIdRef {
+  _SavedAddressByIdProviderElement(super.provider);
+
+  @override
+  int get addressId => (origin as SavedAddressByIdProvider).addressId;
+}
+
 String _$getVaccinationRecordByIdHash() =>
-    r'1bfe653f122acc77e386e60ec08390d2e8d346e4';
+    r'0586beadc028eb8712a5a82f0cce0062226ea630';
 
 /// See also [getVaccinationRecordById].
 @ProviderFor(getVaccinationRecordById)
@@ -1301,7 +1432,7 @@ final chatWebsocketStreamProvider = AutoDisposeStreamProvider<dynamic>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ChatWebsocketStreamRef = AutoDisposeStreamProviderRef<dynamic>;
-String _$petListHash() => r'c409decdc18fbfa41dc5768f676016a784e2f1bf';
+String _$petListHash() => r'bd0f797936fc9abe01539d4c4c2b64fc620d351f';
 
 /// See also [petList].
 @ProviderFor(petList)
@@ -1447,7 +1578,7 @@ class _PetListProviderElement
   int get pageSize => (origin as PetListProvider).pageSize;
 }
 
-String _$bookedPetOwnerHash() => r'8196dbebfb3d7491392e1446d10da2e2b70484d3';
+String _$bookedPetOwnerHash() => r'caf0edc993c879dde11ded5dcccd0ced5d59f75a';
 
 /// See also [bookedPetOwner].
 @ProviderFor(bookedPetOwner)
@@ -1595,7 +1726,7 @@ class _BookedPetOwnerProviderElement
   int get pageSize => (origin as BookedPetOwnerProvider).pageSize;
 }
 
-String _$bookedPetsHash() => r'a5ef662fb9b10fd7180cd670dc460a4487551dae';
+String _$bookedPetsHash() => r'b2d7866c85bb0b9b42ad77859debb909cbdc3d60';
 
 /// See also [bookedPets].
 @ProviderFor(bookedPets)
@@ -1742,7 +1873,7 @@ class _BookedPetsProviderElement
   int get pageSize => (origin as BookedPetsProvider).pageSize;
 }
 
-String _$getPetByIdHash() => r'c66c990b58143c75e3fec67ace1a7874237e3d56';
+String _$getPetByIdHash() => r'4e1146cb4cb7cf11d1bbcb1ab411cdc1ea04713e';
 
 /// See also [getPetById].
 @ProviderFor(getPetById)
@@ -1872,7 +2003,7 @@ class _GetPetByIdProviderElement extends AutoDisposeFutureProviderElement<Pet?>
   int get petId => (origin as GetPetByIdProvider).petId;
 }
 
-String _$getUserByIdHash() => r'c7126e164b7cc2b5ae5ac7bfc57825e39b1f972c';
+String _$getUserByIdHash() => r'bd746b43a715ccae13766d24e35c64d82ea53d60';
 
 /// See also [getUserById].
 @ProviderFor(getUserById)
@@ -2002,7 +2133,7 @@ class _GetUserByIdProviderElement extends AutoDisposeFutureProviderElement<User>
   int get userId => (origin as GetUserByIdProvider).userId;
 }
 
-String _$chatMessagesHash() => r'0c96a5e10ecf7d9d598523b9159c967e4ed97704';
+String _$chatMessagesHash() => r'7f18bf1709e210d39a4ed14083905ac72326b057';
 
 /// See also [chatMessages].
 @ProviderFor(chatMessages)
@@ -2134,7 +2265,7 @@ class _ChatMessagesProviderElement
   int get receiverId => (origin as ChatMessagesProvider).receiverId;
 }
 
-String _$getVetsHash() => r'58e957b0d8d95f6ee404623181fd4dfadd2b485c';
+String _$getVetsHash() => r'7b84dbf5ac948ff19160d4c03e2a1905dda89654';
 
 /// See also [getVets].
 @ProviderFor(getVets)
@@ -2296,7 +2427,7 @@ class _GetVetsProviderElement
   int get vetSpecialtyId => (origin as GetVetsProvider).vetSpecialtyId;
 }
 
-String _$getMyUserHash() => r'61ed52eea89f0f0d871eeab344a47711508ae9fc';
+String _$getMyUserHash() => r'93e012e3b376f1f022bf5f83cd655c7c6ba3a0cb';
 
 /// See also [getMyUser].
 @ProviderFor(getMyUser)
@@ -2312,7 +2443,7 @@ final getMyUserProvider = AutoDisposeFutureProvider<User>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GetMyUserRef = AutoDisposeFutureProviderRef<User>;
-String _$getMyPetDaycareHash() => r'c35f53c843801732554fc581588ea1154513bd95';
+String _$getMyPetDaycareHash() => r'b65293add35e99503a53311f9b213df0f320299a';
 
 /// See also [getMyPetDaycare].
 @ProviderFor(getMyPetDaycare)
@@ -2330,7 +2461,7 @@ final getMyPetDaycareProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GetMyPetDaycareRef = AutoDisposeFutureProviderRef<PetDaycareDetails>;
-String _$getPetDaycareByIdHash() => r'b10f16a89dfcf94c4853f80471005bc0fca752bf';
+String _$getPetDaycareByIdHash() => r'46071d24a830a1b8771af4c2288d28432cc0a99c';
 
 /// See also [getPetDaycareById].
 @ProviderFor(getPetDaycareById)
@@ -2496,7 +2627,7 @@ class _GetPetDaycareByIdProviderElement
 }
 
 String _$getBookingRequestsHash() =>
-    r'f35d96cc499a4b716edebc0953d8a57d173d6052';
+    r'8cb374d0189bc35539f0f424cbc1e67a2e1242b5';
 
 /// See also [getBookingRequests].
 @ProviderFor(getBookingRequests)
@@ -2648,7 +2779,7 @@ class _GetBookingRequestsProviderElement
   int get pageSize => (origin as GetBookingRequestsProvider).pageSize;
 }
 
-String _$getBookedSlotHash() => r'04eed0e06495d30f38b5a42d32bfeb640e81ed32';
+String _$getBookedSlotHash() => r'bf6ec13636a86e2266fb9d4c9f278ec704edb5f7';
 
 /// See also [getBookedSlot].
 @ProviderFor(getBookedSlot)
@@ -2780,7 +2911,7 @@ class _GetBookedSlotProviderElement
   int get transactionId => (origin as GetBookedSlotProvider).transactionId;
 }
 
-String _$getBookedSlotsHash() => r'460f08097e962d0f1e4879c794a86a08b6137efb';
+String _$getBookedSlotsHash() => r'402648c810d14116bd6adefd9bafa783a24bcf86';
 
 /// See also [getBookedSlots].
 @ProviderFor(getBookedSlots)
@@ -2929,7 +3060,7 @@ class _GetBookedSlotsProviderElement
   int get pageSize => (origin as GetBookedSlotsProvider).pageSize;
 }
 
-String _$getReviewsHash() => r'cda720c799e0fb287a3c8a475926e2cf6dfc1895';
+String _$getReviewsHash() => r'0ea724d6b9cdceea013d1ccbd778f7edabdf1892';
 
 /// See also [getReviews].
 @ProviderFor(getReviews)

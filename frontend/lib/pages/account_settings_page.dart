@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/pages/edit/edit_user_page.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/auth_provider.dart';
@@ -26,11 +27,20 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
           // backgroundColor: Constants.secondaryBackgroundColor,
           leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.arrow_back_ios),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            ),
           ),
           title: Text(
             "Account Settings",
-            style: TextStyle(color: Colors.orange),
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            ),
           ),
         ),
         body: switch (themeMode) {

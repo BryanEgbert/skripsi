@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -12,6 +13,7 @@ import 'package:frontend/model/response/token_response.dart';
 abstract interface class IAuthService {
   Future<Result<TokenResponse>> login(String email, String password);
   Future<Result<TokenResponse>> register(CreateUserRequest req);
+  Future<Result<TokenResponse>> logout(String token);
   Future<Result<TokenResponse>> refreshToken(String token);
   Future<Result<TokenResponse>> createPetOwner(CreateUserRequest userReq,
       PetRequest petReq, VaccinationRecordRequest vaccineReq);
@@ -196,5 +198,30 @@ class AuthService implements IAuthService {
 
       return response;
     }, (res) => TokenResponse.fromJson(res));
+  }
+
+  @override
+  Future<Result<TokenResponse>> logout(String token) {
+    return makeRequest(204, () async {
+      final String host =
+          FirebaseRemoteConfig.instance.getString("backend_host");
+
+      final dio = Dio(BaseOptions(
+        validateStatus: (status) {
+          return status != null; // Accept all HTTP status codes
+        },
+      ));
+
+      final response = await dio.delete(
+        "http://$host/logout",
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+        ),
+      );
+
+      return response;
+    });
   }
 }

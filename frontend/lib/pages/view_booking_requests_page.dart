@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/pages/details/booking_request_details_page.dart';
@@ -86,15 +87,16 @@ class _ViewBookingRequestsPageState
       appBar: AppBar(
         title: Text(
           'Booking Requests',
-          style: TextStyle(color: Colors.orange),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         actions: petOwnerAppBarActions(widget.messages.length),
       ),
       body: (_isFetching && _records.isEmpty)
-          ? Center(
-              child: CircularProgressIndicator(
-              color: Colors.orange,
-            ))
+          ? Center(child: CircularProgressIndicator.adaptive())
           : (_error != null || _records.isEmpty)
               ? ErrorText(
                   errorText: _error != null

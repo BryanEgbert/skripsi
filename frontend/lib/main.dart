@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/firebase_options.dart';
 import 'package:frontend/pages/home.dart';
 import 'package:frontend/pages/pet_daycare_home_page.dart';
@@ -84,9 +85,9 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
         primarySwatch: Colors.orange,
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.orange,
-          primary: Color.fromARGB(255, 255, 168, 88),
-          secondary: Color.fromARGB(255, 252, 232, 169),
-          tertiary: Color.fromARGB(255, 253, 247, 242),
+          // primary: Colors.orange[900],
+          // secondary: Color.fromARGB(255, 252, 232, 169),
+          // tertiary: Color.fromARGB(255, 253, 247, 242),
         ),
         textTheme: GoogleFonts.poppinsTextTheme(
           ThemeData.light().textTheme,
@@ -100,7 +101,7 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
-            backgroundColor: Colors.orange,
+            backgroundColor: Constants.primaryTextColor,
             foregroundColor: Color.fromARGB(255, 253, 247, 242),
             minimumSize: Size(50, 50),
             textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),

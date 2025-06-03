@@ -203,20 +203,58 @@ func (s *SlotServiceImpl) AcceptBookedSlot(slotId uint) error {
 	return nil
 }
 func (s *SlotServiceImpl) RejectBookedSlot(slotId uint) error {
-	if err := s.db.
+	tx := s.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.
 		Model(&model.BookedSlot{}).
 		Where("id = ?", slotId).
 		Update("status_id", 3).Error; err != nil {
+		log.Printf("Reject Slot, update status err: %v", err)
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Unscoped().Where("slot_id = ?", slotId).Delete(&model.BookedSlotsDaily{}).Error; err != nil {
+		log.Printf("Delete BookedSlotsDaily: %v", err)
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 func (s *SlotServiceImpl) CancelBookedSlot(slotId uint) error {
-	if err := s.db.
+	tx := s.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.
 		Model(&model.BookedSlot{}).
 		Where("id = ?", slotId).
 		Update("status_id", 5).Error; err != nil {
+		log.Printf("Cancel Slot, update status err: %v", err)
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Unscoped().Where("slot_id = ?", slotId).Delete(&model.BookedSlotsDaily{}).Error; err != nil {
+		log.Printf("Delete BookedSlotsDaily: %v", err)
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
 		return err
 	}
 

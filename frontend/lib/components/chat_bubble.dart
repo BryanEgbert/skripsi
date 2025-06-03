@@ -60,7 +60,7 @@ class ChatBubble extends StatelessWidget {
                                   msg.imageUrl!,
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
-                                      color: Colors.transparent,
+                                      color: Colors.grey,
                                       height: 20,
                                       width: 20,
                                       child: Column(
@@ -76,7 +76,7 @@ class ChatBubble extends StatelessWidget {
                                           Text(
                                             "Failed to load image",
                                             style: TextStyle(
-                                              fontSize: 16,
+                                              fontSize: 12,
                                               decoration: TextDecoration.none,
                                             ),
                                           ),
@@ -91,92 +91,40 @@ class ChatBubble extends StatelessWidget {
                         },
                       );
                     },
-                    child: GestureDetector(
-                      onTap: () {
-                        showGeneralDialog(
-                          context: context,
-                          barrierColor: Colors.black.withValues(alpha: 0.5),
-                          barrierLabel: 'Image details',
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) {
-                            return SizedBox.expand(
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: InteractiveViewer(
-                                  child: Image.network(
-                                    msg.imageUrl!,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        color: Colors.transparent,
-                                        height: 20,
-                                        width: 20,
-                                        child: Column(
-                                          spacing: 8,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.image_not_supported,
-                                              size: 32,
-                                              semanticLabel:
-                                                  "Fail to load image",
-                                            ),
-                                            Text(
-                                              "Failed to load image",
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                decoration: TextDecoration.none,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ),
+                    child: Image.network(
+                      msg.imageUrl!,
+                      // width: 200,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey,
+                          width: double.infinity,
+                          child: Column(
+                            spacing: 8,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.image_not_supported,
+                                size: 32,
+                                semanticLabel: "Fail to load image",
+                              ),
+                              Text(
+                                "Failed to load image",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  decoration: TextDecoration.none,
                                 ),
                               ),
-                            );
-                          },
+                            ],
+                          ),
                         );
                       },
-                      child: Image.network(
-                        msg.imageUrl!,
-                        // width: 200,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.transparent,
-                            height: 20,
-                            width: 20,
-                            child: Column(
-                              spacing: 8,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.image_not_supported,
-                                  size: 32,
-                                  semanticLabel: "Fail to load image",
-                                ),
-                                Text(
-                                  "Failed to load image",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    decoration: TextDecoration.none,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
                     ),
                   ),
                 Text(
                   msg.message,
                   style: TextStyle(
-                    color: Colors.black87,
+                    color: Colors.black,
                   ),
                 ),
                 Row(

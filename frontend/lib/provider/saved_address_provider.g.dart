@@ -6,7 +6,7 @@ part of 'saved_address_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$savedAddressStateHash() => r'4832f5c66c6b6a76451cccaaf410ba6a061f7124';
+String _$savedAddressStateHash() => r'cf8ce33e4f2fe1e449734f87697a3590b7a93f2f';
 
 /// See also [SavedAddressState].
 @ProviderFor(SavedAddressState)

@@ -2,7 +2,7 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_saved_address_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/provider/list_data_provider.dart';
-import 'package:frontend/services/user_service.dart';
+import 'package:frontend/services/saved_address_service.dart';
 import 'package:frontend/utils/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -23,14 +23,14 @@ class SavedAddressState extends _$SavedAddressState {
     state = AsyncLoading();
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
       return;
     }
 
-    final userService = UserService();
-    final res = await userService.addSavedAddress(token.accessToken, req);
+    final service = SavedAddressService();
+    final res = await service.addSavedAddress(token.accessToken, req);
     switch (res) {
       case Ok<void>():
         state = AsyncData(201);
@@ -40,18 +40,20 @@ class SavedAddressState extends _$SavedAddressState {
     }
   }
 
-  Future<void> editSavedAddress(CreateSavedAddressRequest req) async {
+  Future<void> editSavedAddress(
+      int addressId, CreateSavedAddressRequest req) async {
     state = AsyncLoading();
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
       return;
     }
 
-    final userService = UserService();
-    final res = await userService.editSavedAddress(token.accessToken, req);
+    final service = SavedAddressService();
+    final res =
+        await service.editSavedAddress(token.accessToken, addressId, req);
     switch (res) {
       case Ok<void>():
         state = AsyncData(204);
@@ -65,15 +67,14 @@ class SavedAddressState extends _$SavedAddressState {
     state = AsyncLoading();
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
       return;
     }
 
-    final userService = UserService();
-    final res =
-        await userService.deleteSavedAddress(token.accessToken, addressId);
+    final service = SavedAddressService();
+    final res = await service.deleteSavedAddress(token.accessToken, addressId);
     switch (res) {
       case Ok<void>():
         state = AsyncData(204);

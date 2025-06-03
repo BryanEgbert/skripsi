@@ -73,6 +73,22 @@ final petCategoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PetCategoryRef = AutoDisposeFutureProviderRef<List<PetCategory>>;
+String _$pricingTypeHash() => r'bbc6a64ababcad071a7bf6b8fbe2ba478da1b1e2';
+
+/// See also [pricingType].
+@ProviderFor(pricingType)
+final pricingTypeProvider = AutoDisposeFutureProvider<List<Lookup>>.internal(
+  pricingType,
+  name: r'pricingTypeProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$pricingTypeHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef PricingTypeRef = AutoDisposeFutureProviderRef<List<Lookup>>;
 String _$sizeCategoriesHash() => r'3a34ff4fc7789d890f3f37f589feab151f51e5d5';
 
 /// See also [sizeCategories].

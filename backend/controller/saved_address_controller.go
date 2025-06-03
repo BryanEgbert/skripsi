@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -8,6 +9,7 @@ import (
 	"github.com/BryanEgbert/skripsi/model"
 	"github.com/BryanEgbert/skripsi/service"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type SavedAddressController struct {
@@ -16,6 +18,34 @@ type SavedAddressController struct {
 
 func NewSavedAddressController(savedAddressService service.SavedAddressService) *SavedAddressController {
 	return &SavedAddressController{savedAddressService: savedAddressService}
+}
+
+func (s *SavedAddressController) GetSavedAddressById(c *gin.Context) {
+	addressID, err := strconv.ParseUint(c.Param("addressId"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid address ID",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	res, err := s.savedAddressService.GetSavedAddressById(uint(addressID))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, model.ErrorResponse{
+				Message: "Address ID does not exists",
+			})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Something's wrong, please try again later",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, res)
 }
 
 func (s *SavedAddressController) DeleteSavedAddress(c *gin.Context) {
@@ -40,6 +70,7 @@ func (s *SavedAddressController) DeleteSavedAddress(c *gin.Context) {
 }
 
 func (s *SavedAddressController) EditSavedAddress(c *gin.Context) {
+
 	addressID, err := strconv.ParseUint(c.Param("addressId"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{

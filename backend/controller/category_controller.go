@@ -16,12 +16,26 @@ func NewCategoryController(categoryService service.CategoryService) *CategoryCon
 	return &CategoryController{categoryService: categoryService}
 }
 
+func (c *CategoryController) GetPricingType(ctx *gin.Context) {
+	res, err := c.categoryService.GetPricingType()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+			Message: "Something's wrong, please try again later",
+			Error:   err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, model.ListData[model.PricingType]{Data: *res})
+}
+
 func (c *CategoryController) GetVetSpecialties(ctx *gin.Context) {
 	res, err := c.categoryService.GetVetSpecialties()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 
 		return
@@ -35,7 +49,7 @@ func (c *CategoryController) GetPetCategories(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 
 		return
@@ -49,7 +63,7 @@ func (c *CategoryController) GetSizeCategories(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 
 		return
@@ -63,7 +77,7 @@ func (c *CategoryController) GetDailyWalks(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 
 		return
@@ -77,7 +91,7 @@ func (c *CategoryController) GetDailyPlaytime(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 
 		return

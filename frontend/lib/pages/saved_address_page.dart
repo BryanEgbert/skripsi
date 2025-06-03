@@ -4,8 +4,11 @@ import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/model/saved_address.dart';
 import 'package:frontend/pages/add_saved_address.dart';
+import 'package:frontend/pages/edit/edit_saved_address_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/saved_address_provider.dart';
+import 'package:frontend/utils/handle_error.dart';
+import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class SavedAddressPage extends ConsumerStatefulWidget {
   final int? selected;
@@ -84,12 +87,32 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
           });
     }
 
+    handleError(savedAddressState, context);
+
     if (savedAddressState.hasValue) {
       if (savedAddressState.value! == 201 || savedAddressState.value! == 204) {
-        _records = [];
-        _hasMoreData = true;
-        _page = 1;
-        _fetchMoreData();
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          var snackbar = SnackBar(
+            key: Key("success-message"),
+            content: Text(
+              "Operation completed successfully",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: Colors.green[800],
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(snackbar);
+          ref.read(savedAddressStateProvider.notifier).reset();
+        });
+
+        setState(() {
+          _records = [];
+          _hasMoreData = true;
+          _page = 1;
+          _fetchMoreData();
+        });
       }
     }
 
@@ -97,7 +120,12 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         title: Text(
           "Saved Address",
@@ -110,7 +138,9 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
             },
             icon: Icon(
               Icons.save,
-              color: Colors.orange,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
             ),
           )
         ],
@@ -159,7 +189,7 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
                               color: (index == _selectedIndex)
                                   ? Theme.of(context).brightness ==
                                           Brightness.light
-                                      ? Constants.secondaryBackgroundColor
+                                      ? Colors.amber[200]
                                       : Colors.deepOrange[900]
                                   : null,
                               child: Padding(
@@ -167,12 +197,30 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      item.name,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
-                                      ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          item.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                        if (index == _selectedIndex)
+                                          Text(
+                                            "selected",
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.light
+                                                  ? Constants.primaryTextColor
+                                                  : Colors.orange,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          )
+                                      ],
                                     ),
                                     Text(
                                       item.address,
@@ -190,24 +238,48 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
                                       item.notes ?? "-",
                                       style: TextStyle(fontSize: 16),
                                     ),
-                                    if (index == _selectedIndex)
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            "Selected",
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Theme.of(context)
-                                                          .brightness ==
-                                                      Brightness.light
-                                                  ? Constants.primaryTextColor
-                                                  : Colors.orange[50],
-                                            ),
-                                          )
-                                        ],
-                                      ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditSavedAddressPage(
+                                                          item.id),
+                                                ));
+                                          },
+                                          icon: Icon(
+                                            Icons.edit,
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.light
+                                                    ? Constants.primaryTextColor
+                                                    : Colors.orange,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            showDeleteConfirmationDialog(
+                                                context,
+                                                "Are you sure you want to delete this address? This action cannot be undone.",
+                                                () {
+                                              ref
+                                                  .read(
+                                                      savedAddressStateProvider
+                                                          .notifier)
+                                                  .deleteSavedAddress(item.id);
+                                            });
+                                          },
+                                          icon: Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
                               ),

@@ -95,10 +95,7 @@ class _PaginatedPetDaycareGridViewState
         _fetchMoreData();
       },
       child: (_isFetching && _records.isEmpty)
-          ? Center(
-              child: CircularProgressIndicator(
-              color: Colors.orange,
-            ))
+          ? Center(child: CircularProgressIndicator.adaptive())
           : GridView.builder(
               itemCount: _records.length + 1,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

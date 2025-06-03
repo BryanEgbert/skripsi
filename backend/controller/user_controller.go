@@ -136,6 +136,7 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 	req.ThumbnailURLs = thumbnailURLs
 
 	if _, err := uc.petDaycareService.CreatePetDaycare(createdUser.UserID, req.CreatePetDaycareRequest); err != nil {
+		log.Printf("create pet daycare err: %v", err)
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to create pet daycare",
 			Error:   err.Error(),

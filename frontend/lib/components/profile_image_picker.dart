@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/constants.dart';
 
 class ProfileImagePicker extends StatefulWidget {
   final void Function()? onTap;
@@ -24,7 +25,9 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
             label: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.orange,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Constants.primaryTextColor
+                      : Colors.orange,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(

@@ -62,3 +62,24 @@ func (c *AuthController) RefreshToken(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, tokenResponse)
 }
+
+func (c *AuthController) Logout(ctx *gin.Context) {
+	userID, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "User ID not found in token",
+		})
+		return
+	}
+
+	if err := c.authService.Logout(userID.(uint)); err != nil {
+		ctx.JSON(http.StatusUnauthorized, model.ErrorResponse{
+			Message: "Failed to logout",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
+
+}

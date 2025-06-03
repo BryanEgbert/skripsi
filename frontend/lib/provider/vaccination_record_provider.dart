@@ -20,7 +20,7 @@ class VaccinationRecordState extends _$VaccinationRecordState {
   }
 
   Future<void> create(int petId, VaccinationRecordRequest req) async {
-    TokenResponse token = await refreshToken();
+    TokenResponse token = await refreshAccessToken();
 
     final service = VaccinationRecordService();
     final res = await service.create(token.accessToken, petId, req);
@@ -35,7 +35,7 @@ class VaccinationRecordState extends _$VaccinationRecordState {
 
   Future<void> updateRecord(
       int petId, int vaccinationRecordId, VaccinationRecordRequest req) async {
-    TokenResponse token = await refreshToken();
+    TokenResponse token = await refreshAccessToken();
 
     final service = VaccinationRecordService();
     final res =
@@ -52,7 +52,7 @@ class VaccinationRecordState extends _$VaccinationRecordState {
   }
 
   Future<void> delete(int vaccinationRecordId, int petId, int pageSize) async {
-    TokenResponse token = await refreshToken();
+    TokenResponse token = await refreshAccessToken();
 
     final service = VaccinationRecordService();
     final res = await service.delete(token.accessToken, vaccinationRecordId);

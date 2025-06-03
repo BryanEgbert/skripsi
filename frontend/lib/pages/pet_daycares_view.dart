@@ -159,10 +159,23 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
 
     return Scaffold(
       appBar: AppBar(
+        title: Text(
+          "Explore",
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
+        ),
         actions: [
           Builder(builder: (context) {
             return IconButton(
-              icon: Icon(Icons.tune_rounded),
+              icon: Icon(
+                Icons.tune_rounded,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Constants.primaryTextColor
+                    : Colors.orange,
+              ),
               onPressed: () {
                 Scaffold.of(context).openEndDrawer();
               },
@@ -295,6 +308,11 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                             children: [
                               Expanded(
                                 child: TextField(
+                                  enabled: _serviceEnabled &&
+                                      (_permission ==
+                                              LocationPermission.always ||
+                                          _permission ==
+                                              LocationPermission.whileInUse),
                                   controller: _minDistanceController,
                                   decoration: InputDecoration(
                                     labelText: "min distance",
@@ -341,6 +359,11 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                               Text("-"),
                               Expanded(
                                 child: TextField(
+                                  enabled: _serviceEnabled &&
+                                      (_permission ==
+                                              LocationPermission.always ||
+                                          _permission ==
+                                              LocationPermission.whileInUse),
                                   controller: _maxDistanceController,
                                   decoration: InputDecoration(
                                       labelText: "max distance",
@@ -766,10 +789,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                 _refresh();
               },
               child: (_isFetching && _records.isEmpty)
-                  ? Center(
-                      child: CircularProgressIndicator(
-                      color: Colors.orange,
-                    ))
+                  ? Center(child: CircularProgressIndicator.adaptive())
                   : GridView.builder(
                       itemCount: _records.length + 1,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -867,13 +887,13 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
             builder: (context) => PetDaycareDetailsPage(item.id),
           ));
         },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            thumbnail(item),
-            SizedBox(height: 4),
-            SingleChildScrollView(
-              child: Padding(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              thumbnail(item),
+              SizedBox(height: 4),
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -904,8 +924,8 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -950,7 +970,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
           ),
         ),
         Text(
-          "${rupiahFormat.format(price.price)}/${price.pricingType}",
+          "${rupiahFormat.format(price.price)}/${price.pricingType.name}",
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.bold,

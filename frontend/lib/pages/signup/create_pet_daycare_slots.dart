@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/components/modals/select_pricing_type_modal.dart';
+import 'package:frontend/constants.dart';
+import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/pages/signup/create_pet_daycare_services.dart';
@@ -37,6 +40,8 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
   static const _giantDogID = 5;
 
   final _formKey = GlobalKey<FormState>();
+
+  final _pricingTypeController = TextEditingController(text: "day");
 
   final _miniatureDogPriceController = TextEditingController();
   final _miniatureDogPricingTypeController = TextEditingController(text: "day");
@@ -74,7 +79,8 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
 
   List<int> _petCategoryIds = [];
   List<double> _prices = [];
-  List<int> _pricingTypes = [];
+  int _pricingType = 1;
+  String _pricingTypeName = "day";
   List<int> _maxNumbers = [];
 
   bool _acceptCats = false;
@@ -89,7 +95,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
 
     _petCategoryIds = [];
     _prices = [];
-    _pricingTypes = [];
+    // _pricingTypes = [];
     _maxNumbers = [];
 
     if (!_acceptMiniatureDog &&
@@ -109,15 +115,16 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       _prices.add(double.tryParse(_miniatureDogPriceController.text
               .replaceAll(RegExp(r'[^0-9]'), '')) ??
           0.0);
-      _pricingTypes
-          .add(_miniatureDogPricingTypeController.text == "day" ? 1 : 2);
+      // TODO: ganti bagian sini
+      // _pricingTypes
+      //     .add(_miniatureDogPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_miniatureDogSlotController.text) ?? 0);
     } else {
       int index = _petCategoryIds.indexOf(_miniatureDogID);
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -126,14 +133,14 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       _prices.add(double.tryParse(_smallDogPriceController.text
               .replaceAll(RegExp(r'[^0-9]'), '')) ??
           0.0);
-      _pricingTypes.add(_smallDogPricingTypeController.text == "day" ? 1 : 2);
+      // _pricingTypes.add(_smallDogPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_smallDogSlotController.text) ?? 0);
     } else {
       int index = _petCategoryIds.indexOf(_smallDogID);
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -143,14 +150,14 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       _prices.add(double.tryParse(_mediumDogPriceController.text
               .replaceAll(RegExp(r'[^0-9]'), '')) ??
           0.0);
-      _pricingTypes.add(_mediumDogPricingTypeController.text == "day" ? 1 : 2);
+      // _pricingTypes.add(_mediumDogPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_mediumDogSlotController.text) ?? 0);
     } else {
       int index = _petCategoryIds.indexOf(_mediumDogID);
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -160,14 +167,14 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       _prices.add(double.tryParse(_largeDogPriceController.text
               .replaceAll(RegExp(r'[^0-9]'), '')) ??
           0.0);
-      _pricingTypes.add(_largeDogPricingTypeController.text == "day" ? 1 : 2);
+      // _pricingTypes.add(_largeDogPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_largeDogSlotController.text) ?? 0);
     } else {
       int index = _petCategoryIds.indexOf(_largeDogID);
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -177,14 +184,14 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       _prices.add(double.tryParse(_giantDogPriceController.text
               .replaceAll(RegExp(r'[^0-9]'), '')) ??
           0.0);
-      _pricingTypes.add(_giantDogPricingTypeController.text == "day" ? 1 : 2);
+      // _pricingTypes.add(_giantDogPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_giantDogSlotController.text) ?? 0);
     } else {
       int index = _petCategoryIds.indexOf(_giantDogID);
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -193,14 +200,14 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       _prices.add(double.tryParse(
               _catsPriceController.text.replaceAll(RegExp(r'[^0-9]'), '')) ??
           0.0);
-      _pricingTypes.add(_catsPricingTypeController.text == "day" ? 1 : 2);
+      // _pricingTypes.add(_catsPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_catsSlotController.text) ?? 0);
     } else {
       int index = _petCategoryIds.indexOf(6);
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
@@ -210,22 +217,22 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       _prices.add(double.tryParse(
               _bunniesPriceController.text.replaceAll(RegExp(r'[^0-9]'), '')) ??
           0.0);
-      _pricingTypes.add(_bunniesPricingTypeController.text == "day" ? 1 : 2);
+      // _pricingTypes.add(_bunniesPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_bunniesSlotController.text) ?? 0);
     } else {
       int index = _petCategoryIds.indexOf(7);
       if (index != -1) {
         _petCategoryIds.removeAt(index);
         _prices.removeAt(index);
-        _pricingTypes.removeAt(index);
+        // _pricingTypes.removeAt(index);
         _maxNumbers.removeAt(index);
       }
     }
 
-    log("[INFO] prices: $_prices, pet category: $_petCategoryIds, pricingType: $_pricingTypes, maxNumbers: $_maxNumbers");
+    log("[INFO] prices: $_prices, pet category: $_petCategoryIds, pricingType: $_pricingType, maxNumbers: $_maxNumbers");
 
     widget.createPetDaycareReq.price = _prices;
-    widget.createPetDaycareReq.pricingType = _pricingTypes;
+    widget.createPetDaycareReq.pricingType = _pricingType;
     widget.createPetDaycareReq.petCategoryId = _petCategoryIds;
     widget.createPetDaycareReq.maxNumber = _maxNumbers;
 
@@ -241,7 +248,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
   Widget build(BuildContext context) {
     final petCategory = ref.watch(petCategoryProvider);
 
-    log("[INFO] prices: $_prices, pet category: $_petCategoryIds, pricingType: $_pricingTypes");
+    log("[INFO] prices: $_prices, pet category: $_petCategoryIds, pricingType: $_pricingType");
 
     if (_error != null) {
       // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -260,12 +267,19 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
         appBar: AppBar(
           title: Text(
             "Manage Your Pet Slots",
-            style: TextStyle(color: Colors.orange),
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            ),
           ),
           leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: Icon(
               Icons.arrow_back_ios,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
             ),
           ),
         ),
@@ -285,11 +299,50 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
+                          "Pricing Type",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
+                          ),
+                        ),
+                        TextField(
+                          controller: _pricingTypeController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            labelText: "",
+                            suffixIcon: Icon(Icons.navigate_next),
+                          ),
+                          onTap: () async {
+                            var out = await showModalBottomSheet<Lookup>(
+                              context: context,
+                              builder: (context) => SelectPricingTypeModal(),
+                            );
+
+                            if (out == null) {
+                              return;
+                            }
+
+                            setState(() {
+                              _pricingTypeController.text = out.name;
+                              _pricingTypeName = out.name;
+                            });
+                            _pricingType = out.id;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
                           "Dogs",
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Colors.orange,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                           ),
                         ),
                         _buildSizedCheckbox(
@@ -443,11 +496,6 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       children: [
         Expanded(
           child: TextFormField(
-            style: TextStyle(
-              color: Theme.of(context).brightness == Brightness.light
-                  ? Colors.black
-                  : Colors.white70,
-            ),
             controller: priceController,
             enabled: enabled,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -463,59 +511,72 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
             validator: (value) => validatePriceInput(enabled, value),
           ),
         ),
-        Text("per"),
-        Expanded(
-            child: TextFormField(
-          style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.light
-                ? Colors.black
-                : Colors.white70,
-          ),
-          controller: pricingTypeController,
-          enabled: enabled,
-          readOnly: true,
-          decoration: InputDecoration(
-            labelText: "",
-            suffixIcon: Icon(Icons.navigate_next),
-          ),
-          onTap: () async {
-            pricingTypeController.text = await showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                return Container(
-                  margin: EdgeInsets.fromLTRB(12, 12, 12, 32),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "Choose Pricing Type",
-                        style: TextStyle(color: Colors.orange[600]),
-                      ),
-                      ListTile(
-                        title: const Text("Day"),
-                        onTap: () {
-                          setState(() {
-                            pricingTypeController.text = "day";
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                      ListTile(
-                        title: const Text("Night"),
-                        onTap: () {
-                          setState(() {
-                            pricingTypeController.text = "night";
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        )),
+        Text("per $_pricingTypeName"),
+        // Expanded(
+        //   child: TextFormField(
+        //     style: TextStyle(
+        //       color: Theme.of(context).brightness == Brightness.light
+        //           ? Colors.black
+        //           : Colors.white70,
+        //     ),
+        //     controller: pricingTypeController,
+        //     enabled: enabled,
+        //     readOnly: true,
+        //     decoration: InputDecoration(
+        //       labelText: "",
+        //       suffixIcon: Icon(Icons.navigate_next),
+        //     ),
+        //     onTap: () async {
+        //       // pricingTypeController.text = await showModalBottomSheet(
+        //       //   context: context,
+        //       //   builder: (context) {
+        //       //     return Container(
+        //       //       margin: EdgeInsets.fromLTRB(12, 12, 12, 32),
+        //       //       child: Column(
+        //       //         mainAxisSize: MainAxisSize.min,
+        //       //         children: [
+        //       //           Text(
+        //       //             "Choose Pricing Type",
+        //       //             style: TextStyle(color: Colors.orange[600]),
+        //       //           ),
+        //       //           ListTile(
+        //       //             title: const Text("Day"),
+        //       //             onTap: () {
+        //       //               setState(() {
+        //       //                 pricingTypeController.text = "day";
+        //       //               });
+        //       //               Navigator.pop(context);
+        //       //             },
+        //       //           ),
+        //       //           ListTile(
+        //       //             title: const Text("Night"),
+        //       //             onTap: () {
+        //       //               setState(() {
+        //       //                 pricingTypeController.text = "night";
+        //       //               });
+        //       //               Navigator.pop(context);
+        //       //             },
+        //       //           ),
+        //       //         ],
+        //       //       ),
+        //       //     );
+        //       //   },
+        //       // );
+
+        //       var out = await showModalBottomSheet<Lookup>(
+        //         context: context,
+        //         builder: (context) => SelectPricingTypeModal(),
+        //       );
+
+        //       if (out == null) {
+        //         return;
+        //       }
+
+        //       pricingTypeController.text = out.name;
+        //       // _pricingTypes[]
+        //     },
+        //   ),
+        // ),
         Expanded(
           child: TextFormField(
             style: TextStyle(

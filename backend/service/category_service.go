@@ -6,11 +6,12 @@ import (
 )
 
 type CategoryService interface {
-	GetVetSpecialties() (*[]model.VetSpecialty, error);
-	GetPetCategories()(*[]model.PetCategoryDTO, error);
-	GetSizeCategories()(*[]model.SizeCategory, error);
-	GetDailyWalks()(*[]model.DailyWalks, error);
-	GetDailyPlaytime()(*[]model.DailyPlaytime, error);
+	GetVetSpecialties() (*[]model.VetSpecialty, error)
+	GetPetCategories() (*[]model.PetCategoryDTO, error)
+	GetSizeCategories() (*[]model.SizeCategory, error)
+	GetDailyWalks() (*[]model.DailyWalks, error)
+	GetDailyPlaytime() (*[]model.DailyPlaytime, error)
+	GetPricingType() (*[]model.PricingType, error)
 }
 
 type CategoryServiceImpl struct {
@@ -18,7 +19,17 @@ type CategoryServiceImpl struct {
 }
 
 func NewCategoryService(db *gorm.DB) *CategoryServiceImpl {
-	return &CategoryServiceImpl{db: db};
+	return &CategoryServiceImpl{db: db}
+}
+
+func (s *CategoryServiceImpl) GetPricingType() (*[]model.PricingType, error) {
+	var pricingTypes []model.PricingType
+
+	if err := s.db.Find(&pricingTypes).Error; err != nil {
+		return nil, err
+	}
+
+	return &pricingTypes, nil
 }
 
 func (s *CategoryServiceImpl) GetVetSpecialties() (*[]model.VetSpecialty, error) {
@@ -31,7 +42,7 @@ func (s *CategoryServiceImpl) GetVetSpecialties() (*[]model.VetSpecialty, error)
 	return &vetSpecialties, nil
 }
 
-func (s *CategoryServiceImpl) GetPetCategories()(*[]model.PetCategoryDTO, error) {
+func (s *CategoryServiceImpl) GetPetCategories() (*[]model.PetCategoryDTO, error) {
 	var petCategories []model.PetCategory
 	var dto []model.PetCategoryDTO
 
@@ -43,8 +54,8 @@ func (s *CategoryServiceImpl) GetPetCategories()(*[]model.PetCategoryDTO, error)
 
 	for _, val := range petCategories {
 		dto = append(dto, model.PetCategoryDTO{
-			ID: val.ID,
-			Name: val.Name,
+			ID:           val.ID,
+			Name:         val.Name,
 			SizeCategory: val.SizeCategory,
 		})
 	}
@@ -52,7 +63,7 @@ func (s *CategoryServiceImpl) GetPetCategories()(*[]model.PetCategoryDTO, error)
 	return &dto, nil
 }
 
-func (s *CategoryServiceImpl) GetSizeCategories()(*[]model.SizeCategory, error) {
+func (s *CategoryServiceImpl) GetSizeCategories() (*[]model.SizeCategory, error) {
 	var sizeCategories []model.SizeCategory
 
 	if err := s.db.Find(&sizeCategories).Error; err != nil {
@@ -62,7 +73,7 @@ func (s *CategoryServiceImpl) GetSizeCategories()(*[]model.SizeCategory, error) 
 	return &sizeCategories, nil
 }
 
-func (s *CategoryServiceImpl) GetDailyWalks()(*[]model.DailyWalks, error) {
+func (s *CategoryServiceImpl) GetDailyWalks() (*[]model.DailyWalks, error) {
 	var dailyWalks []model.DailyWalks
 
 	if err := s.db.Find(&dailyWalks).Error; err != nil {
@@ -72,7 +83,7 @@ func (s *CategoryServiceImpl) GetDailyWalks()(*[]model.DailyWalks, error) {
 	return &dailyWalks, nil
 }
 
-func (s *CategoryServiceImpl) GetDailyPlaytime()(*[]model.DailyPlaytime, error) {
+func (s *CategoryServiceImpl) GetDailyPlaytime() (*[]model.DailyPlaytime, error) {
 	var dailyPlaytimes []model.DailyPlaytime
 
 	if err := s.db.Find(&dailyPlaytimes).Error; err != nil {

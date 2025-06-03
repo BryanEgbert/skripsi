@@ -52,11 +52,20 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
         return Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.orange),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Constants.primaryTextColor
+                    : Colors.orange,
+              ),
               onPressed: () => Navigator.pop(context),
             ),
-            title: const Text('Pet Daycare',
-                style: TextStyle(color: Colors.orange)),
+            title: Text('Pet Daycare',
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Constants.primaryTextColor
+                      : Colors.orange,
+                )),
             actions: appBarActions(),
           ),
           floatingActionButton: widget.petDaycareId != 0
@@ -82,26 +91,35 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
           appBar: AppBar(
             leading: (widget.petDaycareId != 0)
                 ? IconButton(
-                    icon:
-                        const Icon(Icons.arrow_back_ios, color: Colors.orange),
+                    icon: Icon(
+                      Icons.arrow_back_ios,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   )
                 : null,
-            title: const Text(
+            title: Text(
               'Pet Daycare',
-              style: TextStyle(color: Colors.orange),
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Constants.primaryTextColor
+                    : Colors.orange,
+              ),
             ),
             actions: appBarActions(),
           ),
           floatingActionButton: (widget.petDaycareId == 0)
               ? FloatingActionButton(
                   onPressed: () async {
-                    bool success = await Navigator.of(context).push(
+                    bool? success = await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => EditPetDaycarePage(value.id),
                       ),
                     );
 
+                    if (success == null) return;
                     if (success) {
                       if (!mounted) return;
                       var snackbar = SnackBar(
@@ -127,11 +145,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
         );
 
       default:
-        return Center(
-          child: CircularProgressIndicator(
-            color: Colors.orange,
-          ),
-        );
+        return Center(child: CircularProgressIndicator.adaptive());
     }
   }
 
@@ -159,7 +173,9 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -230,7 +246,9 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       ),
                       trailing: Icon(
                         Icons.chat_rounded,
-                        color: Colors.orange,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.primaryTextColor
+                            : Colors.orange,
                       ),
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
@@ -271,12 +289,14 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
+                  Text(
                     "Operational Hour",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                     ),
                   ),
                   Text("${value.openingHour} - ${value.closingHour}"),
@@ -293,19 +313,21 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
+                  Text(
                     "Pricing",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                     ),
                   ),
                   const SizedBox(height: 8),
                   for (var price in value.pricings)
                     if (price.petCategory.sizeCategory.maxWeight != null)
                       Text(
-                        "${price.petCategory.name} (${price.petCategory.sizeCategory.minWeight}-${price.petCategory.sizeCategory.maxWeight}kg) - ${rupiahFormat.format(price.price)}/${price.pricingType}",
+                        "${price.petCategory.name} (${price.petCategory.sizeCategory.minWeight}-${price.petCategory.sizeCategory.maxWeight}kg) - ${rupiahFormat.format(price.price)}/${price.pricingType.name}",
                         style: TextStyle(
                           color:
                               Theme.of(context).brightness == Brightness.light
@@ -315,7 +337,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       )
                     else
                       Text(
-                        "${price.petCategory.name} (${price.petCategory.sizeCategory.minWeight}kg+) - Rp. ${rupiahFormat.format(price.price)}/${price.pricingType}",
+                        "${price.petCategory.name} (${price.petCategory.sizeCategory.minWeight}kg+) - Rp. ${rupiahFormat.format(price.price)}/${price.pricingType.name}",
                         style: TextStyle(
                           color:
                               Theme.of(context).brightness == Brightness.light
@@ -336,12 +358,14 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Requirements",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                     ),
                   ),
                   ListTile(
@@ -367,12 +391,14 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                         ? Text("Pet vaccination is required to book")
                         : Text("Unvaccinated pets can book at this daycare."),
                   ),
-                  const Text(
+                  Text(
                     "Additional Services",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                     ),
                   ),
                   ListTile(
@@ -477,13 +503,18 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "View Ratings >",
                       style: TextStyle(
-                        color: Colors.orange,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.primaryTextColor
+                            : Colors.orange,
                         fontWeight: FontWeight.bold,
                         decoration: TextDecoration.underline,
-                        decorationColor: Colors.orange,
+                        decorationColor:
+                            Theme.of(context).brightness == Brightness.light
+                                ? Constants.primaryTextColor
+                                : Colors.orange,
                       ),
                     ),
                   ],

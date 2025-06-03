@@ -137,7 +137,12 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         title: Text(
           "Messages",
@@ -215,15 +220,7 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
                               _unreadMessages = newData.data;
                             });
                           });
-                          ref
-                              .read(messageTrackerProvider.notifier)
-                              .shouldReload();
-                          ref
-                              .read(petOwnerChatListTrackerProvider.notifier)
-                              .shouldReload();
-                          ref
-                              .read(petDaycareChatListTrackerProvider.notifier)
-                              .shouldReload();
+                          _reloadTracker();
                         },
                         leading: DefaultCircleAvatar(imageUrl: item.imageUrl),
                         title: Text(
@@ -245,7 +242,10 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
                                   : null,
                           child: Icon(
                             Icons.chat,
-                            color: Colors.orange,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                           ),
                         ),
                       );
@@ -253,5 +253,11 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
                   ),
                 ),
     );
+  }
+
+  void _reloadTracker() {
+    ref.read(messageTrackerProvider.notifier).shouldReload();
+    ref.read(petOwnerChatListTrackerProvider.notifier).shouldReload();
+    ref.read(petDaycareChatListTrackerProvider.notifier).shouldReload();
   }
 }

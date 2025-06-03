@@ -66,7 +66,7 @@ final class InternalServerError<T> extends Error<T> {
 }
 
 final class NetworkError<T> extends Error<T> {
-  const NetworkError(super.error);
+  NetworkError(super.error);
 }
 
 Future<Result<T>> makeRequest<T>(
@@ -113,7 +113,6 @@ Future<Result<T>> makeRequest<T>(
       }
     }
   } on DioException catch (e) {
-    log("exception: ${e.toString()}");
     return switch (e.type) {
       DioExceptionType.connectionTimeout => Result.timeoutErr(),
       DioExceptionType.sendTimeout => Result.timeoutErr(),

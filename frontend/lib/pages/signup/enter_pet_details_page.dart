@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/modals/select_pet_type_modal.dart';
 import 'package:frontend/components/profile_image_picker.dart';
 import 'package:frontend/components/signup_guide_text.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/request/pet_request.dart';
@@ -66,11 +67,21 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.arrow_back_ios)),
-        title: const Text(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
+        ),
+        title: Text(
           "Fill Pet Info",
-          style: TextStyle(color: Colors.orange),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
       ),
       body: SafeArea(
@@ -112,7 +123,13 @@ class _EnterPetDetailsPageState extends ConsumerState<EnterPetDetailsPage> {
                         focusNode: _petCategoryFocusNode,
                         readOnly: true,
                         decoration: InputDecoration(
-                          suffixIcon: Icon(Icons.navigate_next),
+                          suffixIcon: Icon(
+                            Icons.navigate_next,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
+                          ),
                           labelText: "Pet category",
                         ),
                         onTap: () async {

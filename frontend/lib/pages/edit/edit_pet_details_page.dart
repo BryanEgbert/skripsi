@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/select_pet_type_modal.dart';
 import 'package:frontend/components/profile_image_picker.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/request/pet_request.dart';
@@ -81,7 +82,12 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         title: const Text(
           "Edit Pet Info",
@@ -112,12 +118,6 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                         imageUrl: value?.imageUrl,
                       ),
                       TextFormField(
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
                         controller: _nameController,
                         key: Key("name-input"),
                         decoration: InputDecoration(
@@ -136,12 +136,6 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                         validator: (value) => validateNotEmpty("Name", value),
                       ),
                       TextFormField(
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
                         controller: _petCategoryController,
                         focusNode: _petCategoryFocusNode,
                         readOnly: true,

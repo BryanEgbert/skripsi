@@ -1,5 +1,3 @@
-import 'dart:io';
-
 class UpdatePetDaycareRequest {
   String petDaycareName;
   String address;
@@ -11,7 +9,7 @@ class UpdatePetDaycareRequest {
   String openingHour;
   String closingHour;
   List<double> price;
-  List<int> pricingType;
+  int pricingType;
   bool hasPickupService;
   bool mustBeVaccinated;
   bool groomingAvailable;
@@ -19,7 +17,7 @@ class UpdatePetDaycareRequest {
   String? foodBrand;
   int dailyWalksId;
   int dailyPlaytimeId;
-  List<File> thumbnails;
+  List<String> thumbnails;
   List<int> petCategoryId;
   List<int> maxNumber;
 
@@ -59,7 +57,7 @@ class UpdatePetDaycareRequest {
       'longitude': longitude,
       "latitude": latitude,
       'price[]': price.map((e) => e.toString()).toList(),
-      'pricingType[]': pricingType,
+      'pricingType': pricingType,
       'hasPickupService': hasPickupService.toString(),
       'mustBeVaccinated': mustBeVaccinated.toString(),
       'groomingAvailable': groomingAvailable.toString(),

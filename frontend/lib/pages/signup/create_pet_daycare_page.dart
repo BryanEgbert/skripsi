@@ -4,6 +4,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/signup_guide_text.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
@@ -65,8 +66,6 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
       return;
     }
 
-    log("latitude $_latitude, longitude: $_longitude");
-
     final createPetDaycareReq = CreatePetDaycareRequest(
       petDaycareName: _nameController.text,
       address: _address,
@@ -78,7 +77,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
       latitude: _latitude!,
       longitude: _longitude!,
       price: [],
-      pricingType: [],
+      pricingType: 0,
       hasPickupService: false,
       mustBeVaccinated: false,
       groomingAvailable: false,
@@ -121,8 +120,14 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.arrow_back_ios)),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -132,7 +137,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
               children: [
                 SignupGuideText(
                   title: "Let's Set Up Your Account",
-                  subtitle: "Enter your pet daycare details to continue",
+                  subtitle: "Enter your pet daycare/hotel details to continue",
                 ),
                 SizedBox(height: 56),
                 Form(
@@ -189,7 +194,11 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
       children: [
         Text(
           "Operating Hours",
-          style: TextStyle(color: Colors.orange),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         Row(
           spacing: 8,
@@ -203,7 +212,6 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                   labelStyle: TextStyle(fontSize: 12),
                   suffixIcon: Icon(
                     Icons.navigate_next,
-                    color: Colors.orange,
                     size: 20,
                   ),
                 ),
@@ -233,7 +241,6 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                   labelStyle: TextStyle(fontSize: 12),
                   suffixIcon: Icon(
                     Icons.navigate_next,
-                    color: Colors.orange,
                     size: 20,
                   ),
                 ),

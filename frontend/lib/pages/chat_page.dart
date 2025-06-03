@@ -123,6 +123,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       //     (route) => false,
       //   );
       // }
+      handleError(AsyncError(e.toString(), StackTrace.current), context);
     }
   }
 
@@ -171,10 +172,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       });
     }
 
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      _listScrollController
-          .jumpTo(_listScrollController.position.maxScrollExtent);
-    });
+    if (chatMessages is AsyncData && _listScrollController.hasClients) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        _listScrollController
+            .jumpTo(_listScrollController.position.maxScrollExtent);
+      });
+    }
     // final chat = ref.watch(chatMessagesProvider(widget.userId));
 
     return switch (receiverUser) {
@@ -186,7 +189,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           appBar: AppBar(
             leading: IconButton(
               onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(Icons.arrow_back_ios),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Constants.primaryTextColor
+                    : Colors.orange,
+              ),
             ),
             title: Row(
               spacing: 8,
@@ -208,7 +216,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             child: Column(
               children: [
                 Expanded(
-                  child: _isSocketReady
+                  child: _isSocketReady && chatMessages.hasValue
                       ? ListView.builder(
                           controller: _listScrollController,
                           padding: EdgeInsets.all(8),
@@ -358,10 +366,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             ),
           ),
         ),
-      _ => Center(
-          child: CircularProgressIndicator(
-            semanticsLabel: "Fetching user data",
-            color: Colors.orange,
+      _ => Container(
+          color: Theme.of(context).brightness == Brightness.light
+              ? Constants.backgroundColor
+              : Colors.black87,
+          child: Center(
+            child: CircularProgressIndicator(
+              semanticsLabel: "Fetching user data",
+              color: Colors.orange,
+            ),
           ),
         ),
     };

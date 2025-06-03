@@ -103,7 +103,7 @@ _$PriceImpl _$$PriceImplFromJson(Map<String, dynamic> json) => _$PriceImpl(
       petCategory:
           PetCategory.fromJson(json['petCategory'] as Map<String, dynamic>),
       price: (json['price'] as num).toDouble(),
-      pricingType: json['pricingType'] as String,
+      pricingType: Lookup.fromJson(json['pricingType'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$PriceImplToJson(_$PriceImpl instance) =>

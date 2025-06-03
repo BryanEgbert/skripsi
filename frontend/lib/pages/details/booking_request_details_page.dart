@@ -29,7 +29,12 @@ class _BookingRequestDetailsPageState
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.orange),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(

@@ -185,7 +185,10 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
                           item.name,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Constants.primaryTextColor,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                           ),
                         ),
                         trailing: Badge.count(
@@ -197,7 +200,10 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
                                   : null,
                           child: Icon(
                             Icons.chat,
-                            color: Colors.orange,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                           ),
                         ),
                       );

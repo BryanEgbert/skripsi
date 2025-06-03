@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/user.dart';
@@ -150,25 +151,38 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
   @override
   Widget build(BuildContext context) {
     log("[VIEW BOOKED PETS] build");
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "Booked Pets",
-            style: TextStyle(color: Colors.orange),
+          title: Text(
+            "Bookings",
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            ),
           ),
           actions: petOwnerAppBarActions(widget.messages.length),
-          bottom: TabBar(tabs: [
-            Tab(
-              icon: Icon(Icons.pets_rounded),
-              text: "Sort by Pets",
-            ),
-            Tab(
-              icon: Icon(Icons.person_rounded),
-              text: "Sort by Pet Owners",
-            ),
-          ]),
+          bottom: TabBar(
+            tabs: [
+              Tab(
+                icon: Icon(Icons.pets_rounded),
+                text: "Sort by Pets",
+              ),
+              Tab(
+                icon: Icon(Icons.person_rounded),
+                text: "Sort by Pet Owners",
+              ),
+            ],
+            indicatorColor: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+            labelColor: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         body: TabBarView(children: [
           _buildViewByPets(widget.messages),
@@ -189,10 +203,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
         });
       },
       child: (_isFetching && _bookedPetRecords.isEmpty)
-          ? Center(
-              child: CircularProgressIndicator(
-              color: Colors.orange,
-            ))
+          ? Center(child: CircularProgressIndicator.adaptive())
           : (_error == null)
               ? (_bookedPetRecords.isEmpty)
                   ? ErrorText(
@@ -210,26 +221,41 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                       itemCount: _bookedPetRecords.length + 1,
                       itemBuilder: (context, index) {
                         if (index < _bookedPetRecords.length) {
+                          var unreadMessages = widget.messages
+                              .where(
+                                (element) =>
+                                    element.senderId ==
+                                    _bookedPetRecords[index].id,
+                              )
+                              .toList();
                           return ListTile(
                             leading: DefaultCircleAvatar(
-                                imageUrl: _bookedPetRecords[index].imageUrl),
+                              imageUrl: _bookedPetRecords[index].imageUrl,
+                            ),
                             title: Text(_bookedPetRecords[index].name),
                             titleTextStyle: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.orange,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Constants.primaryTextColor
+                                  : Colors.orange,
                             ),
                             trailing: Badge.count(
-                              count: messages.length,
-                              isLabelVisible: messages.isNotEmpty,
+                              count: unreadMessages.length,
+                              isLabelVisible: unreadMessages.isNotEmpty,
                               child: IconButton(
                                 onPressed: () async {
                                   await _navigateToChatPage(
-                                      _bookedPetRecords[index].id);
+                                    _bookedPetRecords[index].id,
+                                  );
                                 },
                                 icon: Icon(
                                   Icons.chat_rounded,
-                                  color: Colors.orange,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Constants.primaryTextColor
+                                      : Colors.orange,
                                 ),
                               ),
                             ),
@@ -237,9 +263,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                         } else {
                           if (_isFetching) {
                             return Center(
-                                child: CircularProgressIndicator(
-                              color: Colors.orange,
-                            ));
+                                child: CircularProgressIndicator.adaptive());
                           }
 
                           return SizedBox();
@@ -270,10 +294,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
         // setState(() {});
       },
       child: (_isFetching && _petRecords.isEmpty)
-          ? Center(
-              child: CircularProgressIndicator(
-              color: Colors.orange,
-            ))
+          ? Center(child: CircularProgressIndicator.adaptive())
           : (_error == null)
               ? (_petRecords.isEmpty)
                   ? ErrorText(
@@ -305,13 +326,15 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
       itemCount: _petRecords.length + 1,
       itemBuilder: (context, index) {
         if (index < _petRecords.length) {
-          return _buildListTile(context, _petRecords[index], messages);
+          var unreadMessages = widget.messages
+              .where(
+                (element) => element.senderId == _petRecords[index].owner.id,
+              )
+              .toList();
+          return _buildListTile(context, _petRecords[index], unreadMessages);
         } else {
           if (_isFetching) {
-            return Center(
-                child: CircularProgressIndicator(
-              color: Colors.orange,
-            ));
+            return Center(child: CircularProgressIndicator.adaptive());
           }
 
           return SizedBox();
@@ -324,7 +347,14 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
       BuildContext context, Pet item, List<ChatMessage> messages) {
     return ListTile(
       leading: DefaultCircleAvatar(imageUrl: item.imageUrl ?? ""),
-      title: Text(item.name),
+      title: Text(
+        item.name,
+        style: TextStyle(
+          color: Theme.of(context).brightness == Brightness.light
+              ? Constants.primaryTextColor
+              : Colors.orange,
+        ),
+      ),
       subtitle: Text(
         "Pet category: ${item.petCategory.name}\nOwner: ${item.owner.name}",
         style: TextStyle(
@@ -343,6 +373,9 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
         count: messages.length,
         isLabelVisible: messages.isNotEmpty,
         child: PopupMenuButton(
+          iconColor: Theme.of(context).brightness == Brightness.light
+              ? Constants.primaryTextColor
+              : Colors.orange,
           itemBuilder: (context) {
             return [
               PopupMenuItem(
@@ -352,7 +385,9 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                   children: [
                     Icon(
                       Icons.add_a_photo,
-                      color: Colors.orange,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                     ),
                     Text("Send Photo To Pet Owner"),
                   ],
@@ -387,7 +422,9 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                     children: [
                       Icon(
                         Icons.chat_rounded,
-                        color: Colors.orange,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.primaryTextColor
+                            : Colors.orange,
                       ),
                       Text("Chat pet's owner"),
                     ],

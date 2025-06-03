@@ -42,6 +42,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
   double _longitude = 0.0;
 
   bool _serviceEnabled = false;
+  LocationPermission _permission = LocationPermission.denied;
 
   Future<void> _getLocationService() async {
     _serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -80,11 +81,20 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         title: Text(
           "Add Address",
-          style: TextStyle(color: Constants.primaryTextColor),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         actions: appBarActions(),
       ),
@@ -99,11 +109,12 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
               children: [
                 GestureDetector(
                   onTap: () async {
-                    var permission = await Geolocator.checkPermission();
-                    if (permission == LocationPermission.denied) {
-                      permission = await Geolocator.requestPermission();
-                      if (permission == LocationPermission.denied ||
-                          permission == LocationPermission.deniedForever) {
+                    _permission = await Geolocator.checkPermission();
+
+                    if (_permission == LocationPermission.denied) {
+                      _permission = await Geolocator.requestPermission();
+                      if (_permission == LocationPermission.denied ||
+                          _permission == LocationPermission.deniedForever) {
                         var snackbar = SnackBar(
                           key: Key("error-message"),
                           content: Text(
@@ -117,12 +128,13 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                           ScaffoldMessenger.of(context).showSnackBar(snackbar);
                         }
                       }
-                    } else if (permission == LocationPermission.deniedForever) {
+                    } else if (_permission ==
+                        LocationPermission.deniedForever) {
                       if (!await Geolocator.openAppSettings()) return;
-                      if (permission == LocationPermission.denied) {
-                        permission = await Geolocator.requestPermission();
-                        if (permission == LocationPermission.denied ||
-                            permission == LocationPermission.deniedForever) {
+                      if (_permission == LocationPermission.denied) {
+                        _permission = await Geolocator.requestPermission();
+                        if (_permission == LocationPermission.denied ||
+                            _permission == LocationPermission.deniedForever) {
                           var snackbar = SnackBar(
                             key: Key("error-message"),
                             content: Text(
@@ -182,7 +194,9 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                   child: Row(
                     spacing: 8,
                     children: [
-                      (_serviceEnabled)
+                      (_serviceEnabled &&
+                              (_permission == LocationPermission.always ||
+                                  _permission == LocationPermission.whileInUse))
                           ? Icon(Icons.gps_fixed_rounded)
                           : Icon(Icons.gps_not_fixed_rounded),
                       Text("Use Current Location"),
@@ -277,11 +291,6 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                     }
                   },
                 ),
-                // if (_searchController.text.isNotEmpty)
-                //   Text(
-                //     "Address: ${_addressController.text}",
-                //     style: TextStyle(fontSize: 14),
-                //   ),
                 TextFormField(
                   controller: _addressController,
                   validator: (value) => validateNotEmpty("Value", value),
@@ -310,6 +319,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                     labelStyle: TextStyle(fontSize: 12),
                   ),
                 ),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
                     log("button pressed");

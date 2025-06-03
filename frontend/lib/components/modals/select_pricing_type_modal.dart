@@ -4,26 +4,28 @@ import 'package:frontend/constants.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/provider/category_provider.dart';
 
-class SelectPetTypeModal extends ConsumerStatefulWidget {
-  const SelectPetTypeModal({super.key});
+class SelectPricingTypeModal extends ConsumerStatefulWidget {
+  const SelectPricingTypeModal({super.key});
 
   @override
-  ConsumerState<SelectPetTypeModal> createState() => _SelectPetTypeModalState();
+  ConsumerState<SelectPricingTypeModal> createState() =>
+      _SelectPetCategoryModalState();
 }
 
-class _SelectPetTypeModalState extends ConsumerState<SelectPetTypeModal> {
+class _SelectPetCategoryModalState
+    extends ConsumerState<SelectPricingTypeModal> {
   @override
   Widget build(BuildContext context) {
-    final petCategory = ref.watch(petCategoryProvider);
+    final pricingTypes = ref.watch(pricingTypeProvider);
 
-    return switch (petCategory) {
+    return switch (pricingTypes) {
       AsyncData(:final value) => Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Choose pet category",
+                "Choose Pricing Type",
                 style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.light
                       ? Constants.primaryTextColor
@@ -31,29 +33,20 @@ class _SelectPetTypeModalState extends ConsumerState<SelectPetTypeModal> {
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                    itemCount: value.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(value[index].name),
-                        subtitle: (value[index].sizeCategory.id != 0)
-                            ? (value[index].sizeCategory.maxWeight != null)
-                                ? Text(
-                                    "${value[index].sizeCategory.minWeight.toInt()} kg - ${value[index].sizeCategory.maxWeight!.toInt()} kg")
-                                : Text(
-                                    "${value[index].sizeCategory.minWeight.toInt()} kg+")
-                            : null,
-                        onTap: () {
-                          Navigator.of(context).pop(
-                            Lookup(
-                              id: value[index].id,
-                              name: value[index].name,
-                            ),
-                          );
-                        },
+                  child: ListView.builder(
+                itemCount: value.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    onTap: () {
+                      Navigator.of(context).pop(
+                        Lookup(id: value[index].id, name: value[index].name),
                       );
-                    }),
-              ),
+                    },
+                    title: Text(value[index].name),
+                    subtitle: Text("Charge per ${value[index].name}"),
+                  );
+                },
+              )),
             ],
           ),
         ),

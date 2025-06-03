@@ -6,7 +6,7 @@ part of 'pet_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$petStateHash() => r'64ec575a7df45efb29ac17728914c3cd9e5939b3';
+String _$petStateHash() => r'721ba22988c7f7ecd88a752323824c5300e09d73';
 
 /// See also [PetState].
 @ProviderFor(PetState)

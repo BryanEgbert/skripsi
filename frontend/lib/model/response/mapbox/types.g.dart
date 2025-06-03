@@ -85,28 +85,29 @@ Map<String, dynamic> _$GeometryToJson(Geometry instance) => <String, dynamic>{
 
 Country _$CountryFromJson(Map<String, dynamic> json) => Country(
       json['id'] as String?,
-      json['name'] as String,
-      json['country_code'] as String,
-      json['country_code_alpha_3'] as String,
+      json['name'] as String?,
+      json['country_code'] as String?,
+      json['country_code_alpha_3'] as String?,
     );
 
 Map<String, dynamic> _$CountryToJson(Country instance) => <String, dynamic>{
       if (instance.id case final value?) 'id': value,
-      'name': instance.name,
-      'country_code': instance.countryCode,
-      'country_code_alpha_3': instance.countryCodeAlpha3,
+      if (instance.name case final value?) 'name': value,
+      if (instance.countryCode case final value?) 'country_code': value,
+      if (instance.countryCodeAlpha3 case final value?)
+        'country_code_alpha_3': value,
     };
 
 Address _$AddressFromJson(Map<String, dynamic> json) => Address(
       json['id'] as String?,
-      json['name'] as String,
+      json['name'] as String?,
       json['address_number'] as String?,
       json['street_name'] as String?,
     );
 
 Map<String, dynamic> _$AddressToJson(Address instance) => <String, dynamic>{
       if (instance.id case final value?) 'id': value,
-      'name': instance.name,
+      if (instance.name case final value?) 'name': value,
       if (instance.addressNumber case final value?) 'address_number': value,
       if (instance.streetName case final value?) 'street_name': value,
     };

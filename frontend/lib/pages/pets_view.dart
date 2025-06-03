@@ -51,7 +51,11 @@ class _PetsViewState extends ConsumerState<PetsView> {
       appBar: AppBar(
         title: Text(
           "Pets",
-          style: TextStyle(color: Colors.orange),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         actions: petOwnerAppBarActions(widget.messages.length),
       ),
@@ -115,7 +119,9 @@ class _PetsViewState extends ConsumerState<PetsView> {
             },
             icon: Icon(
               Icons.edit,
-              color: Colors.orange[600],
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
             ),
           ),
           IconButton(

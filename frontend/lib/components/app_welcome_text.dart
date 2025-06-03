@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/constants.dart';
 
 class AppWelcomeText extends StatelessWidget {
   const AppWelcomeText({
@@ -26,7 +27,9 @@ class AppWelcomeText extends StatelessWidget {
                 TextSpan(
                   text: "PawConnect\n",
                   style: TextStyle(
-                    color: Colors.orange,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Constants.primaryTextColor
+                        : Colors.orange,
                     fontWeight: FontWeight.bold,
                     fontSize: 40,
                   ),

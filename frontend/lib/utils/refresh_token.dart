@@ -6,7 +6,7 @@ import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/database_service.dart';
 import 'package:frontend/services/user_service.dart';
 
-Future<TokenResponse> refreshToken() async {
+Future<TokenResponse> refreshAccessToken() async {
   final dbService = DatabaseService();
   final authService = AuthService();
   final userService = UserService();

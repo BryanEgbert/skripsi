@@ -98,15 +98,16 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
       appBar: AppBar(
         title: Text(
           'Booking History',
-          style: TextStyle(color: Colors.orange),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         actions: petOwnerAppBarActions(widget.messages.length),
       ),
       body: (_isFetching && _records.isEmpty)
-          ? Center(
-              child: CircularProgressIndicator(
-              color: Colors.orange,
-            ))
+          ? Center(child: CircularProgressIndicator.adaptive())
           : (_error != null || _records.isEmpty)
               ? ErrorText(
                   errorText: _error != null

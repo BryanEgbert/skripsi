@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/signup_guide_text.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/pages/signup/create_pet_daycare_slots.dart';
@@ -76,7 +77,12 @@ class _AddPetDaycareThumbnailsState extends State<AddPetDaycareThumbnails> {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.arrow_back_ios)),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            )),
       ),
       body: Container(
         margin: EdgeInsets.symmetric(horizontal: 16),

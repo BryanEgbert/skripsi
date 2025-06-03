@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/pages/welcome.dart';
 
@@ -45,7 +46,9 @@ class _ErrorTextState extends State<ErrorText> {
             onPressed: widget.onRefresh,
             icon: Icon(
               Icons.refresh,
-              color: Colors.orange,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
             ),
           )
         ],

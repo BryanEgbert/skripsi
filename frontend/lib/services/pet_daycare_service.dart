@@ -128,12 +128,13 @@ class PetDaycareService implements IPetDaycareService {
       Map<String, dynamic> mapReq = req.toMap();
 
       if (req.thumbnails.isNotEmpty) {
-        mapReq["thumbnails[]"] = await Future.wait(
-          req.thumbnails
-              .map((file) async => await MultipartFile.fromFile(file.path,
-                  filename: file.path.split('/').last))
-              .toList(),
-        );
+        // mapReq["thumbnails[]"] = await Future.wait(
+        //   req.thumbnails
+        //       .map((file) async => await MultipartFile.fromFile(file.path,
+        //           filename: file.path.split('/').last))
+        //       .toList(),
+        // );
+        mapReq["thumbnails[]"] = req.thumbnails;
       }
       FormData formData = FormData.fromMap(mapReq);
 

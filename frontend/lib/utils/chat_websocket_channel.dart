@@ -36,7 +36,7 @@ class ChatWebsocketChannel {
 
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       return Future.error(jwtExpired);
     }

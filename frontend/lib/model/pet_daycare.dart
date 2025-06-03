@@ -67,7 +67,7 @@ class Price with _$Price {
   factory Price({
     required PetCategory petCategory,
     required double price,
-    required String pricingType,
+    required Lookup pricingType,
   }) = _Price;
 
   factory Price.fromJson(Map<String, dynamic> json) => _$PriceFromJson(json);

@@ -185,38 +185,50 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 	daycare.DailyWalksID = newData.DailyWalksID
 	daycare.DailyPlaytimeID = newData.DailyPlaytimeID
 
-	var thumbnails []model.Thumbnail
-	if err := tx.Unscoped().Where("daycare_id = ?", id).Delete(&thumbnails).Error; err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
 	// Handle new thumbnails if provided
-	if len(newData.Thumbnails) > 0 {
-		// Delete old thumbnails
-		if err := tx.Where("daycare_id = ?", daycare.ID).Delete(&model.Thumbnail{}).Error; err != nil {
+	// if len(newData.Thumbnails) > 0 {
+	// 	// Delete old thumbnails
+	// if err := tx.Unscoped().Where("daycare_id = ?", daycare.ID).Delete(&model.Thumbnail{}).Error; err != nil {
+	// 	tx.Rollback()
+	// 	return nil, err
+	// }
+
+	// 	// Save new thumbnails
+
+	// 	// for _, index := range newData.ThumbnailIndex {
+
+	// 	// 	thumbnails[index-1] = model.Thumbnail{DaycareID: daycare.ID, ImageUrl: newData.ThumbnailURLs[index-1]}
+	// 	// }
+
+	// for _, url := range newData.ThumbnailURLs {
+	// 	if err := tx.Create(&model.Thumbnail{DaycareID: daycare.ID, ImageUrl: url}).Error; err != nil {
+	// 		tx.Rollback()
+	// 		return nil, err
+	// 	}
+	// }
+	// }
+
+	var thumbnails []model.Thumbnail
+	if len(newData.ThumbnailURLs) > 0 {
+		if err := tx.Debug().Where("daycare_id = ?", daycare.ID).Delete(&model.Thumbnail{}).Error; err != nil {
 			tx.Rollback()
 			return nil, err
 		}
 
-		// Save new thumbnails
-
-		// for _, index := range newData.ThumbnailIndex {
-
-		// 	thumbnails[index-1] = model.Thumbnail{DaycareID: daycare.ID, ImageUrl: newData.ThumbnailURLs[index-1]}
-		// }
-
 		for _, url := range newData.ThumbnailURLs {
-			if err := tx.Create(&model.Thumbnail{DaycareID: daycare.ID, ImageUrl: url}).Error; err != nil {
-				tx.Rollback()
-				return nil, err
-			}
+			// if err := tx.Debug().Create(&model.Thumbnail{DaycareID: daycare.ID, ImageUrl: url}).Error; err != nil {
+			// 	tx.Rollback()
+			// 	return nil, err
+			// }
+			thumbnails = append(thumbnails, model.Thumbnail{DaycareID: daycare.ID, ImageUrl: url})
 		}
+
+		daycare.Thumbnails = thumbnails
 	}
 
 	// Handle Slots update (SpeciesID + SizeCategoryID + MaxNumber)
 	if len(newData.PetCategoryID) > 0 && len(newData.MaxNumber) > 0 {
-		log.Printf("data: %v", newData)
+
 		// Delete old slots
 		if err := tx.Unscoped().Where("daycare_id = ?", daycare.ID).Delete(&model.Slots{DaycareID: daycare.ID}).Error; err != nil {
 			tx.Rollback()
@@ -231,7 +243,7 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 				PetCategoryID: newData.PetCategoryID[i],
 				MaxNumber:     newData.MaxNumber[i],
 				Price:         newData.Price[i],
-				PricingTypeID: newData.PricingType[i],
+				PricingTypeID: newData.PricingType,
 			})
 		}
 
@@ -243,7 +255,7 @@ func (s *PetDaycareServiceImpl) UpdatePetDaycare(id uint, userId uint, newData m
 	}
 
 	// Save updates
-	if err := tx.Save(&daycare).Error; err != nil {
+	if err := tx.Debug().Save(&daycare).Error; err != nil {
 		tx.Rollback()
 		return nil, err
 	}
@@ -341,7 +353,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		row.Scan(&results[i].Thumbnail)
 
 		rows, err := s.db.Table("slots").
-			Select("pet_categories.id", "pet_categories.name", "size_categories.*", "slots.price", "pricing_types.name").
+			Select("pet_categories.id", "pet_categories.name", "size_categories.*", "slots.price", "pricing_types.id", "pricing_types.name").
 			Joins("JOIN pet_categories ON pet_categories.id = slots.pet_category_id").
 			Joins("JOIN pricing_types ON pricing_types.id = slots.pricing_type_id").
 			Joins("LEFT JOIN size_categories ON size_categories.id = pet_categories.size_category_id").
@@ -354,7 +366,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 
 		for rows.Next() {
 			var price model.PriceDetails
-			rows.Scan(&price.PetCategory.ID, &price.PetCategory.Name, &price.PetCategory.SizeCategory.ID, &price.PetCategory.SizeCategory.Name, &price.PetCategory.SizeCategory.MinWeight, &price.PetCategory.SizeCategory.MaxWeight, &price.Price, &price.PricingType)
+			rows.Scan(&price.PetCategory.ID, &price.PetCategory.Name, &price.PetCategory.SizeCategory.ID, &price.PetCategory.SizeCategory.Name, &price.PetCategory.SizeCategory.MinWeight, &price.PetCategory.SizeCategory.MaxWeight, &price.Price, &price.PricingType.ID, &price.PricingType.Name)
 			log.Printf("rows: %v", price)
 			if req.MaxPrice > 0 {
 				if price.Price < req.MinPrice || price.Price > req.MaxPrice {
@@ -474,7 +486,7 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 			PetCategoryID: petCategory,
 			MaxNumber:     request.MaxNumber[i],
 			Price:         request.Price[i],
-			PricingTypeID: request.PricingType[i],
+			PricingTypeID: request.PricingType,
 		})
 	}
 

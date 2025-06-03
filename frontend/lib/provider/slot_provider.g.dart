@@ -6,7 +6,7 @@ part of 'slot_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$slotStateHash() => r'ba9cc019eafd72d3da549c9486a8c8e30cd1a2bb';
+String _$slotStateHash() => r'16b543e5a8c08b6a2b18c5c4a1170bff6cbf17d2';
 
 /// See also [SlotState].
 @ProviderFor(SlotState)

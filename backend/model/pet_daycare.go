@@ -77,28 +77,28 @@ type PetDaycare struct {
 }
 
 type PetDaycareDTO struct {
-	ID                uint       `json:"id"`
-	Name              string     `json:"name"`
-	Address           string     `json:"address"`
-	Locality          string     `json:"locality"`
-	Location          string     `json:"location"`
-	Description       string     `json:"description"`
-	OpeningHour       string     `json:"openingHour"`
-	ClosingHour       string     `json:"closingHour"`
-	Price             float64    `json:"price"`
-	PricingType       string     `json:"pricingType"`
-	BookedNum         int64      `json:"bookedNum"`
-	OwnerID           uint       `json:"ownerId"`
-	HasPickupService  bool       `json:"hasPickupService"`
-	MustBeVaccinated  bool       `json:"mustBeVaccinated"`
-	GroomingAvailable bool       `json:"groomingAvailable"`
-	FoodProvided      bool       `json:"foodProvided"`
-	FoodBrand         string     `json:"foodBrand"`
-	CreatedAt         time.Time  `json:"createdAt"`
-	UpdatedAt         *time.Time `json:"updatedAt"`
-	DailyWalksID      uint       `json:"dailyWalksId"`
-	DailyPlaytimeID   uint       `json:"dailyPlaytimeId"`
-	ThumbnailURLs     []string   `json:"thumbnailUrls"`
+	ID                uint        `json:"id"`
+	Name              string      `json:"name"`
+	Address           string      `json:"address"`
+	Locality          string      `json:"locality"`
+	Location          string      `json:"location"`
+	Description       string      `json:"description"`
+	OpeningHour       string      `json:"openingHour"`
+	ClosingHour       string      `json:"closingHour"`
+	Price             float64     `json:"price"`
+	PricingType       PricingType `json:"pricingType"`
+	BookedNum         int64       `json:"bookedNum"`
+	OwnerID           uint        `json:"ownerId"`
+	HasPickupService  bool        `json:"hasPickupService"`
+	MustBeVaccinated  bool        `json:"mustBeVaccinated"`
+	GroomingAvailable bool        `json:"groomingAvailable"`
+	FoodProvided      bool        `json:"foodProvided"`
+	FoodBrand         string      `json:"foodBrand"`
+	CreatedAt         time.Time   `json:"createdAt"`
+	UpdatedAt         *time.Time  `json:"updatedAt"`
+	DailyWalksID      uint        `json:"dailyWalksId"`
+	DailyPlaytimeID   uint        `json:"dailyPlaytimeId"`
+	ThumbnailURLs     []string    `json:"thumbnailUrls"`
 }
 
 // CreatePetDaycareRequest represents the request payload
@@ -113,7 +113,7 @@ type CreatePetDaycareRequest struct {
 	OpeningHour       string                  `form:"openingHour"`
 	ClosingHour       string                  `form:"closingHour"`
 	Price             []float64               `form:"price[]"`
-	PricingType       []uint                  `form:"pricingType[]"`
+	PricingType       uint                    `form:"pricingType"`
 	HasPickupService  bool                    `form:"hasPickupService"`
 	MustBeVaccinated  bool                    `form:"mustBeVaccinated"`
 	GroomingAvailable bool                    `form:"groomingAvailable"`
@@ -128,28 +128,28 @@ type CreatePetDaycareRequest struct {
 }
 
 type UpdatePetDaycareRequest struct {
-	PetDaycareName    string                  `form:"petDaycareName" binding:"required"`
-	Address           string                  `form:"address" binding:"required"`
-	Locality          string                  `form:"locality" binding:"required"`
-	Location          string                  `form:"location" binding:"required"`
-	Latitude          float64                 `form:"latitude" binding:"required"`
-	Longitude         float64                 `form:"longitude" binding:"required"`
-	Description       string                  `form:"description"`
-	OpeningHour       string                  `form:"openingHour"`
-	ClosingHour       string                  `form:"closingHour"`
-	Price             []float64               `form:"price[]"`
-	PricingType       []uint                  `form:"pricingType[]"`
-	HasPickupService  bool                    `form:"hasPickupService"`
-	MustBeVaccinated  bool                    `form:"mustBeVaccinated"`
-	GroomingAvailable bool                    `form:"groomingAvailable"`
-	FoodProvided      bool                    `form:"foodProvided"`
-	FoodBrand         string                  `form:"foodBrand"`
-	DailyWalksID      uint                    `form:"dailyWalksId" binding:"required"`
-	DailyPlaytimeID   uint                    `form:"dailyPlaytimeId" binding:"required"`
-	Thumbnails        []*multipart.FileHeader `form:"thumbnails[]"`
-	PetCategoryID     []uint                  `form:"petCategoryId[]" binding:"required"`
-	MaxNumber         []int                   `form:"maxNumber[]" binding:"required"`
-	ThumbnailURLs     []string
+	PetDaycareName    string    `form:"petDaycareName" binding:"required"`
+	Address           string    `form:"address" binding:"required"`
+	Locality          string    `form:"locality" binding:"required"`
+	Location          string    `form:"location" binding:"required"`
+	Latitude          float64   `form:"latitude" binding:"required"`
+	Longitude         float64   `form:"longitude" binding:"required"`
+	Description       string    `form:"description"`
+	OpeningHour       string    `form:"openingHour"`
+	ClosingHour       string    `form:"closingHour"`
+	Price             []float64 `form:"price[]"`
+	PricingType       uint      `form:"pricingType"`
+	HasPickupService  bool      `form:"hasPickupService"`
+	MustBeVaccinated  bool      `form:"mustBeVaccinated"`
+	GroomingAvailable bool      `form:"groomingAvailable"`
+	FoodProvided      bool      `form:"foodProvided"`
+	FoodBrand         string    `form:"foodBrand"`
+	DailyWalksID      uint      `form:"dailyWalksId" binding:"required"`
+	DailyPlaytimeID   uint      `form:"dailyPlaytimeId" binding:"required"`
+	PetCategoryID     []uint    `form:"petCategoryId[]" binding:"required"`
+	MaxNumber         []int     `form:"maxNumber[]" binding:"required"`
+	ThumbnailURLs     []string  `form:"thumbnails[]"`
+	// Thumbnails        []*multipart.FileHeader `form:"thumbnails[]"`
 }
 
 type GetPetDaycaresRequest struct {
@@ -163,7 +163,7 @@ type GetPetDaycaresRequest struct {
 	DailyPlaytime    uint
 	MinPrice         float64
 	MaxPrice         float64
-	PricingType      *string
+	PricingType      *uint
 }
 
 type GetPetDaycareDetailResponse struct {
@@ -210,7 +210,7 @@ type GetPetDaycaresResponse struct {
 type PriceDetails struct {
 	PetCategory PetCategoryDTO `json:"petCategory"`
 	Price       float64        `json:"price"`
-	PricingType string         `json:"pricingType"`
+	PricingType PricingType    `json:"pricingType"`
 }
 
 type BookSlotsRequest struct {

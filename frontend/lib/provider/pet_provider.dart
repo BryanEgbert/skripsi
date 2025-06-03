@@ -24,7 +24,7 @@ class PetState extends _$PetState {
     state = AsyncLoading();
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
       return;
@@ -46,7 +46,7 @@ class PetState extends _$PetState {
 
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
       return;
@@ -71,7 +71,7 @@ class PetState extends _$PetState {
 
     TokenResponse? token;
     try {
-      token = await refreshToken();
+      token = await refreshAccessToken();
     } catch (e) {
       state = AsyncError(jwtExpired, StackTrace.current);
       return;

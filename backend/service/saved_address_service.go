@@ -8,6 +8,7 @@ import (
 
 type SavedAddressService interface {
 	GetSavedAddress(id uint, page int, pageSize int) ([]model.SavedAddressDTO, error)
+	GetSavedAddressById(id uint) (model.SavedAddressDTO, error)
 	AddSavedAddress(userID uint, req model.CreateSavedAddress) error
 	DeleteSavedAddress(addressID uint) error
 	EditSavedAddress(addressID uint, req model.CreateSavedAddress) error
@@ -19,6 +20,19 @@ type SavedAddressServiceImpl struct {
 
 func NewSavedAddressService(db *gorm.DB) *SavedAddressServiceImpl {
 	return &SavedAddressServiceImpl{db: db}
+}
+
+func (s *SavedAddressServiceImpl) GetSavedAddressById(id uint) (model.SavedAddressDTO, error) {
+	var savedAddresses model.SavedAddress
+	if err := s.db.
+		Model(&model.SavedAddress{}).
+		First(&savedAddresses, id).Error; err != nil {
+		return model.SavedAddressDTO{}, err
+	}
+
+	out := helper.ConvertSavedAddressToDTO(savedAddresses)
+
+	return out, nil
 }
 
 func (s *SavedAddressServiceImpl) EditSavedAddress(addressID uint, req model.CreateSavedAddress) error {
@@ -42,7 +56,7 @@ func (s *SavedAddressServiceImpl) EditSavedAddress(addressID uint, req model.Cre
 }
 
 func (s *SavedAddressServiceImpl) DeleteSavedAddress(addressID uint) error {
-	if err := s.db.Delete(&model.SavedAddress{}, addressID).Error; err != nil {
+	if err := s.db.Unscoped().Delete(&model.SavedAddress{}, addressID).Error; err != nil {
 		return err
 	}
 

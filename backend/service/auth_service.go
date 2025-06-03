@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"github.com/BryanEgbert/skripsi/helper"
@@ -14,6 +15,7 @@ import (
 type AuthService interface {
 	Login(email string, password string) (*model.TokenResponse, error)
 	RefreshToken(refreshToken string) (*model.TokenResponse, error)
+	Logout(userId uint) error
 }
 
 // AuthServiceImpl struct
@@ -24,6 +26,15 @@ type AuthServiceImpl struct {
 // NewAuthService initializes AuthServiceImpl
 func NewAuthService(db *gorm.DB) *AuthServiceImpl {
 	return &AuthServiceImpl{db: db}
+}
+
+func (s *AuthServiceImpl) Logout(userId uint) error {
+	if err := s.db.Unscoped().Where("user_id = ?", userId).Delete(&model.RefreshToken{}).Error; err != nil {
+		log.Printf("Logout err: %v", err)
+		return err
+	}
+
+	return nil
 }
 
 // Login function
