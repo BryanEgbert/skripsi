@@ -5,14 +5,15 @@ import 'package:frontend/constants.dart';
 import 'package:frontend/model/saved_address.dart';
 import 'package:frontend/pages/add_saved_address.dart';
 import 'package:frontend/pages/edit/edit_saved_address_page.dart';
+import 'package:frontend/provider/last_selected.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/saved_address_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class SavedAddressPage extends ConsumerStatefulWidget {
-  final int? selected;
-  const SavedAddressPage({super.key, this.selected});
+  final int? selectedIndex;
+  const SavedAddressPage({super.key, this.selectedIndex});
 
   @override
   ConsumerState<SavedAddressPage> createState() => _SavedAddressPageState();
@@ -26,7 +27,7 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
   bool _isFetching = false;
   bool _hasMoreData = true;
 
-  int _selectedIndex = 0;
+  int _selectedIndex = -1;
 
   Object? _error;
 
@@ -62,7 +63,7 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
   @override
   void initState() {
     super.initState();
-    _selectedIndex = widget.selected == null ? 0 : widget.selected!;
+    // _selectedIndex = widget.selectedIndex == null ? 0 : widget.selectedIndex!;
     _scrollController.addListener(_onScroll);
     _fetchMoreData();
   }
@@ -76,6 +77,10 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
   @override
   Widget build(BuildContext context) {
     final savedAddressState = ref.watch(savedAddressStateProvider);
+    final lastSelected = ref.watch(lastSelectedProvider);
+
+    _selectedIndex = lastSelected.value ?? -1;
+
     if (_error != null) {
       return ErrorText(
           errorText: _error.toString(),
@@ -131,19 +136,19 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
           "Saved Address",
           style: TextStyle(color: Constants.primaryTextColor),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).pop(_selectedIndex);
-            },
-            icon: Icon(
-              Icons.save,
-              color: Theme.of(context).brightness == Brightness.light
-                  ? Constants.primaryTextColor
-                  : Colors.orange,
-            ),
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {
+        //       Navigator.of(context).pop(_selectedIndex);
+        //     },
+        //     icon: Icon(
+        //       Icons.save,
+        //       color: Theme.of(context).brightness == Brightness.light
+        //           ? Constants.primaryTextColor
+        //           : Colors.orange,
+        //     ),
+        //   )
+        // ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.orange,
@@ -182,7 +187,10 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
                           child: InkWell(
                             onTap: () {
                               setState(() {
-                                _selectedIndex = index;
+                                // _selectedIndex = index;
+                                ref
+                                    .read(lastSelectedProvider.notifier)
+                                    .set(index);
                               });
                             },
                             child: Card(
@@ -271,6 +279,15 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
                                                       savedAddressStateProvider
                                                           .notifier)
                                                   .deleteSavedAddress(item.id);
+                                              if (index == lastSelected.value) {
+                                                ref
+                                                    .read(lastSelectedProvider
+                                                        .notifier)
+                                                    .set(-1);
+                                                // setState(() {
+                                                //   _selectedIndex =
+                                                // });
+                                              }
                                             });
                                           },
                                           icon: Icon(

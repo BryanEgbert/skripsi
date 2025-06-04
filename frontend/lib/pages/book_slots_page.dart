@@ -11,6 +11,7 @@ import 'package:frontend/model/request/book_slot_request.dart';
 import 'package:frontend/model/saved_address.dart';
 import 'package:frontend/pages/add_saved_address.dart';
 import 'package:frontend/pages/saved_address_page.dart';
+import 'package:frontend/provider/last_selected.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
@@ -40,7 +41,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
   bool _usePickupService = false;
 
   SavedAddress? _savedAddress;
-  int _addressIndex = 0;
+  // int _addressIndex = 0;
   int addressId = 0;
 
   void _submitForm() {
@@ -61,8 +62,6 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
       addressId: _savedAddress == null ? 0 : _savedAddress!.id,
     );
 
-    log("[BOOK SLOTS PAGE] petId: ${request.petId}");
-
     ref
         .read(slotStateProvider.notifier)
         .bookSlot(widget.petDaycare.id, request);
@@ -71,10 +70,9 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
   @override
   Widget build(BuildContext context) {
     log("[BOOK PET DAYCARE] build");
-    final savedAddress = ref.watch(savedAddressProvider());
+    final savedAddress = ref.watch(savedAddressProvider(1, 100));
     final slotState = ref.watch(slotStateProvider);
-    log("slotState: $slotState");
-    log("petIdValues: $_petIdValue");
+    final lastSelected = ref.watch(lastSelectedProvider);
 
     handleValue(slotState, this, ref.read(slotStateProvider.notifier).reset);
 
@@ -102,396 +100,331 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
           AsyncError(:final error) => ErrorText(
               errorText: error.toString(),
               onRefresh: () => ref.refresh(savedAddressProvider().future)),
-          AsyncData(:final value) => SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: 8,
-                children: [
-                  Container(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Constants.secondaryBackgroundColor
-                        : null,
-                    padding: EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        CheckboxListTile(
-                          controlAffinity: ListTileControlAffinity.leading,
-                          value: _usePickupService,
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _usePickupService = value;
-                                ref.invalidate(slotStateProvider);
-                              });
-                            }
-                          },
-                          title: Text("Use Pick-Up Service"),
-                        ),
-                        AbsorbPointer(
-                          absorbing: !_usePickupService,
-                          child: InkWell(
-                            onTap: () async {
-                              if (value.data.isNotEmpty) {
-                                final pickedAddress =
-                                    await Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                  builder: (context) => SavedAddressPage(
-                                    selected: _addressIndex,
-                                  ),
-                                )) as int;
-
-                                setState(() {
-                                  _addressIndex = pickedAddress;
-                                });
-                              } else {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => AddSavedAddress(),
-                                ));
-                              }
-                            },
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 24.0),
-                              child: Row(
-                                spacing: 12,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    Icons.location_on,
-                                    color: _usePickupService
-                                        ? Theme.of(context).brightness ==
-                                                Brightness.light
-                                            ? Constants.primaryTextColor
-                                            : Colors.orange
-                                        : Colors.grey[700],
-                                  ),
-                                  if (value.data.isEmpty)
-                                    Text(
-                                      "Choose an address",
-                                      style: TextStyle(
-                                        color: _usePickupService
-                                            ? Theme.of(context).brightness ==
-                                                    Brightness.light
-                                                ? Constants.primaryTextColor
-                                                : Colors.orange
-                                            : Colors.grey[700],
-                                      ),
-                                    )
-                                  else
-                                    Text(
-                                      value.data[_addressIndex].name,
-                                      style: TextStyle(
-                                        color: _usePickupService
-                                            ? Theme.of(context).brightness ==
-                                                    Brightness.light
-                                                ? Constants.primaryTextColor
-                                                : Colors.orange
-                                            : Colors.grey[700],
-                                      ),
-                                    ),
-                                  Icon(
-                                    Icons.navigate_next_rounded,
-                                    color: _usePickupService
-                                        ? Theme.of(context).brightness ==
-                                                Brightness.light
-                                            ? Constants.primaryTextColor
-                                            : Colors.orange
-                                        : Colors.grey[700],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
+          AsyncData(:final value) => Builder(builder: (context) {
+              return SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 8,
+                  children: [
+                    Container(
                       color: Theme.of(context).brightness == Brightness.light
                           ? Constants.secondaryBackgroundColor
                           : null,
                       padding: EdgeInsets.all(12),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(
-                            "Pick Pets",
-                            style: TextStyle(
+                          CheckboxListTile(
+                            controlAffinity: ListTileControlAffinity.leading,
+                            value: _usePickupService,
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _usePickupService = value;
+                                  ref.invalidate(slotStateProvider);
+                                });
+                              }
+                            },
+                            title: Text("Use Pick-Up Service"),
+                          ),
+                          AbsorbPointer(
+                            absorbing: !_usePickupService,
+                            child: InkWell(
+                              onTap: () async {
+                                if (value.data.isNotEmpty) {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => SavedAddressPage(
+                                      selectedIndex: lastSelected.value!,
+                                    ),
+                                  )) as int;
+                                } else {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => AddSavedAddress(),
+                                  ));
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0),
+                                child: Row(
+                                  spacing: 12,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.location_on,
+                                      color: _usePickupService
+                                          ? Theme.of(context).brightness ==
+                                                  Brightness.light
+                                              ? Constants.primaryTextColor
+                                              : Colors.orange
+                                          : Colors.grey[700],
+                                    ),
+                                    if (value.data.isEmpty ||
+                                        lastSelected.value! < 0)
+                                      Text(
+                                        "Choose an address",
+                                        style: TextStyle(
+                                          color: _usePickupService
+                                              ? Theme.of(context).brightness ==
+                                                      Brightness.light
+                                                  ? Constants.primaryTextColor
+                                                  : Colors.orange
+                                              : Colors.grey[700],
+                                        ),
+                                      )
+                                    else
+                                      Text(
+                                        value.data[lastSelected.value!].name,
+                                        style: TextStyle(
+                                          color: _usePickupService
+                                              ? Theme.of(context).brightness ==
+                                                      Brightness.light
+                                                  ? Constants.primaryTextColor
+                                                  : Colors.orange
+                                              : Colors.grey[700],
+                                        ),
+                                      ),
+                                    Icon(
+                                      Icons.navigate_next_rounded,
+                                      color: _usePickupService
+                                          ? Theme.of(context).brightness ==
+                                                  Brightness.light
+                                              ? Constants.primaryTextColor
+                                              : Colors.orange
+                                          : Colors.grey[700],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.secondaryBackgroundColor
+                            : null,
+                        padding: EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Pick Pets",
+                              style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Constants.primaryTextColor
+                                      : Colors.orange,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Expanded(
+                              child: PaginatedPetsListView(
+                                pageSize: Constants.pageSize,
+                                buildBody: (pet) {
+                                  bool isPetVaccinated = true;
+                                  String? disabledReason;
+
+                                  if (widget.petDaycare.mustBeVaccinated) {
+                                    isPetVaccinated = pet.isVaccinated;
+                                  }
+                                  bool isPetCategoryMatching = false;
+                                  for (var price
+                                      in widget.petDaycare.pricings) {
+                                    if (price.petCategory.id ==
+                                        pet.petCategory.id) {
+                                      isPetCategoryMatching = true;
+                                    }
+                                  }
+
+                                  if (!isPetVaccinated) {
+                                    disabledReason =
+                                        "Pet must have a valid and up-to-date vaccination record";
+                                  } else if (!isPetCategoryMatching) {
+                                    disabledReason =
+                                        "Pet category not supported";
+                                  }
+                                  return CheckboxListTile(
+                                    enabled: isPetVaccinated &&
+                                        isPetCategoryMatching,
+                                    value: _petIdValue[pet.id] ?? false,
+                                    onChanged: (value) {
+                                      ref
+                                          .read(slotStateProvider.notifier)
+                                          .reset();
+                                      setState(() {
+                                        if (value != null) {
+                                          _petIdValue[pet.id] = value;
+
+                                          if (value) {
+                                            _petCategoryIds
+                                                .add(pet.petCategory.id);
+                                          } else {
+                                            _petCategoryIds
+                                                .remove(pet.petCategory.id);
+                                          }
+                                        }
+                                      });
+                                    },
+                                    title: Text(pet.name),
+                                    secondary: DefaultCircleAvatar(
+                                        imageUrl: pet.imageUrl ?? ""),
+                                    subtitle: disabledReason != null
+                                        ? Text(
+                                            disabledReason,
+                                          )
+                                        : null,
+                                  );
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.secondaryBackgroundColor
+                          : null,
+                      padding: EdgeInsets.all(12),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          spacing: 4,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Choose Booking Date",
+                              style: TextStyle(
+                                color: Colors.orange,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextFormField(
+                              enabled: _petIdValue.values.contains(true),
+                              readOnly: true,
+                              style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.light
-                                    ? Constants.primaryTextColor
-                                    : Colors.orange,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          Expanded(
-                            child: PaginatedPetsListView(
-                              pageSize: Constants.pageSize,
-                              buildBody: (pet) {
-                                bool isPetVaccinated = true;
-                                String? disabledReason;
-                                // widget.petDaycare.mustBeVaccinated &&
-                                //     pet.isVaccinated;
-                                if (widget.petDaycare.mustBeVaccinated) {
-                                  isPetVaccinated = pet.isVaccinated;
-                                }
-                                bool isPetCategoryMatching = false;
-                                for (var price in widget.petDaycare.pricings) {
-                                  if (price.petCategory.id ==
-                                      pet.petCategory.id) {
-                                    isPetCategoryMatching = true;
-                                  }
-                                }
-
-                                if (!isPetVaccinated) {
-                                  disabledReason =
-                                      "Pet must have a valid and up-to-date vaccination record";
-                                } else if (!isPetCategoryMatching) {
-                                  disabledReason = "Pet category not supported";
-                                }
-                                return CheckboxListTile(
-                                  enabled:
-                                      isPetVaccinated && isPetCategoryMatching,
-                                  value: _petIdValue[pet.id] ?? false,
-                                  onChanged: (value) {
-                                    ref
-                                        .read(slotStateProvider.notifier)
-                                        .reset();
-                                    setState(() {
-                                      if (value != null) {
-                                        _petIdValue[pet.id] = value;
-
-                                        if (value) {
-                                          _petCategoryIds
-                                              .add(pet.petCategory.id);
-                                        } else {
-                                          _petCategoryIds
-                                              .remove(pet.petCategory.id);
-                                        }
-                                      }
-                                    });
-                                  },
-                                  title: Text(pet.name),
-                                  secondary: DefaultCircleAvatar(
-                                      imageUrl: pet.imageUrl ?? ""),
-                                  subtitle: disabledReason != null
-                                      ? Text(
-                                          disabledReason,
-                                        )
-                                      : null,
-                                );
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Constants.secondaryBackgroundColor
-                        : null,
-                    padding: EdgeInsets.all(12),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        spacing: 4,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Choose Booking Date",
-                            style: TextStyle(
-                              color: Colors.orange,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextFormField(
-                            enabled: _petIdValue.values.contains(true),
-                            readOnly: true,
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                            ),
-                            controller: _dateRangeController,
-                            onTap: () async {
-                              final slotDate = await ref.read(getSlotsProvider(
-                                widget.petDaycare.id,
-                                _petCategoryIds.toSet().toList(),
-                              ).future);
-
-                              // if (!mounted) return;
-
-                              final dateRange = await showDateRangePicker(
-                                context: context,
-                                helpText:
-                                    "Please select the available date range",
-                                firstDate: DateTime.now(),
-                                lastDate:
-                                    DateTime.now().add(Duration(days: 365)),
-                                selectableDayPredicate:
-                                    (day, selectedStartDay, selectedEndDay) {
-                                  int selectedPetCount = _petIdValue.values
-                                      .where((value) => value)
-                                      .length;
-                                  return !slotDate.data.any(
-                                    (element) {
-                                      if (element.slotAmount <
-                                          selectedPetCount) {
-                                        DateTime disabledDate =
-                                            DateTime.parse(element.date)
-                                                .toLocal();
-                                        return disabledDate.year == day.year &&
-                                            disabledDate.month == day.month &&
-                                            disabledDate.day == day.day;
-                                      }
-
-                                      return false;
-                                    },
-                                  );
-                                },
-                                builder: (context, child) {
-                                  final isDark = Theme.of(context).brightness ==
-                                      Brightness.dark;
-
-                                  return Theme(
-                                    data: isDark
-                                        ? ThemeData.dark().copyWith(
-                                            colorScheme: ColorScheme.dark(
-                                              primary: Colors.orange,
-                                              onSurface: Colors.white70,
-                                            ),
-                                            textTheme:
-                                                ThemeData.dark().textTheme,
-                                            dialogTheme: DialogThemeData(
-                                                backgroundColor:
-                                                    Colors.grey[900]),
-                                          )
-                                        : Theme.of(context),
-                                    child: child!,
-                                  );
-                                },
-                              );
-
-                              if (dateRange == null) return;
-
-                              setState(() {
-                                _startDate =
-                                    toRfc3339WithOffset(dateRange.start);
-                                _endDate = toRfc3339WithOffset(dateRange.end);
-                                _dateRangeController.text =
-                                    "${formatDate(dateRange.start)} - ${formatDate(dateRange.end)}";
-                              });
-                            },
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                    ? Colors.black
+                                    : Colors.white70,
                               ),
-                              labelText: "Booking Date",
+                              controller: _dateRangeController,
+                              onTap: () async {
+                                final slotDate =
+                                    await ref.read(getSlotsProvider(
+                                  widget.petDaycare.id,
+                                  _petCategoryIds.toSet().toList(),
+                                ).future);
+
+                                // if (!mounted) return;
+
+                                final dateRange = await showDateRangePicker(
+                                  context: context,
+                                  helpText:
+                                      "Please select the available date range",
+                                  firstDate: DateTime.now(),
+                                  lastDate:
+                                      DateTime.now().add(Duration(days: 365)),
+                                  selectableDayPredicate:
+                                      (day, selectedStartDay, selectedEndDay) {
+                                    int selectedPetCount = _petIdValue.values
+                                        .where((value) => value)
+                                        .length;
+                                    return !slotDate.data.any(
+                                      (element) {
+                                        if (element.slotAmount <
+                                            selectedPetCount) {
+                                          DateTime disabledDate =
+                                              DateTime.parse(element.date)
+                                                  .toLocal();
+                                          return disabledDate.year ==
+                                                  day.year &&
+                                              disabledDate.month == day.month &&
+                                              disabledDate.day == day.day;
+                                        }
+
+                                        return false;
+                                      },
+                                    );
+                                  },
+                                  builder: (context, child) {
+                                    final isDark =
+                                        Theme.of(context).brightness ==
+                                            Brightness.dark;
+
+                                    return Theme(
+                                      data: isDark
+                                          ? ThemeData.dark().copyWith(
+                                              colorScheme: ColorScheme.dark(
+                                                primary: Colors.orange,
+                                                onSurface: Colors.white70,
+                                              ),
+                                              textTheme:
+                                                  ThemeData.dark().textTheme,
+                                              dialogTheme: DialogThemeData(
+                                                  backgroundColor:
+                                                      Colors.grey[900]),
+                                            )
+                                          : Theme.of(context),
+                                      child: child!,
+                                    );
+                                  },
+                                );
+
+                                if (dateRange == null) return;
+
+                                setState(() {
+                                  _startDate =
+                                      toRfc3339WithOffset(dateRange.start);
+                                  _endDate = toRfc3339WithOffset(dateRange.end);
+                                  _dateRangeController.text =
+                                      "${formatDate(dateRange.start)} - ${formatDate(dateRange.end)}";
+                                });
+                              },
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                labelText: "Booking Date",
+                              ),
+                              validator: (value) =>
+                                  validateNotEmpty("Input", value),
                             ),
-                            validator: (value) =>
-                                validateNotEmpty("Input", value),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 12),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (slotState.isLoading) return;
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 12),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (slotState.isLoading) return;
 
-                        if (value.data.isNotEmpty) {
-                          _savedAddress = value.data[_addressIndex];
-                        }
+                          if (value.data.isNotEmpty) {
+                            _savedAddress = value.data[lastSelected.value!];
+                          }
 
-                        _submitForm();
-                      },
-                      child: (slotState.isLoading)
-                          ? CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                          : Text(
-                              "Book Slot",
-                              style: TextStyle(color: Colors.white),
-                            ),
+                          _submitForm();
+                        },
+                        child: (slotState.isLoading)
+                            ? CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : Text(
+                                "Book Slot",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                  ],
+                ),
+              );
+            }),
           _ => Center(
               child: CircularProgressIndicator.adaptive(),
             )
         });
   }
-
-  // Widget _locationInput() {
-  //   return Autocomplete<SuggestionDetailsResponse>(
-  //     fieldViewBuilder:
-  //         (context, textEditingController, focusNode, onFieldSubmitted) {
-  //       return TextFormField(
-  //         controller: textEditingController,
-  //         focusNode: focusNode,
-  //         onFieldSubmitted: (value) {
-  //           onFieldSubmitted();
-  //         },
-  //         key: Key("location-input"),
-  //         decoration: InputDecoration(
-  //           border: OutlineInputBorder(
-  //             borderRadius: BorderRadius.circular(8),
-  //           ),
-  //           labelText: "Location",
-  //           prefixIcon: Icon(Icons.location_on_outlined),
-  //         ),
-  //         validator: (value) => validateNotEmpty("Location", value),
-  //       );
-  //     },
-  //     displayStringForOption: (option) => "${option.name}\n${option.address}",
-  //     optionsBuilder: (textEditingValue) async {
-  //       final res = await _locationService.getSuggestedLocation(
-  //           _sessionId, textEditingValue.text);
-
-  //       switch (res) {
-  //         case Ok<SuggestResponse>():
-  //           setState(() {
-  //             _locationErrorText = null;
-  //           });
-  //           return res.value!.suggestions;
-  //         case Error<SuggestResponse>():
-  //           log("[INFO] suggest location err: ${res.error}");
-  //           setState(() {
-  //             _locationErrorText = "Network error, please try again";
-  //           });
-  //           return [];
-  //       }
-  //     },
-  //     onSelected: (option) async {
-  //       log("[INFO] mapboxId: ${option.mapboxId}");
-  //       final res = await _locationService.retrieveSuggestedLocation(
-  //           _sessionId, option.mapboxId);
-
-  //       switch (res) {
-  //         case Ok<RetrieveResponse>():
-  //           _locality =
-  //               res.value!.features[0].properties.context.locality!.name;
-  //           _address = res.value!.features[0].properties.context.address!.name;
-  //           _location = res.value!.features[0].properties.name;
-  //           _latitude = res.value!.features[0].properties.coordinates.latitude;
-  //           _longitude =
-  //               res.value!.features[0].properties.coordinates.longitude;
-  //           debugPrint(
-  //               "[INFO] you just selected ${option.address} - $_locality - lat: $_latitude - long: $_longitude");
-  //         case Error<RetrieveResponse>():
-  //           setState(() {
-  //             _locationErrorText =
-  //                 "Something's wrong when retrieving location data";
-  //           });
-  //       }
-  //     },
-  //   );
-  // }
 }

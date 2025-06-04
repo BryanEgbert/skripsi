@@ -10,6 +10,7 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_saved_address_request.dart';
 import 'package:frontend/model/response/mapbox/retrieve_response.dart';
 import 'package:frontend/model/response/mapbox/suggest_response.dart';
+import 'package:frontend/provider/last_selected.dart';
 import 'package:frontend/provider/saved_address_provider.dart';
 import 'package:frontend/services/location_service.dart';
 import 'package:frontend/utils/handle_error.dart';
@@ -61,6 +62,9 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                 _notesController.text.isNotEmpty ? _notesController.text : null,
           ),
         );
+    if (ref.read(lastSelectedProvider).value! < 0) {
+      ref.read(lastSelectedProvider.notifier).set(0);
+    }
   }
 
   @override
@@ -72,6 +76,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
 
   @override
   Widget build(BuildContext context) {
+    // final lastSelected = ref.watch(lastSelectedProvider);
     final savedAddressState = ref.watch(savedAddressStateProvider);
 
     handleValue(savedAddressState, this,

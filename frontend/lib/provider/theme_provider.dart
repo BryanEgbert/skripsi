@@ -7,8 +7,8 @@ part 'theme_provider.g.dart';
 class ThemeState extends _$ThemeState {
   @override
   Future<bool> build() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final bool? isDarkMode = prefs.getBool('isDarkMode');
+    final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+    final bool? isDarkMode = await prefs.getBool('isDarkMode');
 
     if (isDarkMode == null) return Future.value(false);
 
@@ -16,8 +16,8 @@ class ThemeState extends _$ThemeState {
   }
 
   Future<void> setMode() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final bool? isDarkMode = prefs.getBool('isDarkMode');
+    final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+    final bool? isDarkMode = await prefs.getBool('isDarkMode');
 
     if (isDarkMode == true) {
       await prefs.setBool('isDarkMode', false);
@@ -25,7 +25,7 @@ class ThemeState extends _$ThemeState {
       await prefs.setBool('isDarkMode', true);
     }
 
-    final bool? value = prefs.getBool('isDarkMode');
+    final bool? value = await prefs.getBool('isDarkMode');
 
     state = AsyncData(value!);
   }
