@@ -7,8 +7,8 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/chat_message.dart';
-import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/user.dart';
 import 'package:frontend/pages/chat_page.dart';
 import 'package:frontend/pages/welcome.dart';
@@ -16,6 +16,7 @@ import 'package:frontend/provider/chat_tracker_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/message_tracker_provider.dart';
 import 'package:frontend/provider/user_provider.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:frontend/utils/handle_error.dart';
 import 'package:web_socket_channel/io.dart';
@@ -66,8 +67,8 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
         },
       );
     } catch (e) {
-      if (e.toString() == jwtExpired ||
-          e.toString() == userDeleted && mounted) {
+      if (e.toString() == LocalizationService().jwtExpired ||
+          e.toString() == LocalizationService().userDeleted && mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => WelcomeWidget()),
           (route) => false,
@@ -138,6 +139,14 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
 
     return Scaffold(
         appBar: AppBar(
+          title: Text(
+            AppLocalizations.of(context)!.messages,
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            ),
+          ),
           actions: appBarActions(),
         ),
         body: switch (chatList) {

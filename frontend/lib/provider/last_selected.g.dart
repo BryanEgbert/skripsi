@@ -6,7 +6,7 @@ part of 'last_selected.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$lastSelectedHash() => r'80357a1ce4c47e8a1180a7693acaf73cb042e166';
+String _$lastSelectedHash() => r'4611b423fff5bf411be94c0de32509a56b801d08';
 
 /// See also [LastSelected].
 @ProviderFor(LastSelected)

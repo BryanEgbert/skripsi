@@ -82,14 +82,14 @@ func (s *AuthServiceImpl) Login(email string, password string) (*model.TokenResp
 // RefreshToken function
 func (s *AuthServiceImpl) RefreshToken(refreshToken string) (*model.TokenResponse, error) {
 
-	tokenRecord := model.RefreshToken{
-		Token: refreshToken,
-	}
+	tokenRecord := model.RefreshToken{}
 
 	// Check if refresh token exists
-	if err := s.db.First(&tokenRecord).Error; err != nil {
+	if err := s.db.Where("token = ?", refreshToken).First(&tokenRecord).Error; err != nil {
 		return nil, errors.New("invalid refresh token")
 	}
+
+	log.Printf("tokenRecord: %v", tokenRecord)
 
 	if time.Now().After(tokenRecord.ExpiresAt) {
 		s.db.Unscoped().Delete(&tokenRecord)
@@ -102,7 +102,7 @@ func (s *AuthServiceImpl) RefreshToken(refreshToken string) (*model.TokenRespons
 	}
 
 	// Delete the old refresh token
-	s.db.Unscoped().Delete(&tokenRecord)
+	// s.db.Unscoped().Delete(&tokenRecord)
 
 	// Generate new tokens
 	newToken, expiry, err := helper.CreateJWT(tokenRecord.UserID)
@@ -123,7 +123,7 @@ func (s *AuthServiceImpl) RefreshToken(refreshToken string) (*model.TokenRespons
 	}
 
 	return &model.TokenResponse{
-		UserID:       tokenRecord.UserID,
+		UserID:       tokenRecord.ID,
 		RoleID:       user.RoleID,
 		AccessToken:  newToken,
 		RefreshToken: newRefreshToken,

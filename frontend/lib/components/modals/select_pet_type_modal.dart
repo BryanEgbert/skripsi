@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/provider/category_provider.dart';
+import 'package:intl/intl.dart';
 
 class SelectPetTypeModal extends ConsumerStatefulWidget {
   const SelectPetTypeModal({super.key});
@@ -15,6 +17,8 @@ class _SelectPetTypeModalState extends ConsumerState<SelectPetTypeModal> {
   @override
   Widget build(BuildContext context) {
     final petCategory = ref.watch(petCategoryProvider);
+    final formatter = NumberFormat.compact(
+        locale: Localizations.localeOf(context).toLanguageTag());
 
     return switch (petCategory) {
       AsyncData(:final value) => Padding(
@@ -23,7 +27,7 @@ class _SelectPetTypeModalState extends ConsumerState<SelectPetTypeModal> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Choose pet category",
+                AppLocalizations.of(context)!.choosePetCategory,
                 style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.light
                       ? Constants.primaryTextColor
@@ -39,9 +43,9 @@ class _SelectPetTypeModalState extends ConsumerState<SelectPetTypeModal> {
                         subtitle: (value[index].sizeCategory.id != 0)
                             ? (value[index].sizeCategory.maxWeight != null)
                                 ? Text(
-                                    "${value[index].sizeCategory.minWeight.toInt()} kg - ${value[index].sizeCategory.maxWeight!.toInt()} kg")
+                                    "${formatter.format(value[index].sizeCategory.minWeight)}kg - ${formatter.format(value[index].sizeCategory.maxWeight!)}kg")
                                 : Text(
-                                    "${value[index].sizeCategory.minWeight.toInt()} kg+")
+                                    "${formatter.format(value[index].sizeCategory.minWeight)}kg+")
                             : null,
                         onTap: () {
                           Navigator.of(context).pop(

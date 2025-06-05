@@ -7,6 +7,7 @@ import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/image_slider.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/pet_daycare.dart';
 import 'package:frontend/pages/book_slots_page.dart';
 import 'package:frontend/pages/chat_page.dart';
@@ -60,7 +61,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
               ),
               onPressed: () => Navigator.pop(context),
             ),
-            title: Text('Pet Daycare',
+            title: Text(AppLocalizations.of(context)!.petDaycareBoarding,
                 style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.light
                       ? Constants.primaryTextColor
@@ -101,7 +102,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                   )
                 : null,
             title: Text(
-              'Pet Daycare',
+              AppLocalizations.of(context)!.petDaycareBoarding,
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.light
                     ? Constants.primaryTextColor
@@ -125,7 +126,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       var snackbar = SnackBar(
                         key: Key("success-message"),
                         content: Text(
-                          "Operation completed successfully",
+                          AppLocalizations.of(context)!.operationSuccess,
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -137,7 +138,10 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                     }
                   },
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.orange,
+                  backgroundColor:
+                      Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                   child: Icon(Icons.edit),
                 )
               : null,
@@ -150,6 +154,9 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
   }
 
   Widget _buildBody(PetDaycareDetails value) {
+    Locale locale = Localizations.localeOf(context);
+    NumberFormat numberFormatter =
+        NumberFormat.compact(locale: locale.toLanguageTag());
     log("pricings: ${value.pricings.length}");
 
     return SingleChildScrollView(
@@ -183,9 +190,9 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       widget.longitude != null &&
                       widget.petDaycareId != 0) ...[
                     Text(
-                      "${(value.distance.toDouble() / 1000).toStringAsFixed(2)}km away",
+                      AppLocalizations.of(context)!
+                          .kmAway(value.distance.toDouble() / 1000),
                       style: TextStyle(fontSize: 12),
-                      maxLines: 2,
                     ),
                     SizedBox(height: 4),
                   ],
@@ -200,7 +207,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       Icon(Icons.star, color: Colors.orange, size: 16),
                       SizedBox(width: 4),
                       Text(
-                        "${value.averageRating.toStringAsFixed(1)}/5 (${formatNumber(value.ratingCount)})",
+                        "${numberFormatter.format(value.averageRating)}/5 (${formatNumber(value.ratingCount, locale.toLanguageTag())})",
                         style: TextStyle(fontSize: 12),
                       ),
                       const SizedBox(width: 4),
@@ -210,12 +217,12 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        "${formatNumber(value.bookedNum)} ",
+                        "${formatNumber(value.bookedNum, locale.toLanguageTag())} ",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 12),
                       ),
                       Text(
-                        "slots booked",
+                        AppLocalizations.of(context)!.slotsBooked,
                         style: TextStyle(
                           fontSize: 12,
                           color:
@@ -290,7 +297,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    "Operational Hour",
+                    AppLocalizations.of(context)!.operationalHour,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -314,7 +321,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    "Pricing",
+                    AppLocalizations.of(context)!.pricings,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -327,7 +334,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                   for (var price in value.pricings)
                     if (price.petCategory.sizeCategory.maxWeight != null)
                       Text(
-                        "${price.petCategory.name} (${price.petCategory.sizeCategory.minWeight}-${price.petCategory.sizeCategory.maxWeight}kg) - ${rupiahFormat.format(price.price)}/${price.pricingType.name}",
+                        "${price.petCategory.name} (${numberFormatter.format(price.petCategory.sizeCategory.minWeight)}-${numberFormatter.format(price.petCategory.sizeCategory.maxWeight)}kg) - ${rupiahFormat.format(price.price)}/${price.pricingType.name}",
                         style: TextStyle(
                           color:
                               Theme.of(context).brightness == Brightness.light
@@ -337,13 +344,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       )
                     else
                       Text(
-                        "${price.petCategory.name} (${price.petCategory.sizeCategory.minWeight}kg+) - Rp. ${rupiahFormat.format(price.price)}/${price.pricingType.name}",
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                        ),
+                        "${price.petCategory.name} (${numberFormatter.format(price.petCategory.sizeCategory.minWeight)}kg+) - Rp. ${rupiahFormat.format(price.price)}/${price.pricingType.name}",
                       ),
                 ],
               ),
@@ -359,7 +360,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Requirements",
+                    AppLocalizations.of(context)!.requirements,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -379,8 +380,10 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                             color: Colors.blueGrey,
                           ),
                     title: value.mustBeVaccinated
-                        ? Text("Pet Vaccination Required")
-                        : Text("Pet Vaccination Not Required"),
+                        ? Text(AppLocalizations.of(context)!
+                            .petVaccinationRequired)
+                        : Text(AppLocalizations.of(context)!
+                            .petVaccinationNotRequired),
                     titleTextStyle: TextStyle(
                       color: Theme.of(context).brightness == Brightness.light
                           ? Constants.primaryTextColor
@@ -388,11 +391,13 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       fontSize: 18,
                     ),
                     subtitle: value.mustBeVaccinated
-                        ? Text("Pet vaccination is required to book")
-                        : Text("Unvaccinated pets can book at this daycare."),
+                        ? Text(AppLocalizations.of(context)!
+                            .petVaccinationIsRequired)
+                        : Text(AppLocalizations.of(context)!
+                            .petVaccinationIsNotRequired),
                   ),
                   Text(
-                    "Additional Services",
+                    AppLocalizations.of(context)!.additionalServices,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -405,7 +410,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                     leading: value.groomingAvailable
                         ? Icon(Icons.check_circle, color: Colors.green)
                         : Icon(Icons.cancel, color: Colors.grey),
-                    title: Text("Grooming Service"),
+                    title: Text(AppLocalizations.of(context)!.groomingService),
                     titleTextStyle: TextStyle(
                       color: Theme.of(context).brightness == Brightness.light
                           ? Constants.primaryTextColor
@@ -413,9 +418,9 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       fontSize: 18,
                     ),
                     subtitle: value.groomingAvailable
-                        ? Text("Service provided")
+                        ? Text(AppLocalizations.of(context)!.serviceProvided)
                         : Text(
-                            "Service not provided",
+                            AppLocalizations.of(context)!.serviceNotProvided,
                             style: TextStyle(color: Colors.grey),
                           ),
                   ),
@@ -424,7 +429,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                         ? Icon(Icons.check_circle, color: Colors.green)
                         : Icon(Icons.cancel,
                             color: Colors.grey), // More neutral
-                    title: Text("Pick-Up Service"),
+                    title: Text(AppLocalizations.of(context)!.pickupService),
                     titleTextStyle: TextStyle(
                       color: Theme.of(context).brightness == Brightness.light
                           ? Constants.primaryTextColor
@@ -432,15 +437,16 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       fontSize: 18,
                     ),
                     subtitle: value.hasPickupService
-                        ? Text("Service provided")
-                        : Text("Service not provided",
+                        ? Text(AppLocalizations.of(context)!.serviceProvided)
+                        : Text(AppLocalizations.of(context)!.serviceNotProvided,
                             style: TextStyle(color: Colors.grey)),
                   ),
                   ListTile(
                     leading: value.foodProvided
                         ? Icon(Icons.check_circle, color: Colors.green)
                         : Icon(Icons.cancel, color: Colors.grey),
-                    title: Text("In-House Food Provided"),
+                    title: Text(AppLocalizations.of(context)!
+                        .inHouseFoodProvidedDetails),
                     titleTextStyle: TextStyle(
                       color: Theme.of(context).brightness == Brightness.light
                           ? Constants.primaryTextColor
@@ -448,9 +454,9 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       fontSize: 18,
                     ),
                     subtitle: value.foodProvided
-                        ? Text("Service provided")
+                        ? Text(AppLocalizations.of(context)!.serviceProvided)
                         : Text(
-                            "Service not provided",
+                            AppLocalizations.of(context)!.serviceNotProvided,
                             style: TextStyle(color: Colors.grey),
                           ),
                   ),
@@ -462,7 +468,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                   //   ),
                   const SizedBox(height: 16),
                   ListTile(
-                    title: Text("Number of Walks"),
+                    title: Text(AppLocalizations.of(context)!.numberOfWalks),
                     titleTextStyle: TextStyle(
                       color: Theme.of(context).brightness == Brightness.light
                           ? Constants.primaryTextColor
@@ -472,7 +478,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                     subtitle: Text(value.dailyWalks.name),
                   ),
                   ListTile(
-                    title: Text("Number of Playtime"),
+                    title: Text(AppLocalizations.of(context)!.numberOfPlaytime),
                     titleTextStyle: TextStyle(
                       color: Theme.of(context).brightness == Brightness.light
                           ? Constants.primaryTextColor
@@ -504,7 +510,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "View Ratings >",
+                      "${AppLocalizations.of(context)!.viewReviews} >",
                       style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.light
                             ? Constants.primaryTextColor
@@ -531,7 +537,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       builder: (context) => BookSlotsPage(value),
                     ));
                   },
-                  child: Text("Book A Slot"),
+                  child: Text(AppLocalizations.of(context)!.bookSlot),
                 ),
               ),
             ]

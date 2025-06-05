@@ -5,6 +5,7 @@ import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/add_review_modal.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/transaction.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
@@ -61,7 +62,7 @@ class _TransactionDetailsPageState
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
-            'Booking Details',
+            AppLocalizations.of(context)!.bookingDetails,
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.light
                   ? Constants.primaryTextColor
@@ -105,13 +106,13 @@ class _TransactionDetailsPageState
                           Row(
                             children: [
                               Text(
-                                "Status: ",
+                                "${AppLocalizations.of(context)!.statusLabel}: ",
                                 style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.light
-                                      ? Colors.black
-                                      : Colors.white70,
-                                ),
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Constants.primaryTextColor
+                                        : Colors.orange,
+                                    fontWeight: FontWeight.bold),
                               ),
                               Container(
                                 padding: EdgeInsets.all(8),
@@ -135,32 +136,34 @@ class _TransactionDetailsPageState
                               onPressed: () =>
                                   _cancelBooking(value.bookedSlot.id),
                               child: Text(
-                                "Cancel Booking",
+                                AppLocalizations.of(context)!.cancelBooking,
                                 style: TextStyle(color: Colors.red),
                               ),
                             )
                           else if (value.status.id == 4 && !value.isReviewed)
                             TextButton(
-                                onPressed: () async {
-                                  await showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) =>
-                                        AddReviewModal(value.petDaycare.id),
-                                  );
+                              onPressed: () async {
+                                await showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) =>
+                                      AddReviewModal(value.petDaycare.id),
+                                );
 
-                                  setState(() {
-                                    ref.invalidate(getBookedSlotProvider(
-                                        widget.bookedSlotId));
-                                  });
-                                },
-                                child: Text(
-                                  "Give Review",
-                                  style: TextStyle(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.light
-                                          ? Constants.primaryTextColor
-                                          : Colors.orange),
-                                ))
+                                setState(() {
+                                  ref.invalidate(getBookedSlotProvider(
+                                      widget.bookedSlotId));
+                                });
+                              },
+                              child: Text(
+                                AppLocalizations.of(context)!.giveReview,
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Constants.primaryTextColor
+                                      : Colors.orange,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -176,7 +179,10 @@ class _TransactionDetailsPageState
                           Text(
                             value.petDaycare.name,
                             style: TextStyle(
-                              color: Colors.orange,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Constants.primaryTextColor
+                                  : Colors.orange,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -193,15 +199,18 @@ class _TransactionDetailsPageState
                           ),
                           SizedBox(height: 4),
                           Text(
-                            "Booking Period",
+                            AppLocalizations.of(context)!.reservationDates,
                             style: TextStyle(
-                              color: Colors.orange,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Constants.primaryTextColor
+                                  : Colors.orange,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
                           Text(
-                            "${formatDateStr(value.startDate)} - ${formatDateStr(value.endDate)}",
+                            "${formatDateStr(value.startDate, context)} - ${formatDateStr(value.endDate, context)}",
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.light
@@ -214,9 +223,12 @@ class _TransactionDetailsPageState
                             spacing: 4,
                             children: [
                               Text(
-                                "Use Pick-up Service",
+                                AppLocalizations.of(context)!.usePickupService,
                                 style: TextStyle(
-                                  color: Colors.orange,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Constants.primaryTextColor
+                                      : Colors.orange,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
@@ -280,9 +292,12 @@ class _TransactionDetailsPageState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Pricings",
+                            AppLocalizations.of(context)!.pricings,
                             style: TextStyle(
-                              color: Colors.orange,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Constants.primaryTextColor
+                                  : Colors.orange,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -311,7 +326,7 @@ class _TransactionDetailsPageState
                                     ),
                                   ),
                                   Text(
-                                    "${rupiahFormat.format(pricing.price * item.total)}/${pricing.pricingType}",
+                                    "${rupiahFormat.format(pricing.price * item.total)}/${pricing.pricingType.name}",
                                     style: TextStyle(
                                       color: Theme.of(context).brightness ==
                                               Brightness.light
@@ -327,7 +342,7 @@ class _TransactionDetailsPageState
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "Total",
+                                AppLocalizations.of(context)!.total,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).brightness ==
@@ -362,9 +377,12 @@ class _TransactionDetailsPageState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Booked Pets",
+                              AppLocalizations.of(context)!.reservedPets,
                               style: TextStyle(
-                                color: Colors.orange,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
@@ -388,8 +406,8 @@ class _TransactionDetailsPageState
                                     leading: DefaultCircleAvatar(
                                         imageUrl: item.imageUrl ?? ""),
                                     title: Text(item.name),
-                                    subtitle: Text(
-                                        "Pet Category: ${item.petCategory.name}"),
+                                    subtitle: Text(AppLocalizations.of(context)!
+                                        .petCategory(item.petCategory.name)),
                                   );
                                 },
                               ),

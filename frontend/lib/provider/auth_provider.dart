@@ -9,6 +9,7 @@ import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/provider/database_provider.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/database_service.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/utils/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -118,7 +119,7 @@ class Auth extends _$Auth {
     try {
       token = await refreshAccessToken();
     } catch (e) {
-      return Future.error(jwtExpired, StackTrace.current);
+      return Future.error(LocalizationService().jwtExpired, StackTrace.current);
     }
 
     var tokenRes = await authService.logout(token.accessToken);

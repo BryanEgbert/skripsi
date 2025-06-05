@@ -6,6 +6,7 @@ import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/paginated_pets_list_view.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/pet_daycare.dart';
 import 'package:frontend/model/request/book_slot_request.dart';
 import 'package:frontend/model/saved_address.dart';
@@ -88,7 +89,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
             ),
           ),
           title: Text(
-            "Book Slots",
+            AppLocalizations.of(context)!.bookSlot,
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.light
                   ? Constants.primaryTextColor
@@ -125,7 +126,8 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                 });
                               }
                             },
-                            title: Text("Use Pick-Up Service"),
+                            title: Text(
+                                AppLocalizations.of(context)!.usePickupService),
                           ),
                           AbsorbPointer(
                             absorbing: !_usePickupService,
@@ -162,7 +164,8 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                     if (value.data.isEmpty ||
                                         lastSelected.value! < 0)
                                       Text(
-                                        "Choose an address",
+                                        AppLocalizations.of(context)!
+                                            .chooseAddress,
                                         style: TextStyle(
                                           color: _usePickupService
                                               ? Theme.of(context).brightness ==
@@ -211,7 +214,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Pick Pets",
+                              AppLocalizations.of(context)!.pickPets,
                               style: TextStyle(
                                   color: Theme.of(context).brightness ==
                                           Brightness.light
@@ -240,10 +243,12 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
                                   if (!isPetVaccinated) {
                                     disabledReason =
-                                        "Pet must have a valid and up-to-date vaccination record";
+                                        AppLocalizations.of(context)!
+                                            .vaccinationRequired;
                                   } else if (!isPetCategoryMatching) {
                                     disabledReason =
-                                        "Pet category not supported";
+                                        AppLocalizations.of(context)!
+                                            .unsupportedPetCategory;
                                   }
                                   return CheckboxListTile(
                                     enabled: isPetVaccinated &&
@@ -291,13 +296,16 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                       child: Form(
                         key: _formKey,
                         child: Column(
-                          spacing: 4,
+                          spacing: 8,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Choose Booking Date",
+                              AppLocalizations.of(context)!.chooseBookingDate,
                               style: TextStyle(
-                                color: Colors.orange,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -322,8 +330,8 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
                                 final dateRange = await showDateRangePicker(
                                   context: context,
-                                  helpText:
-                                      "Please select the available date range",
+                                  helpText: AppLocalizations.of(context)!
+                                      .selectDateRange,
                                   firstDate: DateTime.now(),
                                   lastDate:
                                       DateTime.now().add(Duration(days: 365)),
@@ -380,17 +388,18 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                       toRfc3339WithOffset(dateRange.start);
                                   _endDate = toRfc3339WithOffset(dateRange.end);
                                   _dateRangeController.text =
-                                      "${formatDate(dateRange.start)} - ${formatDate(dateRange.end)}";
+                                      "${formatDate(dateRange.start, context)} - ${formatDate(dateRange.end, context)}";
                                 });
                               },
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                labelText: "Booking Date",
+                                labelText: AppLocalizations.of(context)!
+                                    .bookingDateLabel,
                               ),
                               validator: (value) =>
-                                  validateNotEmpty("Input", value),
+                                  validateNotEmpty(context, value),
                             ),
                           ],
                         ),
@@ -413,7 +422,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                 color: Colors.white,
                               )
                             : Text(
-                                "Book Slot",
+                                AppLocalizations.of(context)!.bookSlotButton,
                                 style: TextStyle(color: Colors.white),
                               ),
                       ),

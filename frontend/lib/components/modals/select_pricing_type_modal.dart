@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/provider/category_provider.dart';
 
@@ -25,7 +26,7 @@ class _SelectPetCategoryModalState
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Choose Pricing Type",
+                AppLocalizations.of(context)!.choosePricingModel,
                 style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.light
                       ? Constants.primaryTextColor
@@ -43,7 +44,8 @@ class _SelectPetCategoryModalState
                       );
                     },
                     title: Text(value[index].name),
-                    subtitle: Text("Charge per ${value[index].name}"),
+                    subtitle: Text(AppLocalizations.of(context)!
+                        .chargePer(value[index].name)),
                   );
                 },
               )),
@@ -56,7 +58,7 @@ class _SelectPetCategoryModalState
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("Something's wrong"),
+              Text(AppLocalizations.of(context)!.somethingIsWrongTryAgain),
               IconButton(
                 onPressed: () => ref.refresh(petCategoryProvider.future),
                 icon: Icon(

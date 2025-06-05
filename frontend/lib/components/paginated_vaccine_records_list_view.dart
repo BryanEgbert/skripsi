@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/vaccine_record.dart';
 import 'package:frontend/pages/edit/edit_vaccination_record_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/vaccination_record_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
+import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class PaginatedVaccineRecordsListView extends ConsumerStatefulWidget {
   final int petId;
@@ -102,11 +104,9 @@ class _PaginatedListViewState
             var snackbar = SnackBar(
               key: Key("success-message"),
               content: Text(
-                "Operation completed successfully",
+                AppLocalizations.of(context)!.operationSuccess,
                 style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.black
-                      : Colors.white70,
+                  color: Colors.white,
                 ),
               ),
               backgroundColor: Colors.green[800],
@@ -131,30 +131,34 @@ class _PaginatedListViewState
         _page = 1;
         _fetchMoreData();
       },
-      child: (_isFetching && _records.isEmpty)
-          ? Center(
-              child: CircularProgressIndicator(
-              color: Colors.orange,
-            ))
-          : ListView.builder(
-              physics: AlwaysScrollableScrollPhysics(),
-              controller: _scrollController,
-              itemCount: _records.length + 1,
-              itemBuilder: (context, index) {
-                if (index < _records.length) {
-                  return _buildVaccineCard(_records[index], index);
-                } else {
-                  if (_isFetching) {
-                    return Center(
-                        child: CircularProgressIndicator(
-                      color: Colors.orange,
-                    ));
-                  }
+      child: (_isFetching)
+          ? Center(child: CircularProgressIndicator.adaptive())
+          : (_records.isNotEmpty)
+              ? ListView.builder(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  controller: _scrollController,
+                  itemCount: _records.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index < _records.length) {
+                      return _buildVaccineCard(_records[index], index);
+                    } else {
+                      if (_isFetching) {
+                        return Center(
+                            child: CircularProgressIndicator(
+                          color: Colors.orange,
+                        ));
+                      }
 
-                  return SizedBox();
-                }
-              },
-            ),
+                      return SizedBox();
+                    }
+                  },
+                )
+              : Center(
+                  child: Text(
+                    AppLocalizations.of(context)!.noVaccinationRecord,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
     );
   }
 
@@ -172,46 +176,48 @@ class _PaginatedListViewState
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Date Administered:",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Constants.primaryTextColor
-                          : Colors.orange,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "${AppLocalizations.of(context)!.dateAdministered}:",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.primaryTextColor
+                            : Colors.orange,
+                      ),
                     ),
-                  ),
-                  Text(
-                    formatDateStr(vaccineRecord.dateAdministered),
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white,
+                    Text(
+                      formatDateStr(vaccineRecord.dateAdministered, context),
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white,
+                      ),
                     ),
-                  ),
-                  Text(
-                    "Next Due Date:",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Constants.primaryTextColor
-                          : Colors.orange,
+                    Text(
+                      "${AppLocalizations.of(context)!.nextDueDate}:",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.primaryTextColor
+                            : Colors.orange,
+                      ),
                     ),
-                  ),
-                  Text(
-                    formatDateStr(vaccineRecord.nextDueDate),
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white,
+                    Text(
+                      formatDateStr(vaccineRecord.nextDueDate, context),
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black
+                            : Colors.white,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               Row(
                 children: [
@@ -251,7 +257,14 @@ class _PaginatedListViewState
                       itemBuilder: (context) => [
                         PopupMenuItem(
                           value: "edit",
-                          child: Text("Edit"),
+                          child: Row(
+                            spacing: 8,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.edit),
+                              Text(AppLocalizations.of(context)!.edit),
+                            ],
+                          ),
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => EditVaccinationRecordPage(
@@ -261,15 +274,28 @@ class _PaginatedListViewState
                         ),
                         PopupMenuItem(
                           value: "delete",
-                          child: Text(
-                            "Delete",
-                            style: TextStyle(color: Colors.red),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            spacing: 8,
+                            children: [
+                              Icon(Icons.delete, color: Colors.red),
+                              Text(
+                                AppLocalizations.of(context)!.delete,
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ],
                           ),
                           onTap: () {
-                            ref
-                                .read(vaccinationRecordStateProvider.notifier)
-                                .delete(vaccineRecord.id, widget.petId,
-                                    widget.pageSize);
+                            showDeleteConfirmationDialog(
+                                context,
+                                AppLocalizations.of(context)!
+                                    .confirmDeleteVaccination, () {
+                              ref
+                                  .read(vaccinationRecordStateProvider.notifier)
+                                  .delete(vaccineRecord.id, widget.petId,
+                                      widget.pageSize);
+                            });
+
                             _deleteIndex = index;
                             // setState(() {
                             //   _records.removeAt(index);

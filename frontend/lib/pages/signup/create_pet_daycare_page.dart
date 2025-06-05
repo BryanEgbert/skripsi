@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/signup_guide_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
@@ -61,7 +62,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
 
     if (_latitude == null && _longitude == null && _location == null) {
       setState(() {
-        _error = "Invalid location";
+        _error = AppLocalizations.of(context)!.invalidLocation;
       });
       return;
     }
@@ -136,8 +137,9 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
             child: Column(
               children: [
                 SignupGuideText(
-                  title: "Let's Set Up Your Account",
-                  subtitle: "Enter your pet daycare/hotel details to continue",
+                  title: AppLocalizations.of(context)!.setupAccountTitle,
+                  subtitle:
+                      AppLocalizations.of(context)!.enterPetDaycareDetails,
                 ),
                 SizedBox(height: 56),
                 Form(
@@ -154,10 +156,11 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          labelText: "Pet Daycare Name",
+                          labelText:
+                              AppLocalizations.of(context)!.petDaycareName,
                           errorText: _locationErrorText,
                         ),
-                        validator: (value) => validateNotEmpty("Name", value),
+                        validator: (value) => validateNotEmpty(context, value),
                       ),
                       _locationInput(),
                       _operationHoursInput(context),
@@ -170,12 +173,13 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          labelText: "Description (optional)",
+                          labelText:
+                              AppLocalizations.of(context)!.descriptionOptional,
                         ),
                       ),
                       ElevatedButton(
                         onPressed: _submitForm,
-                        child: const Text("Next"),
+                        child: Text(AppLocalizations.of(context)!.next),
                       ),
                     ],
                   ),
@@ -193,7 +197,7 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Operating Hours",
+          AppLocalizations.of(context)!.operatingHours,
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.light
                 ? Constants.primaryTextColor
@@ -208,14 +212,14 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                 readOnly: true,
                 controller: _openingHoursController,
                 decoration: InputDecoration(
-                  labelText: "Opening Hour",
+                  labelText: AppLocalizations.of(context)!.openingHour,
                   labelStyle: TextStyle(fontSize: 12),
                   suffixIcon: Icon(
                     Icons.navigate_next,
                     size: 20,
                   ),
                 ),
-                validator: (value) => validateNotEmpty("Opening hour", value),
+                validator: (value) => validateNotEmpty(context, value),
                 onTap: () async {
                   final timeDisplay = await showTimePicker(
                     context: context,
@@ -231,20 +235,20 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                 },
               ),
             ),
-            Text("to"),
+            Text(AppLocalizations.of(context)!.to),
             Expanded(
               child: TextFormField(
                 readOnly: true,
                 controller: _closingHoursController,
                 decoration: InputDecoration(
-                  labelText: "Closing Hour",
+                  labelText: AppLocalizations.of(context)!.closingHour,
                   labelStyle: TextStyle(fontSize: 12),
                   suffixIcon: Icon(
                     Icons.navigate_next,
                     size: 20,
                   ),
                 ),
-                validator: (value) => validateNotEmpty("Closing hour", value),
+                validator: (value) => validateNotEmpty(context, value),
                 onTap: () async {
                   final timeDisplay = await showTimePicker(
                     context: context,
@@ -272,12 +276,12 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
       builder: (context, controller) {
         return TextFormField(
           controller: controller,
-          validator: (value) => validateNotEmpty("Value", value),
+          validator: (value) => validateNotEmpty(context, value),
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
             ),
-            labelText: "Location name",
+            labelText: AppLocalizations.of(context)!.location,
             labelStyle: TextStyle(fontSize: 12),
           ),
           onTap: () {
@@ -323,8 +327,8 @@ class CreatePetDaycarePageState extends ConsumerState<CreatePetDaycarePage> {
                     case Error<RetrieveResponse>():
                       var snackbar = SnackBar(
                         key: Key("error-message"),
-                        content:
-                            Text("Something's wrong when fetching address"),
+                        content: Text(
+                            AppLocalizations.of(context)!.fetchAddressError),
                         backgroundColor: Colors.red[800],
                       );
 

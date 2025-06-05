@@ -4,8 +4,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/chat_message.dart';
-import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/response/list_response.dart';
 import 'package:frontend/pages/booking_history_view.dart';
 import 'package:frontend/pages/pet_daycares_view.dart';
@@ -16,6 +17,7 @@ import 'package:frontend/provider/chat_tracker_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/message_tracker_provider.dart';
 import 'package:frontend/provider/user_provider.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:frontend/utils/handle_error.dart';
 import 'package:web_socket_channel/io.dart';
@@ -78,8 +80,8 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
         });
       });
     } catch (e) {
-      if (e.toString() == jwtExpired ||
-          e.toString() == userDeleted && mounted) {
+      if (e.toString() == LocalizationService().jwtExpired ||
+          e.toString() == LocalizationService().userDeleted && mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => WelcomeWidget()),
           (route) => false,
@@ -103,15 +105,12 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
     _setupWebSocket();
     _fetchData();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      log("update token");
       ref.read(userStateProvider.notifier).updateDeviceToken();
     });
   }
 
   @override
   void dispose() {
-    log("[HOME PAGE] dispose");
-
     _channel?.sink.close();
     ChatWebsocketChannel().close();
     super.dispose();
@@ -119,8 +118,6 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    log("[HOME PAGE] build");
-
     final messageTracker = ref.watch(messageTrackerProvider);
 
     if (_error != null) {
@@ -138,7 +135,6 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
     }
 
     return Scaffold(
-      key: const Key("home"),
       body: _isSocketReady
           ? StreamBuilder(
               stream: _websocketStream,
@@ -178,34 +174,38 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         // backgroundColor: Colors.orange,
-        backgroundColor: Theme.of(context).brightness == Brightness.light
-            ? Colors.orange
-            : null,
+        // backgroundColor: Theme.of(context).brightness == Brightness.light
+        //     ? Colors.orange
+        //     : null,
         selectedItemColor: Theme.of(context).brightness == Brightness.dark
             ? Colors.orange
-            : null,
+            : Constants.primaryTextColor,
 
-        unselectedItemColor: Colors.white,
+        // unselectedItemColor: const Color.fromARGB(255, 91, 73, 73),
         items: [
           BottomNavigationBarItem(
             backgroundColor: Colors.orangeAccent,
             icon: Icon(Icons.pets),
-            label: "Pets",
+            label: AppLocalizations.of(context)!.petsNav,
+            tooltip: AppLocalizations.of(context)!.petsNav,
           ),
           BottomNavigationBarItem(
             backgroundColor: Colors.orangeAccent,
             icon: Icon(Icons.explore),
-            label: "Explore",
+            label: AppLocalizations.of(context)!.exploreNav,
+            tooltip: AppLocalizations.of(context)!.exploreNav,
           ),
           BottomNavigationBarItem(
             backgroundColor: Colors.orangeAccent,
             icon: Icon(Icons.medical_services),
-            label: "Vets",
+            label: AppLocalizations.of(context)!.vetsNav,
+            tooltip: AppLocalizations.of(context)!.vetsNav,
           ),
           BottomNavigationBarItem(
             backgroundColor: Colors.orangeAccent,
             icon: Icon(Icons.menu_book_rounded),
-            label: "Bookings",
+            label: AppLocalizations.of(context)!.bookingsNav,
+            tooltip: AppLocalizations.of(context)!.bookingsNav,
           ),
         ],
         currentIndex: _selectedIndex,

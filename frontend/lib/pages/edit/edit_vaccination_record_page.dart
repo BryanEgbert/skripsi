@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/model/vaccine_record.dart';
 import 'package:frontend/provider/list_data_provider.dart';
@@ -68,7 +69,10 @@ class _EditVaccinationRecordPageState
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           var snackbar = SnackBar(
             key: Key("error-message"),
-            content: Text("Vaccination record added successfully"),
+            content: Text(
+              "Vaccination record added successfully",
+              style: TextStyle(color: Colors.white),
+            ),
             backgroundColor: Constants.successSnackbarColor,
           );
 
@@ -90,9 +94,13 @@ class _EditVaccinationRecordPageState
                 : Colors.orange,
           ),
         ),
-        title: const Text(
+        title: Text(
           "Edit Vaccination Record",
-          style: TextStyle(color: Colors.orange),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
       ),
       body: handleProvider<VaccineRecord>(
@@ -106,6 +114,7 @@ class _EditVaccinationRecordPageState
   }
 
   Widget _buildBody(BuildContext context, VaccineRecord value) {
+    Locale locale = Localizations.localeOf(context);
     DateTime parsedDateAdministered =
         DateTime.parse(value.dateAdministered).toLocal();
     DateTime parsedNextDueDate = DateTime.parse(value.nextDueDate).toLocal();
@@ -114,10 +123,12 @@ class _EditVaccinationRecordPageState
       _dateAdministered = parsedDateAdministered;
 
       _dateAdministeredController.text =
-          DateFormat('yyyy-MM-dd').format(parsedDateAdministered);
+          DateFormat('yyyy-MM-dd', locale.toLanguageTag())
+              .format(parsedDateAdministered);
 
       _nextDueDateController.text =
-          DateFormat('yyyy-MM-dd').format(parsedNextDueDate);
+          DateFormat('yyyy-MM-dd', locale.toLanguageTag())
+              .format(parsedNextDueDate);
 
       _hasLoaded = true;
     }
@@ -143,7 +154,7 @@ class _EditVaccinationRecordPageState
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                labelText: "Date Administered",
+                labelText: AppLocalizations.of(context)!.dateAdministered,
                 icon: Icon(Icons.today_rounded),
               ),
               onTap: () async {
@@ -156,7 +167,8 @@ class _EditVaccinationRecordPageState
 
                 if (pickedDate != null) {
                   String formattedDate =
-                      DateFormat('yyyy-MM-dd').format(pickedDate);
+                      DateFormat('yyyy-MM-dd', locale.toLanguageTag())
+                          .format(pickedDate);
                   setState(() {
                     _dateAdministered = pickedDate;
                     _isDateAdministeredFilled = true;
@@ -179,7 +191,7 @@ class _EditVaccinationRecordPageState
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                labelText: "Next Due Date",
+                labelText: AppLocalizations.of(context)!.nextDueDate,
                 disabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.blueGrey),
@@ -196,7 +208,8 @@ class _EditVaccinationRecordPageState
 
                 if (pickedDate != null) {
                   String formattedDate =
-                      DateFormat('yyyy-MM-dd').format(pickedDate);
+                      DateFormat('yyyy-MM-dd', locale.toLanguageTag())
+                          .format(pickedDate);
                   setState(() {
                     _nextDueDateController.text = formattedDate;
                   });
@@ -205,7 +218,7 @@ class _EditVaccinationRecordPageState
             ),
             ElevatedButton(
               onPressed: _submitForm,
-              child: const Text("Save"),
+              child: Text(AppLocalizations.of(context)!.saveBtn),
             ),
           ],
         ),
@@ -231,7 +244,7 @@ class _EditVaccinationRecordPageState
                   SizedBox(width: 8),
                   Flexible(
                     child: Text(
-                      "Click to add photo of the vaccination record",
+                      AppLocalizations.of(context)!.clickToAddVaccinePhoto,
                       // softWrap: true,
                     ),
                   ),

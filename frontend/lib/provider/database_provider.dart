@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/services/database_service.dart';
@@ -17,7 +15,6 @@ Future<TokenResponse> getToken(Ref ref) async {
   }
   final dbService = DatabaseService();
   final res = await dbService.getToken();
-  log("token: $res");
 
   return res;
 }

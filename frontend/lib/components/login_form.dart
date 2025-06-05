@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/pages/home.dart';
 import 'package:frontend/pages/pet_daycare_home_page.dart';
@@ -91,7 +92,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               labelText: "Email",
             ),
             validator: (value) {
-              return validateEmail(value);
+              return validateEmail(context, value);
             },
           ),
           const SizedBox(
@@ -104,7 +105,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
-              labelText: "Password",
+              labelText: AppLocalizations.of(context)!.passwordInputLabel,
             ),
             obscureText: true,
             enableSuggestions: false,
@@ -125,7 +126,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               }
             },
             child: !auth.isLoading
-                ? Text("Login")
+                ? Text(AppLocalizations.of(context)!.loginBtn)
                 : CircularProgressIndicator(color: Colors.white),
           ),
         ],

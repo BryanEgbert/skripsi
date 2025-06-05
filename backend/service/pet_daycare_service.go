@@ -331,9 +331,9 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		query = query.Where("daily_walks.id", req.DailyWalks)
 	}
 
-	if req.PricingType != nil {
-		query = query.Where("pricing_type = ?", *req.PricingType)
-	}
+	// if req.PricingType != nil {
+	// 	query = query.Where("pricing_types = ?", *req.PricingType)
+	// }
 
 	rows, err := query.Offset(pageSize * (page - 1)).Limit(pageSize).Rows()
 	if err != nil {
@@ -352,11 +352,22 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		row := s.db.Table("thumbnails").Select("image_url").Where("daycare_id = ?", result.ID).Limit(1).Row()
 		row.Scan(&results[i].Thumbnail)
 
-		rows, err := s.db.Table("slots").
+		slotQuery := s.db.Table("slots").
 			Select("pet_categories.id", "pet_categories.name", "size_categories.*", "slots.price", "pricing_types.id", "pricing_types.name").
 			Joins("JOIN pet_categories ON pet_categories.id = slots.pet_category_id").
 			Joins("JOIN pricing_types ON pricing_types.id = slots.pricing_type_id").
 			Joins("LEFT JOIN size_categories ON size_categories.id = pet_categories.size_category_id").
+			Where("slots.daycare_id = ? AND slots.deleted_at IS NULL", result.ID)
+
+		if req.PricingType != nil {
+			slotQuery = slotQuery.Where("slots.pricing_type_id = ?", *req.PricingType)
+		}
+
+		if len(req.PetCategoryIds) > 0 {
+			slotQuery = slotQuery.Where("slots.pet_category_id IN ?", req.PetCategoryIds)
+		}
+
+		rows, err := slotQuery.
 			Where("slots.daycare_id = ? AND slots.deleted_at IS NULL", result.ID).
 			Rows()
 		if err != nil {
@@ -367,7 +378,6 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		for rows.Next() {
 			var price model.PriceDetails
 			rows.Scan(&price.PetCategory.ID, &price.PetCategory.Name, &price.PetCategory.SizeCategory.ID, &price.PetCategory.SizeCategory.Name, &price.PetCategory.SizeCategory.MinWeight, &price.PetCategory.SizeCategory.MaxWeight, &price.Price, &price.PricingType.ID, &price.PricingType.Name)
-			log.Printf("rows: %v", price)
 			if req.MaxPrice > 0 {
 				if price.Price < req.MinPrice || price.Price > req.MaxPrice {
 					continue

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_saved_address_request.dart';
 import 'package:frontend/model/response/mapbox/retrieve_response.dart';
@@ -94,7 +95,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
           ),
         ),
         title: Text(
-          "Add Address",
+          AppLocalizations.of(context)!.addAddress,
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.light
                 ? Constants.primaryTextColor
@@ -123,7 +124,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                         var snackbar = SnackBar(
                           key: Key("error-message"),
                           content: Text(
-                            "Location request denied.",
+                            AppLocalizations.of(context)!.locationRequestDenied,
                             style: TextStyle(color: Colors.white),
                           ),
                           backgroundColor: Colors.red[800],
@@ -143,7 +144,8 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                           var snackbar = SnackBar(
                             key: Key("error-message"),
                             content: Text(
-                              "Location request denied.",
+                              AppLocalizations.of(context)!
+                                  .locationRequestDenied,
                               style: TextStyle(color: Colors.white),
                             ),
                             backgroundColor: Colors.red[800],
@@ -204,7 +206,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                                   _permission == LocationPermission.whileInUse))
                           ? Icon(Icons.gps_fixed_rounded)
                           : Icon(Icons.gps_not_fixed_rounded),
-                      Text("Use Current Location"),
+                      Text(AppLocalizations.of(context)!.useCurrentLocation),
                     ],
                   ),
                 ),
@@ -219,12 +221,12 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                             : Colors.white70,
                       ),
                       controller: controller,
-                      validator: (value) => validateNotEmpty("Value", value),
+                      validator: (value) => validateNotEmpty(context, value),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        labelText: "Location name",
+                        labelText: AppLocalizations.of(context)!.location,
                         labelStyle: TextStyle(fontSize: 12),
                       ),
                       onTap: () {
@@ -273,8 +275,8 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                                 case Error<RetrieveResponse>():
                                   var snackbar = SnackBar(
                                     key: Key("error-message"),
-                                    content: Text(
-                                        "Something's wrong when fetching address"),
+                                    content: Text(AppLocalizations.of(context)!
+                                        .fetchAddressError),
                                     backgroundColor: Colors.red[800],
                                   );
 
@@ -289,7 +291,6 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                           ),
                         );
                       case Error<SuggestResponse>():
-                        log("[INFO] suggest location err: ${res.error}");
                         return [
                           Text(res.error),
                         ];
@@ -298,7 +299,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                 ),
                 TextFormField(
                   controller: _addressController,
-                  validator: (value) => validateNotEmpty("Value", value),
+                  validator: (value) => validateNotEmpty(context, value),
                   maxLines: 6,
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
@@ -318,9 +319,8 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    labelText: "Notes (optional)",
-                    helperText:
-                        "e.g. Black front door, White wall with 2 plants",
+                    labelText: AppLocalizations.of(context)!.notesOptional,
+                    helperText: AppLocalizations.of(context)!.notesExample,
                     labelStyle: TextStyle(fontSize: 12),
                   ),
                 ),
@@ -332,7 +332,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                   },
                   child: (!savedAddressState.isLoading)
                       ? Text(
-                          "Add Address",
+                          AppLocalizations.of(context)!.addAddress,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         )
                       : Center(

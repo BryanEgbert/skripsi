@@ -5,6 +5,7 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/app_bar_back_button.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/reviews.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/utils/formatter.dart';
@@ -88,8 +89,12 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Reviews',
-          style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+          AppLocalizations.of(context)!.reviewsTitle,
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         leading: appBarBackButton(context),
         actions: appBarActions(),
@@ -127,15 +132,22 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: '/5',
-                                    style: TextStyle(fontSize: 18),
+                                    text: ' /5',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.light
+                                          ? Colors.black
+                                          : Colors.white,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                             Spacer(),
                             Text(
-                              '${formatNumber(widget.ratingsCount)} Reviews',
+                              AppLocalizations.of(context)!
+                                  .reviewsCount(widget.ratingsCount),
                               style: TextStyle(fontSize: 16),
                             ),
                           ],
@@ -209,7 +221,7 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                           color: Colors.amber,
                         ),
                         Text(
-                          formatDateStr(value.createdAt),
+                          formatDateStr(value.createdAt, context),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[900],

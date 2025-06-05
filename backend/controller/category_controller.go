@@ -17,7 +17,8 @@ func NewCategoryController(categoryService service.CategoryService) *CategoryCon
 }
 
 func (c *CategoryController) GetPricingType(ctx *gin.Context) {
-	res, err := c.categoryService.GetPricingType()
+	lang := ctx.DefaultQuery("language", "en")
+	res, err := c.categoryService.GetPricingType(lang)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",
@@ -31,7 +32,8 @@ func (c *CategoryController) GetPricingType(ctx *gin.Context) {
 }
 
 func (c *CategoryController) GetVetSpecialties(ctx *gin.Context) {
-	res, err := c.categoryService.GetVetSpecialties()
+	lang := ctx.DefaultQuery("language", "en")
+	res, err := c.categoryService.GetVetSpecialties(lang)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",
@@ -45,7 +47,8 @@ func (c *CategoryController) GetVetSpecialties(ctx *gin.Context) {
 }
 
 func (c *CategoryController) GetPetCategories(ctx *gin.Context) {
-	res, err := c.categoryService.GetPetCategories()
+	lang := ctx.DefaultQuery("language", "en")
+	res, err := c.categoryService.GetPetCategories(lang)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",
@@ -59,7 +62,8 @@ func (c *CategoryController) GetPetCategories(ctx *gin.Context) {
 }
 
 func (c *CategoryController) GetSizeCategories(ctx *gin.Context) {
-	res, err := c.categoryService.GetSizeCategories()
+	lang := ctx.DefaultQuery("language", "en")
+	res, err := c.categoryService.GetSizeCategories(lang)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",
@@ -73,7 +77,8 @@ func (c *CategoryController) GetSizeCategories(ctx *gin.Context) {
 }
 
 func (c *CategoryController) GetDailyWalks(ctx *gin.Context) {
-	res, err := c.categoryService.GetDailyWalks()
+	lang := ctx.DefaultQuery("language", "en")
+	res, err := c.categoryService.GetDailyWalks(lang)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",
@@ -87,7 +92,8 @@ func (c *CategoryController) GetDailyWalks(ctx *gin.Context) {
 }
 
 func (c *CategoryController) GetDailyPlaytime(ctx *gin.Context) {
-	res, err := c.categoryService.GetDailyPlaytime()
+	lang := ctx.DefaultQuery("language", "en")
+	res, err := c.categoryService.GetDailyPlaytime(lang)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Something's wrong, please try again later",

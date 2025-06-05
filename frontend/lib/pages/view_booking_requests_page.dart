@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/pages/details/booking_request_details_page.dart';
@@ -86,7 +87,7 @@ class _ViewBookingRequestsPageState
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Booking Requests',
+          AppLocalizations.of(context)!.bookingQueue,
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.light
                 ? Constants.primaryTextColor
@@ -101,7 +102,7 @@ class _ViewBookingRequestsPageState
               ? ErrorText(
                   errorText: _error != null
                       ? _error.toString()
-                      : "No pet owners are booking your service",
+                      : AppLocalizations.of(context)!.noBookedPetOwners,
                   onRefresh: () => _refresh(),
                 )
               : Padding(
@@ -115,7 +116,7 @@ class _ViewBookingRequestsPageState
                             color: Colors.grey,
                           ),
                           Text(
-                            "Tap the cards to view booking details",
+                            AppLocalizations.of(context)!.tapCardsToViewDetails,
                             style: TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                         ],
@@ -181,7 +182,7 @@ class _ViewBookingRequestsPageState
                               ),
                             ),
                             Text(
-                              "${formatDateStr(_records[index].startDate)} - ${formatDateStr(_records[index].endDate)}",
+                              "${formatDateStr(_records[index].startDate, context)} - ${formatDateStr(_records[index].endDate, context)}",
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Theme.of(context).brightness ==
@@ -210,7 +211,7 @@ class _ViewBookingRequestsPageState
                       children: [
                         if (_records[index].pickupRequired)
                           Text(
-                            "Pick-up required",
+                            AppLocalizations.of(context)!.pickupRequired,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -219,7 +220,7 @@ class _ViewBookingRequestsPageState
                           )
                         else
                           Text(
-                            "Pick-up not required",
+                            AppLocalizations.of(context)!.pickupNotRequired,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -242,7 +243,7 @@ class _ViewBookingRequestsPageState
                                 minimumSize: Size(0, 0),
                               ),
                               child: Text(
-                                "Accept",
+                                AppLocalizations.of(context)!.accept,
                                 style: TextStyle(fontSize: 12),
                               ),
                             ),
@@ -250,8 +251,9 @@ class _ViewBookingRequestsPageState
                               onPressed: () {
                                 showConfirmationDialog(
                                   context,
-                                  "Reject Request",
-                                  "Are you sure you want to reject this booking request? This action cannot be undone.",
+                                  AppLocalizations.of(context)!.rejectRequest,
+                                  AppLocalizations.of(context)!
+                                      .rejectRequestConfirmation,
                                   () => ref
                                       .read(slotStateProvider.notifier)
                                       .rejectSlot(_records[index].id),
@@ -264,7 +266,7 @@ class _ViewBookingRequestsPageState
                                 minimumSize: Size(0, 0),
                               ),
                               child: Text(
-                                "Reject",
+                                AppLocalizations.of(context)!.reject,
                                 style: TextStyle(fontSize: 12),
                               ),
                             ),

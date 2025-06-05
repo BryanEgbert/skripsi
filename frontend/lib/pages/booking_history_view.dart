@@ -6,6 +6,7 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/add_review_modal.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/transaction.dart';
 import 'package:frontend/pages/details/transaction_details_page.dart';
@@ -97,7 +98,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Booking History',
+          AppLocalizations.of(context)!.bookingHistory,
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.light
                 ? Constants.primaryTextColor
@@ -112,7 +113,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
               ? ErrorText(
                   errorText: _error != null
                       ? _error.toString()
-                      : "Your booking history shows here",
+                      : AppLocalizations.of(context)!.bookingHistoryInfo,
                   onRefresh: () async {
                     _refresh();
                   })
@@ -169,7 +170,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
               children: [
                 Icon(Icons.info_outline_rounded),
                 Text(
-                  "Tap the cards to view details",
+                  AppLocalizations.of(context)!.tapCardsToViewDetails,
                   style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.light
                         ? Colors.grey[700]
@@ -244,7 +245,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                       ),
                                     ),
                                     Text(
-                                      "${formatDateStr(_records[index].startDate)} - ${formatDateStr(_records[index].endDate)}",
+                                      "${formatDateStr(_records[index].startDate, context)} - ${formatDateStr(_records[index].endDate, context)}",
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: Theme.of(context).brightness ==
@@ -293,7 +294,8 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                     onPressed: () {
                                       showCancelBookingConfirmationDialog(
                                         context,
-                                        "Are you sure you want to cancel this booking? This action cannot be undone.",
+                                        AppLocalizations.of(context)!
+                                            .cancelBookingConfirmation,
                                         () {
                                           ref
                                               .read(slotStateProvider.notifier)
@@ -310,7 +312,8 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                       minimumSize: Size(0, 0),
                                     ),
                                     child: Text(
-                                      "Cancel Booking",
+                                      AppLocalizations.of(context)!
+                                          .cancelBooking,
                                       style: TextStyle(fontSize: 12),
                                     ),
                                   )
@@ -333,7 +336,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                       minimumSize: Size(0, 0),
                                     ),
                                     child: Text(
-                                      "Give Review",
+                                      AppLocalizations.of(context)!.giveReview,
                                       style: TextStyle(fontSize: 12),
                                     ),
                                   )

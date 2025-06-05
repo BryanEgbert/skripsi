@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants.dart';
-import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/services/localization_service.dart';
 
 class ErrorText extends StatefulWidget {
   final String errorText;
@@ -17,8 +17,8 @@ class ErrorText extends StatefulWidget {
 class _ErrorTextState extends State<ErrorText> {
   @override
   Widget build(BuildContext context) {
-    if (widget.errorText.toString() == jwtExpired ||
-        widget.errorText.toString() == userDeleted) {
+    if (widget.errorText == LocalizationService().jwtExpired ||
+        widget.errorText == LocalizationService().userDeleted) {
       WidgetsBinding.instance.addPostFrameCallback(
         (timeStamp) {
           Navigator.of(context).pushAndRemoveUntil(
@@ -35,7 +35,8 @@ class _ErrorTextState extends State<ErrorText> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            widget.errorText.toString(),
+            widget.errorText,
+            textAlign: TextAlign.center,
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.light
                   ? Colors.black

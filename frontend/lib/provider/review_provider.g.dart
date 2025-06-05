@@ -6,7 +6,7 @@ part of 'review_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$reviewStateHash() => r'da33e4fbdba1a95d841d50de950b842dac518bcb';
+String _$reviewStateHash() => r'4a35b977c9d52d6ca5650d4a9311a4107d6ca1aa';
 
 /// See also [ReviewState].
 @ProviderFor(ReviewState)

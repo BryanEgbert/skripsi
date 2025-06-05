@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_saved_address_request.dart';
 import 'package:frontend/model/response/mapbox/retrieve_response.dart';
@@ -238,7 +239,8 @@ class _EditSavedAddressPageState extends ConsumerState<EditSavedAddressPage> {
                                               LocationPermission.whileInUse))
                                   ? Icon(Icons.gps_fixed_rounded)
                                   : Icon(Icons.gps_not_fixed_rounded),
-                              Text("Use Current Location"),
+                              Text(AppLocalizations.of(context)!
+                                  .useCurrentLocation),
                             ],
                           ),
                         ),
@@ -247,20 +249,15 @@ class _EditSavedAddressPageState extends ConsumerState<EditSavedAddressPage> {
                           searchController: _searchController,
                           builder: (context, controller) {
                             return TextFormField(
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.light
-                                    ? Colors.black
-                                    : Colors.white70,
-                              ),
                               controller: controller,
                               validator: (value) =>
-                                  validateNotEmpty("Value", value),
+                                  validateNotEmpty(context, value),
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                labelText: "Location name",
+                                labelText:
+                                    AppLocalizations.of(context)!.location,
                                 labelStyle: TextStyle(fontSize: 12),
                               ),
                               onTap: () {
@@ -323,7 +320,9 @@ class _EditSavedAddressPageState extends ConsumerState<EditSavedAddressPage> {
                                           var snackbar = SnackBar(
                                             key: Key("error-message"),
                                             content: Text(
-                                                "Something's wrong when fetching address"),
+                                              AppLocalizations.of(context)!
+                                                  .fetchAddressError,
+                                            ),
                                             backgroundColor: Colors.red[800],
                                           );
 
@@ -349,14 +348,14 @@ class _EditSavedAddressPageState extends ConsumerState<EditSavedAddressPage> {
                         TextFormField(
                           controller: _addressController,
                           validator: (value) =>
-                              validateNotEmpty("Value", value),
+                              validateNotEmpty(context, value),
                           maxLines: 6,
                           keyboardType: TextInputType.multiline,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            labelText: "Address",
+                            labelText: AppLocalizations.of(context)!.address,
                             labelStyle: TextStyle(fontSize: 12),
                           ),
                         ),
@@ -369,21 +368,22 @@ class _EditSavedAddressPageState extends ConsumerState<EditSavedAddressPage> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            labelText: "Notes (optional)",
+                            labelText:
+                                AppLocalizations.of(context)!.notesOptional,
                             helperText:
-                                "e.g. Black front door, White wall with 2 plants",
+                                AppLocalizations.of(context)!.notesExample,
                             labelStyle: TextStyle(fontSize: 12),
                           ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () {
-                            log("button pressed");
                             _submitForm();
                           },
                           child: (!savedAddressState.isLoading)
                               ? Text(
-                                  "Save Address",
+                                  AppLocalizations.of(context)!
+                                      .saveAddressButton,
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 )
                               : Center(

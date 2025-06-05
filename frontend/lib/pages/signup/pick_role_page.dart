@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/signup_guide_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/pages/signup/create_user.dart';
 
 class PickRolePage extends StatelessWidget {
@@ -11,13 +12,14 @@ class PickRolePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: Theme.of(context).brightness == Brightness.light
-                  ? Constants.primaryTextColor
-                  : Colors.orange,
-            )),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
+        ),
       ),
       body: Container(
         margin: EdgeInsets.symmetric(horizontal: 16),
@@ -27,8 +29,8 @@ class PickRolePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SignupGuideText(
-                title: "Join Our Pet Daycare Community!",
-                subtitle: "Choose your role to get started:",
+                title: AppLocalizations.of(context)!.signupTitle,
+                subtitle: "${AppLocalizations.of(context)!.signupSubtitle}:",
               ),
               SizedBox(height: 56),
               displayRoleButtons(context)
@@ -59,16 +61,16 @@ class PickRolePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Pet Owner",
+                Text(
+                  AppLocalizations.of(context)!.rolePetOwner,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
                     color: Colors.white,
                   ),
                 ),
-                const Text(
-                  "Discover trusted pet daycares & chat with vets.",
+                Text(
+                  AppLocalizations.of(context)!.rolePetOwnerDesc,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
@@ -93,16 +95,16 @@ class PickRolePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Pet Daycare Provider",
+                Text(
+                  AppLocalizations.of(context)!.roleProvider,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
                     color: Colors.white,
                   ),
                 ),
-                const Text(
-                  "Connect with pet owners & grow your business.",
+                Text(
+                  AppLocalizations.of(context)!.roleProviderDesc,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
@@ -127,16 +129,16 @@ class PickRolePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Veterinarian",
+                Text(
+                  AppLocalizations.of(context)!.roleVet,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
                     color: Colors.white,
                   ),
                 ),
-                const Text(
-                  "Provide expert care & guidance to pet owners.",
+                Text(
+                  AppLocalizations.of(context)!.roleVetDesc,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,

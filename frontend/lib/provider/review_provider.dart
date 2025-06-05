@@ -2,6 +2,7 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/create_review_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/services/review_service.dart';
 import 'package:frontend/utils/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -25,7 +26,7 @@ class ReviewState extends _$ReviewState {
     try {
       token = await refreshAccessToken();
     } catch (e) {
-      state = AsyncError(jwtExpired, StackTrace.current);
+      state = AsyncError(LocalizationService().jwtExpired, StackTrace.current);
       return;
     }
 

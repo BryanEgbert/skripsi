@@ -6,6 +6,7 @@ import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/select_pet_type_modal.dart';
 import 'package:frontend/components/profile_image_picker.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/request/pet_request.dart';
@@ -89,9 +90,13 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                 : Colors.orange,
           ),
         ),
-        title: const Text(
-          "Edit Pet Info",
-          style: TextStyle(color: Colors.orange),
+        title: Text(
+          AppLocalizations.of(context)!.editPetInfoTitle,
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
       ),
       body: switch (pet) {
@@ -124,7 +129,7 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          labelText: "Name",
+                          labelText: AppLocalizations.of(context)!.nameLabel,
                           hintText: value?.name,
                           hintStyle: TextStyle(
                             color:
@@ -133,7 +138,7 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                                     : Colors.white70,
                           ),
                         ),
-                        validator: (value) => validateNotEmpty("Name", value),
+                        validator: (value) => validateNotEmpty(context, value),
                       ),
                       TextFormField(
                         controller: _petCategoryController,
@@ -141,7 +146,8 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                         readOnly: true,
                         decoration: InputDecoration(
                           suffixIcon: Icon(Icons.navigate_next),
-                          labelText: "Pet category",
+                          labelText:
+                              AppLocalizations.of(context)!.petCategoryLabel,
                         ),
                         onTap: () async {
                           _petCategoryFocusNode.unfocus();
@@ -156,8 +162,7 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                           _petCategoryController.text = out.name;
                           _petCategoryId = out.id;
                         },
-                        validator: (value) =>
-                            validateNotEmpty("Pet category", value),
+                        validator: (value) => validateNotEmpty(context, value),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -165,7 +170,7 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Spayed/Neutered",
+                              AppLocalizations.of(context)!.spayedNeuteredLabel,
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.light
@@ -205,7 +210,7 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                             ? CircularProgressIndicator(
                                 color: Colors.white,
                               )
-                            : const Text("Save"),
+                            : Text(AppLocalizations.of(context)!.saveBtn),
                       ),
                     ],
                   ),

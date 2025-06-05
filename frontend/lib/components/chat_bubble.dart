@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/response/token_response.dart';
 
@@ -48,7 +49,6 @@ class ChatBubble extends StatelessWidget {
                       showGeneralDialog(
                         context: context,
                         barrierColor: Colors.black.withValues(alpha: 0.5),
-                        barrierLabel: 'Image details',
                         pageBuilder: (context, animation, secondaryAnimation) {
                           return SizedBox.expand(
                             child: GestureDetector(
@@ -71,10 +71,13 @@ class ChatBubble extends StatelessWidget {
                                           Icon(
                                             Icons.image_not_supported,
                                             size: 32,
-                                            semanticLabel: "Fail to load image",
+                                            semanticLabel:
+                                                AppLocalizations.of(context)!
+                                                    .failToLoadImage,
                                           ),
                                           Text(
-                                            "Failed to load image",
+                                            AppLocalizations.of(context)!
+                                                .failToLoadImage,
                                             style: TextStyle(
                                               fontSize: 12,
                                               decoration: TextDecoration.none,
@@ -106,10 +109,11 @@ class ChatBubble extends StatelessWidget {
                               Icon(
                                 Icons.image_not_supported,
                                 size: 32,
-                                semanticLabel: "Fail to load image",
+                                semanticLabel: AppLocalizations.of(context)!
+                                    .failToLoadImage,
                               ),
                               Text(
-                                "Failed to load image",
+                                AppLocalizations.of(context)!.failToLoadImage,
                                 style: TextStyle(
                                   fontSize: 12,
                                   decoration: TextDecoration.none,

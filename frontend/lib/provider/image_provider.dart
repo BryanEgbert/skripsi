@@ -5,6 +5,7 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/model/response/upload_image_response.dart';
 import 'package:frontend/services/image_service.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/utils/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -28,7 +29,7 @@ class ImageState extends _$ImageState {
     try {
       token = await refreshAccessToken();
     } catch (e) {
-      return Future.error(jwtExpired, StackTrace.current);
+      return Future.error(LocalizationService().jwtExpired, StackTrace.current);
     }
 
     final service = ImageService();

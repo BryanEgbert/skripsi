@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
-import 'package:frontend/model/error_handler/error_handler.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/request/create_review_request.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/review_provider.dart';
+import 'package:frontend/services/localization_service.dart';
 
 class AddReviewModal extends ConsumerStatefulWidget {
   final int petDaycareId;
@@ -46,8 +47,8 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
 
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
-        if (reviewState.error.toString() == jwtExpired ||
-            reviewState.error.toString() == userDeleted) {
+        if (reviewState.error.toString() == LocalizationService().jwtExpired ||
+            reviewState.error.toString() == LocalizationService().userDeleted) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => WelcomeWidget(),
@@ -74,7 +75,7 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
               var snackbar = SnackBar(
                 key: Key("success-message"),
                 content: Text(
-                  "Operation completed successfully",
+                  AppLocalizations.of(context)!.operationSuccess,
                   style: TextStyle(
                     color: Colors.white,
                   ),

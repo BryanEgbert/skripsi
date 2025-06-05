@@ -27,7 +27,6 @@ class AuthService implements IAuthService {
     return makeRequest(200, () async {
       final String host =
           FirebaseRemoteConfig.instance.getString("backend_host");
-      log("host: $host");
 
       final dio = Dio(BaseOptions(
         validateStatus: (status) {

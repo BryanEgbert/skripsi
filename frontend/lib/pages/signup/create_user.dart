@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/profile_image_picker.dart';
 import 'package:frontend/components/signup_guide_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/pages/signup/create_pet_daycare_page.dart';
 import 'package:frontend/pages/signup/create_vet.dart';
@@ -97,8 +98,8 @@ class _CreateUserPageState extends State<CreateUserPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SignupGuideText(
-                  title: "Let's Set Up Your Account",
-                  subtitle: "Enter your details to continue",
+                  title: AppLocalizations.of(context)!.setupAccountTitle,
+                  subtitle: AppLocalizations.of(context)!.setupAccountSubtitle,
                 ),
                 SizedBox(height: 56),
                 Form(
@@ -119,9 +120,9 @@ class _CreateUserPageState extends State<CreateUserPage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          labelText: "Display Name",
+                          labelText: AppLocalizations.of(context)!.displayName,
                         ),
-                        validator: (value) => validateNotEmpty("Name", value),
+                        validator: (value) => validateNotEmpty(context, value),
                       ),
                       TextFormField(
                         key: Key("email-input"),
@@ -143,7 +144,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                           ),
                         ),
                         validator: (value) {
-                          return validateEmail(value);
+                          return validateEmail(context, value);
                         },
                       ),
                       TextFormField(
@@ -176,9 +177,10 @@ class _CreateUserPageState extends State<CreateUserPage> {
                                         : Colors.orange,
                                   ),
                           ),
-                          labelText: "Password",
+                          labelText:
+                              AppLocalizations.of(context)!.passwordInputLabel,
                           helper: Text(
-                            "Must contain at least 8 characters",
+                            AppLocalizations.of(context)!.passwordRequirement,
                             style: TextStyle(
                               fontSize: 12,
                               color: Theme.of(context).brightness ==
@@ -192,12 +194,12 @@ class _CreateUserPageState extends State<CreateUserPage> {
                         enableSuggestions: false,
                         autocorrect: false,
                         validator: (value) {
-                          return validateRegisterassword(value);
+                          return validateRegisterPassword(context, value);
                         },
                       ),
                       ElevatedButton(
                         onPressed: _navigateToNext,
-                        child: const Text("Next"),
+                        child: Text(AppLocalizations.of(context)!.next),
                       ),
                     ],
                   ),

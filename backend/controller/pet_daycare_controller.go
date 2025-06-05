@@ -589,8 +589,6 @@ func (pdc *PetDaycareController) GetMyPetdaycare(c *gin.Context) {
 		return
 	}
 
-	log.Printf("userId: %d", userID)
-
 	out, err := pdc.petDaycareService.GetMyPetDaycare(userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
@@ -665,6 +663,13 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 			return
 		}
 		filters.MaxDistance = value
+	}
+	if petCategoryIds := c.Query("pet-categories"); petCategoryIds != "" {
+		splitted := strings.Split(petCategoryIds, ",")
+		for _, val := range splitted {
+			value, _ := strconv.ParseUint(val, 10, 64)
+			filters.PetCategoryIds = append(filters.PetCategoryIds, uint(value))
+		}
 	}
 	if facilities := c.Query("facilities"); facilities != "" {
 		filters.Facilities = strings.Split(facilities, ",")

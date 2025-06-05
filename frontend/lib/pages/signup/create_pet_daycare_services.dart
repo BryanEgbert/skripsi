@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/modals/select_lookup_modal.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
@@ -89,7 +90,7 @@ class _CreatePetDaycareServicesState
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Configure Your Services",
+          AppLocalizations.of(context)!.configureYourServices,
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.light
                 ? Constants.primaryTextColor
@@ -112,7 +113,7 @@ class _CreatePetDaycareServicesState
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              "Requirements",
+              AppLocalizations.of(context)!.requirements,
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -122,7 +123,7 @@ class _CreatePetDaycareServicesState
               ),
             ),
             CheckboxListTile(
-              title: Text("Pet Vaccination Required"),
+              title: Text(AppLocalizations.of(context)!.petVaccinationRequired),
               value: _petVaccinationRequired,
               onChanged: (value) {
                 setState(() {
@@ -131,7 +132,7 @@ class _CreatePetDaycareServicesState
               },
             ),
             Text(
-              "Additional Services",
+              AppLocalizations.of(context)!.additionalServices,
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -141,7 +142,7 @@ class _CreatePetDaycareServicesState
               ),
             ),
             CheckboxListTile(
-              title: Text("Grooming Provided"),
+              title: Text(AppLocalizations.of(context)!.groomingProvided),
               value: _groomingServiceProvided,
               onChanged: (value) {
                 setState(() {
@@ -150,7 +151,7 @@ class _CreatePetDaycareServicesState
               },
             ),
             CheckboxListTile(
-              title: Text("Pickup Provided"),
+              title: Text(AppLocalizations.of(context)!.pickupProvided),
               value: _pickupServiceProvided,
               onChanged: (value) {
                 setState(() {
@@ -159,7 +160,7 @@ class _CreatePetDaycareServicesState
               },
             ),
             CheckboxListTile(
-              title: Text("In-House Food Provided"),
+              title: Text(AppLocalizations.of(context)!.inHouseFoodProvided),
               value: _foodProvided,
               onChanged: (value) {
                 setState(() {
@@ -179,7 +180,8 @@ class _CreatePetDaycareServicesState
                       readOnly: true,
                       decoration: InputDecoration(
                         suffixIcon: Icon(Icons.navigate_next),
-                        labelText: "Daily Walks Provided",
+                        labelText:
+                            AppLocalizations.of(context)!.dailyWalksProvided,
                         border: InputBorder.none,
                       ),
                       onTap: () async {
@@ -196,7 +198,7 @@ class _CreatePetDaycareServicesState
                         _dailyWalkController.text = out.name;
                         _dailyWalksId = out.id;
                       },
-                      validator: (value) => validateNotEmpty("Input", value),
+                      validator: (value) => validateNotEmpty(context, value),
                     ),
                     TextFormField(
                       controller: _dailyPlaytimeController,
@@ -204,7 +206,8 @@ class _CreatePetDaycareServicesState
                       readOnly: true,
                       decoration: InputDecoration(
                         suffixIcon: Icon(Icons.navigate_next),
-                        labelText: "Daily Playtime Provided",
+                        labelText:
+                            AppLocalizations.of(context)!.dailyPlaytimeProvided,
                         border: InputBorder.none,
                       ),
                       onTap: () async {
@@ -221,7 +224,7 @@ class _CreatePetDaycareServicesState
                         _dailyPlaytimeController.text = out.name;
                         _dailyPlaytimeId = out.id;
                       },
-                      validator: (value) => validateNotEmpty("Input", value),
+                      validator: (value) => validateNotEmpty(context, value),
                     ),
                   ],
                 ),
@@ -232,7 +235,7 @@ class _CreatePetDaycareServicesState
               onPressed: _submitForm,
               child: !auth.isLoading
                   ? Text(
-                      "Create My Account",
+                      AppLocalizations.of(context)!.createMyAccount,
                       style: TextStyle(fontSize: 18, color: Colors.white),
                     )
                   : CircularProgressIndicator(

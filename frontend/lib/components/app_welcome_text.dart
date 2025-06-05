@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class AppWelcomeText extends StatelessWidget {
   const AppWelcomeText({
@@ -15,7 +16,7 @@ class AppWelcomeText extends StatelessWidget {
           RichText(
             textAlign: TextAlign.start,
             text: TextSpan(
-              text: "Welcome to\n",
+              text: "${AppLocalizations.of(context)!.welcomeTo}\n",
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -35,8 +36,7 @@ class AppWelcomeText extends StatelessWidget {
                   ),
                 ),
                 TextSpan(
-                  text:
-                      "The smarter way to find pet daycares & connect with vets!",
+                  text: AppLocalizations.of(context)!.punchLine,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.normal,

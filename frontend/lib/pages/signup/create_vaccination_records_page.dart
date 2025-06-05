@@ -1,10 +1,10 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/signup_guide_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
@@ -46,7 +46,6 @@ class _CreateVaccinationRecordsPageState
     if (photo != null) {
       setState(() {
         _vaccinationPhoto = File(photo.path);
-        log("profile: ${_vaccinationPhoto!.path}");
       });
     }
   }
@@ -54,6 +53,7 @@ class _CreateVaccinationRecordsPageState
   @override
   Widget build(BuildContext context) {
     final token = ref.watch(authProvider);
+    Locale locale = Localizations.localeOf(context);
 
     handleError(token, context, ref.read(authProvider.notifier).reset);
 
@@ -73,8 +73,14 @@ class _CreateVaccinationRecordsPageState
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.arrow_back_ios)),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -86,9 +92,9 @@ class _CreateVaccinationRecordsPageState
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SignupGuideText(
-                  title: "Let's Set Up Your Account",
-                  subtitle:
-                      "Add your pet's vaccination record (this step is optional)",
+                  title: AppLocalizations.of(context)!.setupAccountTitle,
+                  subtitle: AppLocalizations.of(context)!
+                      .addVaccinationRecordOptional,
                 ),
                 SizedBox(
                   height: 48,
@@ -105,7 +111,8 @@ class _CreateVaccinationRecordsPageState
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          labelText: "Date Administered",
+                          labelText:
+                              AppLocalizations.of(context)!.dateAdministered,
                           icon: Icon(Icons.today_rounded),
                         ),
                         onTap: () async {
@@ -118,7 +125,8 @@ class _CreateVaccinationRecordsPageState
 
                           if (pickedDate != null) {
                             String formattedDate =
-                                DateFormat('yyyy-MM-dd').format(pickedDate);
+                                DateFormat('yyyy-MM-dd', locale.toLanguageTag())
+                                    .format(pickedDate);
                             setState(() {
                               _dateAdministered = pickedDate;
                               _isDateAdministeredFilled = true;
@@ -137,7 +145,7 @@ class _CreateVaccinationRecordsPageState
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          labelText: "Next Due Date",
+                          labelText: AppLocalizations.of(context)!.nextDueDate,
                           disabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(color: Colors.blueGrey),
@@ -153,7 +161,8 @@ class _CreateVaccinationRecordsPageState
 
                           if (pickedDate != null) {
                             String formattedDate =
-                                DateFormat('yyyy-MM-dd').format(pickedDate);
+                                DateFormat('yyyy-MM-dd', locale.toLanguageTag())
+                                    .format(pickedDate);
                             setState(() {
                               _nextDueDateController.text = formattedDate;
                             });
@@ -197,7 +206,8 @@ class _CreateVaccinationRecordsPageState
                           }
                         },
                         child: !token.isLoading
-                            ? Text("Create My Account")
+                            ? Text(
+                                AppLocalizations.of(context)!.createMyAccount)
                             : CircularProgressIndicator(color: Colors.white),
                       ),
                       TextButton(
@@ -220,7 +230,7 @@ class _CreateVaccinationRecordsPageState
                             color: Colors.grey[700],
                           ),
                         ),
-                        child: Text("Skip"),
+                        child: Text(AppLocalizations.of(context)!.skip),
                       ),
                     ],
                   )
@@ -230,7 +240,7 @@ class _CreateVaccinationRecordsPageState
                     spacing: 8,
                     children: [
                       Text(
-                        "Creating Your Account",
+                        AppLocalizations.of(context)!.creatingYourAccount,
                         style: TextStyle(
                           color:
                               Theme.of(context).brightness == Brightness.light
@@ -273,7 +283,7 @@ class _CreateVaccinationRecordsPageState
                   SizedBox(width: 8),
                   Flexible(
                     child: Text(
-                      "Click to add photo of the vaccination record",
+                      AppLocalizations.of(context)!.clickToAddVaccinePhoto,
                       // softWrap: true,
                     ),
                   ),

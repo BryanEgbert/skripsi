@@ -227,8 +227,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                             final dateTime =
                                 DateTime.parse(msg.createdAt).toLocal();
 
-                            final formatter =
-                                DateFormat('EEE, dd MMM yyyy HH:mm');
+                            final formatter = DateFormat(
+                                'EEE, dd MMM yyyy HH:mm',
+                                Localizations.localeOf(context)
+                                    .toLanguageTag());
                             final formattedDate = formatter.format(dateTime);
 
                             if (msg.type == "message") {

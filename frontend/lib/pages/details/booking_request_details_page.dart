@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/booking_request.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/slot_provider.dart';
@@ -38,7 +39,7 @@ class _BookingRequestDetailsPageState
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Booking Details',
+          AppLocalizations.of(context)!.bookingDetails,
           style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
         ),
         actions: appBarActions(),
@@ -57,7 +58,7 @@ class _BookingRequestDetailsPageState
               children: [
                 SizedBox(height: 4),
                 Text(
-                  "Booking Period",
+                  AppLocalizations.of(context)!.reservationDates,
                   style: TextStyle(
                     color: Colors.orange,
                     fontWeight: FontWeight.bold,
@@ -65,7 +66,7 @@ class _BookingRequestDetailsPageState
                   ),
                 ),
                 Text(
-                  "${formatDateStr(widget.bookingReq.startDate)} - ${formatDateStr(widget.bookingReq.endDate)}",
+                  "${formatDateStr(widget.bookingReq.startDate, context)} - ${formatDateStr(widget.bookingReq.endDate, context)}",
                   style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.light
                         ? Colors.black
@@ -77,7 +78,7 @@ class _BookingRequestDetailsPageState
                   spacing: 8,
                   children: [
                     Text(
-                      "Use Pick-up Service",
+                      AppLocalizations.of(context)!.usePickupService,
                       style: TextStyle(
                         color: Colors.orange,
                         fontWeight: FontWeight.bold,
@@ -136,57 +137,6 @@ class _BookingRequestDetailsPageState
               ],
             ),
           ),
-          // Container(
-          //   width: double.infinity,
-          //   color: Constants.secondaryBackgroundColor,
-          //   padding: EdgeInsets.all(12),
-          //   child: Column(
-          //     spacing: 8,
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       Text(
-          //         "Pricings",
-          //         style: TextStyle(
-          //           color: Colors.orange,
-          //           fontWeight: FontWeight.bold,
-          //           fontSize: 16,
-          //         ),
-          //       ),
-          //       ListView.builder(
-          //         physics: NeverScrollableScrollPhysics(),
-          //         shrinkWrap: true,
-          //         itemCount: widget.transaction.bookedSlot.petCount.length,
-          //         itemBuilder: (context, index) {
-          //           var item = widget.transaction.bookedSlot.petCount[index];
-          //           var pricing = widget.transaction.petDaycare.pricings
-          //               .where((e) => e.petCategory.id == item.petCategory.id)
-          //               .first;
-          //           return Row(
-          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //             children: [
-          //               Text("${item.petCategory.name} x ${item.total}"),
-          //               Text(
-          //                   "Rp. ${pricing.price * item.total}/${pricing.pricingType}"),
-          //             ],
-          //           );
-          //         },
-          //       ),
-          //       Row(
-          //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //         children: [
-          //           Text(
-          //             "Total",
-          //             style: TextStyle(fontWeight: FontWeight.bold),
-          //           ),
-          //           Text(
-          //             "Rp. $totalPrice",
-          //             style: TextStyle(fontWeight: FontWeight.bold),
-          //           ),
-          //         ],
-          //       ),
-          //     ],
-          //   ),
-          // ),
           Expanded(
             child: Container(
               width: double.infinity,
@@ -198,7 +148,7 @@ class _BookingRequestDetailsPageState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Booked Pets",
+                    AppLocalizations.of(context)!.reservedPets,
                     style: TextStyle(
                       color: Colors.orange,
                       fontWeight: FontWeight.bold,
@@ -221,8 +171,8 @@ class _BookingRequestDetailsPageState
                           leading: DefaultCircleAvatar(
                               imageUrl: item.imageUrl ?? ""),
                           title: Text(item.name),
-                          subtitle:
-                              Text("Pet Category: ${item.petCategory.name}"),
+                          subtitle: Text(AppLocalizations.of(context)!
+                              .petCategory(item.petCategory.name)),
                         );
                       },
                     ),
@@ -245,7 +195,7 @@ class _BookingRequestDetailsPageState
                   backgroundColor: Colors.green[800],
                 ),
                 child: Text(
-                  "Accept",
+                  AppLocalizations.of(context)!.accept,
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -261,7 +211,7 @@ class _BookingRequestDetailsPageState
                     backgroundColor: Colors.red[800],
                   ),
                   child: Text(
-                    "Reject",
+                    AppLocalizations.of(context)!.reject,
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

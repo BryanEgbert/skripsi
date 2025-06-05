@@ -3,6 +3,7 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/update_user_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/services/user_service.dart';
 import 'package:frontend/utils/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -28,7 +29,7 @@ class UserState extends _$UserState {
       token = await refreshAccessToken();
       ref.invalidate(getMyUserProvider);
     } catch (e) {
-      state = AsyncError(jwtExpired, StackTrace.current);
+      state = AsyncError(LocalizationService().jwtExpired, StackTrace.current);
       return;
     }
 
@@ -52,7 +53,7 @@ class UserState extends _$UserState {
     try {
       token = await refreshAccessToken();
     } catch (e) {
-      state = AsyncError(jwtExpired, StackTrace.current);
+      state = AsyncError(LocalizationService().jwtExpired, StackTrace.current);
       return;
     }
     final deviceToken = await FirebaseMessaging.instance.getToken();

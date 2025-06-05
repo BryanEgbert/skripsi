@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 void showCancelBookingConfirmationDialog(
     BuildContext context, String message, Function() delFunc) {
@@ -8,7 +9,7 @@ void showCancelBookingConfirmationDialog(
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(
-          "Cancel Booking",
+          AppLocalizations.of(context)!.cancelBooking,
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.light
                 ? Constants.primaryTextColor
@@ -28,7 +29,7 @@ void showCancelBookingConfirmationDialog(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text("No"),
+            child: Text(AppLocalizations.of(context)!.no),
           ),
           TextButton(
             onPressed: () {
@@ -36,7 +37,7 @@ void showCancelBookingConfirmationDialog(
               Navigator.of(context).pop();
             },
             child: Text(
-              "Yes",
+              AppLocalizations.of(context)!.yes,
               style: TextStyle(color: Constants.primaryTextColor),
             ),
           ),
@@ -53,7 +54,7 @@ void showDeleteConfirmationDialog(
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(
-          "Confirm Delete",
+          AppLocalizations.of(context)!.confirmDeleteTitle,
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.light
                 ? Constants.primaryTextColor
@@ -73,7 +74,7 @@ void showDeleteConfirmationDialog(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text("Cancel"),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -81,7 +82,7 @@ void showDeleteConfirmationDialog(
               Navigator.of(context).pop();
             },
             child: Text(
-              "Delete",
+              AppLocalizations.of(context)!.delete,
               style: TextStyle(color: Colors.red),
             ),
           ),
@@ -118,7 +119,7 @@ void showConfirmationDialog(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text("Cancel"),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -126,7 +127,7 @@ void showConfirmationDialog(
               Navigator.of(context).pop();
             },
             child: Text(
-              "Delete",
+              AppLocalizations.of(context)!.delete,
               style: TextStyle(color: Colors.red),
             ),
           ),

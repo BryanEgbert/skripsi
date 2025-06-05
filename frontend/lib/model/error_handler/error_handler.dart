@@ -3,10 +3,11 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:frontend/model/response/error_response.dart';
+import 'package:frontend/services/localization_service.dart';
 
-final String unknownErr = "Unknown Error";
-final String jwtExpired = "Session expired";
-final String userDeleted = "User has been deleted, please create a new account";
+// final String unknownErr = LocalizationService().unknownError;
+// final String jwtExpired = LocalizationService().jwtExpired;
+// final String userDeleted = LocalizationService().userDeleted;
 
 sealed class Result<T> {
   const Result();
@@ -82,44 +83,45 @@ Future<Result<T>> makeRequest<T>(
 
       return Result.ok(resp);
     } else {
-      log("exception: ${res.statusCode}");
+      log("Status code ${res.statusCode}: ${res.data}", name: "makeRequest");
       switch (res.statusCode) {
         case 400:
           ErrorResponse errorRes = ErrorResponse.fromJson(res.data);
 
           return Result.badRequestErr(errorRes.error);
         case 401:
-          return Result.unauthorized("Invalid email or password");
+          return Result.unauthorized(
+              LocalizationService().invalidEmailOrPassword);
         case 403:
           if (res.data != null) {
             ErrorResponse errorRes = ErrorResponse.fromJson(res.data);
 
             return Result.forbiddenErr(errorRes.error);
           }
-          return Result.forbiddenErr("Session expired");
+          return Result.forbiddenErr(LocalizationService().jwtExpired);
         case 404:
-          return Result.notFoundErr("URL doesn't exists");
+          return Result.notFoundErr(LocalizationService().dataDoesNotExist);
         case 500:
-          log("exception: ${res.data}");
           if (res.data != null) {
             ErrorResponse errorRes = ErrorResponse.fromJson(res.data);
             return Result.internalServerErr(errorRes.message);
           } else {
             return Result.internalServerErr(
-                "Something's wrong, please try again later");
+                LocalizationService().somethingWrong);
           }
         default:
           return Result.err("Error: ${res.statusCode} status code");
       }
     }
   } on DioException catch (e) {
+    log("${e.type}: ${e.message}", error: e.error, name: "makeRequest");
     return switch (e.type) {
       DioExceptionType.connectionTimeout => Result.timeoutErr(),
       DioExceptionType.sendTimeout => Result.timeoutErr(),
       DioExceptionType.receiveTimeout => Result.timeoutErr(),
       DioExceptionType.connectionError =>
         Result.networkErr("Failed to connect to server"),
-      _ => Result.err(e.message ?? "Unknown error")
+      _ => Result.err(e.message ?? "Unknown error: ${e.error.toString()}")
     };
   }
 }

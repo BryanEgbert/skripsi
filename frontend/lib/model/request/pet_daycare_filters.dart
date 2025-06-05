@@ -7,7 +7,8 @@ class PetDaycareFilters {
   int dailyPlaytime;
   double minPrice;
   double maxPrice;
-  String? pricingType;
+  int? pricingType;
+  List<int> petCategoryIds;
 
   PetDaycareFilters({
     this.minDistance = 0.0,
@@ -19,13 +20,14 @@ class PetDaycareFilters {
     this.minPrice = 0.0,
     this.maxPrice = 0.0,
     this.pricingType,
+    this.petCategoryIds = const [],
   });
 
-  Map<String, String> toMap() {
-    Map<String, String> map = {
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {
       "min-distance": minDistance.toString(),
       "max-distance": maxDistance.toString(),
-      "facilities": facilities.join(","),
+      // "facilities": facilities.join(","),
       "min-price": minPrice.toString(),
       "max-price": maxPrice.toString(),
       "daily-walks": dailyWalks.toString(),
@@ -36,8 +38,12 @@ class PetDaycareFilters {
       map["facilities"] = facilities.join(",");
     }
 
+    if (petCategoryIds.isNotEmpty) {
+      map["pet-categories"] = petCategoryIds.join(",");
+    }
+
     if (pricingType != null) {
-      map["pricing-type"] = pricingType!;
+      map["pricing-type"] = pricingType;
     }
 
     if (mustBeVaccinated != null) {

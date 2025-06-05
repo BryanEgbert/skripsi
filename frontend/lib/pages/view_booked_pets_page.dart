@@ -7,6 +7,7 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/model/user.dart';
@@ -157,7 +158,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "Bookings",
+            AppLocalizations.of(context)!.customers,
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.light
                   ? Constants.primaryTextColor
@@ -169,11 +170,11 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
             tabs: [
               Tab(
                 icon: Icon(Icons.pets_rounded),
-                text: "Sort by Pets",
+                text: AppLocalizations.of(context)!.sortByPets,
               ),
               Tab(
                 icon: Icon(Icons.person_rounded),
-                text: "Sort by Pet Owners",
+                text: AppLocalizations.of(context)!.sortByPetOwners,
               ),
             ],
             indicatorColor: Theme.of(context).brightness == Brightness.light
@@ -207,7 +208,8 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
           : (_error == null)
               ? (_bookedPetRecords.isEmpty)
                   ? ErrorText(
-                      errorText: "There are no booked pet owners",
+                      errorText:
+                          AppLocalizations.of(context)!.noBookedPetOwners,
                       onRefresh: () async {
                         _bookedPetRecords = [];
                         _page = 1;
@@ -298,7 +300,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
           : (_error == null)
               ? (_petRecords.isEmpty)
                   ? ErrorText(
-                      errorText: "There are no booked pets",
+                      errorText: AppLocalizations.of(context)!.noBookedPets,
                       onRefresh: () async {
                         _petRecords = [];
                         _lastId = 0;
@@ -355,13 +357,20 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
               : Colors.orange,
         ),
       ),
-      subtitle: Text(
-        "Pet category: ${item.petCategory.name}\nOwner: ${item.owner.name}",
-        style: TextStyle(
-          color: Theme.of(context).brightness == Brightness.light
-              ? Colors.black
-              : Colors.white70,
-        ),
+      subtitle: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppLocalizations.of(context)!.petCategory(item.petCategory.name),
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black
+                  : Colors.white70,
+            ),
+          ),
+          Text(AppLocalizations.of(context)!.petOwner(item.owner.name))
+        ],
       ),
       titleTextStyle: TextStyle(
         fontSize: 16,
@@ -389,7 +398,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                           ? Constants.primaryTextColor
                           : Colors.orange,
                     ),
-                    Text("Send Photo To Pet Owner"),
+                    Text(AppLocalizations.of(context)!.sendPhotoToOwner),
                   ],
                 ),
                 onTap: () async {
@@ -426,7 +435,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                             ? Constants.primaryTextColor
                             : Colors.orange,
                       ),
-                      Text("Chat pet's owner"),
+                      Text(AppLocalizations.of(context)!.chatPetOwner),
                     ],
                   ),
                 ),

@@ -143,7 +143,7 @@ class _ViewSlotsPageState extends ConsumerState<ViewSlotsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        formatDateStr(_records[index].targetDate),
+                        formatDateStr(_records[index].targetDate, context),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

@@ -3,6 +3,7 @@ import 'package:frontend/model/request/reduce_slot_request.dart';
 import 'package:frontend/model/request/update_pet_daycare_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/services/pet_daycare_service.dart';
 import 'package:frontend/services/slot_service.dart';
 import 'package:frontend/utils/refresh_token.dart';
@@ -28,7 +29,7 @@ class PetDaycareState extends _$PetDaycareState {
     try {
       token = await refreshAccessToken();
     } catch (e) {
-      state = AsyncError(jwtExpired, StackTrace.current);
+      state = AsyncError(LocalizationService().jwtExpired, StackTrace.current);
       return;
     }
 
@@ -52,7 +53,7 @@ class PetDaycareState extends _$PetDaycareState {
     try {
       token = await refreshAccessToken();
     } catch (e) {
-      state = AsyncError(jwtExpired, StackTrace.current);
+      state = AsyncError(LocalizationService().jwtExpired, StackTrace.current);
       return;
     }
 
@@ -77,7 +78,7 @@ class PetDaycareState extends _$PetDaycareState {
     try {
       token = await refreshAccessToken();
     } catch (e) {
-      state = AsyncError(jwtExpired, StackTrace.current);
+      state = AsyncError(LocalizationService().jwtExpired, StackTrace.current);
       return;
     }
 

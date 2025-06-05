@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/profile_image_picker.dart';
+import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/request/update_user_request.dart';
 import 'package:frontend/model/user.dart';
+import 'package:frontend/provider/category_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/user_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
@@ -23,6 +26,7 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
+  List<int> _vetSpecialties = [];
   File? _userProfilePicture;
 
   bool _isLoaded = false;
@@ -44,9 +48,7 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
       image: _userProfilePicture,
       email: value.email,
       roleId: value.role.id,
-      vetSpecialtyId: value.vetSpecialties.isNotEmpty
-          ? value.vetSpecialties.map((e) => e.id).toList()
-          : [],
+      vetSpecialtyId: _vetSpecialties,
     );
 
     ref.read(userStateProvider.notifier).editUser(updateUserReq);
@@ -56,6 +58,7 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
   Widget build(BuildContext context) {
     final user = ref.watch(getMyUserProvider);
     final userState = ref.watch(userStateProvider);
+    final vetSpecialties = ref.watch(vetSpecialtiesProvider);
 
     handleValue(userState, this, ref.read(userStateProvider.notifier).reset);
 
@@ -63,10 +66,19 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
         appBar: AppBar(
           leading: IconButton(
               onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(Icons.arrow_back_ios)),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Constants.primaryTextColor
+                    : Colors.orange,
+              )),
           title: Text(
-            "Edit User Profile",
-            style: TextStyle(color: Colors.orange),
+            AppLocalizations.of(context)!.editUserProfile,
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
+            ),
           ),
         ),
         body: switch (user) {
@@ -77,67 +89,100 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
               child: Builder(builder: (context) {
                 if (!_isLoaded) {
                   _nameController.text = value.name;
+                  _vetSpecialties =
+                      value.vetSpecialties.map((e) => e.id).toList();
                   _isLoaded = true;
                 }
 
-                return SingleChildScrollView(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 16),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        spacing: 12,
-                        children: [
-                          ProfileImagePicker(
-                            onTap: _pickImage,
-                            image: _userProfilePicture,
-                            imageUrl:
-                                (value.imageUrl == "") ? null : value.imageUrl,
+                return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 16),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      spacing: 12,
+                      children: [
+                        ProfileImagePicker(
+                          onTap: _pickImage,
+                          image: _userProfilePicture,
+                          imageUrl:
+                              (value.imageUrl == "") ? null : value.imageUrl,
+                        ),
+                        SizedBox(height: 0),
+                        TextFormField(
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.black
+                                    : Colors.white70,
                           ),
-                          SizedBox(height: 0),
-                          TextFormField(
+                          key: Key("name-input"),
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            labelText:
+                                AppLocalizations.of(context)!.displayName,
+                          ),
+                          validator: (value) =>
+                              validateNotEmpty(context, value),
+                        ),
+                        if (value.role.id == 3) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            AppLocalizations.of(context)!.chooseVetSpecialties,
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
+                                  ? Constants.primaryTextColor
+                                  : Colors.orange,
+                              fontWeight: FontWeight.bold,
                             ),
-                            key: Key("name-input"),
-                            controller: _nameController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              labelText: "Display Name",
-                            ),
-                            validator: (value) =>
-                                validateNotEmpty("Name", value),
                           ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              _submitForm(
-                                value,
-                              );
-                            },
-                            child: !userState.isLoading
-                                ? const Text("Save")
-                                : CircularProgressIndicator(
-                                    color: Colors.white),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: vetSpecialties.value!.length,
+                              itemBuilder: (context, index) {
+                                return CheckboxListTile(
+                                  value: _vetSpecialties.contains(
+                                      vetSpecialties.value![index].id),
+                                  title:
+                                      Text(vetSpecialties.value![index].name),
+                                  onChanged: (isChecked) {
+                                    setState(() {
+                                      if (isChecked == true) {
+                                        _vetSpecialties.add(
+                                            vetSpecialties.value![index].id);
+                                      } else {
+                                        _vetSpecialties.remove(
+                                            vetSpecialties.value![index].id);
+                                      }
+                                    });
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ],
-                      ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            _submitForm(value);
+                          },
+                          child: !userState.isLoading
+                              ? Text(AppLocalizations.of(context)!.saveBtn)
+                              : CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                        ),
+                      ],
                     ),
                   ),
                 );
               }),
             ),
-          _ => Center(
-              child: CircularProgressIndicator(
-                color: Colors.orange,
-              ),
-            )
+          _ => Center(child: CircularProgressIndicator.adaptive())
         });
   }
 

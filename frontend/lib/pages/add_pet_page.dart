@@ -6,6 +6,7 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/modals/select_pet_type_modal.dart';
 import 'package:frontend/components/profile_image_picker.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
@@ -84,6 +85,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
   @override
   Widget build(BuildContext context) {
     final petState = ref.watch(petStateProvider);
+    Locale locale = Localizations.localeOf(context);
 
     handleValue(petState, this, ref.read(petStateProvider.notifier).reset);
 
@@ -116,7 +118,11 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
         ),
         title: Text(
           "Pets",
-          style: TextStyle(color: Colors.orange),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         actions: appBarActions(),
       ),
@@ -132,11 +138,12 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                 spacing: 12,
                 children: [
                   Text(
-                    "Pet Info",
+                    AppLocalizations.of(context)!.petInfo,
                     style: TextStyle(
-                      color: Colors.orange,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
+                      fontSize: 20,
                     ),
                   ),
                   ProfileImagePicker(
@@ -150,9 +157,9 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      labelText: "Name",
+                      labelText: AppLocalizations.of(context)!.nameLabel,
                     ),
-                    validator: (value) => validateNotEmpty("Name", value),
+                    validator: (value) => validateNotEmpty(context, value),
                   ),
                   TextFormField(
                     controller: _petCategoryController,
@@ -160,7 +167,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                     readOnly: true,
                     decoration: InputDecoration(
                       suffixIcon: Icon(Icons.navigate_next),
-                      labelText: "Pet category",
+                      labelText: AppLocalizations.of(context)!.petCategoryLabel,
                     ),
                     onTap: () async {
                       _petCategoryFocusNode.unfocus();
@@ -175,15 +182,14 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                       _petCategoryController.text = out.name;
                       _petCategoryId = out.id;
                     },
-                    validator: (value) =>
-                        validateNotEmpty("Pet category", value),
+                    validator: (value) => validateNotEmpty(context, value),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Spayed/Neutered"),
+                        Text(AppLocalizations.of(context)!.spayedNeuteredLabel),
                         Checkbox(
                           value: _isNeutered,
                           onChanged: (value) {
@@ -196,11 +202,12 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                     ),
                   ),
                   Text(
-                    "Vaccination Record (Optional)",
+                    AppLocalizations.of(context)!.vaccinationRecordOptional,
                     style: TextStyle(
-                      color: Colors.orange,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
+                      fontSize: 20,
                     ),
                   ),
                   _vaccineRecordImagePicker(),
@@ -215,7 +222,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      labelText: "Date Administered",
+                      labelText: AppLocalizations.of(context)!.dateAdministered,
                       icon: Icon(Icons.today_rounded),
                     ),
                     onTap: () async {
@@ -228,7 +235,8 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
 
                       if (pickedDate != null) {
                         String formattedDate =
-                            DateFormat('yyyy-MM-dd').format(pickedDate);
+                            DateFormat('yyyy-MM-dd', locale.toLanguageTag())
+                                .format(pickedDate);
                         setState(() {
                           _dateAdministered = pickedDate;
                           _isDateAdministeredFilled = true;
@@ -251,7 +259,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      labelText: "Next Due Date",
+                      labelText: AppLocalizations.of(context)!.nextDueDate,
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(color: Colors.blueGrey),
@@ -267,7 +275,8 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
 
                       if (pickedDate != null) {
                         String formattedDate =
-                            DateFormat('yyyy-MM-dd').format(pickedDate);
+                            DateFormat('yyyy-MM-dd', locale.toLanguageTag())
+                                .format(pickedDate);
                         setState(() {
                           _nextDueDateController.text = formattedDate;
                         });
@@ -277,7 +286,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                   ElevatedButton(
                     onPressed: _submitForm,
                     child: (!ref.read(petStateProvider).isLoading)
-                        ? Text("Add Pet")
+                        ? Text(AppLocalizations.of(context)!.addPet)
                         : CircularProgressIndicator(
                             color: Colors.white,
                           ),

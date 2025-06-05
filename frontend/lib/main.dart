@@ -1,19 +1,20 @@
-import 'dart:developer';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/firebase_options.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/pages/home.dart';
 import 'package:frontend/pages/pet_daycare_home_page.dart';
 import 'package:frontend/pages/vet_main_page.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/database_provider.dart';
+import 'package:frontend/provider/locale_provider.dart';
 import 'package:frontend/provider/theme_provider.dart';
 import 'package:frontend/provider/user_provider.dart';
 import 'package:frontend/services/firebase_service.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
@@ -44,9 +45,7 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
   @override
   void initState() {
     super.initState();
-    log("init Home");
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      log("update token");
       ref.read(userStateProvider.notifier).updateDeviceToken();
     });
   }
@@ -54,12 +53,12 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeStateProvider);
+    final localeState = ref.watch(localeStateProvider);
     final tokenProvider = ref.watch(getTokenProvider);
     Widget home = Container(color: Colors.white);
 
     tokenProvider.when(
       data: (user) {
-        log("[MAIN PAGE] setting home page");
         if (user.roleId == 1) {
           home = HomeWidget();
         } else if (user.roleId == 2) {
@@ -79,12 +78,31 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
     );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Pet Daycare Search App",
+      title: "PawConnect",
+      onGenerateTitle: (context) {
+        LocalizationService().load(context);
+        // ref
+        //     .read(localeStateProvider.notifier)
+        //     .set(Localizations.localeOf(context).toLanguageTag());
+
+        return "PawConnect";
+      },
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localeResolutionCallback: (locale, supportedLocales) {
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale?.languageCode) {
+            return supportedLocale;
+          }
+        }
+
+        return const Locale('en');
+      },
       theme: ThemeData(
         brightness: Brightness.light,
-        primarySwatch: Colors.orange,
+        primarySwatch: Colors.deepOrange,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.orange,
+          seedColor: Colors.deepOrange,
           // primary: Colors.orange[900],
           // secondary: Color.fromARGB(255, 252, 232, 169),
           // tertiary: Color.fromARGB(255, 253, 247, 242),
@@ -93,16 +111,17 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
           ThemeData.light().textTheme,
         ),
         appBarTheme: AppBarTheme(
-            iconTheme: IconThemeData(
-          color: Colors.orange,
-        )),
+          iconTheme: IconThemeData(
+            color: Colors.deepOrange,
+          ),
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
             backgroundColor: Constants.primaryTextColor,
-            foregroundColor: Color.fromARGB(255, 253, 247, 242),
+            foregroundColor: Colors.white,
             minimumSize: Size(50, 50),
             textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
@@ -112,8 +131,8 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
-            backgroundColor: Colors.orange,
-            foregroundColor: Color.fromARGB(255, 253, 247, 242),
+            backgroundColor: Constants.primaryTextColor,
+            foregroundColor: Colors.white,
             minimumSize: Size(50, 50),
             textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
@@ -139,7 +158,7 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
               borderRadius: BorderRadius.circular(8),
             ),
             backgroundColor: Colors.orange,
-            foregroundColor: Color.fromARGB(255, 253, 247, 242),
+            foregroundColor: Colors.white,
             minimumSize: Size(50, 50),
             textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
@@ -150,12 +169,13 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
               borderRadius: BorderRadius.circular(8),
             ),
             backgroundColor: Colors.orange,
-            foregroundColor: Color.fromARGB(255, 253, 247, 242),
+            foregroundColor: Colors.white,
             minimumSize: Size(50, 50),
             textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
         ),
       ),
+      locale: Locale(localeState.value!),
       themeMode: (themeMode.value == false) ? ThemeMode.light : ThemeMode.dark,
       home: home,
     );

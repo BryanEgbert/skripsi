@@ -6,7 +6,7 @@ part of 'list_data_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$petDaycaresHash() => r'a842982c379670d32ff51a9a3401b37949605652';
+String _$petDaycaresHash() => r'74dd787e5bad097f3b9591b185906e9303c851bf';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -52,7 +52,8 @@ class PetDaycaresFamily extends Family<AsyncValue<ListData<PetDaycare>>> {
     int dailyPlaytime = 0,
     double minPrice = 0.0,
     double maxPrice = 0.0,
-    String? pricingType,
+    int? pricingType,
+    List<int> petCategoryIds = const [],
   ]) {
     return PetDaycaresProvider(
       lat,
@@ -68,6 +69,7 @@ class PetDaycaresFamily extends Family<AsyncValue<ListData<PetDaycare>>> {
       minPrice,
       maxPrice,
       pricingType,
+      petCategoryIds,
     );
   }
 
@@ -89,6 +91,7 @@ class PetDaycaresFamily extends Family<AsyncValue<ListData<PetDaycare>>> {
       provider.minPrice,
       provider.maxPrice,
       provider.pricingType,
+      provider.petCategoryIds,
     );
   }
 
@@ -124,7 +127,8 @@ class PetDaycaresProvider
     int dailyPlaytime = 0,
     double minPrice = 0.0,
     double maxPrice = 0.0,
-    String? pricingType,
+    int? pricingType,
+    List<int> petCategoryIds = const [],
   ]) : this._internal(
           (ref) => petDaycares(
             ref as PetDaycaresRef,
@@ -141,6 +145,7 @@ class PetDaycaresProvider
             minPrice,
             maxPrice,
             pricingType,
+            petCategoryIds,
           ),
           from: petDaycaresProvider,
           name: r'petDaycaresProvider',
@@ -164,6 +169,7 @@ class PetDaycaresProvider
           minPrice: minPrice,
           maxPrice: maxPrice,
           pricingType: pricingType,
+          petCategoryIds: petCategoryIds,
         );
 
   PetDaycaresProvider._internal(
@@ -186,6 +192,7 @@ class PetDaycaresProvider
     required this.minPrice,
     required this.maxPrice,
     required this.pricingType,
+    required this.petCategoryIds,
   }) : super.internal();
 
   final double? lat;
@@ -200,7 +207,8 @@ class PetDaycaresProvider
   final int dailyPlaytime;
   final double minPrice;
   final double maxPrice;
-  final String? pricingType;
+  final int? pricingType;
+  final List<int> petCategoryIds;
 
   @override
   Override overrideWith(
@@ -228,6 +236,7 @@ class PetDaycaresProvider
         minPrice: minPrice,
         maxPrice: maxPrice,
         pricingType: pricingType,
+        petCategoryIds: petCategoryIds,
       ),
     );
   }
@@ -252,7 +261,8 @@ class PetDaycaresProvider
         other.dailyPlaytime == dailyPlaytime &&
         other.minPrice == minPrice &&
         other.maxPrice == maxPrice &&
-        other.pricingType == pricingType;
+        other.pricingType == pricingType &&
+        other.petCategoryIds == petCategoryIds;
   }
 
   @override
@@ -271,6 +281,7 @@ class PetDaycaresProvider
     hash = _SystemHash.combine(hash, minPrice.hashCode);
     hash = _SystemHash.combine(hash, maxPrice.hashCode);
     hash = _SystemHash.combine(hash, pricingType.hashCode);
+    hash = _SystemHash.combine(hash, petCategoryIds.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -316,7 +327,10 @@ mixin PetDaycaresRef on AutoDisposeFutureProviderRef<ListData<PetDaycare>> {
   double get maxPrice;
 
   /// The parameter `pricingType` of this provider.
-  String? get pricingType;
+  int? get pricingType;
+
+  /// The parameter `petCategoryIds` of this provider.
+  List<int> get petCategoryIds;
 }
 
 class _PetDaycaresProviderElement
@@ -350,11 +364,14 @@ class _PetDaycaresProviderElement
   @override
   double get maxPrice => (origin as PetDaycaresProvider).maxPrice;
   @override
-  String? get pricingType => (origin as PetDaycaresProvider).pricingType;
+  int? get pricingType => (origin as PetDaycaresProvider).pricingType;
+  @override
+  List<int> get petCategoryIds =>
+      (origin as PetDaycaresProvider).petCategoryIds;
 }
 
 String _$getUnreadChatMessagesHash() =>
-    r'648d09192a5fea758195be96ff55deb2c9f12f52';
+    r'fe8a9cc78f72556384417344b0beb8bbf9112e8d';
 
 /// See also [getUnreadChatMessages].
 @ProviderFor(getUnreadChatMessages)
@@ -391,7 +408,7 @@ final getUserChatListProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GetUserChatListRef = AutoDisposeFutureProviderRef<ListData<User>>;
-String _$getSlotsHash() => r'32f861e1169f77554d21d3a583123ac2e85745f3';
+String _$getSlotsHash() => r'2deda545d0310dd90debd67992f51b4e7ba9dec2';
 
 /// See also [getSlots].
 @ProviderFor(getSlots)
@@ -537,7 +554,7 @@ class _GetSlotsProviderElement
   List<int> get petCategoryIds => (origin as GetSlotsProvider).petCategoryIds;
 }
 
-String _$reducedSlotsHash() => r'6cdaec271737b00acf473685a75f3c2952750675';
+String _$reducedSlotsHash() => r'f94886ac3448165d34ab0aa2a3178082f698e153';
 
 /// See also [reducedSlots].
 @ProviderFor(reducedSlots)
@@ -686,7 +703,7 @@ class _ReducedSlotsProviderElement
   int get pageSize => (origin as ReducedSlotsProvider).pageSize;
 }
 
-String _$petHash() => r'66eea8b69eb3995f93a82722d004ebe719782782';
+String _$petHash() => r'9a2bbdd74d14910143ced0cb516b47ec545b94dd';
 
 /// See also [pet].
 @ProviderFor(pet)
@@ -813,7 +830,7 @@ class _PetProviderElement extends AutoDisposeFutureProviderElement<Pet>
   int get petId => (origin as PetProvider).petId;
 }
 
-String _$vaccineRecordsHash() => r'28dc9ef9fa5e4dcaae7a3609e123dca807e3a6d0';
+String _$vaccineRecordsHash() => r'd74b031a8f2411badec04944cc4341a4a5893659';
 
 /// See also [vaccineRecords].
 @ProviderFor(vaccineRecords)
@@ -980,7 +997,7 @@ class _VaccineRecordsProviderElement
   int get pageSize => (origin as VaccineRecordsProvider).pageSize;
 }
 
-String _$savedAddressHash() => r'a7836c88284762f3b752d9834489d18962a9ff72';
+String _$savedAddressHash() => r'ad3686243dad79499088523818e0828285a3f454';
 
 /// See also [savedAddress].
 @ProviderFor(savedAddress)
@@ -1129,7 +1146,7 @@ class _SavedAddressProviderElement
   int get pageSize => (origin as SavedAddressProvider).pageSize;
 }
 
-String _$savedAddressByIdHash() => r'ca69aeb849f3d0698103ceb821f9c38c88153cc8';
+String _$savedAddressByIdHash() => r'2c1e63258d14903d1addb8a466e963d4a666f1b4';
 
 /// See also [savedAddressById].
 @ProviderFor(savedAddressById)
@@ -1261,7 +1278,7 @@ class _SavedAddressByIdProviderElement
 }
 
 String _$getVaccinationRecordByIdHash() =>
-    r'0586beadc028eb8712a5a82f0cce0062226ea630';
+    r'b0ee89168075cd47188793775e80141ed1b3b5a3';
 
 /// See also [getVaccinationRecordById].
 @ProviderFor(getVaccinationRecordById)
@@ -1432,7 +1449,7 @@ final chatWebsocketStreamProvider = AutoDisposeStreamProvider<dynamic>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ChatWebsocketStreamRef = AutoDisposeStreamProviderRef<dynamic>;
-String _$petListHash() => r'bd0f797936fc9abe01539d4c4c2b64fc620d351f';
+String _$petListHash() => r'b4e449fca979cffbcab65d2753d6585cc7f61dd7';
 
 /// See also [petList].
 @ProviderFor(petList)

@@ -46,7 +46,6 @@ dependencies:
   path: ^1.9.0
   dio: ^5.8.0+1
   geolocator: ^13.0.3
-  intl: ^0.20.2
   uuid: ^4.5.1
   readmore: ^3.0.0
   flutter_rating: ^2.0.2
@@ -58,6 +57,9 @@ dependencies:
   firebase_remote_config: ^5.4.4
   flutter_launcher_icons: ^0.14.3
   permission_handler: ^12.0.0+1
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 
 dev_dependencies:
   flutter_test:
@@ -90,6 +92,7 @@ flutter_launcher_icons:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

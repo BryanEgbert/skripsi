@@ -145,7 +145,7 @@ class _AddVaccinationRecordPageState
                             _isDateAdministeredFilled = false;
                           }
                         },
-                        validator: (value) => validateNotEmpty("value", value),
+                        validator: (value) => validateNotEmpty(context, value),
                       ),
                       TextFormField(
                         enabled: _isDateAdministeredFilled,
@@ -176,7 +176,7 @@ class _AddVaccinationRecordPageState
                             });
                           }
                         },
-                        validator: (value) => validateNotEmpty("value", value),
+                        validator: (value) => validateNotEmpty(context, value),
                       ),
                     ],
                   ),

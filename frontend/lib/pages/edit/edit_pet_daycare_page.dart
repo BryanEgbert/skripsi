@@ -10,6 +10,7 @@ import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/select_lookup_modal.dart';
 import 'package:frontend/components/modals/select_pricing_type_modal.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/pet_daycare.dart';
@@ -20,6 +21,7 @@ import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/image_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/pet_daycare_provider.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/services/location_service.dart';
 import 'package:frontend/utils/handle_error.dart';
 import 'package:frontend/utils/validator.dart';
@@ -208,8 +210,8 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
-        if (imageState.error.toString() == jwtExpired ||
-            imageState.error.toString() == userDeleted) {
+        if (imageState.error.toString() == LocalizationService().jwtExpired ||
+            imageState.error.toString() == LocalizationService().userDeleted) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => WelcomeWidget(),
@@ -270,7 +272,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
               appBar: AppBar(
                 leading: appBarBackButton(context),
                 title: Text(
-                  "Edit Pet Daycare",
+                  AppLocalizations.of(context)!.editDaycare,
                   style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.light
                         ? Constants.primaryTextColor
@@ -279,12 +281,13 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 ),
                 centerTitle: false,
                 actions: [
-                  TextButton(
+                  IconButton(
                     onPressed: () {
                       if (imageState.isLoading) return;
                       if (_latitude == null && _longitude == null) {
                         setState(() {
-                          _errorText = "Invalid location";
+                          _errorText =
+                              AppLocalizations.of(context)!.invalidLocation;
                         });
                         return;
                       }
@@ -337,7 +340,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                       //     _images.whereType<File>().toList();
                       // if (updatePetDaycareReq.thumbnails.isEmpty) {
                       //   setState(() {
-                      //     _errorText = "Must contains at least one image";
+                      //     _errorText = AppLocalizations.of(context)!.mustContainAtLeastOneImage;
                       //   });
                       //   return;
                       // }
@@ -348,23 +351,41 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                           .read(petDaycareStateProvider.notifier)
                           .updatePetDaycare(value.id, updatePetDaycareReq);
                     },
-                    child: !petDaycareState.isLoading
-                        ? Text("SAVE", style: _defaultTextStyle(context))
+                    icon: !petDaycareState.isLoading
+                        ? Icon(
+                            Icons.save,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
+                          )
                         : CircularProgressIndicator(),
                   )
                 ],
                 bottom: TabBar(tabs: [
                   Tab(
-                    child: Text("Details", style: _defaultTextStyle(context)),
+                    child: Text(
+                      AppLocalizations.of(context)!.detailsTab,
+                      style: _defaultTextStyle(context),
+                    ),
                   ),
                   Tab(
-                    child: Text("Images", style: _defaultTextStyle(context)),
+                    child: Text(
+                      AppLocalizations.of(context)!.imagesTab,
+                      style: _defaultTextStyle(context),
+                    ),
                   ),
                   Tab(
-                    child: Text("Slots", style: _defaultTextStyle(context)),
+                    child: Text(
+                      AppLocalizations.of(context)!.slotsTab,
+                      style: _defaultTextStyle(context),
+                    ),
                   ),
                   Tab(
-                    child: Text("Services", style: _defaultTextStyle(context)),
+                    child: Text(
+                      AppLocalizations.of(context)!.servicesTab,
+                      style: _defaultTextStyle(context),
+                    ),
                   ),
                 ]),
               ),
@@ -636,7 +657,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            "Requirements",
+            AppLocalizations.of(context)!.requirements,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -646,7 +667,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             ),
           ),
           CheckboxListTile(
-            title: Text("Pet Vaccination Required"),
+            title: Text(AppLocalizations.of(context)!.petVaccinationRequired),
             value: _petVaccinationRequired,
             onChanged: (value) {
               setState(() {
@@ -655,7 +676,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             },
           ),
           Text(
-            "Additional Services",
+            AppLocalizations.of(context)!.additionalServices,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -665,7 +686,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             ),
           ),
           CheckboxListTile(
-            title: Text("Grooming Provided"),
+            title: Text(AppLocalizations.of(context)!.groomingProvided),
             value: _groomingServiceProvided,
             onChanged: (value) {
               setState(() {
@@ -674,7 +695,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             },
           ),
           CheckboxListTile(
-            title: Text("Pickup Provided"),
+            title: Text(AppLocalizations.of(context)!.pickupProvided),
             value: _pickupServiceProvided,
             onChanged: (value) {
               setState(() {
@@ -683,7 +704,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             },
           ),
           CheckboxListTile(
-            title: Text("In-House Food Provided"),
+            title: Text(AppLocalizations.of(context)!.inHouseFoodProvided),
             value: _foodProvided,
             onChanged: (value) {
               setState(() {
@@ -708,7 +729,8 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                     readOnly: true,
                     decoration: InputDecoration(
                       suffixIcon: Icon(Icons.navigate_next),
-                      labelText: "Daily Walks Provided",
+                      labelText:
+                          AppLocalizations.of(context)!.dailyWalksProvided,
                       border: InputBorder.none,
                     ),
                     onTap: () async {
@@ -725,7 +747,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                       _dailyWalkController.text = out.name;
                       _dailyWalksId = out.id;
                     },
-                    validator: (value) => validateNotEmpty("Input", value),
+                    validator: (value) => validateNotEmpty(context, value),
                   ),
                   TextFormField(
                     style: TextStyle(
@@ -738,7 +760,8 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                     readOnly: true,
                     decoration: InputDecoration(
                       suffixIcon: Icon(Icons.navigate_next),
-                      labelText: "Daily Playtime Provided",
+                      labelText:
+                          AppLocalizations.of(context)!.dailyPlaytimeProvided,
                       border: InputBorder.none,
                     ),
                     onTap: () async {
@@ -755,7 +778,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                       _dailyPlaytimeController.text = out.name;
                       _dailyPlaytimeId = out.id;
                     },
-                    validator: (value) => validateNotEmpty("Input", value),
+                    validator: (value) => validateNotEmpty(context, value),
                   ),
                 ],
               ),
@@ -777,7 +800,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                "Pricing Type",
+                AppLocalizations.of(context)!.pricingModel,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -812,7 +835,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
               ),
               const SizedBox(height: 20),
               Text(
-                "Dogs",
+                AppLocalizations.of(context)!.dogs,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -903,7 +926,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
               ),
               SizedBox(height: 20),
               Text(
-                "Others",
+                AppLocalizations.of(context)!.others,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -912,7 +935,9 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                       : Colors.orange,
                 ),
               ),
-              _buildCheckboxTile("Accept cats?", _acceptCats, (value) {
+              _buildCheckboxTile(
+                  AppLocalizations.of(context)!.acceptCats, _acceptCats,
+                  (value) {
                 setState(() {
                   _acceptCats = value!;
                 });
@@ -923,7 +948,9 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 _catsPriceController,
                 _catsSlotController,
               ),
-              _buildCheckboxTile("Accept bunnies?", _acceptBunnies, (value) {
+              _buildCheckboxTile(
+                  AppLocalizations.of(context)!.acceptBunnies, _acceptBunnies,
+                  (value) {
                 setState(() {
                   _acceptBunnies = value!;
                 });
@@ -1034,10 +1061,10 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                labelText: "Pet Daycare Name",
+                labelText: AppLocalizations.of(context)!.petDaycareName,
                 errorText: _locationErrorText,
               ),
-              validator: (value) => validateNotEmpty("Name", value),
+              validator: (value) => validateNotEmpty(context, value),
             ),
             _locationInput(value),
             _operationHoursInput(context),
@@ -1055,7 +1082,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                labelText: "Description (optional)",
+                labelText: AppLocalizations.of(context)!.descriptionOptional,
               ),
             ),
           ],
@@ -1069,7 +1096,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Operating Hours",
+          AppLocalizations.of(context)!.operatingHours,
           style: _defaultTextStyle(context),
         ),
         Row(
@@ -1080,14 +1107,14 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 readOnly: true,
                 controller: _openingHoursController,
                 decoration: InputDecoration(
-                  labelText: "Opening Hour",
+                  labelText: AppLocalizations.of(context)!.openingHour,
                   labelStyle: TextStyle(fontSize: 12),
                   suffixIcon: Icon(
                     Icons.navigate_next,
                     size: 20,
                   ),
                 ),
-                validator: (value) => validateNotEmpty("Opening hour", value),
+                validator: (value) => validateNotEmpty(context, value),
                 onTap: () async {
                   final timeDisplay = await showTimePicker(
                     context: context,
@@ -1103,20 +1130,20 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 },
               ),
             ),
-            Text("to"),
+            Text(AppLocalizations.of(context)!.to),
             Expanded(
               child: TextFormField(
                 readOnly: true,
                 controller: _closingHoursController,
                 decoration: InputDecoration(
-                  labelText: "Closing Hour",
+                  labelText: AppLocalizations.of(context)!.closingHour,
                   labelStyle: TextStyle(fontSize: 12),
                   suffixIcon: Icon(
                     Icons.navigate_next,
                     size: 20,
                   ),
                 ),
-                validator: (value) => validateNotEmpty("Closing hour", value),
+                validator: (value) => validateNotEmpty(context, value),
                 onTap: () async {
                   final timeDisplay = await showTimePicker(
                     context: context,
@@ -1149,12 +1176,12 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 : Colors.white70,
           ),
           controller: controller,
-          validator: (value) => validateNotEmpty("Value", value),
+          validator: (value) => validateNotEmpty(context, value),
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
             ),
-            labelText: "Location name",
+            labelText: AppLocalizations.of(context)!.location,
             labelStyle: TextStyle(fontSize: 12),
           ),
           onTap: () {
@@ -1200,8 +1227,8 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                     case Error<RetrieveResponse>():
                       var snackbar = SnackBar(
                         key: Key("error-message"),
-                        content:
-                            Text("Something's wrong when fetching address"),
+                        content: Text(
+                            AppLocalizations.of(context)!.fetchAddressError),
                         backgroundColor: Colors.red[800],
                       );
 
@@ -1244,7 +1271,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             enabled: enabled,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
-              labelText: "Price",
+              labelText: AppLocalizations.of(context)!.price,
             ),
             keyboardType: TextInputType.number,
             onChanged: (value) {
@@ -1252,10 +1279,10 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 priceController.text = rupiahFormat.format(int.parse(value));
               }
             },
-            validator: (value) => validatePriceInput(enabled, value),
+            validator: (value) => validatePriceInput(context, enabled, value),
           ),
         ),
-        Text("per $_pricingTypeName"),
+        Text(AppLocalizations.of(context)!.perPricingModel(_pricingTypeName)),
         // Expanded(
         //     child: TextFormField(
         //   style: TextStyle(
@@ -1319,10 +1346,10 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             enabled: enabled,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
-              labelText: "# of Slot",
+              labelText: AppLocalizations.of(context)!.numberOfSlots,
             ),
             keyboardType: TextInputType.number,
-            validator: (value) => validateSlotInput(enabled, value),
+            validator: (value) => validateSlotInput(context, enabled, value),
           ),
         ),
       ],

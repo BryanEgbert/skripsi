@@ -6,13 +6,14 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/chat_message.dart';
-import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/user.dart';
 import 'package:frontend/pages/chat_page.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/message_tracker_provider.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:frontend/utils/handle_error.dart';
 
@@ -90,8 +91,8 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
       );
     } catch (e) {
       log("fetchData: $e");
-      if (e.toString() == jwtExpired ||
-          e.toString() == userDeleted && mounted) {
+      if (e.toString() == LocalizationService().jwtExpired ||
+          e.toString() == LocalizationService().userDeleted && mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => WelcomeWidget()),
           (route) => false,
@@ -109,7 +110,6 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
 
   @override
   void dispose() {
-    log("[PET OWNER CHAT LIST] dispose");
     // _webSocketSubscription?.cancel();
     // _streamController.close();
     // _channel?.sink.close();
@@ -145,7 +145,7 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
           ),
         ),
         title: Text(
-          "Messages",
+          AppLocalizations.of(context)!.messages,
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.light
                 ? Constants.primaryTextColor

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class ImageSlider extends StatefulWidget {
   final List<String> images;
@@ -20,7 +21,6 @@ class _ImageSliderState extends State<ImageSlider> {
         showGeneralDialog(
           context: context,
           barrierColor: Colors.black.withValues(alpha: 0.5),
-          barrierLabel: 'Image details',
           pageBuilder: (context, animation, secondaryAnimation) {
             return SizedBox.expand(
               child: GestureDetector(
@@ -46,10 +46,11 @@ class _ImageSliderState extends State<ImageSlider> {
                             Icon(
                               Icons.image_not_supported,
                               size: 32,
-                              semanticLabel: "Fail to load image",
+                              semanticLabel:
+                                  AppLocalizations.of(context)!.failToLoadImage,
                             ),
                             Text(
-                              "Failed to load image",
+                              AppLocalizations.of(context)!.failToLoadImage,
                               style: TextStyle(
                                 fontSize: 16,
                                 decoration: TextDecoration.none,

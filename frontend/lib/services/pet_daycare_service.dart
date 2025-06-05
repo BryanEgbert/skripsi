@@ -56,6 +56,7 @@ class PetDaycareService implements IPetDaycareService {
 
       final res = await dio.get(
         "http://$host/daycare/$petDaycareId",
+        queryParameters: coord.toMap(),
         options: Options(headers: {
           HttpHeaders.authorizationHeader: "Bearer $token",
         }),

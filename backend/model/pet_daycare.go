@@ -164,6 +164,7 @@ type GetPetDaycaresRequest struct {
 	MinPrice         float64
 	MaxPrice         float64
 	PricingType      *uint
+	PetCategoryIds   []uint
 }
 
 type GetPetDaycareDetailResponse struct {

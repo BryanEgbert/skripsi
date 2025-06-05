@@ -4,10 +4,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/send_message.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/image_provider.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -33,7 +33,7 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
         },
       );
     } catch (e) {
-      if (e.toString() == jwtExpired && mounted) {
+      if (e.toString() == LocalizationService().jwtExpired && mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => WelcomeWidget()),
           (route) => false,
@@ -75,8 +75,8 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
 
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
-        if (imageState.error.toString() == jwtExpired ||
-            imageState.error.toString() == userDeleted) {
+        if (imageState.error.toString() == LocalizationService().jwtExpired ||
+            imageState.error.toString() == LocalizationService().userDeleted) {
           WidgetsBinding.instance.addPostFrameCallback(
             (timeStamp) {
               Navigator.of(context).pushAndRemoveUntil(

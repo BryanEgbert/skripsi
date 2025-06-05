@@ -6,9 +6,11 @@ import 'package:frontend/components/app_bar_actions.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/user.dart';
 import 'package:frontend/pages/chat_page.dart';
+import 'package:frontend/provider/category_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
 
@@ -30,27 +32,26 @@ class _VetsViewState extends ConsumerState<VetsView> {
 
   Object? _error;
 
-  final List<Map<String, dynamic>> vetSpecialties = [
-    {'id': 1, 'name': 'General Practice'},
-    {'id': 2, 'name': 'Preventive Medicine'},
-    {'id': 3, 'name': 'Emergency & Critical Care'},
-    {'id': 4, 'name': 'Internal Medicine'},
-    {'id': 5, 'name': 'Cardiology'},
-    {'id': 6, 'name': 'Neurology'},
-    {'id': 7, 'name': 'Oncology'},
-    {'id': 8, 'name': 'Gastroenterology'},
-    {'id': 9, 'name': 'Dermatology & Allergy Care'},
-    {'id': 10, 'name': 'Dentistry & Oral Surgery'},
-    {'id': 11, 'name': 'Behavioral Medicine'},
-    {'id': 12, 'name': 'Surgery & Orthopedics'},
-    {'id': 13, 'name': 'Soft Tissue Surgery'},
-    {'id': 14, 'name': 'Orthopedic Surgery'},
-    {'id': 15, 'name': 'Ophthalmology'},
-    {'id': 16, 'name': 'Rehabilitation & Physical Therapy'},
-    {'id': 17, 'name': 'Exotic & Small Animal Care'},
-  ];
+  // final List<Map<String, dynamic>> vetSpecialties = [
+  //   {'id': 1, 'name': 'General Practice'},
+  //   {'id': 2, 'name': 'Preventive Medicine'},
+  //   {'id': 3, 'name': 'Emergency & Critical Care'},
+  //   {'id': 4, 'name': 'Internal Medicine'},
+  //   {'id': 5, 'name': 'Cardiology'},
+  //   {'id': 6, 'name': 'Neurology'},
+  //   {'id': 7, 'name': 'Oncology'},
+  //   {'id': 8, 'name': 'Gastroenterology'},
+  //   {'id': 9, 'name': 'Dermatology & Allergy Care'},
+  //   {'id': 10, 'name': 'Dentistry & Oral Surgery'},
+  //   {'id': 11, 'name': 'Behavioral Medicine'},
+  //   {'id': 12, 'name': 'Surgery & Orthopedics'},
+  //   {'id': 13, 'name': 'Soft Tissue Surgery'},
+  //   {'id': 14, 'name': 'Orthopedic Surgery'},
+  //   {'id': 15, 'name': 'Ophthalmology'},
+  //   {'id': 16, 'name': 'Rehabilitation & Physical Therapy'},
+  //   {'id': 17, 'name': 'Exotic & Small Animal Care'},
+  // ];
 
-  // ignore: prefer_final_fields
   int _vetSpecialtyId = 0;
 
   void _onScroll() {
@@ -103,6 +104,7 @@ class _VetsViewState extends ConsumerState<VetsView> {
 
   @override
   Widget build(BuildContext context) {
+    final vetSpecialties = ref.watch(vetSpecialtiesProvider);
     if (_error != null) {
       handleError(AsyncError(_error!, StackTrace.current), context);
     }
@@ -110,7 +112,7 @@ class _VetsViewState extends ConsumerState<VetsView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Vets",
+          AppLocalizations.of(context)!.vetsNav,
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.light
                 ? Constants.primaryTextColor
@@ -134,139 +136,158 @@ class _VetsViewState extends ConsumerState<VetsView> {
           ...petOwnerAppBarActions(widget.messages.length),
         ],
       ),
-      endDrawer: Container(
-        padding: EdgeInsets.all(8),
-        color: Theme.of(context).brightness == Brightness.light
-            ? Constants.secondaryBackgroundColor
-            : Constants.darkBackgroundColor,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: SafeArea(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
+      endDrawer: switch (vetSpecialties) {
+        AsyncError(:final error) => ErrorText(
+            errorText: error.toString(),
+            onRefresh: () => ref.refresh(vetSpecialtiesProvider.future)),
+        AsyncData(:final value) => Container(
+            padding: EdgeInsets.all(8),
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.secondaryBackgroundColor
+                : Constants.darkBackgroundColor,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: SafeArea(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          IconButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            icon: Icon(
-                              Icons.navigate_before,
-                              color: Constants.primaryTextColor,
-                            ),
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                icon: Icon(
+                                  Icons.navigate_before,
+                                  color: Constants.primaryTextColor,
+                                ),
+                              ),
+                              Text(
+                                AppLocalizations.of(context)!.back,
+                                style: TextStyle(
+                                  color: Constants.primaryTextColor,
+                                ),
+                              )
+                            ],
                           ),
                           Text(
-                            "Back",
+                            AppLocalizations.of(context)!.vetSpecialties,
                             style: TextStyle(
                               color: Constants.primaryTextColor,
+                              fontWeight: FontWeight.bold,
                             ),
-                          )
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 4.0,
+                            children: value.map((specialty) {
+                              final int id = specialty.id;
+                              final String name = specialty.name;
+                              return FilterChip(
+                                label: Text(
+                                  name,
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                selected: _vetSpecialtyId == id,
+                                onSelected: (bool selected) {
+                                  setState(() {
+                                    _vetSpecialtyId = selected ? id : 0;
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
                         ],
                       ),
-                      Text(
-                        "Vet Specialties",
-                        style: TextStyle(
-                          color: Constants.primaryTextColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8.0,
-                        children: vetSpecialties.map((specialty) {
-                          final int id = specialty['id'];
-                          final String name = specialty['name'];
-                          return FilterChip(
-                            label: Text(name),
-                            selected: _vetSpecialtyId == id,
-                            onSelected: (bool selected) {
-                              setState(() {
-                                _vetSpecialtyId = selected ? id : 0;
-                              });
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _records = [];
+                      _lastId = 0;
+                      _hasMoreData = true;
+                      _fetchMoreData();
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                      textStyle:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  child: Text(AppLocalizations.of(context)!.applyFilter),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _records = [];
-                  _lastId = 0;
-                  _hasMoreData = true;
-                  _fetchMoreData();
-                });
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                  textStyle:
-                      TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              child: Text("Apply Filter"),
-            ),
-          ],
-        ),
-      ),
-      body: (_error != null)
-          ? ErrorText(
-              errorText: _error.toString(),
-              onRefresh: () async {
-                _records = [];
-                _lastId = 0;
-                _hasMoreData = true;
-                _fetchMoreData();
-              })
-          : RefreshIndicator.adaptive(
-              onRefresh: () async {
-                _records = [];
-                _lastId = 0;
-                _fetchMoreData();
-              },
-              child: ListView.builder(
-                itemCount: _records.length,
-                itemBuilder: (context, index) {
-                  List<String> vetSpecialtyNames = [];
-                  for (var val in _records[index].vetSpecialties) {
-                    vetSpecialtyNames.add(val.name);
-                  }
-                  return ListTile(
-                    tileColor: Theme.of(context).brightness == Brightness.light
-                        ? Constants.secondaryBackgroundColor
-                        : null,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ChatPage(userId: _records[index].id),
+          ),
+        _ => Center(
+            child: CircularProgressIndicator.adaptive(),
+          )
+      },
+      body: _isFetching
+          ? Center(
+              child: CircularProgressIndicator.adaptive(),
+            )
+          : (_error != null)
+              ? ErrorText(
+                  errorText: _error.toString(),
+                  onRefresh: () async {
+                    _records = [];
+                    _lastId = 0;
+                    _hasMoreData = true;
+                    _fetchMoreData();
+                  })
+              : RefreshIndicator.adaptive(
+                  onRefresh: () async {
+                    _records = [];
+                    _lastId = 0;
+                    _fetchMoreData();
+                  },
+                  child: ListView.builder(
+                    itemCount: _records.length,
+                    itemBuilder: (context, index) {
+                      List<String> vetSpecialtyNames = [];
+                      for (var val in _records[index].vetSpecialties) {
+                        vetSpecialtyNames.add(val.name);
+                      }
+                      return ListTile(
+                        tileColor:
+                            Theme.of(context).brightness == Brightness.light
+                                ? Constants.secondaryBackgroundColor
+                                : null,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ChatPage(userId: _records[index].id),
+                            ),
+                          );
+                        },
+                        leading: DefaultCircleAvatar(
+                          imageUrl: _records[index].imageUrl,
+                        ),
+                        title: Text(
+                          _records[index].name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
+                          ),
+                        ),
+                        subtitle: Text(
+                          AppLocalizations.of(context)!
+                              .specialtiesLabel(vetSpecialtyNames.join(", ")),
                         ),
                       );
                     },
-                    leading: DefaultCircleAvatar(
-                      imageUrl: _records[index].imageUrl,
-                    ),
-                    title: Text(
-                      _records[index].name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Constants.primaryTextColor
-                            : Colors.orange,
-                      ),
-                    ),
-                    subtitle:
-                        Text("Specialties: ${vetSpecialtyNames.join(", ")}"),
-                  );
-                },
-              ),
-            ),
+                  ),
+                ),
     );
   }
 }

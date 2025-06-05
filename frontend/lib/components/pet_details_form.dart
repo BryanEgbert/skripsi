@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/modals/select_species_modal.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class PetDetailsForm extends ConsumerStatefulWidget {
   final VoidCallback onSubmit;
@@ -103,7 +104,7 @@ class _PetDetailsFormState extends ConsumerState<PetDetailsForm> {
           ),
           ElevatedButton(
             onPressed: widget.onSubmit,
-            child: const Text("Next"),
+            child: Text(AppLocalizations.of(context)!.next),
           ),
         ],
       ),

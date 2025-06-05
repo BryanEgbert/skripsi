@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/model/error_handler/error_handler.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/pages/welcome.dart';
+import 'package:frontend/services/localization_service.dart';
 
 void handleError(AsyncValue providerValue, BuildContext context,
     [Function()? reset]) {
@@ -23,8 +22,8 @@ void handleError(AsyncValue providerValue, BuildContext context,
 
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
-      if (providerValue.error.toString() == jwtExpired ||
-          providerValue.error.toString() == userDeleted) {
+      if (providerValue.error.toString() == LocalizationService().jwtExpired ||
+          providerValue.error.toString() == LocalizationService().userDeleted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
             builder: (context) => WelcomeWidget(),
@@ -58,8 +57,8 @@ void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
 
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
-      if (providerValue.error.toString() == jwtExpired ||
-          providerValue.error.toString() == userDeleted) {
+      if (providerValue.error.toString() == LocalizationService().jwtExpired ||
+          providerValue.error.toString() == LocalizationService().userDeleted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
             builder: (context) => WelcomeWidget(),
@@ -76,10 +75,8 @@ void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
 
   if (providerValue.hasValue && !providerValue.isLoading) {
     if (providerValue.value == null) return;
-    log("wahoo");
     if (providerValue.value is int) {
       if (providerValue.value >= 200 && providerValue.value <= 400) {
-        log("show snackbar");
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           if (!state.mounted) return;
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -87,7 +84,7 @@ void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
           var snackbar = SnackBar(
             key: Key("success-message"),
             content: Text(
-              "Operation completed successfully",
+              AppLocalizations.of(context)!.operationSuccess,
               style: TextStyle(
                 color: Colors.white,
               ),

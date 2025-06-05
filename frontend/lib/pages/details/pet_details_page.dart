@@ -6,6 +6,7 @@ import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/paginated_vaccine_records_list_view.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/pages/add_vaccination_record_page.dart';
 import 'package:frontend/pages/edit/edit_pet_details_page.dart';
@@ -32,14 +33,13 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
   void _deletePet() {
     showDeleteConfirmationDialog(
       context,
-      "Are you sure you want to delete this pet? This action cannot be undone.",
+      AppLocalizations.of(context)!.deletePetConfirmation,
       () => ref.read(petStateProvider.notifier).deletePet(widget.petId),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    log("[PET DETAILS PAGE] build");
     final pet = ref.watch(petProvider(widget.petId));
     final petState = ref.watch(petStateProvider);
     log("[PET DETAILS PAGE] petState: $petState");
@@ -58,7 +58,7 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
             ),
           ),
           title: Text(
-            "Pet Details",
+            AppLocalizations.of(context)!.petDetails,
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.light
                   ? Constants.primaryTextColor
@@ -108,7 +108,7 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
                       ? const EdgeInsets.only(top: 8.0)
                       : null,
                   child: Text(
-                    "Vaccination Records",
+                    AppLocalizations.of(context)!.vaccinationRecords,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -154,58 +154,38 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
   }
 
   Widget _buildPetDetails(Pet petValue) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      color: Theme.of(context).brightness == Brightness.light
+    return ListTile(
+      tileColor: Theme.of(context).brightness == Brightness.light
           ? Constants.secondaryBackgroundColor
           : null,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      leading: DefaultCircleAvatar(
+        imageUrl: petValue.imageUrl ?? "",
+        iconSize: 30,
+        circleAvatarRadius: 30,
+      ),
+      title: Text(petValue.name),
+      titleTextStyle: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: Theme.of(context).brightness == Brightness.light
+            ? Constants.primaryTextColor
+            : Colors.orange,
+      ),
+      subtitle: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              DefaultCircleAvatar(
-                imageUrl: petValue.imageUrl ?? "",
-                iconSize: 30,
-                circleAvatarRadius: 30,
-              ),
-              SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    petValue.name,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Constants.primaryTextColor
-                          : Colors.orange,
-                    ),
-                  ),
-                  Text(
-                    "pet category: ${petValue.petCategory.name}",
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white,
-                    ),
-                  ),
-                  if (!widget.isOwner)
-                    Text(
-                      "owner: ${petValue.owner.name}",
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Colors.black
-                            : Colors.white,
-                      ),
-                    ),
-                ],
-              ),
-            ],
+          Text(
+            AppLocalizations.of(context)!
+                .petCategory(petValue.petCategory.name),
           ),
-          if (widget.isOwner)
-            IconButton(
+          if (!widget.isOwner)
+            Text(
+              AppLocalizations.of(context)!.petOwner(petValue.owner.name),
+            ),
+        ],
+      ),
+      trailing: widget.isOwner
+          ? IconButton(
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => EditPetDetailsPage(
@@ -219,9 +199,8 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
                     ? Constants.primaryTextColor
                     : Colors.orange,
               ),
-            ),
-        ],
-      ),
+            )
+          : null,
     );
   }
 }

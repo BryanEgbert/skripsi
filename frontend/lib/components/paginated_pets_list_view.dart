@@ -3,9 +3,11 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/pet.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/pet_provider.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/utils/handle_error.dart';
 
 class PaginatedPetsListView extends ConsumerStatefulWidget {
@@ -79,11 +81,13 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
   @override
   Widget build(BuildContext context) {
     final petState = ref.watch(petStateProvider);
-    log("petState: $petState");
     if (_error != null) {
-      handleValue(
+      if (_error.toString() == "Null check operator used on a null value") {
+        _error = LocalizationService().jwtExpired;
+      }
+      handleError(
         AsyncValue.error(_error.toString(), StackTrace.current),
-        this,
+        context,
       );
       _error = null;
     }
@@ -100,7 +104,7 @@ class PaginatedPetsListViewState extends ConsumerState<PaginatedPetsListView> {
               var snackbar = SnackBar(
                 key: Key("success-message"),
                 content: Text(
-                  "Operation completed successfully",
+                  AppLocalizations.of(context)!.operationSuccess,
                   style: TextStyle(
                     color: Colors.white,
                   ),

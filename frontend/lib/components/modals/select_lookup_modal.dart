@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/provider/category_provider.dart';
 
@@ -34,13 +36,21 @@ class _SelectLookupModalState extends ConsumerState<SelectLookupModal> {
             children: [
               if (widget.lookupCategory == LookupCategory.dailyWalk)
                 Text(
-                  "Daily Walks Provided",
-                  style: TextStyle(color: Colors.orange[600]),
+                  AppLocalizations.of(context)!.dailyWalksProvided,
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Constants.primaryTextColor
+                        : Colors.orange,
+                  ),
                 ),
               if (widget.lookupCategory == LookupCategory.dailyPlaytime)
                 Text(
-                  "Daily Playtime Provided",
-                  style: TextStyle(color: Colors.orange[600]),
+                  AppLocalizations.of(context)!.dailyPlaytimeProvided,
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Constants.primaryTextColor
+                        : Colors.orange,
+                  ),
                 ),
               Expanded(
                 child: ListView.builder(
@@ -65,7 +75,9 @@ class _SelectLookupModalState extends ConsumerState<SelectLookupModal> {
       AsyncError() => SizedBox(
           height: double.infinity,
           width: double.infinity,
-          child: Center(child: const Text("Something's wrong")),
+          child: Center(
+              child:
+                  Text(AppLocalizations.of(context)!.somethingIsWrongTryAgain)),
         ),
       _ => SizedBox(
           height: double.infinity,

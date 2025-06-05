@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/components/modals/select_pricing_type_modal.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
@@ -44,31 +43,31 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
   final _pricingTypeController = TextEditingController(text: "day");
 
   final _miniatureDogPriceController = TextEditingController();
-  final _miniatureDogPricingTypeController = TextEditingController(text: "day");
+  // final _miniatureDogPricingTypeController = TextEditingController(text: "day");
   final _miniatureDogSlotController = TextEditingController();
 
   final _smallDogPriceController = TextEditingController();
-  final _smallDogPricingTypeController = TextEditingController(text: "day");
+  // final _smallDogPricingTypeController = TextEditingController(text: "day");
   final _smallDogSlotController = TextEditingController();
 
   final _mediumDogPriceController = TextEditingController();
-  final _mediumDogPricingTypeController = TextEditingController(text: "day");
+  // final _mediumDogPricingTypeController = TextEditingController(text: "day");
   final _mediumDogSlotController = TextEditingController();
 
   final _largeDogPriceController = TextEditingController();
-  final _largeDogPricingTypeController = TextEditingController(text: "day");
+  // final _largeDogPricingTypeController = TextEditingController(text: "day");
   final _largeDogSlotController = TextEditingController();
 
   final _giantDogPriceController = TextEditingController();
-  final _giantDogPricingTypeController = TextEditingController(text: "day");
+  // final _giantDogPricingTypeController = TextEditingController(text: "day");
   final _giantDogSlotController = TextEditingController();
 
   final _catsPriceController = TextEditingController();
-  final _catsPricingTypeController = TextEditingController(text: "day");
+  // final _catsPricingTypeController = TextEditingController(text: "day");
   final _catsSlotController = TextEditingController();
 
   final _bunniesPriceController = TextEditingController();
-  final _bunniesPricingTypeController = TextEditingController(text: "day");
+  // final _bunniesPricingTypeController = TextEditingController(text: "day");
   final _bunniesSlotController = TextEditingController();
 
   bool _acceptMiniatureDog = false;
@@ -105,7 +104,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
         !_acceptCats &&
         !_acceptBunnies) {
       setState(() {
-        _error = "Must accept at least one pet";
+        _error = AppLocalizations.of(context)!.mustAcceptAtLeastOnePet;
       });
       return;
     }
@@ -115,7 +114,6 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       _prices.add(double.tryParse(_miniatureDogPriceController.text
               .replaceAll(RegExp(r'[^0-9]'), '')) ??
           0.0);
-      // TODO: ganti bagian sini
       // _pricingTypes
       //     .add(_miniatureDogPricingTypeController.text == "day" ? 1 : 2);
       _maxNumbers.add(int.tryParse(_miniatureDogSlotController.text) ?? 0);
@@ -229,8 +227,6 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       }
     }
 
-    log("[INFO] prices: $_prices, pet category: $_petCategoryIds, pricingType: $_pricingType, maxNumbers: $_maxNumbers");
-
     widget.createPetDaycareReq.price = _prices;
     widget.createPetDaycareReq.pricingType = _pricingType;
     widget.createPetDaycareReq.petCategoryId = _petCategoryIds;
@@ -248,8 +244,6 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
   Widget build(BuildContext context) {
     final petCategory = ref.watch(petCategoryProvider);
 
-    log("[INFO] prices: $_prices, pet category: $_petCategoryIds, pricingType: $_pricingType");
-
     if (_error != null) {
       // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       //   var snackbar = SnackBar(
@@ -266,7 +260,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            "Manage Your Pet Slots",
+            AppLocalizations.of(context)!.manageYourPetSlots,
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.light
                   ? Constants.primaryTextColor
@@ -284,9 +278,8 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
           ),
         ),
         body: switch (petCategory) {
-          AsyncError(:final error) => ErrorText(
-              errorText:
-                  "Something is wrong, please try again later\nerror message: $error",
+          AsyncError() => ErrorText(
+              errorText: AppLocalizations.of(context)!.somethingIsWrongTryAgain,
               onRefresh: () => ref.refresh(petCategoryProvider.future),
             ),
           AsyncData() => SafeArea(
@@ -299,7 +292,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          "Pricing Type",
+                          AppLocalizations.of(context)!.pricingModel,
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -335,7 +328,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          "Dogs",
+                          AppLocalizations.of(context)!.dogs,
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -359,7 +352,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                           context,
                           _acceptMiniatureDog,
                           _miniatureDogPriceController,
-                          _miniatureDogPricingTypeController,
+                          // _miniatureDogPricingTypeController,
                           _miniatureDogSlotController,
                         ),
                         _buildSizedCheckbox(
@@ -376,7 +369,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                           context,
                           _acceptSmallDog,
                           _smallDogPriceController,
-                          _smallDogPricingTypeController,
+                          // _smallDogPricingTypeController,
                           _smallDogSlotController,
                         ),
                         _buildSizedCheckbox(
@@ -393,7 +386,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                           context,
                           _acceptMediumDog,
                           _mediumDogPriceController,
-                          _mediumDogPricingTypeController,
+                          // _mediumDogPricingTypeController,
                           _mediumDogSlotController,
                         ),
                         _buildSizedCheckbox(
@@ -410,7 +403,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                           context,
                           _acceptLargeDog,
                           _largeDogPriceController,
-                          _largeDogPricingTypeController,
+                          // _largeDogPricingTypeController,
                           _largeDogSlotController,
                         ),
                         _buildSizedCheckbox(
@@ -427,17 +420,24 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                           context,
                           _acceptGiantDog,
                           _giantDogPriceController,
-                          _giantDogPricingTypeController,
+                          // _giantDogPricingTypeController,
                           _giantDogSlotController,
                         ),
                         SizedBox(height: 20),
-                        Text("Others",
-                            style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.orange)),
-                        _buildCheckboxTile("Accept cats?", _acceptCats,
-                            (value) {
+                        Text(
+                          AppLocalizations.of(context)!.others,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
+                          ),
+                        ),
+                        _buildCheckboxTile(
+                            AppLocalizations.of(context)!.acceptCats,
+                            _acceptCats, (value) {
                           setState(() {
                             _acceptCats = value!;
                           });
@@ -446,11 +446,12 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                           context,
                           _acceptCats,
                           _catsPriceController,
-                          _catsPricingTypeController,
+                          // _catsPricingTypeController,
                           _catsSlotController,
                         ),
-                        _buildCheckboxTile("Accept bunnies?", _acceptBunnies,
-                            (value) {
+                        _buildCheckboxTile(
+                            AppLocalizations.of(context)!.acceptBunnies,
+                            _acceptBunnies, (value) {
                           setState(() {
                             _acceptBunnies = value!;
                           });
@@ -459,14 +460,14 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                           context,
                           _acceptBunnies,
                           _bunniesPriceController,
-                          _bunniesPricingTypeController,
+                          // _bunniesPricingTypeController,
                           _bunniesSlotController,
                         ),
                         SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: _submitForm,
                           child: Text(
-                            "Next",
+                            AppLocalizations.of(context)!.next,
                             style: TextStyle(fontSize: 18, color: Colors.white),
                           ),
                         ),
@@ -488,7 +489,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
       BuildContext context,
       bool enabled,
       TextEditingController priceController,
-      TextEditingController pricingTypeController,
+      // TextEditingController pricingTypeController,
       TextEditingController slotController) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -500,7 +501,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
             enabled: enabled,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
-              labelText: "Price",
+              labelText: AppLocalizations.of(context)!.price,
             ),
             keyboardType: TextInputType.number,
             onChanged: (value) {
@@ -508,75 +509,10 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
                 priceController.text = rupiahFormat.format(int.parse(value));
               }
             },
-            validator: (value) => validatePriceInput(enabled, value),
+            validator: (value) => validatePriceInput(context, enabled, value),
           ),
         ),
-        Text("per $_pricingTypeName"),
-        // Expanded(
-        //   child: TextFormField(
-        //     style: TextStyle(
-        //       color: Theme.of(context).brightness == Brightness.light
-        //           ? Colors.black
-        //           : Colors.white70,
-        //     ),
-        //     controller: pricingTypeController,
-        //     enabled: enabled,
-        //     readOnly: true,
-        //     decoration: InputDecoration(
-        //       labelText: "",
-        //       suffixIcon: Icon(Icons.navigate_next),
-        //     ),
-        //     onTap: () async {
-        //       // pricingTypeController.text = await showModalBottomSheet(
-        //       //   context: context,
-        //       //   builder: (context) {
-        //       //     return Container(
-        //       //       margin: EdgeInsets.fromLTRB(12, 12, 12, 32),
-        //       //       child: Column(
-        //       //         mainAxisSize: MainAxisSize.min,
-        //       //         children: [
-        //       //           Text(
-        //       //             "Choose Pricing Type",
-        //       //             style: TextStyle(color: Colors.orange[600]),
-        //       //           ),
-        //       //           ListTile(
-        //       //             title: const Text("Day"),
-        //       //             onTap: () {
-        //       //               setState(() {
-        //       //                 pricingTypeController.text = "day";
-        //       //               });
-        //       //               Navigator.pop(context);
-        //       //             },
-        //       //           ),
-        //       //           ListTile(
-        //       //             title: const Text("Night"),
-        //       //             onTap: () {
-        //       //               setState(() {
-        //       //                 pricingTypeController.text = "night";
-        //       //               });
-        //       //               Navigator.pop(context);
-        //       //             },
-        //       //           ),
-        //       //         ],
-        //       //       ),
-        //       //     );
-        //       //   },
-        //       // );
-
-        //       var out = await showModalBottomSheet<Lookup>(
-        //         context: context,
-        //         builder: (context) => SelectPricingTypeModal(),
-        //       );
-
-        //       if (out == null) {
-        //         return;
-        //       }
-
-        //       pricingTypeController.text = out.name;
-        //       // _pricingTypes[]
-        //     },
-        //   ),
-        // ),
+        Text(AppLocalizations.of(context)!.perPricingModel(_pricingTypeName)),
         Expanded(
           child: TextFormField(
             style: TextStyle(
@@ -588,10 +524,10 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
             enabled: enabled,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
-              labelText: "# of Slot",
+              labelText: AppLocalizations.of(context)!.numberOfSlots,
             ),
             keyboardType: TextInputType.number,
-            validator: (value) => validateSlotInput(enabled, value),
+            validator: (value) => validateSlotInput(context, enabled, value),
           ),
         ),
       ],

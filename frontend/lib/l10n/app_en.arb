@@ -1,0 +1,948 @@
+{
+    "@@locale": "en",
+
+
+    "welcomeTo": "Welcome to",
+    "@welcomeTo": {
+        "description": "Initial message in the welcome text widget"
+    },
+    "punchLine": "The smarter way to find pet daycares & connect with vets!",
+    "@punchLine": {
+        "description": "The punch line of the app"
+    },
+    "passwordInputLabel": "Password",
+    "@passwordInputLabel": {
+        "description": "password input"
+    },
+    "loginBtn": "Login",
+    "@loginBtn": {
+        "description": "Login button"
+    },
+    "createAnAccountBtn": "Create An Account",
+    "@createAnAccountBtn": {
+        "description": "Create an account button"
+    },
+    "or": "or",
+    "@or": {
+        "description": "or separator"
+    },
+    "petsTitle": "Pets",
+    "@petsTitle": {
+        "description": "Pets title"
+    },
+    "petCategory": "Pet category: {category}",
+    "@petCategory": {
+        "description": "Pet category",
+        "placeholders": {
+            "category": {
+                "type": "String",
+                "example": "Cat"
+            }
+        }
+    },
+    "editPetTooltip": "Edit pet",
+    "@editPetTooltip": {
+        "description": "Edit pet tooltip"
+    },
+    "deletePetTooltip": "Delete pet",
+    "@deletePetTooltip": {
+        "description": "Delete pet tooltip"
+    },
+    "editPetInfoTitle": "Edit Pet Info",
+    "@editPetInfoTitle": {
+        "description": "Title shown on the app bar of the edit pet details page"
+    },
+    "nameLabel": "Name",
+    "@nameLabel": {
+        "description": "Label for the pet's name input field"
+    },
+    "petCategoryLabel": "Pet category",
+    "@petCategoryLabel": {
+        "description": "Label for the pet category input field"
+    },
+    "spayedNeuteredLabel": "Spayed/Neutered",
+    "@spayedNeuteredLabel": {
+        "description": "Label for the checkbox indicating whether the pet is spayed or neutered"
+    },
+    "saveAddressButton": "Save Address",
+    "@saveAddressButton": {
+        "description": "Text on the button to save the pet details"
+    },
+    "nameEmptyError": "Please enter the Name",
+    "@nameEmptyError": {
+        "description": "Validation error message shown when the name field is empty"
+    },
+    "petCategoryEmptyError": "Please select the Pet category",
+    "@petCategoryEmptyError": {
+        "description": "Validation error message shown when the pet category is not selected"
+    },
+    "saveBtn": "Save",
+    "@saveBtn": {
+        "description": "Save button"
+    },
+    "petsNav": "Pets",
+    "@petsNav": {
+        "description": "Pets nav bar"
+    },
+    "exploreNav": "Explore",
+    "@exploreNav": {
+        "description": "Explore nav bar"
+    },
+    "vetsNav": "Vets",
+    "@vetsNav": {
+        "description": "Vets nav bar"
+    },
+    "bookingsNav": "Bookings",
+    "@bookingsNav": {
+        "description": "Bookings nav bar"
+    },
+    "back": "Back",
+    "@back": {
+        "description": "Back"
+    },
+    "petVaccination": "Pet Vaccination",
+    "@petVaccination": {
+        "description": "Pet Vaccination"
+    },
+    "requiresVaccination": "Requires Vaccination",
+    "@requiresVaccination": {
+        "description": "requiresVaccination"
+    },
+    "noRequiresVaccination": "Doesn't Require Vaccination",
+    "@noRequiresVaccination": {
+        "description": "noRequiresVaccination"
+    },
+    "distanceFilter": "Distance in kilometer (GPS and location permission must be enabled)",
+    "@distanceFilter": {
+        "description": "distanceFilter"
+    },
+    "distanceInfo": "To disable filter by distance, set slider to 0",
+    "@distanceInfo": {
+        "description": "distanceInfo"
+    },
+    "maxDistanceInput": "Max Distance",
+    "@maxDistanceInput": {
+        "description": "max distance input"
+    },
+    "minDistanceInput": "Min Distance",
+    "@minDistanceInput": {
+        "description": "Min distance input"
+    },
+    "priceRange": "Price Range",
+    "@priceRange": {
+        "description": "priceRange"
+    },
+    "priceRangeInfo": "To disable price range filter, set slider to 0",
+    "@priceRangeInfo": {
+        "description": "Price range desc"
+    },
+    "minPriceInput": "Min Price",
+    "@minPriceInput": {
+        "description": "min price input"
+    },
+    "maxPriceInput": "Max Price",
+    "@maxPriceInput": {
+        "description": "max price input"
+    },
+    "facilities": "Facilities",
+    "@facilities": {
+        "description": "facilities"
+    },
+    "messages": "Messages",
+    "@messages": {
+        "description": "messages"
+    },
+    "pickupServiceProvided": "Pick-Up Service Provided",
+    "@pickupServiceProvided": {
+        "description": "Label for the pickup service filter chip"
+    },
+    "inHouseFoodProvided": "In-House Food Provided",
+    "@inHouseFoodProvided": {
+        "description": "Label for the food service filter chip"
+    },
+    "groomingServiceProvided": "Grooming Service Provided",
+    "@groomingServiceProvided": {
+        "description": "Label for the grooming service filter chip"
+    },
+    "dailyWalks": "Daily Walks",
+    "@dailyWalks": {
+        "description": "Title for the daily walks section"
+    },
+    "noWalksProvided": "No Walks Provided",
+    "@noWalksProvided": {
+        "description": "Filter option for no daily walks"
+    },
+    "oneWalkADay": "One Walk a Day",
+    "@oneWalkADay": {
+        "description": "Filter option for one walk per day"
+    },
+    "twoWalksADay": "Two Walks a Day",
+    "@twoWalksADay": {
+        "description": "Filter option for two walks per day"
+    },
+    "moreThanTwoWalksADay": "More Than Two Walks a Day",
+    "@moreThanTwoWalksADay": {
+        "description": "Filter option for more than two walks per day"
+    },
+    "dailyPlaytime": "Daily Playtime",
+    "@dailyPlaytime": {
+        "description": "Title for the daily playtime section"
+    },
+    "noPlaytimeProvided": "No Playtime Provided",
+    "@noPlaytimeProvided": {
+        "description": "Filter option for no playtime"
+    },
+    "onePlaySessionADay": "One Play Session a Day",
+    "@onePlaySessionADay": {
+        "description": "Filter option for one play session per day"
+    },
+    "twoPlaySessionsADay": "Two Play Session a Day",
+    "@twoPlaySessionsADay": {
+        "description": "Filter option for two play sessions per day"
+    },
+    "moreThanTwoPlaySessionsADay": "More Than Two Play Session a Day",
+    "@moreThanTwoPlaySessionsADay": {
+        "description": "Filter option for more than two play sessions per day"
+    },
+    "applyFilter": "Apply Filter",
+    "@applyFilter": {
+        "description": "Button label to apply the selected filters"
+    },
+    "vetSpecialties": "Vet Specialties",
+    "@vetSpecialties": {
+        "description": "Section title for veterinary specializations"
+    },
+    "bookingHistory": "Booking History",
+    "@bookingHistory": {
+        "description": "Booking history"
+    },
+    "cancelBookingConfirmation": "Are you sure you want to cancel this booking? This action cannot be undone.",
+    "@cancelBookingConfirmation": {
+        "description": "Confirmation message shown before cancelling a booking"
+    },
+    "cancelBooking": "Cancel Booking",
+    "@cancelBooking": {
+        "description": "Button text to cancel a booking"
+    },
+    "giveReview": "Give Review",
+    "@giveReview": {
+        "description": "Button text to give a review"
+    },
+    "tapCardsToViewDetails": "Tap the cards to view details",
+    "@tapCardsToViewDetails": {
+        "description": "Instruction to user to tap the card elements to see more information"
+    },
+    "deletePetConfirmation": "Are you sure you want to delete this pet? This action cannot be undone.",
+    "@deletePetConfirmation": {
+        "description": "Confirmation message shown before deleting a pet"
+    },
+    "confirmDeleteTitle": "Confirm Delete",
+    "@confirmDeleteTitle": {
+        "description": "Title for delete confirmation dialog"
+    },
+    "cancel": "Cancel",
+    "@cancel": {
+        "description": "Text for cancel button in dialogs"
+    },
+    "delete": "Delete",
+    "@delete": {
+        "description": "Text for delete button in dialogs"
+    },
+    "no": "No",
+    "@no": {
+        "description": "Text for no button in dialogs"
+    },
+    "yes": "Yes",
+    "@yes": {
+        "description": "Text for yes button in dialogs"
+    },
+    "specialtiesLabel": "Specialties: {vetSpecialtyNames}",
+    "@specialtiesLabel": {
+        "description": "Label showing the list of vet specialties joined by comma",
+        "placeholders": {
+            "vetSpecialtyNames": {
+                "type": "String",
+                "example": "General Practice"
+            }
+        }
+    },
+    "accountSettings": "Account Settings",
+    "@accountSettings": {
+        "description": "Title for the account settings page"
+    },
+    "editProfile": "Edit Profile",
+    "@editProfile": {
+        "description": "Label for the button or list tile to edit user profile"
+    },
+    "darkMode": "Dark Mode",
+    "@darkMode": {
+        "description": "Label for the toggle switch to enable or disable dark mode"
+    },
+    "logout": "Logout",
+    "@logout": {
+        "description": "Label for the logout button"
+    },
+    "editUserProfile": "Edit User Profile",
+    "@editUserProfile": {
+        "description": "Title of the Edit User Profile page"
+    },
+    "displayName": "Display Name",
+    "@displayName": {
+        "description": "Label for the user's display name input field"
+    },
+    "bookingDetails": "Booking Details",
+    "@bookingDetails": {
+        "description": "Title for the booking details page"
+    },
+    "statusLabel": "Status",
+    "@statusLabel": {
+        "description": "Label indicating the status of a booking"
+    },
+    "reservationDates": "Reservation Dates",
+    "@reservationDate": {
+        "description": "Label for the Reservation Dates showing start and end date"
+    },
+    "usePickupService": "Use Pick-up Service",
+    "@usePickupService": {
+        "description": "Label indicating whether pick-up service is used"
+    },
+    "reservedPets": "Reserved Pets",
+    "@reservedPets": {
+        "description": "Label showing the list or count of pets that are included in a booking"
+    },
+    "pricings": "Pricings",
+    "@pricings": {
+        "description": "Section title that lists all individual pricing items or components"
+    },
+    "total": "Total",
+    "@total": {
+        "description": "Label showing the sum of all pricing components"
+    },
+    "turnOnLocationMessage": "Turn on location to find the nearest pet daycare",
+    "@turnOnLocationMessage": {
+        "description": "Prompt message telling user to enable location services to find nearby pet daycare"
+    },
+    "turnOn": "Turn On",
+    "@turnOn": {
+        "description": "Button label to enable location settings"
+    },
+    "petDaycareBoarding": "Pet Daycare & Boarding",
+    "@petDaycareBoarding": {
+        "description": "Label for pet daycare and boarding facilities"
+    },
+    "kmAway": "{range}km away",
+    "@kmAway": {
+        "description": "Distance from user to location",
+        "placeholders": {
+            "range": {
+                "type": "double",
+                "format": "decimalPattern",
+                "optionalParameters": {
+                    "decimalDigits": 1
+                },
+                "example": "1.2"
+            }
+        }
+    },
+    "operationalHour": "Operational Hour",
+    "@operationalHour": {
+        "description": "Label for the business operating hours"
+    },
+    "requirements": "Requirements",
+    "@requirements": {
+        "description": "Label for listing the requirements for booking"
+    },
+    "petVaccinationRequired": "Pet Vaccination Required",
+    "@petVaccinationRequired": {
+        "description": "Indicates that pet vaccination is mandatory"
+    },
+    "petVaccinationNotRequired": "Pet Vaccination Not Required",
+    "@petVaccinationNotRequired": {
+        "description": "Indicates that pet vaccination is not mandatory"
+    },
+    "petVaccinationIsRequired": "Pet vaccination is required to book",
+    "@petVaccinationIsRequired": {
+        "description": "Sentence informing user that vaccination is required"
+    },
+    "petVaccinationIsNotRequired": "Unvaccinated pets can book at this daycare",
+    "@petVaccinationIsNotRequired": {
+        "description": "Sentence informing user that unvaccinated pets can still book"
+    },
+    "additionalServices": "Additional Services",
+    "@additionalServices": {
+        "description": "Section title for extra services offered"
+    },
+    "groomingService": "Grooming Service",
+    "@groomingService": {
+        "description": "Label for grooming services"
+    },
+    "serviceProvided": "Service provided",
+    "@serviceProvided": {
+        "description": "Indicates a service is available"
+    },
+    "serviceNotProvided": "Service not provided",
+    "@serviceNotProvided": {
+        "description": "Indicates a service is not available"
+    },
+    "pickupService": "Pick-Up Service",
+    "@pickupService": {
+        "description": "Label for pet pick-up service"
+    },
+    "inHouseFoodProvidedDetails": "In-House Food Provided",
+    "@inHouseFoodProvidedDetails": {
+        "description": "Indicates food is available at the facility"
+    },
+    "numberOfWalks": "Number of Walks",
+    "@numberOfWalks": {
+        "description": "Label for daily walk sessions"
+    },
+    "numberOfPlaytime": "Number of Playtime",
+    "@numberOfPlaytime": {
+        "description": "Label for daily play sessions"
+    },
+    "viewReviews": "View Reviews",
+    "@viewReviews": {
+        "description": "Button to view reviews"
+    },
+    "bookSlot": "Book A Slot",
+    "@bookSlot": {
+        "description": "Button to book an available time slot"
+    },
+    "slotsBooked": "slots booked",
+    "@slotsBooked": {
+        "description": "Label indicating the number of slots that have been booked"
+    },
+    "reviewsTitle": "Reviews",
+    "@reviewsTitle": {
+        "description": "Title for the reviews section or page"
+    },
+    "reviewsCount": "{count} Reviews",
+    "@reviewsCount": {
+        "description": "Shows the number of reviews, e.g., '120 Reviews'",
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "format": "compact",
+                "example": "120"
+            }
+        }
+    },
+    "pickPets": "Pick Pets",
+    "@pickPets": {
+        "description": "Label or button to choose pets for the booking"
+    },
+    "chooseBookingDate": "Choose Booking Date",
+    "@chooseBookingDate": {
+        "description": "Prompt text asking user to select a date range for booking"
+    },
+
+    "bookingDateLabel": "Booking Date",
+    "@bookingDateLabel": {
+        "description": "Label for the input field where user selects booking date"
+    },
+    "bookSlotButton": "Book Slot",
+    "@bookSlotButton": {
+        "description": "Label on the button used to confirm and book the selected slot"
+    },
+    "chooseAddress": "Choose an address",
+    "@chooseAddress": {
+        "description": "Button or label prompting the user to select or add an address"
+    },
+    "selectDateRange": "Please select the available date range",
+    "@selectDateRange": {
+        "description": "Prompt telling the user to choose a valid date range for booking or availability"
+    },
+    "vaccinationRequired": "Pet must have a valid and up-to-date vaccination record",
+    "@vaccinationRequired": {
+        "description": "Message shown when a pet is required to have valid vaccination documents to proceed"
+    },
+    "unsupportedPetCategory": "Pet category not supported",
+    "@unsupportedPetCategory": {
+        "description": "Error message shown when the selected pet type is not accepted"
+    },
+    "savedAddress": "Saved Address",
+    "@savedAddress": {
+        "description": "Label or section title for the list of user's saved addresses"
+    },
+    "notes": "Notes",
+    "@notes": {
+        "description": "Label for additional user-entered information or remarks"
+    },
+    "selected": "selected",
+    "@selected": {
+        "description": "Indicates that an item has been selected (usually appears with a number or context)"
+    },
+    "deleteAddressConfirmation": "Are you sure you want to delete this address? This action cannot be undone.",
+    "@deleteAddressConfirmation": {
+        "description": "Confirmation message shown before deleting a saved address"
+    },
+    "addAddress": "Add Address",
+    "@addAddress": {
+        "description": "Button or title to add a new address"
+    },
+    "notesOptional": "Notes (optional)",
+    "@notesOptional": {
+        "description": "Label for optional notes field"
+    },
+    "notesExample": "e.g. Black front door, White wall with 2 plants",
+    "@notesExample": {
+        "description": "Example text to help the user write address notes"
+    },
+    "location": "Location Name",
+    "@location": {
+        "description": "Label for location field"
+    },
+    "address": "Address",
+    "@address": {
+        "description": "Label for address field"
+    },
+    "useCurrentLocation": "Use Current Location",
+    "@useCurrentLocation": {
+        "description": "Button label to use the user's current GPS location"
+    },
+    "locationRequestDenied": "Location request denied, please enable location in the settings",
+    "@locationRequestDenied": {
+        "description": "Message shown when location permission is denied"
+    },
+    "petDetails": "Pet Details",
+    "@petDetails": {
+        "description": "Title for the section displaying information about a pet"
+    },
+    "vaccinationRecords": "Vaccination Records",
+    "@vaccinationRecords": {
+        "description": "Title for the section showing the pet's vaccination history"
+    },
+    "ownerName": "owner: {name}",
+    "@ownerName": {
+        "description": "Label showing the pet owner's name",
+        "placeholders": {
+            "name": {
+                "type": "String",
+                "example": "John Doe"
+            }
+        }
+    },
+    "dateAdministered": "Date Administered:",
+    "@dateAdministered": {
+        "description": "Label for the date when a vaccination was given"
+    },
+    "nextDueDate": "Next Due Date:",
+    "@nextDueDate": {
+        "description": "Label for the next due date of a vaccination"
+    },
+    "edit": "Edit",
+    "@edit": {
+        "description": "A label for a button or action that allows the user to edit a record or information"
+    },
+    "petOwner": "owner: {ownerName}",
+    "@petOwner": {
+        "description": "Label displaying the pet owner's name",
+        "placeholders": {
+            "ownerName": {
+                "type": "String",
+                "example": "John Doe"
+            }
+        }
+    },
+    "customers": "Customers",
+    "@customers": {
+        "description": "Title for the customers section"
+    },
+
+    "sortByPets": "Sort by Pets",
+    "@sortByPets": {
+        "description": "Button to sort the list by pets"
+    },
+
+    "sortByPetOwners": "Sort by Pet Owners",
+    "@sortByPetOwners": {
+        "description": "Button to sort the list by pet owners"
+    },
+
+    "noBookedPets": "There are no booked pets",
+    "@noBookedPets": {
+        "description": "Message shown when no pets are booked"
+    },
+
+    "sendPhotoToOwner": "Send Photo To Pet Owner",
+    "@sendPhotoToOwner": {
+        "description": "Button to send a photo to the pet owner"
+    },
+
+    "chatPetOwner": "Chat pet's owner",
+    "@chatPetOwner": {
+        "description": "Button to start a chat with the pet's owner"
+    },
+    "noBookedPetOwners": "There are no booked pet owners",
+    "@noBookedPetOwners": {
+        "description": "Message shown when there are no pet owners with bookings"
+    },
+    "accept": "Accept",
+    "@accept": {
+        "description": "Button label to accept a booking or request"
+    },
+    "reject": "Reject",
+    "@reject": {
+        "description": "Button label to reject a booking or request"
+    },
+    "pickupRequired": "Pick-up required",
+    "@pickupRequired": {
+        "description": "Label indicating that pick-up service is required"
+    },
+    "pickupNotRequired": "Pick-up not required",
+    "@pickupNotRequired": {
+        "description": "Label indicating that pick-up service is not required"
+    },
+    "rejectRequest": "Reject Request",
+    "@rejectRequest": {
+        "description": "Button label to reject a booking request"
+    },
+    "rejectRequestConfirmation": "Are you sure you want to reject this booking request? This action cannot be undone.",
+    "@rejectRequestConfirmation": {
+        "description": "Confirmation message shown when rejecting a booking request"
+    },
+    "bookingQueue": "Booking Queue",
+    "@bookingQueue": {
+        "description": "Title for the list where pet daycare providers see pending booking requests to accept or reject."
+    },
+    "myPetDaycare": "My Service",
+    "@myPetDaycare": {
+        "description": "Title for the user's own pet daycare section or page"
+    },
+    "setupAccountTitle": "Let's Set Up Your Account",
+    "@setupAccountTitle": {
+        "description": "Title shown when the user is setting up their account for the first time"
+    },
+    "setupAccountSubtitle": "Enter your details to continue",
+    "@setupAccountSubtitle": {
+        "description": "Subtitle prompting user to input their account information"
+    },
+    "passwordRequirement": "Must contain at least 8 characters",
+    "@passwordRequirement": {
+        "description": "Hint message about minimum password length"
+    },
+    "next": "Next",
+    "@next": {
+        "description": "Label for button to proceed to the next step"
+    },
+    "signupTitle": "Join Our Pet Daycare Community!",
+    "@signupTitle": {
+        "description": "Title displayed during signup role selection"
+    },
+    "signupSubtitle": "Choose your role to get started:",
+    "@signupSubtitle": {
+        "description": "Subtitle shown under the signup title"
+    },
+    "rolePetOwner": "Pet Owner",
+    "@rolePetOwner": {
+        "description": "Button title for user who wants to join as a pet owner"
+    },
+    "rolePetOwnerDesc": "Discover trusted pet daycares & chat with vets.",
+    "@rolePetOwnerDesc": {
+        "description": "Description under the Pet Owner button"
+    },
+    "roleProvider": "Pet Daycare Provider",
+    "@roleProvider": {
+        "description": "Button title for user who wants to join as a daycare provider"
+    },
+    "roleProviderDesc": "Connect with pet owners & grow your business.",
+    "@roleProviderDesc": {
+        "description": "Description under the Pet Daycare Provider button"
+    },
+    "roleVet": "Veterinarian",
+    "@roleVet": {
+        "description": "Button title for user who wants to join as a veterinarian"
+    },
+    "roleVetDesc": "Provide expert care & guidance to pet owners.",
+    "@roleVetDesc": {
+        "description": "Description under the Veterinarian button"
+    },
+    "addPet": "Add Pet",
+    "@addPet": {
+        "description": "Button label to add a pet"
+    },
+    "vaccinationRecordOptional": "Vaccination Record (Optional)",
+    "@vaccinationRecordOptional": {
+        "description": "Label for optional vaccination record section"
+    },
+    "fillPetInfo": "Fill Pet Info",
+    "@fillPetInfo": {
+        "description": "Title or instruction to fill pet information"
+    },
+    "choosePetCategory": "Choose pet category",
+    "@choosePetCategory": {
+        "description": "Label or instruction for selecting a category of pet"
+    },
+    "enterPetDetails": "Enter your pet details to continue",
+    "@enterPetDetails": {
+        "description": "Instruction text asking user to input pet details"
+    },
+    "addVaccinationRecordOptional": "Add your pet's vaccination record (this step is optional)",
+    "@addVaccinationRecordOptional": {
+        "description": "Instruction that adding vaccination record is optional"
+    },
+    "createMyAccount": "Create My Account",
+    "@createMyAccount": {
+        "description": "Button label to create user account"
+    },
+    "skip": "Skip",
+    "@skip": {
+        "description": "Button label to skip a step"
+    },
+    "creatingYourAccount": "Creating Account",
+    "@creatingYourAccount": {
+        "description": "Text shown while the account is being created"
+    },
+    "clickToAddVaccinePhoto": "Click to add photo of the vaccination record",
+    "@clickToAddVaccinePhoto": {
+        "description": "Prompt to upload or add a vaccination record photo"
+    },
+    "enterPetDaycareDetails": "Enter your pet daycare/hotel details to continue",
+    "@enterPetDaycareDetails": {
+        "description": "Instructional text prompting the user to fill out their pet daycare or hotel information"
+    },
+    "petDaycareName": "Pet Daycare Name",
+    "@petDaycareName": {
+        "description": "Label for the input field where the user enters the name of their pet daycare"
+    },
+    "descriptionOptional": "Description (optional)",
+    "@descriptionOptional": {
+        "description": "Label for an optional description input field"
+    },
+    "addPetDaycareImages": "Add images of your pet daycare (min. 1 image)",
+    "@addPetDaycareImages": {
+        "description": "Prompt for users to upload at least one image of their pet daycare"
+    },
+    "operatingHours": "Operating Hours",
+    "@operatingHours": {
+        "description": "Label for the section that defines business operating hours"
+    },
+    "openingHour": "Opening Hour",
+    "@openingHour": {
+        "description": "Label for input field where user selects the opening time"
+    },
+    "closingHour": "Closing Hour",
+    "@closingHour": {
+        "description": "Label for input field where user selects the closing time"
+    },
+    "to": "to",
+    "@to": {
+        "description": "Used between two time values (e.g., 9 AM to 5 PM)"
+    },
+    "mustContainAtLeastOneImage": "Must contain at least one image",
+    "@mustContainAtLeastOneImage": {
+        "description": "Validation message when user has not added any image but it's required"
+    },
+    "manageYourPetSlots": "Manage Your Pet Slots",
+    "@manageYourPetSlots": {
+        "description": "Title or heading for managing pet booking slots"
+    },
+
+    "somethingIsWrongTryAgain": "Something is wrong, please try again later",
+    "@somethingIsWrongTryAgain": {
+        "description": "Error message shown when an operation fails unexpectedly"
+    },
+    "pricingModel": "Pricing Model",
+    "@pricingModel": {
+        "description": "Label for selecting the pricing model, such as per day or per night."
+    },
+    "dogs": "Dogs",
+    "@dogs": {
+        "description": "Label for dogs category"
+    },
+    "others": "Others",
+    "@others": {
+        "description": "Label for other pets category"
+    },
+    "acceptCats": "Accept cats?",
+    "@acceptCats": {
+        "description": "Question asking if cats are accepted"
+    },
+    "acceptBunnies": "Accept bunnies?",
+    "@acceptBunnies": {
+        "description": "Question asking if bunnies are accepted"
+    },
+    "choosePricingModel": "Choose Pricing Model",
+    "@choosePricingModel": {
+        "description": "Prompt for user to select a pricing model."
+    },
+    "chargePer": "Charge per {name}",
+    "@chargePer": {
+        "description": "Label indicating the charge per unit, e.g. per day or per night.",
+        "placeholders": {
+            "name": {
+                "type": "String",
+                "example": "day"
+            }
+        }
+    },
+    "configureYourServices": "Configure Your Services",
+    "@configureYourServices": {
+        "description": "Title shown when user is asked to configure the pet daycare services."
+    },
+    "groomingProvided": "Grooming Provided",
+    "@groomingProvided": {
+        "description": "Label for indicating whether grooming service is available."
+    },
+    "pickupProvided": "Pickup Provided",
+    "@pickupProvided": {
+        "description": "Label for indicating whether pickup service is available."
+    },
+    "dailyWalksProvided": "Daily Walks Provided",
+    "@dailyWalksProvided": {
+        "description": "Label for indicating whether daily walks are provided for pets."
+    },
+    "dailyPlaytimeProvided": "Daily Playtime Provided",
+    "@dailyPlaytimeProvided": {
+        "description": "Label for indicating whether daily playtime is provided for pets."
+    },
+    "passwordEmpty": "Password cannot be empty",
+    "@passwordEmpty": {
+        "description": "Shown when the password field is empty."
+    },
+    
+    "passwordTooShort": "Password must contain at least 8 characters",
+    "@passwordTooShort": {
+        "description": "Shown when the password entered is less than 8 characters."
+    },
+
+    "fieldCannotBeEmpty": "This field cannot be empty",
+    "@fieldCannotBeEmpty": {
+        "description": "Generic message for any required text field left empty."
+    },
+
+    "priceEmpty": "Price cannot be empty",
+    "@priceEmpty": {
+        "description": "Shown when price input is empty."
+    },
+
+    "priceMustBeGreaterThanZero": "Price must be greater than 0",
+    "@priceMustBeGreaterThanZero": {
+        "description": "Shown when the price entered is 0 or negative."
+    },
+
+    "invalidSlotNumber": "Enter a valid slot number",
+    "@invalidSlotNumber": {
+        "description": "Shown when the number of pet slots is invalid or less than 1."
+    },
+
+    "emailEmpty": "Email cannot be empty",
+    "@emailEmpty": {
+        "description": "Shown when the email field is empty."
+    },
+
+    "emailInvalid": "Email is not valid",
+    "@emailInvalid": {
+        "description": "Shown when the email format is incorrect."
+    },
+    "price": "Price",
+    "@price": {
+        "description": "Label for the price input field"
+    },
+    "numberOfSlots": "# of Slot",
+    "@numberOfSlots": {
+        "description": "Label for the number of pet slots"
+    },
+    "perPricingModel": "per {pricingModel}",
+    "@perPricingModel": {
+        "description": "Used after a price value, e.g., 'Price per Day' or 'Price per Night'. The {pricingModel} will be replaced by the actual pricing type name.",
+        "placeholders": {
+            "pricingModel": {
+                "type": "String",
+                "example": "day"
+            }
+        }
+    },
+    "mustAcceptAtLeastOnePet": "Must accept at least one pet",
+    "@mustAcceptAtLeastOnePet": {
+        "description": "Validation message when no pet types are selected for acceptance"
+    },
+    "fetchAddressError": "Something's wrong when fetching address",
+    "@fetchAddressError": {
+        "description": "Displayed when the app fails to fetch the address from a service or database."
+    },
+    "editDaycare": "Edit Pet Daycare/Hotel",
+    "@editDaycare": {
+        "description": "Title for the page where users can edit their pet daycare details."
+    },
+    "detailsTab": "Details",
+    "@detailsTab": {
+        "description": "Tab label showing general information about the daycare."
+    },
+    "imagesTab": "Images",
+    "@imagesTab": {
+        "description": "Tab label for uploading or viewing daycare images."
+    },
+    "slotsTab": "Slots",
+    "@slotsTab": {
+        "description": "Tab label for managing available pet slots in the daycare."
+    },
+    "servicesTab": "Services",
+    "@servicesTab": {
+        "description": "Tab label for configuring provided services (e.g. grooming, playtime)."
+    },
+    "invalidLocation": "Invalid location",
+    "@invalidLocation": {
+        "description": "Error message shown when the user's selected or entered location is not valid."
+    },
+    "confirmDeleteVaccination": "Are you sure you want to delete this vaccination record? This action cannot be undone.",
+    "@confirmDeleteVaccination": {
+        "description": "Confirmation dialog message asking the user to confirm deletion of a vaccination record. Irreversible action."
+    },
+    "noVaccinationRecord": "There are no vaccination record for this pet.",
+    "@noVaccinationRecord": {
+        "description": "Displayed when a pet does not have any vaccination records"
+    },
+    "operationSuccess": "Operation completed successfully.",
+    "@operationSuccess": {
+        "description": "Displayed when an action or process finishes successfully"
+    },
+    "unknownError": "Unknown Error",
+    "@unknownError": {
+        "description": "Generic error message shown when an unknown error occurs."
+    },
+    "jwtExpired": "Session expired",
+    "@jwtExpired": {
+        "description": "Message shown when JWT token has expired."
+    },
+    "userDeleted": "User has been deleted, please create a new account",
+    "@userDeleted": {
+        "description": "Message shown when the user account has been deleted."
+    },
+    "bookingHistoryInfo": "Your booking history shows here",
+    "@bookingHistoryInfo": {
+        "description": "Informational message displayed when showing the user's past booking history"
+    },
+    "failToLoadImage": "Failed to load image",
+    "@failToLoadImage": {
+        "description": "Displayed when an image fails to load due to an error"
+    },
+    "preferredLanguage": "Preferred Language",
+    "@preferredLanguage": {
+        "description": "Label or title for choosing the user's preferred language"
+    },
+    "choosePreferredLanguage": "Choose Preferred Language",
+    "@choosePreferredLanguage": {
+        "description": "Prompt or instruction asking the user to select their preferred language"
+    },
+    "mustChooseOneVetSpecialty": "Must choose at least one vet specialty",
+    "@mustChooseOneVetSpecialty": {
+        "description": "Validation error shown when the user hasn't selected any veterinarian specialties"
+    },
+    "chooseVetSpecialties": "Choose Vet Specialties",
+    "@chooseVetSpecialties": {
+        "description": "Label or title prompting the user to select one or more veterinarian specialties"
+    },
+    "invalidEmailOrPassword": "Invalid email or password",
+    "@invalidEmailOrPassword": {
+        "description": "Shown when the user enters incorrect email or password during login."
+    },
+    "dataDoesNotExist": "Data doesn't exist",
+    "@dataDoesNotExist": {
+        "description": "Displayed when requested data is not found or doesn't exist."
+    },
+    "petInfo": "Pet Info",
+    "@petInfo": {
+        "description": "Label or title for a section that displays or requests information about a pet."
+    }
+}   

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/signup_guide_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/request/create_pet_daycare_request.dart';
 import 'package:frontend/model/request/create_user_request.dart';
 import 'package:frontend/pages/signup/create_pet_daycare_slots.dart';
@@ -45,7 +46,7 @@ class _AddPetDaycareThumbnailsState extends State<AddPetDaycareThumbnails> {
     widget.createPetDaycareReq.thumbnails = _images.whereType<File>().toList();
     if (widget.createPetDaycareReq.thumbnails.isEmpty) {
       setState(() {
-        _errorText = "Must contains at least one image";
+        _errorText = AppLocalizations.of(context)!.mustContainAtLeastOneImage;
       });
       return;
     }
@@ -91,8 +92,8 @@ class _AddPetDaycareThumbnailsState extends State<AddPetDaycareThumbnails> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SignupGuideText(
-              title: "Let's Set Up Your Account",
-              subtitle: "Add images of your pet daycare (min. 1 image)",
+              title: AppLocalizations.of(context)!.setupAccountTitle,
+              subtitle: AppLocalizations.of(context)!.addPetDaycareImages,
             ),
             SizedBox(height: 56),
             GridView.builder(
@@ -155,7 +156,7 @@ class _AddPetDaycareThumbnailsState extends State<AddPetDaycareThumbnails> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _submitForm,
-              child: const Text("Next"),
+              child: Text(AppLocalizations.of(context)!.next),
             ),
           ],
         ),

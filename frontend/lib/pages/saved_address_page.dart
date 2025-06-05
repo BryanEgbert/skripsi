@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/saved_address.dart';
 import 'package:frontend/pages/add_saved_address.dart';
 import 'package:frontend/pages/edit/edit_saved_address_page.dart';
@@ -100,7 +101,7 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
           var snackbar = SnackBar(
             key: Key("success-message"),
             content: Text(
-              "Operation completed successfully",
+              AppLocalizations.of(context)!.operationSuccess,
               style: TextStyle(
                 color: Colors.white,
               ),
@@ -133,8 +134,12 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
           ),
         ),
         title: Text(
-          "Saved Address",
-          style: TextStyle(color: Constants.primaryTextColor),
+          AppLocalizations.of(context)!.savedAddress,
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
         // actions: [
         //   IconButton(
@@ -218,7 +223,8 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
                                         ),
                                         if (index == _selectedIndex)
                                           Text(
-                                            "selected",
+                                            AppLocalizations.of(context)!
+                                                .selected,
                                             style: TextStyle(
                                               color: Theme.of(context)
                                                           .brightness ==
@@ -236,7 +242,7 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      "Notes",
+                                      AppLocalizations.of(context)!.notes,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
@@ -272,7 +278,8 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
                                           onPressed: () {
                                             showDeleteConfirmationDialog(
                                                 context,
-                                                "Are you sure you want to delete this address? This action cannot be undone.",
+                                                AppLocalizations.of(context)!
+                                                    .deleteAddressConfirmation,
                                                 () {
                                               ref
                                                   .read(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/app_welcome_text.dart';
 import 'package:frontend/components/login_form.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/pages/signup/pick_role_page.dart';
 
 class WelcomeWidget extends StatelessWidget {
@@ -43,8 +44,8 @@ class WelcomeWidget extends StatelessWidget {
           MaterialPageRoute(builder: (context) => const PickRolePage()),
         );
       },
-      child: const Text(
-        "Create An Account",
+      child: Text(
+        AppLocalizations.of(context)!.createAnAccountBtn,
       ),
     );
   }
@@ -56,14 +57,7 @@ class WelcomeWidget extends StatelessWidget {
           Expanded(child: Divider()),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              "or",
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.black
-                    : Colors.white70,
-              ),
-            ),
+            child: Text(AppLocalizations.of(context)!.or),
           ),
           Expanded(child: Divider()),
         ],

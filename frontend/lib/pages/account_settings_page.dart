@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/components/modals/select_language_modal.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/pages/edit/edit_user_page.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/auth_provider.dart';
+import 'package:frontend/provider/locale_provider.dart';
 import 'package:frontend/provider/theme_provider.dart';
+import 'package:frontend/services/localization_service.dart';
 
 class AccountSettingsPage extends ConsumerStatefulWidget {
   const AccountSettingsPage({super.key});
@@ -18,9 +22,8 @@ class AccountSettingsPage extends ConsumerStatefulWidget {
 class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
   @override
   Widget build(BuildContext context) {
-    // final auth = ref.watch(authProvider);
+    final localeState = ref.watch(localeStateProvider);
     final themeMode = ref.watch(themeStateProvider);
-    // if (!auth.hasError)
 
     return Scaffold(
         appBar: AppBar(
@@ -35,7 +38,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
             ),
           ),
           title: Text(
-            "Account Settings",
+            AppLocalizations.of(context)!.accountSettings,
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.light
                   ? Constants.primaryTextColor
@@ -50,7 +53,8 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
           AsyncData(:final value) => ListView.custom(
               childrenDelegate: SliverChildListDelegate.fixed([
                 ListTile(
-                  title: Text("Edit Profile"),
+                  leading: Icon(Icons.edit),
+                  title: Text(AppLocalizations.of(context)!.editProfile),
                   trailing: Icon(Icons.navigate_next),
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
@@ -58,12 +62,35 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     ));
                   },
                 ),
+                ListTile(
+                  onTap: () async {
+                    await showModalBottomSheet(
+                      context: context,
+                      builder: (context) => SelectLanguageModal(),
+                    );
+                    if (!mounted) return;
+                    LocalizationService().load(context);
+                  },
+                  leading: Icon(Icons.language),
+                  title: Text(AppLocalizations.of(context)!.preferredLanguage),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        localeState.value!.toUpperCase(),
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      Icon(Icons.navigate_next),
+                    ],
+                  ),
+                ),
                 SwitchListTile.adaptive(
                   value: value,
+                  secondary: Icon(Icons.dark_mode),
                   onChanged: (value) {
                     ref.read(themeStateProvider.notifier).setMode();
                   },
-                  title: Text("Dark Mode"),
+                  title: Text(AppLocalizations.of(context)!.darkMode),
                 ),
                 ListTile(
                   onTap: () {
@@ -73,8 +100,12 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                       (route) => false,
                     );
                   },
+                  leading: Icon(
+                    Icons.logout,
+                    color: Colors.red,
+                  ),
                   title: Text(
-                    "Logout",
+                    AppLocalizations.of(context)!.logout,
                     style: TextStyle(color: Colors.red),
                   ),
                 ),
