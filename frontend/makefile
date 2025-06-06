@@ -1,5 +1,8 @@
 release:
-	flutter build apk --split-per-abi --build-number 8 --build-name=1.0.0+8
+	flutter build apk --split-per-abi --build-number 9 --build-name=1.0.0+9
+
+build-analyze-size:
+	flutter build apk --build-number 9 --build-name=1.0.0+9 --analyze-size --target-platform=android-arm64 
 
 l10n:
 	flutter gen-l10n

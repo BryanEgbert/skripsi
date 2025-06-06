@@ -941,8 +941,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                     ),
             ),
       bottomSheet: _serviceEnabled == false ||
-              _permission != LocationPermission.always ||
-              _permission != LocationPermission.whileInUse
+              _permission == LocationPermission.denied
           ? Container(
               color: Theme.of(context).brightness == Brightness.light
                   ? Colors.amber[100]
@@ -1018,7 +1017,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
 
   Widget _buildCard(BuildContext context, PetDaycare item) {
     return Card(
-      elevation: 0,
+      // elevation: 0,
       // color: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5.0),

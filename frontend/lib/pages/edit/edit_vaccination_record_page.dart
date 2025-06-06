@@ -144,11 +144,7 @@ class _EditVaccinationRecordPageState
           children: [
             _vaccineRecordImagePicker(),
             TextField(
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.black
-                    : Colors.white70,
-              ),
+              readOnly: true,
               controller: _dateAdministeredController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
@@ -180,11 +176,7 @@ class _EditVaccinationRecordPageState
               },
             ),
             TextField(
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.black
-                    : Colors.white70,
-              ),
+              readOnly: true,
               enabled: _isDateAdministeredFilled,
               controller: _nextDueDateController,
               decoration: InputDecoration(

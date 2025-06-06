@@ -118,6 +118,7 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // log("[HOME] build");
     final messageTracker = ref.watch(messageTrackerProvider);
 
     if (_error != null) {

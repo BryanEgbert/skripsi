@@ -15,70 +15,73 @@ class WelcomeWidget extends StatelessWidget {
     return Scaffold(
       body: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16),
-        child: Stack(
-          children: [
-            Positioned(
-              top: 32,
-              right: 16,
-              child: GestureDetector(
-                onTap: () => showModalBottomSheet(
-                  context: context,
-                  builder: (context) => SelectLanguageModal(),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CountryFlag.fromLanguageCode(
-                      Localizations.localeOf(context).toLanguageTag(),
-                      shape: RoundedRectangle(4),
-                      width: 24,
-                      height: 20,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      Localizations.localeOf(context)
-                          .toLanguageTag()
-                          .toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+        child: SafeArea(
+          child: Stack(
+            children: [
+              Positioned(
+                top: 32,
+                right: 16,
+                child: GestureDetector(
+                  onTap: () => showModalBottomSheet(
+                    context: context,
+                    builder: (context) => SelectLanguageModal(),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CountryFlag.fromLanguageCode(
+                        Localizations.localeOf(context).toLanguageTag(),
+                        shape: RoundedRectangle(4),
+                        width: 24,
+                        height: 20,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        Localizations.localeOf(context)
+                            .toLanguageTag()
+                            .toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Constants.primaryTextColor
+                                  : Colors.orange,
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_drop_down,
                         color: Theme.of(context).brightness == Brightness.light
                             ? Constants.primaryTextColor
                             : Colors.orange,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AppWelcomeText(),
+                      SizedBox(
+                        height: 64,
                       ),
-                    ),
-                    Icon(
-                      Icons.arrow_drop_down,
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Constants.primaryTextColor
-                          : Colors.orange,
-                    )
-                  ],
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          LoginForm(),
+                          _separator(),
+                          _createAccountButton(context),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AppWelcomeText(),
-                    SizedBox(
-                      height: 64,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        LoginForm(),
-                        _separator(),
-                        _createAccountButton(context),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

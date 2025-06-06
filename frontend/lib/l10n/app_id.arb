@@ -228,5 +228,6 @@
   "addVaccinationRecord": "Tambah Catatan Vaksinasi",
   "petOwnersMessageInfo": "Pemilik hewan yang mengirim pesan akan muncul di sini.",
   "selectSpecialties": "Pilih spesialisasi",
-  "ratePetDaycare": "Ulas {petDaycareName}"
+  "ratePetDaycare": "Ulas {petDaycareName}",
+  "locationCannotBeEmpty": "Anda Belum Memilih Alamat"
 }

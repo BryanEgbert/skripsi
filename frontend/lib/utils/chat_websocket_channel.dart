@@ -31,6 +31,14 @@ class ChatWebsocketChannel {
     _instance = null;
   }
 
+  Future<void> add(dynamic data) async {
+    _instance ??= await instance;
+
+    _instance!.sink.add(data);
+
+    // _instance = null;
+  }
+
   Future<IOWebSocketChannel> get instance async {
     final String host = FirebaseRemoteConfig.instance.getString("backend_host");
 

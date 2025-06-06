@@ -986,5 +986,9 @@
                 "example": "Happy Paws"
             }
         }
+    },
+    "locationCannotBeEmpty": "Please Set an Address",
+    "@locationCannotBeEmpty": {
+        "description": "Error message shown when the location input field is empty"
     }
 }   

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/l10n/app_localizations.dart';
@@ -67,7 +69,10 @@ void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
         );
       }
 
-      if (reset != null) reset();
+      if (reset != null) {
+        log("running reset");
+        reset();
+      }
     });
 
     return;
@@ -98,7 +103,10 @@ void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
             Navigator.of(context).pop();
           }
 
-          if (reset != null) reset();
+          if (reset != null) {
+            log("running reset");
+            reset();
+          }
         });
       } else {
         return;

@@ -42,6 +42,7 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
   Widget build(BuildContext context) {
     final pet = ref.watch(petProvider(widget.petId));
     final petState = ref.watch(petStateProvider);
+
     log("[PET DETAILS PAGE] petState: $petState");
     handleValue(petState, this, ref.read(petStateProvider.notifier).reset);
 

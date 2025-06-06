@@ -718,4 +718,7 @@ class AppLocalizationsId extends AppLocalizations {
   String ratePetDaycare(String petDaycareName) {
     return 'Ulas $petDaycareName';
   }
+
+  @override
+  String get locationCannotBeEmpty => 'Anda Belum Memilih Alamat';
 }

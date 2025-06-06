@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +12,6 @@ import 'package:frontend/model/chat_message.dart';
 import 'package:frontend/model/user.dart';
 import 'package:frontend/pages/chat_page.dart';
 import 'package:frontend/pages/welcome.dart';
-import 'package:frontend/provider/chat_tracker_provider.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/message_tracker_provider.dart';
 import 'package:frontend/provider/user_provider.dart';
@@ -47,12 +47,13 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
           _websocketStream = value.stream.asBroadcastStream();
           _webSocketSubscription = _websocketStream.listen(
             (message) {
+              log("[VET MAIN PAGE] new message");
               _fetchData();
 
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 ref.read(vetChatListTrackerProvider.notifier).reset();
                 ref.invalidate(getUserChatListProvider);
-                ref.read(chatTrackerProvider.notifier).shouldReload();
+                // ref.read(chatTrackerProvider.notifier).shouldReload();
               });
             },
             onError: (e) {

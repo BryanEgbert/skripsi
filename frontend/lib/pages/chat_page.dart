@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -149,8 +148,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     final chatTracker = ref.watch(chatTrackerProvider);
 
     final chatMessages = ref.watch(chatMessagesProvider(widget.userId));
-
-    log("myInfo: $myInfo");
+    // log("chatMessages: ${chatMessages.value!.data}");
 
     handleError(myInfo, context);
 
@@ -224,6 +222,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           itemBuilder: (context, index) {
                             var msg = chatMessages.value!.data[index];
 
+                            // log("msg: $msg");
                             final dateTime =
                                 DateTime.parse(msg.createdAt).toLocal();
 
@@ -293,17 +292,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                             ).toJson());
 
                             channel!.sink.add(sendMessage);
-
                             _textController.clear();
-                            // ref
-                            //     .read(chatMessagesProvider(widget.userId)
-                            //         .future)
-                            //     .then((newData) {
-                            //   setState(() {
-                            //     _totalMessages = newData.data;
-                            //   });
-                            // });
                             ref.invalidate(chatMessagesProvider);
+                            ref
+                                .read(chatTrackerProvider.notifier)
+                                .shouldReload();
                           }
                         },
                         icon: !chatMessages.isLoading

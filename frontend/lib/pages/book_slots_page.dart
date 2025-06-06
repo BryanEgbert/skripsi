@@ -70,7 +70,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
   @override
   Widget build(BuildContext context) {
-    log("[BOOK PET DAYCARE] build");
+    log("[BOOK SLOTS] build");
     final savedAddress = ref.watch(savedAddressProvider(1, 100));
     final slotState = ref.watch(slotStateProvider);
     final lastSelected = ref.watch(lastSelectedProvider);
@@ -102,6 +102,11 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
               errorText: error.toString(),
               onRefresh: () => ref.refresh(savedAddressProvider().future)),
           AsyncData(:final value) => Builder(builder: (context) {
+              if (value.data.length == lastSelected.value!) {
+                ref
+                    .read(lastSelectedProvider.notifier)
+                    .set(lastSelected.value! - 1);
+              }
               return SafeArea(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -413,6 +418,24 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
                           if (value.data.isNotEmpty) {
                             _savedAddress = value.data[lastSelected.value!];
+                          }
+                          if (_usePickupService) {
+                            if (_savedAddress == null) {
+                              var snackbar = SnackBar(
+                                key: Key("error-message"),
+                                content: Text(
+                                  AppLocalizations.of(context)!
+                                      .locationCannotBeEmpty,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: Colors.red[800],
+                              );
+
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackbar);
+
+                              return;
+                            }
                           }
 
                           _submitForm();

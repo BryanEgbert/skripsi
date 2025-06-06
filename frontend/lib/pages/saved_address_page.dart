@@ -294,6 +294,13 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
                                                 // setState(() {
                                                 //   _selectedIndex =
                                                 // });
+                                              } else if (index - 1 <
+                                                  lastSelected.value!) {
+                                                ref
+                                                    .read(lastSelectedProvider
+                                                        .notifier)
+                                                    .set(lastSelected.value! -
+                                                        1);
                                               }
                                             });
                                           },

@@ -1462,6 +1462,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rate {petDaycareName}'**
   String ratePetDaycare(String petDaycareName);
+
+  /// Error message shown when the location input field is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Please Set an Address'**
+  String get locationCannotBeEmpty;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

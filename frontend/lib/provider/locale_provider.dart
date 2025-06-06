@@ -27,12 +27,13 @@ class LocaleState extends _$LocaleState {
 
   Future<void> setIfNull(String language) async {
     final SharedPreferencesAsync prefs = SharedPreferencesAsync();
-    final String? value = await prefs.getString('locale');
+    String? value = await prefs.getString('locale');
 
     if (value == null) {
       await prefs.setString('locale', language);
-    }
+      value = await prefs.getString('locale');
 
-    state = AsyncData(value!);
+      state = AsyncData(value!);
+    }
   }
 }

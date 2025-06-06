@@ -718,4 +718,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String ratePetDaycare(String petDaycareName) {
     return 'Rate $petDaycareName';
   }
+
+  @override
+  String get locationCannotBeEmpty => 'Please Set an Address';
 }

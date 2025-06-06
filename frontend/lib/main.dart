@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,8 +20,25 @@ import 'package:frontend/services/firebase_service.dart';
 import 'package:frontend/services/localization_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+// Future<void> _getDeviceInfo() async {
+//   final deviceInfoPlugin = DeviceInfoPlugin();
+//   AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
+//   log('Model: ${androidInfo.model}');
+//   log('Android Version: ${androidInfo.version.release}');
+//   log('Manufacturer: ${androidInfo.manufacturer}');
+//   log('RAM: ${androidInfo.systemFeatures}');
+//   log('Is Low RAM: ${androidInfo.isLowRamDevice}');
+// }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // if (kDebugMode) {
+  //   debugProfileBuildsEnabled = true;
+  //   debugPaintSizeEnabled = true;
+  //   debugRepaintRainbowEnabled = true;
+  //   _getDeviceInfo();
+  // }
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -56,6 +76,7 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
     final localeState = ref.watch(localeStateProvider);
     final tokenProvider = ref.watch(getTokenProvider);
     Widget home = Container(color: Colors.white);
+    log("localeState: $localeState");
 
     tokenProvider.when(
       data: (user) {
@@ -78,6 +99,7 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
     );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      showPerformanceOverlay: kDebugMode,
       title: "PawConnect",
       onGenerateTitle: (context) {
         LocalizationService().load(context);

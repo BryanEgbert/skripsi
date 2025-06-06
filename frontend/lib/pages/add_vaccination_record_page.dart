@@ -119,6 +119,7 @@ class _AddVaccinationRecordPageState
                     children: [
                       TextFormField(
                         controller: _dateAdministeredController,
+                        readOnly: true,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -151,6 +152,7 @@ class _AddVaccinationRecordPageState
                       ),
                       TextFormField(
                         enabled: _isDateAdministeredFilled,
+                        readOnly: true,
                         controller: _nextDueDateController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
