@@ -68,7 +68,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                       context: context,
                       builder: (context) => SelectLanguageModal(),
                     );
-                    if (!mounted) return;
+
                     LocalizationService().load(context);
                   },
                   leading: Icon(Icons.language),

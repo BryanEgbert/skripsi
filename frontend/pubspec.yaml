@@ -60,6 +60,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  country_flags: ^3.3.0
 
 dev_dependencies:
   flutter_test:

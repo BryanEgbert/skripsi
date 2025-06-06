@@ -1,3 +1,4 @@
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
@@ -42,6 +43,13 @@ class _SelectLanguageModalState extends ConsumerState<SelectLanguageModal> {
                     return RadioListTile.adaptive(
                       value: AppLocalizations.supportedLocales[index]
                           .toLanguageTag(),
+                      secondary: CountryFlag.fromLanguageCode(
+                        AppLocalizations.supportedLocales[index]
+                            .toLanguageTag(),
+                        shape: RoundedRectangle(4),
+                        width: 24,
+                        height: 20,
+                      ),
                       groupValue: value,
                       onChanged: (value) {
                         if (value == null) return;
