@@ -944,5 +944,47 @@
     "petInfo": "Pet Info",
     "@petInfo": {
         "description": "Label or title for a section that displays or requests information about a pet."
+    },
+    "editPetDaycare": "Edit Pet Daycare",
+    "@editPetDaycare": {
+        "description": "Title used when editing a pet daycare listing or profile"
+    },
+    "editVaccinationRecord": "Edit Vaccination Record",
+    "@editVaccinationRecord": {
+        "description": "Label or title used when editing a pet's vaccination record"
+    },
+    "description": "Description",
+    "@description": {
+        "description": "Label or heading for a text that explains more details about something"
+    },
+    "addReview": "Add Review",
+    "@addReview": {
+        "description": "Button label or title for adding a new review"
+    },
+    "imageRequired": "Image required",
+    "@imageRequired": {
+        "description": "Validation message shown when a user must upload or select an image"
+    },
+    "addVaccinationRecord": "Add Vaccination Record",
+    "@addVaccinationRecord": {
+        "description": "Label or button text to add a new vaccination record for a pet"
+    },
+    "petOwnersMessageInfo": "Pet owners who message you will show up here.",
+    "@petOwnersMessageInfo": {
+        "description": "Informational text displayed when no pet owners have messaged the user yet"
+    },
+    "selectSpecialties": "Select specialties",
+    "@selectSpecialties": {
+        "description": "Prompt for users to choose one or more specialties (e.g., in a vet profile setup)"
+    },
+    "ratePetDaycare": "Rate {petDaycareName}",
+    "@ratePetDaycare": {
+        "description": "Label or title prompting the user to rate a specific pet daycare",
+        "placeholders": {
+            "petDaycareName": {
+                "type": "String",
+                "example": "Happy Paws"
+            }
+        }
     }
 }   

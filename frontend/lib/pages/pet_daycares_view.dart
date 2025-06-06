@@ -567,8 +567,9 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
 
                                         String digitsOnly = value.replaceAll(
                                             RegExp(r'[^0-9]'), '');
-                                        if (digitsOnly.isEmpty)
+                                        if (digitsOnly.isEmpty) {
                                           digitsOnly = '0';
+                                        }
 
                                         if (digitsOnly.isEmpty) {
                                           _minPriceController.text =
@@ -623,8 +624,9 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                                         _maxPriceError = null;
                                         String digitsOnly = value.replaceAll(
                                             RegExp(r'[^0-9]'), '');
-                                        if (digitsOnly.isEmpty)
+                                        if (digitsOnly.isEmpty) {
                                           digitsOnly = '0';
+                                        }
 
                                         if (digitsOnly.isEmpty) {
                                           _maxPriceController.text =

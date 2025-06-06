@@ -324,7 +324,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                       await showModalBottomSheet(
                                         context: context,
                                         builder: (context) => AddReviewModal(
-                                          _records[index].petDaycare.id,
+                                          _records[index].petDaycare,
                                         ),
                                       );
 

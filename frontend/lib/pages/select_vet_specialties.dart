@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/lookup.dart';
 import 'package:frontend/provider/category_provider.dart';
 
@@ -22,7 +23,7 @@ class _SelectVetSpecialtiesPageState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Select specialties"),
+        title: Text(AppLocalizations.of(context)!.selectSpecialties),
       ),
       body: switch (vetSpecialties) {
         AsyncData(:final value) => ListView.builder(
@@ -37,7 +38,8 @@ class _SelectVetSpecialtiesPageState
               );
             },
           ),
-        AsyncError() => const Text("Something's wrong"),
+        AsyncError() =>
+          Text(AppLocalizations.of(context)!.somethingIsWrongTryAgain),
         _ => const CircularProgressIndicator(),
       },
     );

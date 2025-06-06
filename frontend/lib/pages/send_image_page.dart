@@ -62,7 +62,7 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
     if (imageState.hasError &&
         (imageState.valueOrNull == null) &&
         !imageState.isLoading) {
-      log("send image err");
+      log("Send image err", error: imageState.error, name: "send_image_page");
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         var snackbar = SnackBar(
           key: Key("error-message"),

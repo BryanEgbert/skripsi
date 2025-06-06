@@ -1408,6 +1408,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pet Info'**
   String get petInfo;
+
+  /// Title used when editing a pet daycare listing or profile
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Pet Daycare'**
+  String get editPetDaycare;
+
+  /// Label or title used when editing a pet's vaccination record
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Vaccination Record'**
+  String get editVaccinationRecord;
+
+  /// Label or heading for a text that explains more details about something
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// Button label or title for adding a new review
+  ///
+  /// In en, this message translates to:
+  /// **'Add Review'**
+  String get addReview;
+
+  /// Validation message shown when a user must upload or select an image
+  ///
+  /// In en, this message translates to:
+  /// **'Image required'**
+  String get imageRequired;
+
+  /// Label or button text to add a new vaccination record for a pet
+  ///
+  /// In en, this message translates to:
+  /// **'Add Vaccination Record'**
+  String get addVaccinationRecord;
+
+  /// Informational text displayed when no pet owners have messaged the user yet
+  ///
+  /// In en, this message translates to:
+  /// **'Pet owners who message you will show up here.'**
+  String get petOwnersMessageInfo;
+
+  /// Prompt for users to choose one or more specialties (e.g., in a vet profile setup)
+  ///
+  /// In en, this message translates to:
+  /// **'Select specialties'**
+  String get selectSpecialties;
+
+  /// Label or title prompting the user to rate a specific pet daycare
+  ///
+  /// In en, this message translates to:
+  /// **'Rate {petDaycareName}'**
+  String ratePetDaycare(String petDaycareName);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

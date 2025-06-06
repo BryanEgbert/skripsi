@@ -2444,7 +2444,7 @@ class _GetVetsProviderElement
   int get vetSpecialtyId => (origin as GetVetsProvider).vetSpecialtyId;
 }
 
-String _$getMyUserHash() => r'93e012e3b376f1f022bf5f83cd655c7c6ba3a0cb';
+String _$getMyUserHash() => r'd0ebc6e13ad4af558b588d0d197b9ba1c31deca2';
 
 /// See also [getMyUser].
 @ProviderFor(getMyUser)

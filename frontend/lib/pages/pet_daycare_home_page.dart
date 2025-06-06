@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -89,13 +88,13 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
   @override
   void initState() {
     super.initState();
-    log("[PET DAYCARE HOME] init");
+
     if (_hasInitialized) return;
+
     _hasInitialized = true;
     _setupWebSocket();
     _fetchMessages();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      log("update token");
       ref.read(userStateProvider.notifier).updateDeviceToken();
     });
   }
@@ -118,7 +117,6 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
     }
 
     if (tracker.value ?? false) {
-      log("[PET DAYCARE HOME PAGE] tracker: ${tracker.value}");
       _fetchMessages();
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         ref.read(petDaycareChatListTrackerProvider.notifier).reset();

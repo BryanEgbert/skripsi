@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,7 +40,6 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
   List<ChatMessage> _messages = [];
 
   void _setupWebSocket() {
-    log("[VET PAGE] setupWebSocket");
     try {
       ChatWebsocketChannel().instance.then(
         (value) {
@@ -63,7 +61,6 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
               });
             },
           );
-          log("connected to websocket");
         },
       );
     } catch (e) {
@@ -100,8 +97,6 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
     if (_hasInitialized) return;
     _hasInitialized = true;
 
-    log("[VET PAGE] init");
-
     if (_channel == null) _setupWebSocket();
     _fetchData();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -111,7 +106,6 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
 
   @override
   void dispose() {
-    log("[VET PAGE] dispose");
     _webSocketSubscription?.cancel();
     _channel?.sink.close();
     ChatWebsocketChannel().close();
@@ -120,7 +114,6 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    log("[VET PAGE] build");
     final chatList = ref.watch(getUserChatListProvider);
     final tracker = ref.watch(vetChatListTrackerProvider);
 
@@ -220,7 +213,7 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
                   ),
                 )
               : ErrorText(
-                  errorText: "Pet owners who message you will show up here.",
+                  errorText: AppLocalizations.of(context)!.petOwnersMessageInfo,
                   onRefresh: () async {
                     _fetchData();
                   },

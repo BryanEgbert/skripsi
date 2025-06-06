@@ -689,4 +689,33 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get petInfo => 'Info Hewan';
+
+  @override
+  String get editPetDaycare => 'Edit Penitipan Hewan';
+
+  @override
+  String get editVaccinationRecord => 'Edit Catatan Vaksinasi';
+
+  @override
+  String get description => 'Deskripsi';
+
+  @override
+  String get addReview => 'Tambah Ulasan';
+
+  @override
+  String get imageRequired => 'Gambar diperlukan';
+
+  @override
+  String get addVaccinationRecord => 'Tambah Catatan Vaksinasi';
+
+  @override
+  String get petOwnersMessageInfo => 'Pemilik hewan yang mengirim pesan akan muncul di sini.';
+
+  @override
+  String get selectSpecialties => 'Pilih spesialisasi';
+
+  @override
+  String ratePetDaycare(String petDaycareName) {
+    return 'Ulas $petDaycareName';
+  }
 }

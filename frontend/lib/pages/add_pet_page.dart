@@ -117,7 +117,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
           ),
         ),
         title: Text(
-          "Pets",
+          AppLocalizations.of(context)!.addPet,
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.light
                 ? Constants.primaryTextColor

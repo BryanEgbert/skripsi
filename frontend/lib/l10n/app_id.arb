@@ -219,5 +219,14 @@
   "chooseVetSpecialties": "Pilih Spesialisasi Dokter Hewan",
   "invalidEmailOrPassword": "Email atau kata sandi salah",
   "dataDoesNotExist": "Data tidak ditemukan",
-  "petInfo": "Info Hewan"
+  "petInfo": "Info Hewan",
+  "editPetDaycare": "Edit Penitipan Hewan",
+  "editVaccinationRecord": "Edit Catatan Vaksinasi",
+  "description": "Deskripsi",
+  "addReview": "Tambah Ulasan",
+  "imageRequired": "Gambar diperlukan",
+  "addVaccinationRecord": "Tambah Catatan Vaksinasi",
+  "petOwnersMessageInfo": "Pemilik hewan yang mengirim pesan akan muncul di sini.",
+  "selectSpecialties": "Pilih spesialisasi",
+  "ratePetDaycare": "Ulas {petDaycareName}"
 }

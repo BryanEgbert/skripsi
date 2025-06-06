@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
@@ -306,7 +305,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    labelText: "Address",
+                    labelText: AppLocalizations.of(context)!.address,
                     labelStyle: TextStyle(fontSize: 12),
                   ),
                 ),
@@ -327,7 +326,6 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
-                    log("button pressed");
                     _submitForm();
                   },
                   child: (!savedAddressState.isLoading)

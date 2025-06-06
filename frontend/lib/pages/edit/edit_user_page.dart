@@ -37,7 +37,6 @@ class _EditUserPageState extends ConsumerState<EditUserPage> {
     if (photo != null) {
       setState(() {
         _userProfilePicture = File(photo.path);
-        // log("profile: ${_userProfilePicture!.path}");
       });
     }
   }

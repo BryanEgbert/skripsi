@@ -177,8 +177,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
     final petDaycareState = ref.watch(petDaycareStateProvider);
     final imageState = ref.watch(imageStateProvider);
 
-    log("[EDIT PET DAYCARE PAGE] petDaycareState: $petDaycareState");
-
     if (_errorText != null) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         var snackbar = SnackBar(
@@ -246,7 +244,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
           appBar: AppBar(
             leading: appBarBackButton(context),
             title: Text(
-              "Edit Pet Daycare",
+              AppLocalizations.of(context)!.editPetDaycare,
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.light
                     ? Constants.primaryTextColor
@@ -404,7 +402,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
           appBar: AppBar(
             leading: appBarBackButton(context),
             title: Text(
-              "Edit Pet Daycare",
+              AppLocalizations.of(context)!.editPetDaycare,
               style: TextStyle(color: Colors.orange),
             ),
             centerTitle: false,
@@ -1069,11 +1067,6 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             _locationInput(value),
             _operationHoursInput(context),
             TextFormField(
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.black
-                    : Colors.white70,
-              ),
               controller: _descriptionController,
               key: Key("description-input"),
               maxLines: 6,

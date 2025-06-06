@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/provider/vaccination_record_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
@@ -44,7 +45,7 @@ class _AddVaccinationRecordPageState
   void _submitForm() {
     if (_vaccinationPhoto == null) {
       setState(() {
-        _imageError = "Image required";
+        _imageError = AppLocalizations.of(context)!.imageRequired;
       });
       return;
     }
@@ -96,7 +97,7 @@ class _AddVaccinationRecordPageState
             onPressed: () => Navigator.of(context).pop(),
             icon: Icon(Icons.arrow_back_ios)),
         title: Text(
-          "Add Vaccination Record",
+          AppLocalizations.of(context)!.addVaccinationRecord,
           style: TextStyle(color: Colors.orange),
         ),
       ),
@@ -122,7 +123,8 @@ class _AddVaccinationRecordPageState
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          labelText: "Date Administered",
+                          labelText:
+                              AppLocalizations.of(context)!.dateAdministered,
                           icon: Icon(Icons.today_rounded),
                         ),
                         onTap: () async {
@@ -154,7 +156,7 @@ class _AddVaccinationRecordPageState
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          labelText: "Next Due Date",
+                          labelText: AppLocalizations.of(context)!.nextDueDate,
                           disabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(color: Colors.blueGrey),
@@ -184,7 +186,7 @@ class _AddVaccinationRecordPageState
                 ElevatedButton(
                   onPressed: _submitForm,
                   child: (!vaccinationRecordState.isLoading)
-                      ? const Text("Add Vaccination Record")
+                      ? Text(AppLocalizations.of(context)!.addVaccinationRecord)
                       : CircularProgressIndicator(
                           color: Colors.white,
                         ),

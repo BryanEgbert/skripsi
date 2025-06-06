@@ -70,7 +70,7 @@ class _EditVaccinationRecordPageState
           var snackbar = SnackBar(
             key: Key("error-message"),
             content: Text(
-              "Vaccination record added successfully",
+              AppLocalizations.of(context)!.operationSuccess,
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: Constants.successSnackbarColor,
@@ -95,7 +95,7 @@ class _EditVaccinationRecordPageState
           ),
         ),
         title: Text(
-          "Edit Vaccination Record",
+          AppLocalizations.of(context)!.editVaccinationRecord,
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.light
                 ? Constants.primaryTextColor

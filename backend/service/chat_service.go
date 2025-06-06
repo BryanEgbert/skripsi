@@ -77,7 +77,6 @@ func (c *ChatServiceImpl) GetUnreadMessages(userId uint) (model.ListData[model.C
 	for _, val := range chatMessages {
 		chatDTO = append(chatDTO, model.ChatMessageDTO{
 			ID:         val.ID,
-			Type:       "message",
 			SenderID:   val.SenderID,
 			ReceiverID: val.ReceiverID,
 			Message:    val.Message,
@@ -105,7 +104,6 @@ func (c *ChatServiceImpl) GetMessages(userId1 uint, userId2 uint) (model.ListDat
 	for _, val := range chatMessages {
 		chatDTO = append(chatDTO, model.ChatMessageDTO{
 			ID:         val.ID,
-			Type:       "message",
 			SenderID:   val.SenderID,
 			ReceiverID: val.ReceiverID,
 			Message:    val.Message,

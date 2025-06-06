@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/error_text.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/l10n/app_localizations.dart';
+import 'package:frontend/model/pet_daycare.dart';
 import 'package:frontend/model/request/create_review_request.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/list_data_provider.dart';
@@ -10,8 +12,8 @@ import 'package:frontend/provider/review_provider.dart';
 import 'package:frontend/services/localization_service.dart';
 
 class AddReviewModal extends ConsumerStatefulWidget {
-  final int petDaycareId;
-  const AddReviewModal(this.petDaycareId, {super.key});
+  final PetDaycareDetails petDaycare;
+  const AddReviewModal(this.petDaycare, {super.key});
 
   @override
   ConsumerState<AddReviewModal> createState() => _AddReviewModalState();
@@ -107,6 +109,15 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: 8,
             children: [
+              Text(
+                AppLocalizations.of(context)!
+                    .ratePetDaycare(widget.petDaycare.name),
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Constants.primaryTextColor
+                      : Colors.orange,
+                ),
+              ),
               StarRating(
                 size: 50,
                 allowHalfRating: false,
@@ -126,7 +137,7 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  labelText: "Description",
+                  labelText: AppLocalizations.of(context)!.description,
                   errorText: _descriptionInputError,
                 ),
               ),
@@ -136,12 +147,13 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
                   if (reviewState.isLoading) return;
                   if (_descriptionController.text.isEmpty) {
                     setState(() {
-                      _descriptionInputError = "description cannot be empty";
+                      _descriptionInputError =
+                          AppLocalizations.of(context)!.fieldCannotBeEmpty;
                     });
                     return;
                   }
                   ref.read(reviewStateProvider.notifier).addReview(
-                      widget.petDaycareId,
+                      widget.petDaycare.id,
                       CreateReviewRequest(
                         rating: _rating.toInt(),
                         description: _descriptionController.text,
@@ -149,7 +161,7 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
                 },
                 child: (!reviewState.isLoading)
                     ? Text(
-                        "Add Review",
+                        AppLocalizations.of(context)!.addReview,
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       )
@@ -159,9 +171,7 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
           ),
         ),
       _ => Center(
-          child: CircularProgressIndicator(
-            color: Colors.orange,
-          ),
+          child: CircularProgressIndicator.adaptive(),
         ),
     };
   }

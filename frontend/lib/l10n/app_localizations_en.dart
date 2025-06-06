@@ -689,4 +689,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get petInfo => 'Pet Info';
+
+  @override
+  String get editPetDaycare => 'Edit Pet Daycare';
+
+  @override
+  String get editVaccinationRecord => 'Edit Vaccination Record';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get addReview => 'Add Review';
+
+  @override
+  String get imageRequired => 'Image required';
+
+  @override
+  String get addVaccinationRecord => 'Add Vaccination Record';
+
+  @override
+  String get petOwnersMessageInfo => 'Pet owners who message you will show up here.';
+
+  @override
+  String get selectSpecialties => 'Select specialties';
+
+  @override
+  String ratePetDaycare(String petDaycareName) {
+    return 'Rate $petDaycareName';
+  }
 }

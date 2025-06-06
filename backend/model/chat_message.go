@@ -18,7 +18,6 @@ type ChatMessage struct {
 
 type ChatMessageDTO struct {
 	ID           uint    `json:"id"`
-	Type         string  `json:"type"`
 	SenderID     uint    `json:"senderId"`
 	ReceiverID   uint    `json:"receiverId"`
 	Message      string  `json:"message"`

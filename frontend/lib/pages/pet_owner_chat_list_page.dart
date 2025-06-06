@@ -160,7 +160,7 @@ class PetOwnerChatListPageState extends ConsumerState<PetOwnerChatListPage> {
             )
           : (users.isEmpty)
               ? ErrorText(
-                  errorText: "Chat history will appear here",
+                  errorText: AppLocalizations.of(context)!.petOwnersMessageInfo,
                   onRefresh: () async {
                     ref.read(getUserChatListProvider.future).then((newData) {
                       setState(() {

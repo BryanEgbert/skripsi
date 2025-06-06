@@ -226,7 +226,6 @@ class _PaginatedListViewState
                       showGeneralDialog(
                         context: context,
                         barrierColor: Colors.black.withValues(alpha: 0.5),
-                        barrierLabel: 'Image details',
                         pageBuilder: (context, animation, secondaryAnimation) {
                           return SizedBox.expand(
                             child: GestureDetector(

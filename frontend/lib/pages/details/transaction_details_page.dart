@@ -30,9 +30,8 @@ class _TransactionDetailsPageState
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
 
   void _cancelBooking(int bookedSlotId) {
-    showCancelBookingConfirmationDialog(context,
-        "Are you sure you want to cancel this booking? This action cannot be undone.",
-        () {
+    showCancelBookingConfirmationDialog(
+        context, AppLocalizations.of(context)!.cancelBookingConfirmation, () {
       ref.read(slotStateProvider.notifier).cancelSlot(bookedSlotId);
       ref.invalidate(getBookedSlotProvider(widget.bookedSlotId));
     });
@@ -146,7 +145,7 @@ class _TransactionDetailsPageState
                                 await showModalBottomSheet(
                                   context: context,
                                   builder: (context) =>
-                                      AddReviewModal(value.petDaycare.id),
+                                      AddReviewModal(value.petDaycare),
                                 );
 
                                 setState(() {
@@ -436,7 +435,7 @@ class _TransactionDetailsPageState
 
       totalPrice += pricing.price *
           pet.total *
-          (difference.inDays + (pricing.pricingType == "day" ? 1 : 0));
+          (difference.inDays + (pricing.pricingType.id == 1 ? 1 : 0));
     }
     return totalPrice;
   }

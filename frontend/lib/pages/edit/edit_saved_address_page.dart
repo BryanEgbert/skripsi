@@ -110,7 +110,7 @@ class _EditSavedAddressPageState extends ConsumerState<EditSavedAddressPage> {
             ),
           ),
           title: Text(
-            "Add Address",
+            AppLocalizations.of(context)!.addAddress,
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.light
                   ? Constants.primaryTextColor
@@ -151,7 +151,8 @@ class _EditSavedAddressPageState extends ConsumerState<EditSavedAddressPage> {
                                 var snackbar = SnackBar(
                                   key: Key("error-message"),
                                   content: Text(
-                                    "Location request denied.",
+                                    AppLocalizations.of(context)!
+                                        .locationRequestDenied,
                                     style: TextStyle(color: Colors.white),
                                   ),
                                   backgroundColor: Colors.red[800],
@@ -174,7 +175,8 @@ class _EditSavedAddressPageState extends ConsumerState<EditSavedAddressPage> {
                                   var snackbar = SnackBar(
                                     key: Key("error-message"),
                                     content: Text(
-                                      "Location request denied.",
+                                      AppLocalizations.of(context)!
+                                          .locationRequestDenied,
                                       style: TextStyle(color: Colors.white),
                                     ),
                                     backgroundColor: Colors.red[800],

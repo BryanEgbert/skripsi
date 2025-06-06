@@ -150,7 +150,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
     final chatMessages = ref.watch(chatMessagesProvider(widget.userId));
 
-    log("muInfo: $myInfo");
+    log("myInfo: $myInfo");
 
     handleError(myInfo, context);
 
@@ -233,57 +233,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                                     .toLanguageTag());
                             final formattedDate = formatter.format(dateTime);
 
-                            if (msg.type == "message") {
-                              return ChatBubble(
-                                msg: msg,
-                                myInfo: myInfo,
-                                formattedDate: formattedDate,
-                              );
-                            } else if (msg.type == "error") {
-                              return Column(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: (msg.senderId ==
-                                              myInfo.value!.userId)
-                                          ? Colors.orange[300]
-                                          : Constants.secondaryBackgroundColor,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        if (msg.imageUrl != null)
-                                          Image.network(msg.imageUrl!),
-                                        Text(
-                                          msg.message,
-                                          style: TextStyle(
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              formattedDate,
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey[700],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Text(
-                                    "Failed to send message",
-                                    style: TextStyle(color: Colors.red[800]),
-                                  ),
-                                ],
-                              );
-                            } else {
-                              return SizedBox();
-                            }
+                            return ChatBubble(
+                              msg: msg,
+                              myInfo: myInfo,
+                              formattedDate: formattedDate,
+                            );
                           },
                         )
                       : Center(

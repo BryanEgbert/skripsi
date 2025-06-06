@@ -81,9 +81,6 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
       title: "PawConnect",
       onGenerateTitle: (context) {
         LocalizationService().load(context);
-        // ref
-        //     .read(localeStateProvider.notifier)
-        //     .set(Localizations.localeOf(context).toLanguageTag());
 
         return "PawConnect";
       },
@@ -92,6 +89,9 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
       localeResolutionCallback: (locale, supportedLocales) {
         for (var supportedLocale in supportedLocales) {
           if (supportedLocale.languageCode == locale?.languageCode) {
+            ref
+                .read(localeStateProvider.notifier)
+                .setIfNull(supportedLocale.languageCode);
             return supportedLocale;
           }
         }
@@ -175,7 +175,7 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
           ),
         ),
       ),
-      locale: Locale(localeState.value!),
+      locale: Locale(localeState.value ?? "id"),
       themeMode: (themeMode.value == false) ? ThemeMode.light : ThemeMode.dark,
       home: home,
     );
