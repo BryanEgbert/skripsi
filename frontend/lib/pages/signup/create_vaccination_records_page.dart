@@ -187,7 +187,8 @@ class _CreateVaccinationRecordsPageState
                           if (!token.isLoading) {
                             if (_vaccinationPhoto == null) {
                               setState(() {
-                                _imageError = "Image must not be empty";
+                                _imageError =
+                                    AppLocalizations.of(context)!.imageRequired;
                               });
                               return;
                             }

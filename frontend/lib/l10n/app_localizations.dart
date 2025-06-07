@@ -1468,6 +1468,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please Set an Address'**
   String get locationCannotBeEmpty;
+
+  /// Displayed when user tries to save a vaccination record without an image.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccination Record\'s Image Required'**
+  String get vaccinationImageRequired;
+
+  /// Displayed when user selects a next due date earlier than or equal to the administered date.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Due date must be greater than the date administered'**
+  String get nextDueDateValidationError;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

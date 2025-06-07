@@ -990,5 +990,13 @@
     "locationCannotBeEmpty": "Please Set an Address",
     "@locationCannotBeEmpty": {
         "description": "Error message shown when the location input field is empty"
+    },
+    "vaccinationImageRequired": "Vaccination Record's Image Required",
+    "@vaccinationImageRequired": {
+        "description": "Displayed when user tries to save a vaccination record without an image."
+    },
+    "nextDueDateValidationError": "Next Due date must be greater than the date administered",
+    "@nextDueDateValidationError": {
+        "description": "Displayed when user selects a next due date earlier than or equal to the administered date."
     }
 }   

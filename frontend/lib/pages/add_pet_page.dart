@@ -24,7 +24,8 @@ class AddPetPage extends ConsumerStatefulWidget {
 }
 
 class _AddPetPageState extends ConsumerState<AddPetPage> {
-  final _formKey = GlobalKey<FormState>();
+  final _petFormKey = GlobalKey<FormState>();
+  final _vaccinationRecordFormKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
   final _petCategoryController = TextEditingController();
@@ -40,6 +41,9 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
   File? _vaccinationPhoto;
   bool _isDateAdministeredFilled = false;
   DateTime _dateAdministered = DateTime.now();
+  DateTime _nextDueDate = DateTime.now();
+
+  String? _imageError;
 
   Future<void> _pickPetImage() async {
     final photo = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -63,8 +67,23 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
 
   void _submitForm() {
     if (ref.read(petStateProvider).isLoading) return;
-    if (!_formKey.currentState!.validate()) {
+    if (!_petFormKey.currentState!.validate()) {
       return;
+    }
+
+    if (_vaccinationPhoto != null ||
+        _dateAdministeredController.text.isNotEmpty ||
+        _nextDueDateController.text.isNotEmpty) {
+      if (_vaccinationPhoto == null) {
+        setState(() {
+          _imageError = AppLocalizations.of(context)!.vaccinationImageRequired;
+        });
+        return;
+      }
+
+      if (!_vaccinationRecordFormKey.currentState!.validate()) {
+        return;
+      }
     }
 
     ref.read(petStateProvider.notifier).addPet(
@@ -88,6 +107,19 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
     Locale locale = Localizations.localeOf(context);
 
     handleValue(petState, this, ref.read(petStateProvider.notifier).reset);
+
+    if (_imageError != null) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        var snackbar = SnackBar(
+          key: Key("error-message"),
+          content: Text(_imageError!),
+          backgroundColor: Colors.red,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+        _imageError = null;
+      });
+    }
 
     // if (petState.hasValue && !petState.isLoading) {
     //   if (petState.value == 201) {
@@ -130,169 +162,181 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
         child: SingleChildScrollView(
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: 16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: 12,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.petInfo,
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Constants.primaryTextColor
-                          : Colors.orange,
-                      fontSize: 20,
-                    ),
-                  ),
-                  ProfileImagePicker(
-                    onTap: _pickPetImage,
-                    image: _petProfilePicture,
-                  ),
-                  TextFormField(
-                    controller: _nameController,
-                    key: Key("name-input"),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      labelText: AppLocalizations.of(context)!.nameLabel,
-                    ),
-                    validator: (value) => validateNotEmpty(context, value),
-                  ),
-                  TextFormField(
-                    controller: _petCategoryController,
-                    focusNode: _petCategoryFocusNode,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      suffixIcon: Icon(Icons.navigate_next),
-                      labelText: AppLocalizations.of(context)!.petCategoryLabel,
-                    ),
-                    onTap: () async {
-                      _petCategoryFocusNode.unfocus();
-
-                      final out = await showModalBottomSheet<Lookup>(
-                          context: context,
-                          builder: (context) => SelectPetTypeModal());
-
-                      if (out == null) {
-                        return;
-                      }
-                      _petCategoryController.text = out.name;
-                      _petCategoryId = out.id;
-                    },
-                    validator: (value) => validateNotEmpty(context, value),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(AppLocalizations.of(context)!.spayedNeuteredLabel),
-                        Checkbox(
-                          value: _isNeutered,
-                          onChanged: (value) {
-                            setState(() {
-                              _isNeutered = value!;
-                            });
-                          },
+            child: Column(
+              children: [
+                Form(
+                  key: _petFormKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 12,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.petInfo,
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Constants.primaryTextColor
+                                  : Colors.orange,
+                          fontSize: 20,
                         ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    AppLocalizations.of(context)!.vaccinationRecordOptional,
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Constants.primaryTextColor
-                          : Colors.orange,
-                      fontSize: 20,
-                    ),
-                  ),
-                  _vaccineRecordImagePicker(),
-                  TextFormField(
-                    controller: _dateAdministeredController,
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white70,
-                    ),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
                       ),
-                      labelText: AppLocalizations.of(context)!.dateAdministered,
-                      icon: Icon(Icons.today_rounded),
-                    ),
-                    onTap: () async {
-                      final pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(1970),
-                        lastDate: DateTime.now(),
-                      );
-
-                      if (pickedDate != null) {
-                        String formattedDate =
-                            DateFormat('yyyy-MM-dd', locale.toLanguageTag())
-                                .format(pickedDate);
-                        setState(() {
-                          _dateAdministered = pickedDate;
-                          _isDateAdministeredFilled = true;
-                          _dateAdministeredController.text = formattedDate;
-                        });
-                      } else {
-                        _isDateAdministeredFilled = false;
-                      }
-                    },
-                  ),
-                  TextFormField(
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.black
-                          : Colors.white70,
-                    ),
-                    enabled: _isDateAdministeredFilled,
-                    controller: _nextDueDateController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                      ProfileImagePicker(
+                        onTap: _pickPetImage,
+                        image: _petProfilePicture,
                       ),
-                      labelText: AppLocalizations.of(context)!.nextDueDate,
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.blueGrey),
-                      ),
-                      icon: Icon(Icons.today_rounded),
-                    ),
-                    onTap: () async {
-                      final pickedDate = await showDatePicker(
-                        context: context,
-                        firstDate: _dateAdministered.add(Duration(days: 1)),
-                        lastDate: DateTime.now().add(Duration(days: 3653)),
-                      );
-
-                      if (pickedDate != null) {
-                        String formattedDate =
-                            DateFormat('yyyy-MM-dd', locale.toLanguageTag())
-                                .format(pickedDate);
-                        setState(() {
-                          _nextDueDateController.text = formattedDate;
-                        });
-                      }
-                    },
-                  ),
-                  ElevatedButton(
-                    onPressed: _submitForm,
-                    child: (!ref.read(petStateProvider).isLoading)
-                        ? Text(AppLocalizations.of(context)!.addPet)
-                        : CircularProgressIndicator(
-                            color: Colors.white,
+                      TextFormField(
+                        controller: _nameController,
+                        key: Key("name-input"),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
+                          labelText: AppLocalizations.of(context)!.nameLabel,
+                        ),
+                        validator: (value) => validateNotEmpty(context, value),
+                      ),
+                      TextFormField(
+                        controller: _petCategoryController,
+                        focusNode: _petCategoryFocusNode,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          suffixIcon: Icon(Icons.navigate_next),
+                          labelText:
+                              AppLocalizations.of(context)!.petCategoryLabel,
+                        ),
+                        onTap: () async {
+                          _petCategoryFocusNode.unfocus();
+
+                          final out = await showModalBottomSheet<Lookup>(
+                              context: context,
+                              builder: (context) => SelectPetTypeModal());
+
+                          if (out == null) {
+                            return;
+                          }
+                          _petCategoryController.text = out.name;
+                          _petCategoryId = out.id;
+                        },
+                        validator: (value) => validateNotEmpty(context, value),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(AppLocalizations.of(context)!
+                                .spayedNeuteredLabel),
+                            Checkbox(
+                              value: _isNeutered,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isNeutered = value!;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                Form(
+                  key: _vaccinationRecordFormKey,
+                  child: Column(
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.vaccinationRecordOptional,
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Constants.primaryTextColor
+                                  : Colors.orange,
+                          fontSize: 20,
+                        ),
+                      ),
+                      _vaccineRecordImagePicker(),
+                      TextFormField(
+                        controller: _dateAdministeredController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          labelText:
+                              AppLocalizations.of(context)!.dateAdministered,
+                          icon: Icon(Icons.today_rounded),
+                        ),
+                        onTap: () async {
+                          final pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(1970),
+                            lastDate: DateTime.now(),
+                          );
+
+                          if (pickedDate != null) {
+                            String formattedDate =
+                                DateFormat('yyyy-MM-dd', locale.toLanguageTag())
+                                    .format(pickedDate);
+                            setState(() {
+                              _dateAdministered = pickedDate;
+                              _isDateAdministeredFilled = true;
+                              _dateAdministeredController.text = formattedDate;
+                            });
+                          } else {
+                            _isDateAdministeredFilled = false;
+                          }
+                        },
+                        validator: (value) => validateNotEmpty(context, value),
+                      ),
+                      TextFormField(
+                        readOnly: true,
+                        enabled: _isDateAdministeredFilled,
+                        controller: _nextDueDateController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          labelText: AppLocalizations.of(context)!.nextDueDate,
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.blueGrey),
+                          ),
+                          icon: Icon(Icons.today_rounded),
+                        ),
+                        onTap: () async {
+                          final pickedDate = await showDatePicker(
+                            context: context,
+                            firstDate: _dateAdministered.add(Duration(days: 1)),
+                            lastDate: DateTime.now().add(Duration(days: 3653)),
+                          );
+
+                          if (pickedDate != null) {
+                            _nextDueDate = pickedDate;
+                            String formattedDate =
+                                DateFormat('yyyy-MM-dd', locale.toLanguageTag())
+                                    .format(pickedDate);
+                            setState(() {
+                              _nextDueDateController.text = formattedDate;
+                            });
+                          }
+                        },
+                        validator: (value) => validateNextDueDate(
+                            context, _dateAdministered, _nextDueDate, value),
+                      ),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: _submitForm,
+                  child: (!ref.read(petStateProvider).isLoading)
+                      ? Text(AppLocalizations.of(context)!.addPet)
+                      : CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                ),
+              ],
             ),
           ),
         ),

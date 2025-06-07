@@ -721,4 +721,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get locationCannotBeEmpty => 'Anda Belum Memilih Alamat';
+
+  @override
+  String get vaccinationImageRequired => 'Gambar catatan vaksinasi wajib diisi';
+
+  @override
+  String get nextDueDateValidationError => 'Tanggal jatuh tempo berikutnya harus lebih besar dari tanggal pemberian';
 }

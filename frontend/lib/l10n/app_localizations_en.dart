@@ -721,4 +721,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationCannotBeEmpty => 'Please Set an Address';
+
+  @override
+  String get vaccinationImageRequired => 'Vaccination Record\'s Image Required';
+
+  @override
+  String get nextDueDateValidationError => 'Next Due date must be greater than the date administered';
 }

@@ -52,8 +52,9 @@ String? validateEmail(BuildContext context, String? value) {
     return AppLocalizations.of(context)!.emailEmpty;
   }
   final bool emailIsValid = RegExp(
-          r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
-      .hasMatch(value);
+    r'''(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])''',
+    caseSensitive: false,
+  ).hasMatch(value);
 
   if (!emailIsValid) {
     return AppLocalizations.of(context)!.emailInvalid;
@@ -69,7 +70,7 @@ String? validateNextDueDate(BuildContext context, DateTime dateAdministered,
   }
 
   if (dateAdministered.compareTo(nextDueDate) >= 0) {
-    return "Next Due date must be greater than the date administered";
+    return AppLocalizations.of(context)!.nextDueDateValidationError;
   }
 
   return null;
