@@ -92,14 +92,15 @@ class VaccinationRecordService implements IVaccinationRecordService {
         },
       ));
 
-      FormData formData = FormData.fromMap({
-        ...req.toMap(),
-        "vaccineRecordImage": req.vaccineRecordImage != null
-            ? await MultipartFile.fromFile(req.vaccineRecordImage!.path,
-                filename: req.vaccineRecordImage!.path.split('/').last)
-            : null,
-      });
+      Map<String, dynamic> reqMap = req.toMap();
 
+      if (req.vaccineRecordImage != null) {
+        reqMap["vaccineRecordImage"] = await MultipartFile.fromFile(
+            req.vaccineRecordImage!.path,
+            filename: req.vaccineRecordImage!.path.split('/').last);
+      }
+
+      FormData formData = FormData.fromMap(reqMap);
       final res = await dio.put(
         "http://$host/vaccination-record/$vaccineRecordId",
         options: Options(headers: {

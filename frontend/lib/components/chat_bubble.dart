@@ -60,7 +60,7 @@ class ChatBubble extends StatelessWidget {
                                   msg.imageUrl!,
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
-                                      color: Colors.grey,
+                                      color: Colors.grey.withAlpha(125),
                                       height: 20,
                                       width: 20,
                                       child: Column(
@@ -100,7 +100,7 @@ class ChatBubble extends StatelessWidget {
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: Colors.grey,
+                          color: Colors.grey.withAlpha(125),
                           width: double.infinity,
                           child: Column(
                             spacing: 8,

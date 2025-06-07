@@ -44,11 +44,14 @@ func (s *VaccineServiceImpl) UpdateVaccineRecord(id uint, req model.VaccineRecor
 		return err
 	}
 
-	os.Remove(helper.GetFilePath(record.ImageURL))
+	// os.Remove(helper.GetFilePath(record.ImageURL))
 
 	record.DateAdministered = req.DateAdministered
 	record.NextDueDate = req.NextDueDate
-	record.ImageURL = req.VaccineRecordImageUrl
+
+	if req.VaccineRecordImageUrl != "" {
+		record.ImageURL = req.VaccineRecordImageUrl
+	}
 
 	if err := s.db.Save(&record).Error; err != nil {
 		return err
@@ -63,6 +66,7 @@ func (s *VaccineServiceImpl) GetVaccineRecords(petId uint, page int, limit int) 
 		Where("pet_id = ?", petId).
 		Offset((page - 1) * limit).
 		Limit(limit).
+		Order("next_due_date DESC").
 		Find(&records).Error; err != nil {
 		return nil, err
 	}

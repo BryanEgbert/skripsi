@@ -14,6 +14,7 @@ import (
 	"github.com/BryanEgbert/skripsi/routes"
 	"github.com/BryanEgbert/skripsi/seeder"
 	"github.com/BryanEgbert/skripsi/service"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"google.golang.org/api/option"
@@ -116,6 +117,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	ctx := context.Background()
 	r := gin.Default()
+	r.Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedPaths([]string{"/image/"})))
+
 	opt := option.WithCredentialsFile("./skripsi-e8cfb-firebase-adminsdk-fbsvc-4d06e0c321.json")
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {

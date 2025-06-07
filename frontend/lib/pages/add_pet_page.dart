@@ -269,7 +269,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                     onTap: () async {
                       final pickedDate = await showDatePicker(
                         context: context,
-                        firstDate: _dateAdministered,
+                        firstDate: _dateAdministered.add(Duration(days: 1)),
                         lastDate: DateTime.now().add(Duration(days: 3653)),
                       );
 

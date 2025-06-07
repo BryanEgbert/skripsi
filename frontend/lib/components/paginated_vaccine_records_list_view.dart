@@ -117,9 +117,12 @@ class _PaginatedListViewState
               setState(() {
                 _records.removeAt(_deleteIndex);
                 _deleteIndex = -1;
-                ref.invalidate(vaccinationRecordStateProvider);
               });
             }
+            ref.read(vaccinationRecordStateProvider.notifier).reset();
+            _records = [];
+            _page = 1;
+            _fetchMoreData();
           });
         }
       }
@@ -233,7 +236,36 @@ class _PaginatedListViewState
                                 Navigator.of(context).pop();
                               },
                               child: InteractiveViewer(
-                                child: Image.network(vaccineRecord.imageUrl),
+                                child: Image.network(
+                                  vaccineRecord.imageUrl,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: Colors.grey.withAlpha(125),
+                                      child: Column(
+                                        spacing: 8,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.image_not_supported,
+                                            size: 32,
+                                            semanticLabel:
+                                                AppLocalizations.of(context)!
+                                                    .failToLoadImage,
+                                          ),
+                                          Text(
+                                            AppLocalizations.of(context)!
+                                                .failToLoadImage,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              decoration: TextDecoration.none,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           );

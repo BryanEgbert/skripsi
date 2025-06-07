@@ -29,6 +29,8 @@ class _AddVaccinationRecordPageState
   File? _vaccinationPhoto;
   bool _isDateAdministeredFilled = false;
   DateTime _dateAdministered = DateTime.now();
+  DateTime _nextDueDate = DateTime.now();
+
   String? _imageError;
 
   Future<void> _pickImage() async {
@@ -168,11 +170,12 @@ class _AddVaccinationRecordPageState
                         onTap: () async {
                           final pickedDate = await showDatePicker(
                             context: context,
-                            firstDate: _dateAdministered,
+                            firstDate: _dateAdministered.add(Duration(days: 1)),
                             lastDate: DateTime.now().add(Duration(days: 3653)),
                           );
 
                           if (pickedDate != null) {
+                            _nextDueDate = pickedDate;
                             String formattedDate =
                                 DateFormat('yyyy-MM-dd').format(pickedDate);
                             setState(() {
@@ -180,7 +183,9 @@ class _AddVaccinationRecordPageState
                             });
                           }
                         },
-                        validator: (value) => validateNotEmpty(context, value),
+                        // TODO: change validation
+                        validator: (value) => validateNextDueDate(
+                            context, _dateAdministered, _nextDueDate, value),
                       ),
                     ],
                   ),

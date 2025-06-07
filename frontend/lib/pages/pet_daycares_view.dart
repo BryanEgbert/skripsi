@@ -156,6 +156,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
   @override
   Widget build(BuildContext context) {
     final petCategory = ref.watch(petCategoryProvider);
+    final pricingType = ref.watch(pricingTypeProvider);
     final locale = Localizations.localeOf(context).toLanguageTag();
 
     if (_error != null) {
@@ -282,35 +283,54 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                                   color: Constants.primaryTextColor,
                                 ),
                               ),
-                              Wrap(
-                                spacing: 4,
-                                children: [
-                                  FilterChip(
-                                    label: Text(
-                                      "per day",
-                                      style: TextStyle(fontSize: 12),
-                                    ),
-                                    selected: _filters.pricingType == 1,
-                                    onSelected: (value) {
-                                      setState(() {
-                                        _filters.pricingType = value ? 1 : null;
-                                      });
-                                    },
-                                  ),
-                                  FilterChip(
-                                    label: Text(
-                                      "per night",
-                                      style: TextStyle(fontSize: 12),
-                                    ),
-                                    selected: _filters.pricingType == 2,
-                                    onSelected: (value) {
-                                      setState(() {
-                                        _filters.pricingType = value ? 2 : null;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
+                              // Wrap(
+                              //   spacing: 4,
+                              //   children: [
+                              //     FilterChip(
+                              //       label: Text(
+                              //         "per day",
+                              //         style: TextStyle(fontSize: 12),
+                              //       ),
+                              //       selected: _filters.pricingType == 1,
+                              //       onSelected: (value) {
+                              //         setState(() {
+                              //           _filters.pricingType = value ? 1 : null;
+                              //         });
+                              //       },
+                              //     ),
+                              //     FilterChip(
+                              //       label: Text(
+                              //         "per night",
+                              //         style: TextStyle(fontSize: 12),
+                              //       ),
+                              //       selected: _filters.pricingType == 2,
+                              //       onSelected: (value) {
+                              //         setState(() {
+                              //           _filters.pricingType = value ? 2 : null;
+                              //         });
+                              //       },
+                              //     ),
+                              //   ],
+                              // ),
+                              if (pricingType.hasValue)
+                                Wrap(
+                                  spacing: 4,
+                                  children: pricingType.value!.map((type) {
+                                    return FilterChip(
+                                      label: Text(
+                                        "per ${type.name}",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      selected: _filters.pricingType == type.id,
+                                      onSelected: (selected) {
+                                        setState(() {
+                                          _filters.pricingType =
+                                              selected ? type.id : null;
+                                        });
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
                               const SizedBox(height: 16),
                               Text(
                                 AppLocalizations.of(context)!.petCategoryLabel,

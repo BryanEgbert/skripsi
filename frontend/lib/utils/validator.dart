@@ -61,3 +61,16 @@ String? validateEmail(BuildContext context, String? value) {
 
   return null;
 }
+
+String? validateNextDueDate(BuildContext context, DateTime dateAdministered,
+    DateTime nextDueDate, String? value) {
+  if (value == null || value.isEmpty) {
+    return AppLocalizations.of(context)!.fieldCannotBeEmpty;
+  }
+
+  if (dateAdministered.compareTo(nextDueDate) >= 0) {
+    return "Next Due date must be greater than the date administered";
+  }
+
+  return null;
+}

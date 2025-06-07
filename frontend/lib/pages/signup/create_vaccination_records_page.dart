@@ -10,6 +10,7 @@ import 'package:frontend/model/request/pet_request.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/provider/auth_provider.dart';
 import 'package:frontend/utils/handle_error.dart';
+import 'package:frontend/utils/validator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -38,6 +39,7 @@ class _CreateVaccinationRecordsPageState
   File? _vaccinationPhoto;
   bool _isDateAdministeredFilled = false;
   DateTime _dateAdministered = DateTime.now();
+  DateTime _nextDueDate = DateTime.now();
   String? _imageError;
 
   Future<void> _pickImage() async {
@@ -136,7 +138,7 @@ class _CreateVaccinationRecordsPageState
                             _isDateAdministeredFilled = false;
                           }
                         },
-                        // validator: (value) => validateNotEmpty("value", value),
+                        validator: (value) => validateNotEmpty(context, value),
                       ),
                       TextFormField(
                         enabled: _isDateAdministeredFilled,
@@ -155,11 +157,12 @@ class _CreateVaccinationRecordsPageState
                         onTap: () async {
                           final pickedDate = await showDatePicker(
                             context: context,
-                            firstDate: _dateAdministered,
+                            firstDate: _dateAdministered.add(Duration(days: 1)),
                             lastDate: DateTime.now().add(Duration(days: 3653)),
                           );
 
                           if (pickedDate != null) {
+                            _nextDueDate = pickedDate;
                             String formattedDate =
                                 DateFormat('yyyy-MM-dd', locale.toLanguageTag())
                                     .format(pickedDate);
@@ -168,7 +171,8 @@ class _CreateVaccinationRecordsPageState
                             });
                           }
                         },
-                        // validator: (value) => validateNotEmpty("value", value),
+                        validator: (value) => validateNextDueDate(
+                            context, _dateAdministered, _nextDueDate, value),
                       ),
                     ],
                   ),
@@ -181,12 +185,12 @@ class _CreateVaccinationRecordsPageState
                       ElevatedButton(
                         onPressed: () {
                           if (!token.isLoading) {
-                            // if (_vaccinationPhoto == null) {
-                            //   setState(() {
-                            //     _imageError = "Image must not be empty";
-                            //   });
-                            //   return;
-                            // }
+                            if (_vaccinationPhoto == null) {
+                              setState(() {
+                                _imageError = "Image must not be empty";
+                              });
+                              return;
+                            }
                             if (!_formKey.currentState!.validate()) {
                               return;
                             }

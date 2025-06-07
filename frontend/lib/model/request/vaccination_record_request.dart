@@ -10,8 +10,8 @@ class VaccinationRecordRequest {
       required this.dateAdministered,
       required this.nextDueDate});
 
-  Map<String, String> toMap() {
-    Map<String, String> map = {
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {
       "dateAdministered": dateAdministered,
       "nextDueDate": nextDueDate,
     };
