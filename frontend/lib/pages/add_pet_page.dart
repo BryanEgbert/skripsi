@@ -368,7 +368,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                   SizedBox(width: 8),
                   Flexible(
                     child: Text(
-                      "Click to add photo of the vaccination record",
+                      AppLocalizations.of(context)!.clickToAddVaccinePhoto,
                       // softWrap: true,
                     ),
                   ),
