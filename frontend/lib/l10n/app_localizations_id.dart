@@ -727,4 +727,16 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get nextDueDateValidationError => 'Tanggal jatuh tempo berikutnya harus lebih besar dari tanggal pemberian';
+
+  @override
+  String get editAddress => 'Ubah Alamat';
+
+  @override
+  String get takePhoto => 'Ambil Foto';
+
+  @override
+  String get sendImage => 'Kirim Gambar';
+
+  @override
+  String get ratingCannotBeZero => 'Penilaian tidak boleh nol';
 }

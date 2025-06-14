@@ -40,7 +40,12 @@ class _BookingRequestDetailsPageState
         ),
         title: Text(
           AppLocalizations.of(context)!.bookingDetails,
-          style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: appBarActions(),
       ),
@@ -60,7 +65,9 @@ class _BookingRequestDetailsPageState
                 Text(
                   AppLocalizations.of(context)!.reservationDates,
                   style: TextStyle(
-                    color: Colors.orange,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Constants.primaryTextColor
+                        : Colors.orange,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -70,7 +77,7 @@ class _BookingRequestDetailsPageState
                   style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.light
                         ? Colors.black
-                        : Colors.white70,
+                        : Colors.white,
                   ),
                 ),
                 SizedBox(height: 12),
@@ -80,7 +87,9 @@ class _BookingRequestDetailsPageState
                     Text(
                       AppLocalizations.of(context)!.usePickupService,
                       style: TextStyle(
-                        color: Colors.orange,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.primaryTextColor
+                            : Colors.orange,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -150,7 +159,9 @@ class _BookingRequestDetailsPageState
                   Text(
                     AppLocalizations.of(context)!.reservedPets,
                     style: TextStyle(
-                      color: Colors.orange,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),

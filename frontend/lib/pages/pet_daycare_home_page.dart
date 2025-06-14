@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,7 +25,8 @@ class PetDaycareHomePage extends ConsumerStatefulWidget {
   ConsumerState<PetDaycareHomePage> createState() => _PetDaycareHomePageState();
 }
 
-class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
+class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage>
+    with WidgetsBindingObserver {
   int _selectedIndex = 0;
   // IOWebSocketChannel? _channel;
   StreamSubscription? _webSocketSubscription;
@@ -94,6 +96,8 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
     _hasInitialized = true;
     _setupWebSocket();
     _fetchMessages();
+
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(userStateProvider.notifier).updateDeviceToken();
     });
@@ -103,7 +107,21 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage> {
   void dispose() {
     _webSocketSubscription?.cancel();
     ChatWebsocketChannel().close();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    log("[APP LIFECYCLE STATE] state changed: $state",
+        name: "pet_daycare_home_page.dart");
+    if (state == AppLifecycleState.resumed) {
+      _setupWebSocket();
+    } else if (state == AppLifecycleState.paused) {
+      _webSocketSubscription?.cancel();
+      ChatWebsocketChannel().close();
+      _webSocketSubscription = null;
+    }
   }
 
   @override

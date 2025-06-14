@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/provider/vaccination_record_provider.dart';
@@ -96,11 +97,21 @@ class _AddVaccinationRecordPageState
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.arrow_back_ios)),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
+        ),
         title: Text(
           AppLocalizations.of(context)!.addVaccinationRecord,
-          style: TextStyle(color: Colors.orange),
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
         ),
       ),
       body: SafeArea(
@@ -183,7 +194,6 @@ class _AddVaccinationRecordPageState
                             });
                           }
                         },
-                        // TODO: change validation
                         validator: (value) => validateNextDueDate(
                             context, _dateAdministered, _nextDueDate, value),
                       ),

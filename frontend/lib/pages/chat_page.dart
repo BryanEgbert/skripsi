@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:frontend/components/chat_bubble.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
 import 'package:frontend/components/error_text.dart';
 import 'package:frontend/constants.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/send_message.dart';
 import 'package:frontend/pages/send_image_page.dart';
 import 'package:frontend/provider/chat_tracker_provider.dart';
@@ -29,7 +31,8 @@ class ChatPage extends ConsumerStatefulWidget {
   ConsumerState<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends ConsumerState<ChatPage> {
+class _ChatPageState extends ConsumerState<ChatPage>
+    with WidgetsBindingObserver {
   final _textController = TextEditingController();
   final _listScrollController = ScrollController();
 
@@ -78,7 +81,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         (value) {
           channel = value;
           // _streamController.add(channel!.stream);
-          channel!.sink.add(
+          channel?.sink.add(
             jsonEncode(
               SendMessage(
                 updateRead: true,
@@ -129,6 +132,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _setupWebSocket();
     // _fetchMessages();
   }
@@ -136,9 +140,23 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   @override
   void dispose() {
     // _webSocketSubscription?.cancel();
-    // channel?.sink.close();
+    channel?.sink.close();
+    channel = null;
+    WidgetsBinding.instance.removeObserver(this);
     // ChatWebsocketChannel().sink.close();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    log("[APP LIFECYCLE STATE] state changed: $state", name: "chat_page.dart");
+    if (state == AppLifecycleState.resumed) {
+      _setupWebSocket();
+    } else if (state == AppLifecycleState.paused) {
+      channel?.sink.close();
+      // ChatWebsocketChannel().close();
+      channel = null;
+    }
   }
 
   @override
@@ -155,7 +173,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     if (chatTracker.value ?? false) {
       setState(() {
         ref.invalidate(chatMessagesProvider);
-        channel!.sink.add(
+        channel?.sink.add(
           jsonEncode(
             SendMessage(
               updateRead: true,
@@ -255,13 +273,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                         icon: Icon(Icons.add),
                         itemBuilder: (context) => [
                           PopupMenuItem(
-                            child: Text("Take Photo"),
+                            child:
+                                Text(AppLocalizations.of(context)!.takePhoto),
                             onTap: () {
                               _pickImage(ImageSource.camera);
                             },
                           ),
                           PopupMenuItem(
-                            child: Text("Gallery"),
+                            child:
+                                Text(AppLocalizations.of(context)!.sendImage),
                             onTap: () {
                               _pickImage(ImageSource.gallery);
                             },

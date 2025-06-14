@@ -25,7 +25,6 @@ class EditVaccinationRecordPage extends ConsumerStatefulWidget {
       _EditVaccinationRecordPageState();
 }
 
-// TODO: add next due date validation
 class _EditVaccinationRecordPageState
     extends ConsumerState<EditVaccinationRecordPage> {
   final _formKey = GlobalKey<FormState>();

@@ -163,6 +163,8 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: 16),
             child: Column(
+              spacing: 12,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Form(
                   key: _petFormKey,
@@ -244,6 +246,9 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                 Form(
                   key: _vaccinationRecordFormKey,
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 12,
                     children: [
                       Text(
                         AppLocalizations.of(context)!.vaccinationRecordOptional,
@@ -328,6 +333,7 @@ class _AddPetPageState extends ConsumerState<AddPetPage> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 4),
                 ElevatedButton(
                   onPressed: _submitForm,
                   child: (!ref.read(petStateProvider).isLoading)

@@ -727,4 +727,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nextDueDateValidationError => 'Next Due date must be greater than the date administered';
+
+  @override
+  String get editAddress => 'Edit Address';
+
+  @override
+  String get takePhoto => 'Take Photo';
+
+  @override
+  String get sendImage => 'Send Image';
+
+  @override
+  String get ratingCannotBeZero => 'Ratings cannot be zero';
 }

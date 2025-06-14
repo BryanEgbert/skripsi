@@ -110,7 +110,7 @@ class _EditSavedAddressPageState extends ConsumerState<EditSavedAddressPage> {
             ),
           ),
           title: Text(
-            AppLocalizations.of(context)!.addAddress,
+            AppLocalizations.of(context)!.editAddress,
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.light
                   ? Constants.primaryTextColor

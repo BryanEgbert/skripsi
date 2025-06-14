@@ -174,6 +174,7 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
       ),
       subtitle: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             AppLocalizations.of(context)!

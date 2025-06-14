@@ -1480,6 +1480,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Next Due date must be greater than the date administered'**
   String get nextDueDateValidationError;
+
+  /// Edit address title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Address'**
+  String get editAddress;
+
+  /// Button label to capture a photo using the camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get takePhoto;
+
+  /// Button label to send or upload an image.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Image'**
+  String get sendImage;
+
+  /// Displayed when the user tries to submit a rating with zero value.
+  ///
+  /// In en, this message translates to:
+  /// **'Ratings cannot be zero'**
+  String get ratingCannotBeZero;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

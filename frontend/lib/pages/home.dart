@@ -29,7 +29,8 @@ class HomeWidget extends ConsumerStatefulWidget {
   ConsumerState<HomeWidget> createState() => _HomeWidgetState();
 }
 
-class _HomeWidgetState extends ConsumerState<HomeWidget> {
+class _HomeWidgetState extends ConsumerState<HomeWidget>
+    with WidgetsBindingObserver {
   // final _streamController = StreamController.broadcast();
 
   int _selectedIndex = 0;
@@ -104,6 +105,7 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
     _hasInitialized = true;
     _setupWebSocket();
     _fetchData();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(userStateProvider.notifier).updateDeviceToken();
     });
@@ -113,7 +115,20 @@ class _HomeWidgetState extends ConsumerState<HomeWidget> {
   void dispose() {
     _channel?.sink.close();
     ChatWebsocketChannel().close();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    log("[APP LIFECYCLE STATE] state changed: $state", name: "home.dart");
+    if (state == AppLifecycleState.resumed) {
+      _setupWebSocket();
+    } else if (state == AppLifecycleState.paused) {
+      _channel?.sink.close();
+      ChatWebsocketChannel().close();
+      _channel = null;
+    }
   }
 
   @override

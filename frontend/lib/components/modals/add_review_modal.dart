@@ -117,6 +117,7 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
                       ? Constants.primaryTextColor
                       : Colors.orange,
                 ),
+                textAlign: TextAlign.center,
               ),
               StarRating(
                 size: 50,
@@ -145,6 +146,19 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
               ElevatedButton(
                 onPressed: () {
                   if (reviewState.isLoading) return;
+                  if (_rating.toInt() == 0) {
+                    var snackbar = SnackBar(
+                      content: Text(
+                        AppLocalizations.of(context)!.ratingCannotBeZero,
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                      backgroundColor: Colors.red[800],
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                  }
                   if (_descriptionController.text.isEmpty) {
                     setState(() {
                       _descriptionInputError =

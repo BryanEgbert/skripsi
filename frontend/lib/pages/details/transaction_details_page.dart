@@ -274,6 +274,20 @@ class _TransactionDetailsPageState
                                           : Colors.white70,
                                     ),
                                   ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    AppLocalizations.of(context)!.notes,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Text(
+                                    value.addressInfo!.notes ?? "-",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),

@@ -113,6 +113,7 @@
   "selected": "dipilih",
   "deleteAddressConfirmation": "Apakah Anda yakin ingin menghapus alamat ini? Tindakan ini tidak dapat dibatalkan.",
   "addAddress": "Tambah Alamat",
+  "editAddress": "Ubah Alamat",
   "notesOptional": "Catatan (opsional)",
   "notesExample": "contoh: Blok 3 No. 2",
   "location": "Nama Lokasi",
@@ -231,5 +232,8 @@
   "ratePetDaycare": "Ulas {petDaycareName}",
   "locationCannotBeEmpty": "Anda Belum Memilih Alamat",
   "vaccinationImageRequired": "Gambar catatan vaksinasi wajib diisi",
-  "nextDueDateValidationError": "Tanggal jatuh tempo berikutnya harus lebih besar dari tanggal pemberian"
+  "nextDueDateValidationError": "Tanggal jatuh tempo berikutnya harus lebih besar dari tanggal pemberian",
+  "takePhoto": "Ambil Foto",
+  "sendImage": "Kirim Gambar",
+  "ratingCannotBeZero": "Penilaian tidak boleh nol"
 }

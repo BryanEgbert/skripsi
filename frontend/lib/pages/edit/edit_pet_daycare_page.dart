@@ -1272,7 +1272,10 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                 priceController.text = rupiahFormat.format(int.parse(value));
               }
             },
-            validator: (value) => validatePriceInput(context, enabled, value),
+            validator: (value) {
+              if (!enabled) return null;
+              return validatePriceInput(context, enabled, value);
+            },
           ),
         ),
         Text(AppLocalizations.of(context)!.perPricingModel(_pricingTypeName)),
@@ -1342,7 +1345,10 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
               labelText: AppLocalizations.of(context)!.numberOfSlots,
             ),
             keyboardType: TextInputType.number,
-            validator: (value) => validateSlotInput(context, enabled, value),
+            validator: (value) {
+              if (!enabled) return null;
+              validateSlotInput(context, enabled, value);
+            },
           ),
         ),
       ],

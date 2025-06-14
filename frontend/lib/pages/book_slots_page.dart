@@ -112,103 +112,109 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   spacing: 8,
                   children: [
-                    Container(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Constants.secondaryBackgroundColor
-                          : null,
-                      padding: EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          CheckboxListTile(
-                            controlAffinity: ListTileControlAffinity.leading,
-                            value: _usePickupService,
-                            onChanged: (value) {
-                              if (value != null) {
-                                setState(() {
-                                  _usePickupService = value;
-                                  ref.invalidate(slotStateProvider);
-                                });
-                              }
-                            },
-                            title: Text(
-                                AppLocalizations.of(context)!.usePickupService),
-                          ),
-                          AbsorbPointer(
-                            absorbing: !_usePickupService,
-                            child: InkWell(
-                              onTap: () async {
-                                if (value.data.isNotEmpty) {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => SavedAddressPage(
-                                      selectedIndex: lastSelected.value!,
-                                    ),
-                                  )) as int;
-                                } else {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => AddSavedAddress(),
-                                  ));
+                    if (widget.petDaycare.hasPickupService)
+                      Container(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.secondaryBackgroundColor
+                            : null,
+                        padding: EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            CheckboxListTile(
+                              controlAffinity: ListTileControlAffinity.leading,
+                              value: _usePickupService,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _usePickupService = value;
+                                    ref.invalidate(slotStateProvider);
+                                  });
                                 }
                               },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 24.0),
-                                child: Row(
-                                  spacing: 12,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Icon(
-                                      Icons.location_on,
-                                      color: _usePickupService
-                                          ? Theme.of(context).brightness ==
-                                                  Brightness.light
-                                              ? Constants.primaryTextColor
-                                              : Colors.orange
-                                          : Colors.grey[700],
-                                    ),
-                                    if (value.data.isEmpty ||
-                                        lastSelected.value! < 0)
-                                      Text(
-                                        AppLocalizations.of(context)!
-                                            .chooseAddress,
-                                        style: TextStyle(
-                                          color: _usePickupService
-                                              ? Theme.of(context).brightness ==
-                                                      Brightness.light
-                                                  ? Constants.primaryTextColor
-                                                  : Colors.orange
-                                              : Colors.grey[700],
-                                        ),
-                                      )
-                                    else
-                                      Text(
-                                        value.data[lastSelected.value!].name,
-                                        style: TextStyle(
-                                          color: _usePickupService
-                                              ? Theme.of(context).brightness ==
-                                                      Brightness.light
-                                                  ? Constants.primaryTextColor
-                                                  : Colors.orange
-                                              : Colors.grey[700],
-                                        ),
+                              title: Text(
+                                AppLocalizations.of(context)!.usePickupService,
+                              ),
+                            ),
+                            AbsorbPointer(
+                              absorbing: !_usePickupService,
+                              child: InkWell(
+                                onTap: () async {
+                                  if (value.data.isNotEmpty) {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (context) => SavedAddressPage(
+                                        selectedIndex: lastSelected.value!,
                                       ),
-                                    Icon(
-                                      Icons.navigate_next_rounded,
-                                      color: _usePickupService
-                                          ? Theme.of(context).brightness ==
-                                                  Brightness.light
-                                              ? Constants.primaryTextColor
-                                              : Colors.orange
-                                          : Colors.grey[700],
-                                    ),
-                                  ],
+                                    )) as int;
+                                  } else {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (context) => AddSavedAddress(),
+                                    ));
+                                  }
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 24.0),
+                                  child: Row(
+                                    spacing: 12,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        Icons.location_on,
+                                        color: _usePickupService
+                                            ? Theme.of(context).brightness ==
+                                                    Brightness.light
+                                                ? Constants.primaryTextColor
+                                                : Colors.orange
+                                            : Colors.grey[700],
+                                      ),
+                                      if (value.data.isEmpty ||
+                                          lastSelected.value! < 0)
+                                        Text(
+                                          AppLocalizations.of(context)!
+                                              .chooseAddress,
+                                          style: TextStyle(
+                                            color: _usePickupService
+                                                ? Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.light
+                                                    ? Constants.primaryTextColor
+                                                    : Colors.orange
+                                                : Colors.grey[700],
+                                          ),
+                                        )
+                                      else
+                                        Text(
+                                          value.data[lastSelected.value!].name,
+                                          style: TextStyle(
+                                            color: _usePickupService
+                                                ? Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.light
+                                                    ? Constants.primaryTextColor
+                                                    : Colors.orange
+                                                : Colors.grey[700],
+                                          ),
+                                        ),
+                                      Icon(
+                                        Icons.navigate_next_rounded,
+                                        color: _usePickupService
+                                            ? Theme.of(context).brightness ==
+                                                    Brightness.light
+                                                ? Constants.primaryTextColor
+                                                : Colors.orange
+                                            : Colors.grey[700],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
                     Expanded(
                       child: Container(
                         color: Theme.of(context).brightness == Brightness.light
@@ -284,7 +290,11 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                         ? Text(
                                             disabledReason,
                                           )
-                                        : null,
+                                        : Text(
+                                            AppLocalizations.of(context)!
+                                                .petCategory(
+                                                    pet.petCategory.name),
+                                          ),
                                   );
                                 },
                               ),
@@ -416,10 +426,11 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                         onPressed: () {
                           if (slotState.isLoading) return;
 
-                          if (value.data.isNotEmpty) {
-                            _savedAddress = value.data[lastSelected.value!];
-                          }
                           if (_usePickupService) {
+                            if (value.data.isNotEmpty &&
+                                lastSelected.value! >= 0) {
+                              _savedAddress = value.data[lastSelected.value!];
+                            }
                             if (_savedAddress == null) {
                               var snackbar = SnackBar(
                                 key: Key("error-message"),

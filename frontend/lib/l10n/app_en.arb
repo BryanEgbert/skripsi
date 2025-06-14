@@ -998,5 +998,21 @@
     "nextDueDateValidationError": "Next Due date must be greater than the date administered",
     "@nextDueDateValidationError": {
         "description": "Displayed when user selects a next due date earlier than or equal to the administered date."
+    },
+    "editAddress": "Edit Address",
+    "@editAddress": {
+        "description": "Edit address title"
+    },
+    "takePhoto": "Take Photo",
+    "@takePhoto": {
+        "description": "Button label to capture a photo using the camera."
+    },
+    "sendImage": "Send Image",
+    "@sendImage": {
+        "description": "Button label to send or upload an image."
+    },
+    "ratingCannotBeZero": "Ratings cannot be zero",
+    "@ratingCannotBeZero": {
+        "description": "Displayed when the user tries to submit a rating with zero value."
     }
 }   

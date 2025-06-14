@@ -142,14 +142,15 @@ func SeedTable(db *gorm.DB) error {
 
 	daycare := []model.PetDaycare{
 		{
-			Name:        "Happy Paws",
-			Address:     "123 Bark St",
-			Latitude:    -6.17722188,
-			Longitude:   106.7909223,
-			Locality:    "Grogol Petamburan",
-			Location:    "Happy Paws",
-			OpeningHour: model.CustomTime{Time: time.Now()},
-			ClosingHour: model.CustomTime{Time: time.Now().Add(1 * time.Hour)},
+			Name:             "Happy Paws",
+			Address:          "123 Bark St",
+			Latitude:         -6.17722188,
+			Longitude:        106.7909223,
+			Locality:         "Grogol Petamburan",
+			Location:         "Happy Paws",
+			OpeningHour:      model.CustomTime{Time: time.Now()},
+			ClosingHour:      model.CustomTime{Time: time.Now().Add(1 * time.Hour)},
+			HasPickupService: true,
 			// Price:         100000.0,
 			OwnerID:       users[1].ID,
 			DailyWalks:    dailyWalks[1],

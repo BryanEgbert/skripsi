@@ -27,7 +27,8 @@ class VetMainPage extends ConsumerStatefulWidget {
   ConsumerState<VetMainPage> createState() => VetMainPageState();
 }
 
-class VetMainPageState extends ConsumerState<VetMainPage> {
+class VetMainPageState extends ConsumerState<VetMainPage>
+    with WidgetsBindingObserver {
   IOWebSocketChannel? _channel;
   late Stream _websocketStream;
   StreamSubscription? _webSocketSubscription;
@@ -100,6 +101,8 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
 
     if (_channel == null) _setupWebSocket();
     _fetchData();
+
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(userStateProvider.notifier).updateDeviceToken();
     });
@@ -110,7 +113,24 @@ class VetMainPageState extends ConsumerState<VetMainPage> {
     _webSocketSubscription?.cancel();
     _channel?.sink.close();
     ChatWebsocketChannel().close();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    log("[APP LIFECYCLE STATE] state changed: $state",
+        name: "vet_main_page.dart");
+    if (state == AppLifecycleState.resumed) {
+      _setupWebSocket();
+    } else if (state == AppLifecycleState.paused) {
+      _webSocketSubscription?.cancel();
+      _channel?.sink.close();
+      ChatWebsocketChannel().close();
+
+      _webSocketSubscription = null;
+      _channel = null;
+    }
   }
 
   @override

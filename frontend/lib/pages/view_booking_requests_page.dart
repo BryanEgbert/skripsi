@@ -177,7 +177,10 @@ class _ViewBookingRequestsPageState
                             Text(
                               _records[index].user.name,
                               style: TextStyle(
-                                color: Colors.orange,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -188,7 +191,7 @@ class _ViewBookingRequestsPageState
                                 color: Theme.of(context).brightness ==
                                         Brightness.light
                                     ? Colors.black
-                                    : Colors.white70,
+                                    : Colors.white,
                               ),
                             )
                           ],

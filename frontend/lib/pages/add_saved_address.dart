@@ -108,18 +108,39 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.all(16),
-          child: Center(
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  spacing: 8,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    GestureDetector(
-                      onTap: () async {
-                        _permission = await Geolocator.checkPermission();
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                spacing: 8,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      _permission = await Geolocator.checkPermission();
 
+                      if (_permission == LocationPermission.denied) {
+                        _permission = await Geolocator.requestPermission();
+                        if (_permission == LocationPermission.denied ||
+                            _permission == LocationPermission.deniedForever) {
+                          var snackbar = SnackBar(
+                            key: Key("error-message"),
+                            content: Text(
+                              AppLocalizations.of(context)!
+                                  .locationRequestDenied,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red[800],
+                          );
+
+                          if (mounted) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackbar);
+                          }
+                        }
+                      } else if (_permission ==
+                          LocationPermission.deniedForever) {
+                        if (!await Geolocator.openAppSettings()) return;
                         if (_permission == LocationPermission.denied) {
                           _permission = await Geolocator.requestPermission();
                           if (_permission == LocationPermission.denied ||
@@ -139,223 +160,196 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                                   .showSnackBar(snackbar);
                             }
                           }
-                        } else if (_permission ==
-                            LocationPermission.deniedForever) {
-                          if (!await Geolocator.openAppSettings()) return;
-                          if (_permission == LocationPermission.denied) {
-                            _permission = await Geolocator.requestPermission();
-                            if (_permission == LocationPermission.denied ||
-                                _permission ==
-                                    LocationPermission.deniedForever) {
-                              var snackbar = SnackBar(
-                                key: Key("error-message"),
-                                content: Text(
-                                  AppLocalizations.of(context)!
-                                      .locationRequestDenied,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                backgroundColor: Colors.red[800],
-                              );
+                        }
+                      }
 
-                              if (mounted) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackbar);
-                              }
-                            }
+                      final serviceEnabled =
+                          await Geolocator.isLocationServiceEnabled();
+
+                      if (!serviceEnabled) {
+                        await Geolocator.openLocationSettings();
+                      }
+
+                      final position = await Geolocator.getCurrentPosition();
+
+                      _latitude = position.latitude;
+                      _longitude = position.longitude;
+
+                      final res = await _locationService.reverseLookup(
+                          _latitude, _longitude);
+                      switch (res) {
+                        case Ok():
+                          final prop = res.value!.features[0].properties;
+                          setState(() {
+                            _searchController.text = prop.name;
+                            _addressController.text =
+                                prop.fullAddress ?? prop.address ?? "";
+                          });
+
+                          break;
+                        case Error():
+                          var snackbar = SnackBar(
+                            key: Key("error-message"),
+                            content: Text(
+                              res.error,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red[800],
+                          );
+
+                          if (mounted) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackbar);
                           }
-                        }
-
-                        final serviceEnabled =
-                            await Geolocator.isLocationServiceEnabled();
-
-                        if (!serviceEnabled) {
-                          await Geolocator.openLocationSettings();
-                        }
-
-                        final position = await Geolocator.getCurrentPosition();
-
-                        _latitude = position.latitude;
-                        _longitude = position.longitude;
-
-                        final res = await _locationService.reverseLookup(
-                            _latitude, _longitude);
-                        switch (res) {
-                          case Ok():
-                            final prop = res.value!.features[0].properties;
-                            setState(() {
-                              _searchController.text = prop.name;
-                              _addressController.text =
-                                  prop.fullAddress ?? prop.address ?? "";
-                            });
-
-                            break;
-                          case Error():
-                            var snackbar = SnackBar(
-                              key: Key("error-message"),
-                              content: Text(
-                                res.error,
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              backgroundColor: Colors.red[800],
-                            );
-
-                            if (mounted) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackbar);
-                            }
-                        }
-                      },
-                      child: Row(
-                        spacing: 8,
-                        children: [
-                          (_serviceEnabled &&
-                                  (_permission == LocationPermission.always ||
-                                      _permission ==
-                                          LocationPermission.whileInUse))
-                              ? Icon(Icons.gps_fixed_rounded)
-                              : Icon(Icons.gps_not_fixed_rounded),
-                          Text(
-                              AppLocalizations.of(context)!.useCurrentLocation),
-                        ],
-                      ),
+                      }
+                    },
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        (_serviceEnabled &&
+                                (_permission == LocationPermission.always ||
+                                    _permission ==
+                                        LocationPermission.whileInUse))
+                            ? Icon(Icons.gps_fixed_rounded)
+                            : Icon(Icons.gps_not_fixed_rounded),
+                        Text(AppLocalizations.of(context)!.useCurrentLocation),
+                      ],
                     ),
-                    Divider(),
-                    SearchAnchor(
-                      searchController: _searchController,
-                      builder: (context, controller) {
-                        return TextFormField(
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.light
-                                    ? Colors.black
-                                    : Colors.white70,
-                          ),
-                          controller: controller,
-                          validator: (value) =>
-                              validateNotEmpty(context, value),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            labelText: AppLocalizations.of(context)!.location,
-                            labelStyle: TextStyle(fontSize: 12),
-                          ),
-                          onTap: () {
-                            controller.openView();
-                          },
-                          onChanged: (_) {
-                            controller.openView();
-                          },
-                          onTapOutside: (_) {
-                            // controller.closeView(controller.text);
-                          },
-                        );
-                      },
-                      suggestionsBuilder: (context, controller) async {
-                        if (controller.text.isEmpty) return [];
-                        final res = await _locationService.getSuggestedLocation(
-                            _sessionId, controller.text);
-
-                        switch (res) {
-                          case Ok<SuggestResponse>():
-                            return res.value!.suggestions.map(
-                              (e) => ListTile(
-                                onTap: () async {
-                                  final retrieve = await _locationService
-                                      .retrieveSuggestedLocation(
-                                          _sessionId, e.mapboxId);
-                                  switch (retrieve) {
-                                    case Ok<RetrieveResponse>():
-                                      setState(() {
-                                        _addressController.text = retrieve
-                                                .value!
-                                                .features[0]
-                                                .properties
-                                                .fullAddress ??
-                                            retrieve.value!.features[0]
-                                                .properties.address ??
-                                            "";
-                                        _searchController.text = retrieve
-                                            .value!.features[0].properties.name;
-                                        _latitude = retrieve.value!.features[0]
-                                            .properties.coordinates.latitude;
-                                        _longitude = retrieve.value!.features[0]
-                                            .properties.coordinates.longitude;
-                                      });
-                                      controller
-                                          .closeView(_searchController.text);
-                                    case Error<RetrieveResponse>():
-                                      var snackbar = SnackBar(
-                                        key: Key("error-message"),
-                                        content: Text(
-                                            AppLocalizations.of(context)!
-                                                .fetchAddressError),
-                                        backgroundColor: Colors.red[800],
-                                      );
-
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(snackbar);
-                                      }
-                                  }
-                                },
-                                title: Text(e.name),
-                                subtitle:
-                                    Text(e.fullAddress ?? e.address ?? ""),
-                              ),
-                            );
-                          case Error<SuggestResponse>():
-                            return [
-                              Text(res.error),
-                            ];
-                        }
-                      },
-                    ),
-                    TextFormField(
-                      controller: _addressController,
-                      validator: (value) => validateNotEmpty(context, value),
-                      maxLines: 6,
-                      keyboardType: TextInputType.multiline,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                  ),
+                  Divider(),
+                  SearchAnchor(
+                    searchController: _searchController,
+                    builder: (context, controller) {
+                      return TextFormField(
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
                         ),
-                        labelText: AppLocalizations.of(context)!.address,
-                        labelStyle: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                    TextFormField(
-                      controller: _notesController,
-                      key: Key("notes-input"),
-                      keyboardType: TextInputType.multiline,
-                      maxLines: 6,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                        controller: controller,
+                        validator: (value) => validateNotEmpty(context, value),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          labelText: AppLocalizations.of(context)!.location,
+                          labelStyle: TextStyle(fontSize: 12),
                         ),
-                        labelText: AppLocalizations.of(context)!.notesOptional,
-                        helperText: AppLocalizations.of(context)!.notesExample,
-                        labelStyle: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        _submitForm();
-                      },
-                      child: (!savedAddressState.isLoading)
-                          ? Text(
-                              AppLocalizations.of(context)!.addAddress,
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            )
-                          : Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                              ),
+                        onTap: () {
+                          controller.openView();
+                        },
+                        onChanged: (_) {
+                          controller.openView();
+                        },
+                        onTapOutside: (_) {
+                          // controller.closeView(controller.text);
+                        },
+                      );
+                    },
+                    suggestionsBuilder: (context, controller) async {
+                      if (controller.text.isEmpty) return [];
+                      final res = await _locationService.getSuggestedLocation(
+                          _sessionId, controller.text);
+
+                      switch (res) {
+                        case Ok<SuggestResponse>():
+                          return res.value!.suggestions.map(
+                            (e) => ListTile(
+                              onTap: () async {
+                                final retrieve = await _locationService
+                                    .retrieveSuggestedLocation(
+                                        _sessionId, e.mapboxId);
+                                switch (retrieve) {
+                                  case Ok<RetrieveResponse>():
+                                    setState(() {
+                                      _addressController.text = retrieve
+                                              .value!
+                                              .features[0]
+                                              .properties
+                                              .fullAddress ??
+                                          retrieve.value!.features[0].properties
+                                              .address ??
+                                          "";
+                                      _searchController.text = retrieve
+                                          .value!.features[0].properties.name;
+                                      _latitude = retrieve.value!.features[0]
+                                          .properties.coordinates.latitude;
+                                      _longitude = retrieve.value!.features[0]
+                                          .properties.coordinates.longitude;
+                                    });
+                                    controller
+                                        .closeView(_searchController.text);
+                                  case Error<RetrieveResponse>():
+                                    var snackbar = SnackBar(
+                                      key: Key("error-message"),
+                                      content: Text(
+                                          AppLocalizations.of(context)!
+                                              .fetchAddressError),
+                                      backgroundColor: Colors.red[800],
+                                    );
+
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackbar);
+                                    }
+                                }
+                              },
+                              title: Text(e.name),
+                              subtitle: Text(e.fullAddress ?? e.address ?? ""),
                             ),
+                          );
+                        case Error<SuggestResponse>():
+                          return [
+                            Text(res.error),
+                          ];
+                      }
+                    },
+                  ),
+                  TextFormField(
+                    controller: _addressController,
+                    validator: (value) => validateNotEmpty(context, value),
+                    maxLines: 6,
+                    keyboardType: TextInputType.multiline,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      labelText: AppLocalizations.of(context)!.address,
+                      labelStyle: TextStyle(fontSize: 12),
                     ),
-                  ],
-                ),
+                  ),
+                  TextFormField(
+                    controller: _notesController,
+                    key: Key("notes-input"),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 6,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      labelText: AppLocalizations.of(context)!.notesOptional,
+                      helperText: AppLocalizations.of(context)!.notesExample,
+                      labelStyle: TextStyle(fontSize: 12),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      _submitForm();
+                    },
+                    child: (!savedAddressState.isLoading)
+                        ? Text(
+                            AppLocalizations.of(context)!.addAddress,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          )
+                        : Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
+                  ),
+                ],
               ),
             ),
           ),

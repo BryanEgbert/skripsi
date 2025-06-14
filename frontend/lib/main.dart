@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -76,7 +73,6 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
     final localeState = ref.watch(localeStateProvider);
     final tokenProvider = ref.watch(getTokenProvider);
     Widget home = Container(color: Colors.white);
-    log("localeState: $localeState");
 
     tokenProvider.when(
       data: (user) {
@@ -99,7 +95,7 @@ class _PetDaycareAppState extends ConsumerState<PetDaycareApp> {
     );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      showPerformanceOverlay: kDebugMode,
+      // showPerformanceOverlay: kDebugMode,
       title: "PawConnect",
       onGenerateTitle: (context) {
         LocalizationService().load(context);
