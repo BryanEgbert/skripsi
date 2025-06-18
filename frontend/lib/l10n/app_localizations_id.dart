@@ -739,4 +739,18 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get ratingCannotBeZero => 'Penilaian tidak boleh nol';
+
+  @override
+  String get minimumRating => 'Bintang Minimum';
+
+  @override
+  String minStar(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+      
+    );
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString bintang';
+  }
 }

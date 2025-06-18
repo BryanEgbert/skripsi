@@ -739,4 +739,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ratingCannotBeZero => 'Ratings cannot be zero';
+
+  @override
+  String get minimumRating => 'Minimum Rating';
+
+  @override
+  String minStar(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+      
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString stars',
+      one: '1 star',
+    );
+    return '$_temp0';
+  }
 }

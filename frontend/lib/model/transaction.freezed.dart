@@ -22,8 +22,7 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) {
 mixin _$Transaction {
   int get id => throw _privateConstructorUsedError;
   Lookup get status => throw _privateConstructorUsedError;
-  PetDaycareDetails get petDaycare =>
-      throw _privateConstructorUsedError; // required List<Pet> bookedPet,
+  PetDaycareDetails get petDaycare => throw _privateConstructorUsedError;
   String get startDate => throw _privateConstructorUsedError;
   String get endDate => throw _privateConstructorUsedError;
   BookingRequest get bookedSlot => throw _privateConstructorUsedError;
@@ -276,7 +275,6 @@ class _$TransactionImpl implements _Transaction {
   final Lookup status;
   @override
   final PetDaycareDetails petDaycare;
-// required List<Pet> bookedPet,
   @override
   final String startDate;
   @override
@@ -353,7 +351,7 @@ abstract class _Transaction implements Transaction {
   @override
   Lookup get status;
   @override
-  PetDaycareDetails get petDaycare; // required List<Pet> bookedPet,
+  PetDaycareDetails get petDaycare;
   @override
   String get startDate;
   @override

@@ -180,6 +180,14 @@ class _PetDetailsPageState extends ConsumerState<PetDetailsPage> {
             AppLocalizations.of(context)!
                 .petCategory(petValue.petCategory.name),
           ),
+          if (petValue.neutered)
+            Text(
+              "pet has been neutered",
+            )
+          else
+            Text(
+              "pet is not neutered",
+            ),
           if (!widget.isOwner)
             Text(
               AppLocalizations.of(context)!.petOwner(petValue.owner.name),

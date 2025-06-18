@@ -22,7 +22,8 @@ Pet _$PetFromJson(Map<String, dynamic> json) {
 mixin _$Pet {
   int get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String? get imageUrl => throw _privateConstructorUsedError;
+  String? get imageUrl =>
+      throw _privateConstructorUsedError; // TODO: remove status
   String get status => throw _privateConstructorUsedError;
   bool get isVaccinated => throw _privateConstructorUsedError;
   User get owner => throw _privateConstructorUsedError;
@@ -238,6 +239,7 @@ class _$PetImpl implements _Pet {
   final String name;
   @override
   final String? imageUrl;
+// TODO: remove status
   @override
   final String status;
   @override
@@ -312,7 +314,7 @@ abstract class _Pet implements Pet {
   @override
   String get name;
   @override
-  String? get imageUrl;
+  String? get imageUrl; // TODO: remove status
   @override
   String get status;
   @override

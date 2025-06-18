@@ -1504,6 +1504,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ratings cannot be zero'**
   String get ratingCannotBeZero;
+
+  /// Label for selecting the lowest acceptable rating in a filter or form.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum Rating'**
+  String get minimumRating;
+
+  /// Label for a 1-star rating.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 star} other{{count} stars}}'**
+  String minStar(num count);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

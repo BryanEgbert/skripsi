@@ -404,7 +404,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 	filteredResults := []model.GetPetDaycaresResponse{}
 
 	for _, daycare := range results {
-		if len(daycare.Prices) > 0 {
+		if len(daycare.Prices) > 0 && (daycare.AverageRating >= float64(req.MinRating)) {
 			filteredResults = append(filteredResults, daycare)
 		}
 	}

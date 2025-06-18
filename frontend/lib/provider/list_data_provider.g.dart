@@ -6,7 +6,7 @@ part of 'list_data_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$petDaycaresHash() => r'74dd787e5bad097f3b9591b185906e9303c851bf';
+String _$petDaycaresHash() => r'3d0ec890c8cac3ca75fe1bb4a804071a72fb54b6';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -54,6 +54,7 @@ class PetDaycaresFamily extends Family<AsyncValue<ListData<PetDaycare>>> {
     double maxPrice = 0.0,
     int? pricingType,
     List<int> petCategoryIds = const [],
+    int minimumRating = 0,
   ]) {
     return PetDaycaresProvider(
       lat,
@@ -70,6 +71,7 @@ class PetDaycaresFamily extends Family<AsyncValue<ListData<PetDaycare>>> {
       maxPrice,
       pricingType,
       petCategoryIds,
+      minimumRating,
     );
   }
 
@@ -92,6 +94,7 @@ class PetDaycaresFamily extends Family<AsyncValue<ListData<PetDaycare>>> {
       provider.maxPrice,
       provider.pricingType,
       provider.petCategoryIds,
+      provider.minimumRating,
     );
   }
 
@@ -129,6 +132,7 @@ class PetDaycaresProvider
     double maxPrice = 0.0,
     int? pricingType,
     List<int> petCategoryIds = const [],
+    int minimumRating = 0,
   ]) : this._internal(
           (ref) => petDaycares(
             ref as PetDaycaresRef,
@@ -146,6 +150,7 @@ class PetDaycaresProvider
             maxPrice,
             pricingType,
             petCategoryIds,
+            minimumRating,
           ),
           from: petDaycaresProvider,
           name: r'petDaycaresProvider',
@@ -170,6 +175,7 @@ class PetDaycaresProvider
           maxPrice: maxPrice,
           pricingType: pricingType,
           petCategoryIds: petCategoryIds,
+          minimumRating: minimumRating,
         );
 
   PetDaycaresProvider._internal(
@@ -193,6 +199,7 @@ class PetDaycaresProvider
     required this.maxPrice,
     required this.pricingType,
     required this.petCategoryIds,
+    required this.minimumRating,
   }) : super.internal();
 
   final double? lat;
@@ -209,6 +216,7 @@ class PetDaycaresProvider
   final double maxPrice;
   final int? pricingType;
   final List<int> petCategoryIds;
+  final int minimumRating;
 
   @override
   Override overrideWith(
@@ -237,6 +245,7 @@ class PetDaycaresProvider
         maxPrice: maxPrice,
         pricingType: pricingType,
         petCategoryIds: petCategoryIds,
+        minimumRating: minimumRating,
       ),
     );
   }
@@ -262,7 +271,8 @@ class PetDaycaresProvider
         other.minPrice == minPrice &&
         other.maxPrice == maxPrice &&
         other.pricingType == pricingType &&
-        other.petCategoryIds == petCategoryIds;
+        other.petCategoryIds == petCategoryIds &&
+        other.minimumRating == minimumRating;
   }
 
   @override
@@ -282,6 +292,7 @@ class PetDaycaresProvider
     hash = _SystemHash.combine(hash, maxPrice.hashCode);
     hash = _SystemHash.combine(hash, pricingType.hashCode);
     hash = _SystemHash.combine(hash, petCategoryIds.hashCode);
+    hash = _SystemHash.combine(hash, minimumRating.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -331,6 +342,9 @@ mixin PetDaycaresRef on AutoDisposeFutureProviderRef<ListData<PetDaycare>> {
 
   /// The parameter `petCategoryIds` of this provider.
   List<int> get petCategoryIds;
+
+  /// The parameter `minimumRating` of this provider.
+  int get minimumRating;
 }
 
 class _PetDaycaresProviderElement
@@ -368,6 +382,8 @@ class _PetDaycaresProviderElement
   @override
   List<int> get petCategoryIds =>
       (origin as PetDaycaresProvider).petCategoryIds;
+  @override
+  int get minimumRating => (origin as PetDaycaresProvider).minimumRating;
 }
 
 String _$getUnreadChatMessagesHash() =>

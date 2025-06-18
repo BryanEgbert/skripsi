@@ -235,5 +235,7 @@
   "nextDueDateValidationError": "Tanggal jatuh tempo berikutnya harus lebih besar dari tanggal pemberian",
   "takePhoto": "Ambil Foto",
   "sendImage": "Kirim Gambar",
-  "ratingCannotBeZero": "Penilaian tidak boleh nol"
+  "ratingCannotBeZero": "Penilaian tidak boleh nol",
+  "minimumRating": "Bintang Minimum",
+  "minStar": "{count} bintang"
 }

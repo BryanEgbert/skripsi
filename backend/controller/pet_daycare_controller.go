@@ -694,6 +694,12 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 		filters.DailyWalks = valueUint
 	}
 
+	if minRating := c.DefaultQuery("min-rating", "0"); minRating != "" {
+		value, _ := strconv.ParseUint(minRating, 10, 64)
+		valueUint := uint(value)
+		filters.MinRating = valueUint
+	}
+
 	if dailyPlaytimeId := c.DefaultQuery("daily-playtime", "0"); dailyPlaytimeId != "" {
 		value, _ := strconv.ParseUint(dailyPlaytimeId, 10, 64)
 		valueUint := uint(value)

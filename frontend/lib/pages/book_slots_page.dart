@@ -33,8 +33,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
   final _dateRangeController = TextEditingController();
 
-  String? _startDate;
-  String? _endDate;
+  String? _startDate, _endDate;
 
   final Map<int, bool> _petIdValue = {};
   final List<int> _petCategoryIds = [];

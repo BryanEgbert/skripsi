@@ -50,6 +50,7 @@ Future<ListData<PetDaycare>> petDaycares(
   double maxPrice = 0.0,
   int? pricingType,
   List<int> petCategoryIds = const [],
+  int minimumRating = 0,
 ]) async {
   TokenResponse? token;
   try {
@@ -74,6 +75,7 @@ Future<ListData<PetDaycare>> petDaycares(
       mustBeVaccinated: mustBeVaccinated,
       pricingType: pricingType,
       petCategoryIds: petCategoryIds,
+      minimumRating: minimumRating,
     ),
     OffsetPaginationQueryParams(page: page, pageSize: pageSize),
   );

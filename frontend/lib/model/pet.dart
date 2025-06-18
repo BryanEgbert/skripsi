@@ -11,6 +11,7 @@ class Pet with _$Pet {
     required int id,
     required String name,
     required String? imageUrl,
+    // TODO: remove status
     required String status,
     required bool isVaccinated,
     required User owner,

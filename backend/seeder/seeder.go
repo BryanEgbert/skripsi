@@ -518,10 +518,10 @@ func SeedTable(db *gorm.DB) error {
 			DaycareID: daycare[0].ID, UserID: users[0].ID, Rate: 5, Description: "Great daycare!",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[0].ID, Rate: 5, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[0].ID, Rate: 2, Description: "Great daycare!",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 4, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
 		},
 	}
 

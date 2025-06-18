@@ -35,12 +35,13 @@ class _HomeWidgetState extends ConsumerState<HomeWidget>
 
   int _selectedIndex = 0;
   IOWebSocketChannel? _channel;
-  late Stream _websocketStream;
+  Stream? _websocketStream;
   // StreamSubscription? _webSocketSubscription;
   int _messageCount = 0;
   bool _hasInitialized = false;
+  bool _isPaused = true;
 
-  bool _isSocketReady = false;
+  bool _isSocketReady = true;
   Object? _error;
 
   List<ChatMessage> _messages = [];
@@ -56,6 +57,7 @@ class _HomeWidgetState extends ConsumerState<HomeWidget>
   }
 
   void _setupWebSocket() {
+    if (!_isPaused) return;
     setState(() {
       _isSocketReady = false;
     });
@@ -64,15 +66,9 @@ class _HomeWidgetState extends ConsumerState<HomeWidget>
       ChatWebsocketChannel().instance.then((value) {
         _channel = value;
         _websocketStream = value.stream.asBroadcastStream();
-        // _streamController.addStream(value.stream);
-        // _webSocketSubscription = value.stream.listen(
-        //   (message) {
-        //     log("[HOME PAGE] new message: ${message.length}");
-        //     _fetchData();
-        //   },
-        // );
         setState(() {
           _isSocketReady = true;
+          _isPaused = false;
         });
       }).catchError((e) {
         log("[_setupWebSocket] err: $e");
@@ -128,6 +124,8 @@ class _HomeWidgetState extends ConsumerState<HomeWidget>
       _channel?.sink.close();
       ChatWebsocketChannel().close();
       _channel = null;
+      _websocketStream = null;
+      _isPaused = true;
     }
   }
 

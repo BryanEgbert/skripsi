@@ -1014,5 +1014,19 @@
     "ratingCannotBeZero": "Ratings cannot be zero",
     "@ratingCannotBeZero": {
         "description": "Displayed when the user tries to submit a rating with zero value."
+    },
+    "minimumRating": "Minimum Rating",
+    "@minimumRating": {
+        "description": "Label for selecting the lowest acceptable rating in a filter or form."
+    },
+    "minStar": "{count, plural, =1{1 star} other{{count} stars}}",
+    "@minStar": {
+        "description": "Label for a 1-star rating.",
+        "placeholders": {
+            "count": {
+            "type": "num",
+            "format": "compact"
+            }
+        }
     }
 }   

@@ -90,6 +90,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
       _filters.maxPrice,
       _filters.pricingType,
       _filterPetCategoryIds,
+      _filters.minimumRating,
     ).future)
         .then((newData) {
       if (newData.data.isNotEmpty) {
@@ -331,6 +332,40 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                                     );
                                   }).toList(),
                                 ),
+                              const SizedBox(height: 16),
+                              Text(
+                                AppLocalizations.of(context)!.minimumRating,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Constants.primaryTextColor,
+                                ),
+                              ),
+                              Wrap(
+                                spacing: 4,
+                                children: [1, 2, 3, 4, 5].map((star) {
+                                  return FilterChip(
+                                    label: Text(
+                                      AppLocalizations.of(context)!
+                                          .minStar(star),
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                    selected: _filters.minimumRating == star,
+                                    onSelected: (selected) {
+                                      setState(() {
+                                        _filters.minimumRating =
+                                            selected ? star : 0;
+                                      });
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                              Text(
+                                AppLocalizations.of(context)!.pricingModel,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Constants.primaryTextColor,
+                                ),
+                              ),
                               const SizedBox(height: 16),
                               Text(
                                 AppLocalizations.of(context)!.petCategoryLabel,

@@ -149,7 +149,6 @@ type UpdatePetDaycareRequest struct {
 	PetCategoryID     []uint    `form:"petCategoryId[]" binding:"required"`
 	MaxNumber         []int     `form:"maxNumber[]" binding:"required"`
 	ThumbnailURLs     []string  `form:"thumbnails[]"`
-	// Thumbnails        []*multipart.FileHeader `form:"thumbnails[]"`
 }
 
 type GetPetDaycaresRequest struct {
@@ -165,6 +164,7 @@ type GetPetDaycaresRequest struct {
 	MaxPrice         float64
 	PricingType      *uint
 	PetCategoryIds   []uint
+	MinRating        uint
 }
 
 type GetPetDaycareDetailResponse struct {
