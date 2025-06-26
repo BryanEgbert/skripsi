@@ -8,9 +8,11 @@ import (
 	"net/http"
 	"os"
 
+	apputils "github.com/BryanEgbert/skripsi/app_utils"
 	"github.com/BryanEgbert/skripsi/seeder"
 	"github.com/BryanEgbert/skripsi/setup"
 	"github.com/joho/godotenv"
+	"github.com/robfig/cron"
 	"golang.ngrok.com/ngrok"
 	"golang.ngrok.com/ngrok/config"
 	"gorm.io/driver/postgres"
@@ -54,6 +56,19 @@ func main() {
 		}
 	}
 
+	apputils.UpdateBookSlotStatus(db)
+
+	newCron := cron.New()
+
+	go func() {
+		log.Println("Running daily UpdateBookSlotStatus job...")
+		newCron.AddFunc("@daily", func() {
+			apputils.UpdateBookSlotStatus(db)
+		})
+		newCron.Start()
+	}()
+	defer newCron.Stop()
+
 	if os.Getenv("USE_NGROK") == "1" {
 		listener, err := ngrok.Listen(ctx,
 			config.HTTPEndpoint(config.WithScheme(config.SchemeHTTP)),
@@ -73,5 +88,4 @@ func main() {
 			log.Fatalf("Run err: %v", err)
 		}
 	}
-
 }

@@ -3,9 +3,8 @@ package model
 import "time"
 
 type BookedSlotsDaily struct {
-	ID     uint `gorm:"primaryKey"`
-	SlotID uint `gorm:"not null"`
-	// DaycareID uint      `gorm:"not null"`
+	ID        uint      `gorm:"primaryKey"`
+	SlotID    uint      `gorm:"not null"`
 	Date      time.Time `gorm:"not null;index"`
 	SlotCount int       `gorm:"default:1"`
 }

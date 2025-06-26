@@ -34,6 +34,7 @@ func SeedTable(db *gorm.DB) error {
 		{ID: 3, Name: "Rejected"},
 		{ID: 4, Name: "Done"},
 		{ID: 5, Name: "Cancelled"},
+		{ID: 6, Name: "Ignored"},
 	}
 
 	if err := db.Create(&bookedSlotStatus).Error; err != nil {
@@ -380,7 +381,7 @@ func SeedTable(db *gorm.DB) error {
 
 	var waitingConfirmation uint = 1
 	var confirmed uint = 2
-	var done uint = 4
+	// var done uint = 4
 	bookedSlot := []model.BookedSlot{
 		{
 			UserID:    users[0].ID,
@@ -395,8 +396,10 @@ func SeedTable(db *gorm.DB) error {
 		{
 			UserID:    users[0].ID,
 			DaycareID: daycare[1].ID,
-			Pet:       []model.Pet{pet[1]}, StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 3),
-			StatusID: &waitingConfirmation,
+			Pet:       []model.Pet{pet[1]},
+			StartDate: time.Now(),
+			EndDate:   time.Now().AddDate(0, 0, 3),
+			StatusID:  &waitingConfirmation,
 		},
 		{
 			UserID:    users[0].ID,
@@ -425,7 +428,7 @@ func SeedTable(db *gorm.DB) error {
 			Pet:       []model.Pet{pet[1], pet[0]},
 			StartDate: time.Date(2025, time.April, 27, 0, 0, 0, 0, time.Local),
 			EndDate:   time.Date(2025, time.April, 30, 0, 0, 0, 0, time.Local),
-			StatusID:  &done,
+			StatusID:  &confirmed,
 			AddressID: &savedAddress[0].ID,
 		},
 	}

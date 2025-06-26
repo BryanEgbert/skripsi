@@ -206,7 +206,8 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                     statusColor = Colors.green[900]!;
                     chipColor = Color(0xFFCAFFC7);
                   } else if (_records[index].status.id == 3 ||
-                      _records[index].status.id == 5) {
+                      _records[index].status.id == 5 ||
+                      _records[index].status.id == 6) {
                     statusColor = Colors.red[900]!;
                     chipColor = Color(0XFFFFD7D7);
                   }
