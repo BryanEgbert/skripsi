@@ -12,8 +12,9 @@ class Pet with _$Pet {
     required String name,
     required String? imageUrl,
     // TODO: remove status
-    required String status,
+    // required String status,
     required bool isVaccinated,
+    required bool isBooked,
     required User owner,
     required bool neutered,
     required PetCategory petCategory,

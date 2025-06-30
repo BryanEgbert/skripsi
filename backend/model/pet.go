@@ -29,6 +29,7 @@ type PetDTO struct {
 	Owner        UserDTO        `json:"owner"`
 	PetCategory  PetCategoryDTO `json:"petCategory"`
 	IsVaccinated bool           `json:"isVaccinated"`
+	IsBooked     bool           `json:"isBooked"`
 }
 
 type GetBookedPetsResponse struct {

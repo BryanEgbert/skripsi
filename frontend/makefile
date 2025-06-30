@@ -6,3 +6,6 @@ build-analyze-size:
 
 l10n:
 	flutter gen-l10n
+
+install:
+	flutter install --use-application-binary=build/app/outputs/flutter-apk/app-arm64-v8a-release.apk

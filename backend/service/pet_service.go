@@ -166,6 +166,7 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 		Preload("VaccineRecords", func(db *gorm.DB) *gorm.DB {
 			return db.Order("vaccine_records.next_due_date DESC")
 		}).
+		Preload("BookedSlots", "status_id IN ?", []uint{1, 2}).
 		Where("owner_id = ?", ownerID).
 		Order("id ASC").
 		Limit(pageSize)
@@ -194,10 +195,15 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 			PetCategory:  helper.ConvertPetCategoryToDTO(pet.PetCategory),
 			Owner:        helper.ConvertUserToDTO(pet.Owner),
 			IsVaccinated: isVaccinated,
+			IsBooked:     false,
 		}
 
 		if pet.ImageUrl != nil {
 			dto.ImageUrl = *pet.ImageUrl
+		}
+
+		if len(pet.BookedSlots) > 0 {
+			dto.IsBooked = true
 		}
 
 		petDTOs = append(petDTOs, dto)

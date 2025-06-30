@@ -10,6 +10,16 @@ import (
 // 	return 0.0
 // }
 
+// func PetIsBooked(pet model.Pet) (bool, error) {
+// 	if len(pet.BookedSlots) == 0 {
+// 		return false, nil
+// 	}
+
+// 	for _, slot := range pet.BookedSlots {
+// 		if slot.StatusID
+// 	}
+// }
+
 func PetIsVaccinated(pet model.Pet) (bool, error) {
 	if len(pet.VaccineRecords) == 0 {
 		return false, nil

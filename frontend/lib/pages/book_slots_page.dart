@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/default_circle_avatar.dart';
@@ -69,7 +67,6 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
 
   @override
   Widget build(BuildContext context) {
-    log("[BOOK SLOTS] build");
     final savedAddress = ref.watch(savedAddressProvider(1, 100));
     final slotState = ref.watch(slotStateProvider);
     final lastSelected = ref.watch(lastSelectedProvider);
@@ -237,12 +234,13 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                 pageSize: Constants.pageSize,
                                 buildBody: (pet) {
                                   bool isPetVaccinated = true;
+                                  bool isPetCategoryMatching = false;
                                   String? disabledReason;
 
                                   if (widget.petDaycare.mustBeVaccinated) {
                                     isPetVaccinated = pet.isVaccinated;
                                   }
-                                  bool isPetCategoryMatching = false;
+
                                   for (var price
                                       in widget.petDaycare.pricings) {
                                     if (price.petCategory.id ==
@@ -259,10 +257,13 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                     disabledReason =
                                         AppLocalizations.of(context)!
                                             .unsupportedPetCategory;
+                                  } else if (pet.isBooked) {
+                                    disabledReason =
+                                        AppLocalizations.of(context)!
+                                            .petAlreadyBooked;
                                   }
                                   return CheckboxListTile(
-                                    enabled: isPetVaccinated &&
-                                        isPetCategoryMatching,
+                                    enabled: disabledReason == null,
                                     value: _petIdValue[pet.id] ?? false,
                                     onChanged: (value) {
                                       ref

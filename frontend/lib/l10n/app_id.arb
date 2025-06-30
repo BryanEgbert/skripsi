@@ -237,5 +237,6 @@
   "sendImage": "Kirim Gambar",
   "ratingCannotBeZero": "Penilaian tidak boleh nol",
   "minimumRating": "Bintang Minimum",
-  "minStar": "{count} bintang"
+  "minStar": "{count} bintang",
+  "petAlreadyBooked": "Satu atau lebih hewan peliharaan sudah memiliki pemesanan aktif"
 }

@@ -1028,5 +1028,9 @@
             "format": "compact"
             }
         }
+    },
+    "petAlreadyBooked": "Pet already booked",
+    "@petAlreadyBooked": {
+        "description": "Error message shown when a pet is already booked"
     }
 }   

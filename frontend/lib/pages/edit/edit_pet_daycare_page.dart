@@ -1347,7 +1347,7 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
             keyboardType: TextInputType.number,
             validator: (value) {
               if (!enabled) return null;
-              validateSlotInput(context, enabled, value);
+              return validateSlotInput(context, enabled, value);
             },
           ),
         ),

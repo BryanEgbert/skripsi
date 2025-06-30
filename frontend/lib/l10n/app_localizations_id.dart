@@ -753,4 +753,7 @@ class AppLocalizationsId extends AppLocalizations {
 
     return '$countString bintang';
   }
+
+  @override
+  String get petAlreadyBooked => 'Satu atau lebih hewan peliharaan sudah memiliki pemesanan aktif';
 }

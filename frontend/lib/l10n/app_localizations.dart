@@ -1516,6 +1516,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 star} other{{count} stars}}'**
   String minStar(num count);
+
+  /// Error message shown when a pet is already booked
+  ///
+  /// In en, this message translates to:
+  /// **'Pet already booked'**
+  String get petAlreadyBooked;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

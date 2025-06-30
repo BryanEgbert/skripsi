@@ -24,8 +24,9 @@ mixin _$Pet {
   String get name => throw _privateConstructorUsedError;
   String? get imageUrl =>
       throw _privateConstructorUsedError; // TODO: remove status
-  String get status => throw _privateConstructorUsedError;
+// required String status,
   bool get isVaccinated => throw _privateConstructorUsedError;
+  bool get isBooked => throw _privateConstructorUsedError;
   User get owner => throw _privateConstructorUsedError;
   bool get neutered => throw _privateConstructorUsedError;
   PetCategory get petCategory => throw _privateConstructorUsedError;
@@ -48,8 +49,8 @@ abstract class $PetCopyWith<$Res> {
       {int id,
       String name,
       String? imageUrl,
-      String status,
       bool isVaccinated,
+      bool isBooked,
       User owner,
       bool neutered,
       PetCategory petCategory});
@@ -75,8 +76,8 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
     Object? id = null,
     Object? name = null,
     Object? imageUrl = freezed,
-    Object? status = null,
     Object? isVaccinated = null,
+    Object? isBooked = null,
     Object? owner = null,
     Object? neutered = null,
     Object? petCategory = null,
@@ -94,13 +95,13 @@ class _$PetCopyWithImpl<$Res, $Val extends Pet> implements $PetCopyWith<$Res> {
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
-      status: null == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as String,
       isVaccinated: null == isVaccinated
           ? _value.isVaccinated
           : isVaccinated // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isBooked: null == isBooked
+          ? _value.isBooked
+          : isBooked // ignore: cast_nullable_to_non_nullable
               as bool,
       owner: null == owner
           ? _value.owner
@@ -148,8 +149,8 @@ abstract class _$$PetImplCopyWith<$Res> implements $PetCopyWith<$Res> {
       {int id,
       String name,
       String? imageUrl,
-      String status,
       bool isVaccinated,
+      bool isBooked,
       User owner,
       bool neutered,
       PetCategory petCategory});
@@ -174,8 +175,8 @@ class __$$PetImplCopyWithImpl<$Res> extends _$PetCopyWithImpl<$Res, _$PetImpl>
     Object? id = null,
     Object? name = null,
     Object? imageUrl = freezed,
-    Object? status = null,
     Object? isVaccinated = null,
+    Object? isBooked = null,
     Object? owner = null,
     Object? neutered = null,
     Object? petCategory = null,
@@ -193,13 +194,13 @@ class __$$PetImplCopyWithImpl<$Res> extends _$PetCopyWithImpl<$Res, _$PetImpl>
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
-      status: null == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as String,
       isVaccinated: null == isVaccinated
           ? _value.isVaccinated
           : isVaccinated // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isBooked: null == isBooked
+          ? _value.isBooked
+          : isBooked // ignore: cast_nullable_to_non_nullable
               as bool,
       owner: null == owner
           ? _value.owner
@@ -224,8 +225,8 @@ class _$PetImpl implements _Pet {
       {required this.id,
       required this.name,
       required this.imageUrl,
-      required this.status,
       required this.isVaccinated,
+      required this.isBooked,
       required this.owner,
       required this.neutered,
       required this.petCategory});
@@ -240,10 +241,11 @@ class _$PetImpl implements _Pet {
   @override
   final String? imageUrl;
 // TODO: remove status
-  @override
-  final String status;
+// required String status,
   @override
   final bool isVaccinated;
+  @override
+  final bool isBooked;
   @override
   final User owner;
   @override
@@ -253,7 +255,7 @@ class _$PetImpl implements _Pet {
 
   @override
   String toString() {
-    return 'Pet(id: $id, name: $name, imageUrl: $imageUrl, status: $status, isVaccinated: $isVaccinated, owner: $owner, neutered: $neutered, petCategory: $petCategory)';
+    return 'Pet(id: $id, name: $name, imageUrl: $imageUrl, isVaccinated: $isVaccinated, isBooked: $isBooked, owner: $owner, neutered: $neutered, petCategory: $petCategory)';
   }
 
   @override
@@ -265,9 +267,10 @@ class _$PetImpl implements _Pet {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
-            (identical(other.status, status) || other.status == status) &&
             (identical(other.isVaccinated, isVaccinated) ||
                 other.isVaccinated == isVaccinated) &&
+            (identical(other.isBooked, isBooked) ||
+                other.isBooked == isBooked) &&
             (identical(other.owner, owner) || other.owner == owner) &&
             (identical(other.neutered, neutered) ||
                 other.neutered == neutered) &&
@@ -277,8 +280,8 @@ class _$PetImpl implements _Pet {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, imageUrl, status,
-      isVaccinated, owner, neutered, petCategory);
+  int get hashCode => Object.hash(runtimeType, id, name, imageUrl, isVaccinated,
+      isBooked, owner, neutered, petCategory);
 
   /// Create a copy of Pet
   /// with the given fields replaced by the non-null parameter values.
@@ -301,8 +304,8 @@ abstract class _Pet implements Pet {
       {required final int id,
       required final String name,
       required final String? imageUrl,
-      required final String status,
       required final bool isVaccinated,
+      required final bool isBooked,
       required final User owner,
       required final bool neutered,
       required final PetCategory petCategory}) = _$PetImpl;
@@ -315,10 +318,11 @@ abstract class _Pet implements Pet {
   String get name;
   @override
   String? get imageUrl; // TODO: remove status
-  @override
-  String get status;
+// required String status,
   @override
   bool get isVaccinated;
+  @override
+  bool get isBooked;
   @override
   User get owner;
   @override

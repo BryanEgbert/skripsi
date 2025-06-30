@@ -532,7 +532,7 @@ class _CreatePetDaycareSlotsState extends ConsumerState<CreatePetDaycareSlots> {
             keyboardType: TextInputType.number,
             validator: (value) {
               if (!enabled) return null;
-              validateSlotInput(context, enabled, value);
+              return validateSlotInput(context, enabled, value);
             },
           ),
         ),

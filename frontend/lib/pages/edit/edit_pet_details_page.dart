@@ -202,7 +202,7 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                                   petCategoryId: _petCategoryId,
                                   neutered: _isNeutered,
                                   petImage: _petProfilePicture,
-                                  status: value?.status,
+                                  // status: value?.status,
                                 ),
                               );
                         },
