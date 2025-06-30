@@ -37,10 +37,11 @@ class ImageState extends _$ImageState {
 
     switch (res) {
       case Ok():
+        log("value: ${res.value}");
         state = AsyncData(res.value);
       case Error():
         log("upload err: ${res.error}");
-        return Future.error(res.error);
+        state = AsyncError(res.error, StackTrace.current);
     }
   }
 }

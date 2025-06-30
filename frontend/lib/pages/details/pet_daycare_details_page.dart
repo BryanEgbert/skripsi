@@ -149,7 +149,9 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
         );
 
       default:
-        return Center(child: CircularProgressIndicator.adaptive());
+        return Scaffold(
+          body: Center(child: CircularProgressIndicator.adaptive()),
+        );
     }
   }
 
@@ -191,7 +193,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                       widget.petDaycareId != 0) ...[
                     Text(
                       AppLocalizations.of(context)!
-                          .kmAway(value.distance.toDouble() / 1000),
+                          .kmAway(value.distance / 1000),
                       style: TextStyle(fontSize: 12),
                     ),
                     SizedBox(height: 4),

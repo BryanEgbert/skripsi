@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -121,6 +122,35 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 		return
 	}
 
+	petProfilePicture, err := c.FormFile("petProfilePicture")
+	if err != nil {
+		if !errors.Is(err, http.ErrMissingFile) {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "something's wrong",
+				Error:   err.Error(),
+			})
+			log.Printf("Form file err: %v", err)
+			return
+		}
+
+	}
+
+	vaccineRecordImage, err := c.FormFile("vaccineRecordImage")
+	if err != nil {
+		if errors.Is(err, http.ErrMissingFile) {
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "Invalid request body",
+				Error:   err.Error(),
+			})
+		} else {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "something's wrong",
+				Error:   err.Error(),
+			})
+		}
+		return
+	}
+
 	var req model.PetAndVaccinationRecordRequest
 	if err := c.Bind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
@@ -130,12 +160,12 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 		return
 	}
 
-	if req.PetImage != nil {
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.PetImage.Filename)))
+	if petProfilePicture != nil {
+		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(petProfilePicture.Filename)))
 		imageUrl := fmt.Sprintf("%s/%s", c.Request.Host, filename)
 		req.PetImageUrl = &imageUrl
 
-		if err := c.SaveUploadedFile(req.PetImage, filename); err != nil {
+		if err := c.SaveUploadedFile(petProfilePicture, filename); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save image",
 				Error:   err.Error(),
@@ -144,12 +174,12 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 		}
 	}
 
-	if req.VaccineRecordImage != nil {
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.VaccineRecordImage.Filename)))
+	if vaccineRecordImage != nil {
+		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(vaccineRecordImage.Filename)))
 		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
 		req.VaccineRecordImageUrl = imageUrl
 
-		if err := c.SaveUploadedFile(req.VaccineRecordImage, filename); err != nil {
+		if err := c.SaveUploadedFile(vaccineRecordImage, filename); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save image",
 				Error:   err.Error(),
@@ -167,11 +197,10 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 		return
 	}
 
-	if req.DateAdministered != nil && req.NextDueDate != nil && req.VaccineRecordImage != nil {
+	if req.DateAdministered != nil && req.NextDueDate != nil && vaccineRecordImage != nil {
 		if _, err = pc.vaccineRecordService.CreateVaccineRecords(petID, model.VaccineRecordRequest{
 			DateAdministered:      *req.DateAdministered,
 			NextDueDate:           *req.NextDueDate,
-			VaccineRecordImage:    req.VaccineRecordImage,
 			VaccineRecordImageUrl: req.VaccineRecordImageUrl,
 		}); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
@@ -186,21 +215,21 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 }
 
 func (pc *PetController) UpdatePet(c *gin.Context) {
-	userIDRaw, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
-			Message: "Unauthorized",
-		})
-		return
-	}
+	// userIDRaw, exists := c.Get("userID")
+	// if !exists {
+	// 	c.JSON(http.StatusUnauthorized, model.ErrorResponse{
+	// 		Message: "Unauthorized",
+	// 	})
+	// 	return
+	// }
 
-	userID, ok := userIDRaw.(uint)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-			Message: "Invalid user ID",
-		})
-		return
-	}
+	// userID, ok := userIDRaw.(uint)
+	// if !ok {
+	// 	c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+	// 		Message: "Invalid user ID",
+	// 	})
+	// 	return
+	// }
 
 	petID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -209,6 +238,19 @@ func (pc *PetController) UpdatePet(c *gin.Context) {
 			Error:   err.Error(),
 		})
 		return
+	}
+
+	petProfilePicture, err := c.FormFile("petProfilePicture")
+	if err != nil {
+		if !errors.Is(err, http.ErrMissingFile) {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "something's wrong",
+				Error:   err.Error(),
+			})
+			log.Printf("Form file err: %v", err)
+			return
+		}
+
 	}
 
 	var req model.PetRequest
@@ -220,13 +262,13 @@ func (pc *PetController) UpdatePet(c *gin.Context) {
 		return
 	}
 
-	if req.PetImage != nil {
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.PetImage.Filename)))
+	if petProfilePicture != nil {
+		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(petProfilePicture.Filename)))
 		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
 		req.PetImageUrl = &imageUrl
 
 		log.Printf("pet image: %s", *req.PetImageUrl)
-		if err := c.SaveUploadedFile(req.PetImage, filename); err != nil {
+		if err := c.SaveUploadedFile(petProfilePicture, filename); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Upload image error",
 				Error:   err.Error(),
@@ -237,7 +279,7 @@ func (pc *PetController) UpdatePet(c *gin.Context) {
 
 	dto := model.PetDTO{
 		Name:        req.Name,
-		Status:      req.Status,
+		Neutered:    req.Neutered,
 		PetCategory: model.PetCategoryDTO{ID: req.PetCategoryID},
 	}
 

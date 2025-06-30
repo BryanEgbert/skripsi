@@ -55,30 +55,24 @@ class _ChatPageState extends ConsumerState<ChatPage>
     if (photo == null) return;
     Navigator.of(context)
         .push(MaterialPageRoute(
-          builder: (context) => SendImagePage(
-            image: File(photo.path),
-            receiverId: widget.userId,
-          ),
-        ))
+      builder: (context) => SendImagePage(
+        image: File(photo.path),
+        receiverId: widget.userId,
+      ),
+    ))
         .then(
-          (_) => setState(
-            () {
-              ref.invalidate(chatMessagesProvider);
-            },
-          ),
-        );
+      (_) {
+        if (!mounted) return;
+        ref.invalidate(chatMessagesProvider);
+      },
+    );
   }
-
-  // void _fetchMessages() {
-  //   ref.read(chatMessagesProvider(widget.userId).future).then((newData) {
-  //     _totalMessages = newData.data;
-  //   });
-  // }
 
   void _setupWebSocket() {
     try {
       ChatWebsocketChannel().instance.then(
         (value) {
+          if (!mounted) return;
           channel = value;
           // _streamController.add(channel!.stream);
           channel?.sink.add(
@@ -90,27 +84,6 @@ class _ChatPageState extends ConsumerState<ChatPage>
               ).toJson(),
             ),
           );
-          // _webSocketSubscription = _streamController.stream.listen(
-          //   (message) {
-          //     log("[CHAT PAGE] new messages");
-          //     var messages = ListData<ChatMessage>.fromJson(
-          //         jsonDecode(message), ChatMessage.fromJson);
-          //     if (messages.data.length > _messageCount) {
-          //       log("[INFO] update read");
-          //       channel!.sink.add(
-          //         jsonEncode(
-          //           SendMessage(
-          //             updateRead: true,
-          //             receiverId: widget.userId,
-          //             message: "",
-          //           ).toJson(),
-          //         ),
-          //       );
-          //       _messageCount = messages.data.length;
-          //     }
-          //     _fetchMessages();
-          //   },
-          // );
 
           setState(() {
             _isSocketReady = true;
@@ -118,13 +91,7 @@ class _ChatPageState extends ConsumerState<ChatPage>
         },
       );
     } catch (e) {
-      // if (e.toString() == jwtExpired ||
-      //     e.toString() == userDeleted && mounted) {
-      //   Navigator.of(context).pushAndRemoveUntil(
-      //     MaterialPageRoute(builder: (context) => WelcomeWidget()),
-      //     (route) => false,
-      //   );
-      // }
+      if (!mounted) return;
       handleError(AsyncError(e.toString(), StackTrace.current), context);
     }
   }
@@ -139,11 +106,9 @@ class _ChatPageState extends ConsumerState<ChatPage>
 
   @override
   void dispose() {
-    // _webSocketSubscription?.cancel();
-    channel?.sink.close();
+    // channel?.sink.close();
     channel = null;
     WidgetsBinding.instance.removeObserver(this);
-    // ChatWebsocketChannel().sink.close();
     super.dispose();
   }
 
@@ -154,7 +119,6 @@ class _ChatPageState extends ConsumerState<ChatPage>
       _setupWebSocket();
     } else if (state == AppLifecycleState.paused) {
       channel?.sink.close();
-      // ChatWebsocketChannel().close();
       channel = null;
     }
   }
@@ -166,7 +130,6 @@ class _ChatPageState extends ConsumerState<ChatPage>
     final chatTracker = ref.watch(chatTrackerProvider);
 
     final chatMessages = ref.watch(chatMessagesProvider(widget.userId));
-    // log("chatMessages: ${chatMessages.value!.data}");
 
     handleError(myInfo, context);
 
@@ -322,10 +285,17 @@ class _ChatPageState extends ConsumerState<ChatPage>
                         icon: !chatMessages.isLoading
                             ? Icon(
                                 Icons.send_rounded,
-                                color: Colors.orange[800],
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                               )
                             : CircularProgressIndicator(
                                 semanticsLabel: "sending message",
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                               ),
                       ),
                     ],
@@ -342,7 +312,9 @@ class _ChatPageState extends ConsumerState<ChatPage>
           child: Center(
             child: CircularProgressIndicator(
               semanticsLabel: "Fetching user data",
-              color: Colors.orange,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
             ),
           ),
         ),

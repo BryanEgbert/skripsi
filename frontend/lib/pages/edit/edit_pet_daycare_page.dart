@@ -41,6 +41,8 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
   final rupiahFormat =
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
 
+  int _imageIndex = -1;
+
   static const _miniatureDogID = 1;
   static const _smallDogID = 2;
   static const _mediumDogID = 3;
@@ -60,6 +62,8 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
   double? _latitude;
   double? _longitude;
   String _locality = "";
+
+  Set<int> _uploadingIndices = {};
 
   String? _locationErrorText;
 
@@ -147,18 +151,28 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
   }
 
   Future<void> _pickImage(int index) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      // if (!_thumbnailIndex.contains(index + 1)) {
-      //   _thumbnailIndex.add(index + 1);
-      // }
+    try {
+      final pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _imageIndex = index;
+          _uploadingIndices.add(_imageIndex);
+        });
+        log("pick image");
+        // if (!_thumbnailIndex.contains(index + 1)) {
+        //   _thumbnailIndex.add(index + 1);
+        // }
 
-      await ref.read(imageStateProvider.notifier).upload(File(pickedFile.path));
-      setState(() {
-        // _images[index] = File(pickedFile.path);
-        _imageUrls[index] = ref.read(imageStateProvider).value?.imageUrl;
-      });
+        ref.read(imageStateProvider.notifier).upload(File(pickedFile.path));
+        log("finish uploading");
+        // setState(() {
+        //   // _images[index] = File(pickedFile.path);
+        //   _imageUrls[index] = ref.read(imageStateProvider).value?.imageUrl;
+        // });
+      }
+    } catch (e) {
+      log("_pickImage error: $e");
     }
   }
 
@@ -172,10 +186,55 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
   @override
   Widget build(BuildContext context) {
     log("[EDIT PET DAYCARE PAGE] build");
+    log("image: ${_imageUrls}, _imageIndex: $_imageIndex");
 
     final petDaycare = ref.watch(getMyPetDaycareProvider);
     final petDaycareState = ref.watch(petDaycareStateProvider);
     final imageState = ref.watch(imageStateProvider);
+
+    if (imageState.hasError && _imageIndex > -1) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        var snackbar = SnackBar(
+          key: Key("error-message"),
+          content: Text(
+            imageState.error.toString(),
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red[800],
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+        if (imageState.error.toString() == LocalizationService().jwtExpired ||
+            imageState.error.toString() == LocalizationService().userDeleted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => WelcomeWidget(),
+            ),
+            (route) => false,
+          );
+        }
+
+        setState(() {
+          _uploadingIndices.remove(_imageIndex);
+          _imageIndex = -1;
+          ref.invalidate(imageStateProvider);
+        });
+      });
+    }
+
+    if (imageState.value != null && _imageIndex > -1) {
+      log("image value ${imageState.value?.imageUrl}");
+      _imageUrls[_imageIndex] = imageState.value?.imageUrl;
+      setState(() {
+        _uploadingIndices.remove(_imageIndex);
+        _imageIndex = -1;
+        log("updated image: ${_imageUrls}");
+        ref.invalidate(imageStateProvider);
+      });
+      // ref.invalidate(imageStateProvider);
+    }
 
     if (_errorText != null) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -334,22 +393,13 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
                         maxNumber: _maxNumbers,
                       );
 
-                      // updatePetDaycareReq.thumbnails =
-                      //     _images.whereType<File>().toList();
-                      // if (updatePetDaycareReq.thumbnails.isEmpty) {
-                      //   setState(() {
-                      //     _errorText = AppLocalizations.of(context)!.mustContainAtLeastOneImage;
-                      //   });
-                      //   return;
-                      // }
-
                       log(updatePetDaycareReq.toString());
 
                       ref
                           .read(petDaycareStateProvider.notifier)
                           .updatePetDaycare(value.id, updatePetDaycareReq);
                     },
-                    icon: !petDaycareState.isLoading
+                    icon: !petDaycareState.isLoading && !imageState.isLoading
                         ? Icon(
                             Icons.save,
                             color:
@@ -968,66 +1018,87 @@ class _EditPetDaycarePageState extends ConsumerState<EditPetDaycarePage> {
 
   Widget _buildPetDaycareImagesForm() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           GridView.builder(
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: 9,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
             ),
             itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () => _pickImage(index),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey[300],
-                    image: (_imageUrls[index] != null)
-                        ? DecorationImage(
-                            image: NetworkImage(_imageUrls[index]!),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
-                  ),
-                  child: (_imageUrls.isEmpty)
-                      ? Icon(Icons.image, color: Colors.black54, size: 32)
-                      : Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.black45,
-                              ),
-                              child: IconButton(
-                                icon: Icon(
-                                  (index == 0)
-                                      ? Icons.edit
-                                      : (_imageUrls[index] != null)
-                                          ? Icons.delete
-                                          : Icons.edit,
-                                  color: Colors.white,
-                                ),
-                                onPressed: () {
-                                  if (index == 0 || _imageUrls[index] == null) {
-                                    _pickImage(index); // Edit first image
-                                  } else {
-                                    _deleteImage(index); // Delete other images
-                                  }
-                                  // _pickImage(index);
-                                },
-                              ),
-                            ),
-                          ],
+              final isUploading = _uploadingIndices.contains(index);
+              final imageUrl = _imageUrls[index];
+
+              Widget child;
+              if (isUploading) {
+                child =
+                    const Center(child: CircularProgressIndicator.adaptive());
+              } else if (imageUrl != null) {
+                child = Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, progress) {
+                        if (progress == null) return child;
+                        return const Center(
+                            child: CircularProgressIndicator.adaptive());
+                      },
+                      errorBuilder: (context, error, stack) {
+                        return const Icon(Icons.broken_image,
+                            color: Colors.black54);
+                      },
+                    ),
+                    // Overlay for edit/delete
+                    Container(
+                      color: Colors.black.withValues(alpha: 0.4),
+                      child: Center(
+                        child: IconButton(
+                          icon: Icon(
+                            index == 0 ? Icons.edit : Icons.delete,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            if (index == 0) {
+                              _pickImage(index);
+                            } else {
+                              _deleteImage(index);
+                            }
+                          },
                         ),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                // Placeholder to add an image
+                child = Center(
+                  child: IconButton(
+                    icon: const Icon(Icons.add_a_photo_outlined,
+                        color: Colors.black54),
+                    onPressed: () {
+                      if (ref.read(imageStateProvider).isLoading) return;
+                      _pickImage(index);
+                    },
+                  ),
+                );
+              }
+
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey[300],
                 ),
+                clipBehavior: Clip.antiAlias, // Ensures child respects radius
+                child: child,
               );
             },
           ),

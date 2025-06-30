@@ -1,8 +1,6 @@
 package model
 
 import (
-	"mime/multipart"
-
 	"gorm.io/gorm"
 )
 
@@ -24,15 +22,15 @@ type VaccineRecordDTO struct {
 }
 
 type VaccineRecordRequest struct {
-	DateAdministered      string                `form:"dateAdministered"`
-	NextDueDate           string                `form:"nextDueDate"`
-	VaccineRecordImage    *multipart.FileHeader `form:"vaccineRecordImage"`
+	DateAdministered string `form:"dateAdministered"`
+	NextDueDate      string `form:"nextDueDate"`
+	// VaccineRecordImage    *multipart.FileHeader `form:"vaccineRecordImage"`
 	VaccineRecordImageUrl string
 }
 
 type CreateVaccineRecordRequest struct {
-	DateAdministered      *string               `form:"dateAdministered"`
-	NextDueDate           *string               `form:"nextDueDate"`
-	VaccineRecordImage    *multipart.FileHeader `form:"vaccineRecordImage"`
+	DateAdministered *string `form:"dateAdministered"`
+	NextDueDate      *string `form:"nextDueDate"`
+	// VaccineRecordImage    *multipart.FileHeader `form:"vaccineRecordImage"`
 	VaccineRecordImageUrl string
 }

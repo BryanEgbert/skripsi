@@ -986,7 +986,7 @@ abstract class AppLocalizations {
   /// Button title for user who wants to join as a daycare provider
   ///
   /// In en, this message translates to:
-  /// **'Pet Daycare Provider'**
+  /// **'Pet Daycare/Hotel Provider'**
   String get roleProvider;
 
   /// Description under the Pet Daycare Provider button
@@ -1522,6 +1522,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pet already booked'**
   String get petAlreadyBooked;
+
+  /// Label for pet daycare filter title
+  ///
+  /// In en, this message translates to:
+  /// **'Pet Daycare/Hotel Filter'**
+  String get petDaycareFilter;
+
+  /// Label for veterinary specialty filter title
+  ///
+  /// In en, this message translates to:
+  /// **'Veterinary Specialty Filter'**
+  String get vetSpecialtyFilter;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

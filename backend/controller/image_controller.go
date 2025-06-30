@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"path/filepath"
 
@@ -21,24 +22,25 @@ func NewImageController(imageService service.ImageService) *ImageController {
 }
 
 func (c *ImageController) Upload(ctx *gin.Context) {
-	userIDRaw, exists := ctx.Get("userID")
-	if !exists {
-		ctx.JSON(http.StatusUnauthorized, model.ErrorResponse{
-			Message: "Unauthorized",
-		})
-		return
-	}
+	// userIDRaw, exists := ctx.Get("userID")
+	// if !exists {
+	// 	ctx.JSON(http.StatusUnauthorized, model.ErrorResponse{
+	// 		Message: "Unauthorized",
+	// 	})
+	// 	return
+	// }
 
-	userID, ok := userIDRaw.(uint)
-	if !ok {
-		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
-			Message: "Invalid user ID",
-		})
-		return
-	}
+	// userID, ok := userIDRaw.(uint)
+	// if !ok {
+	// 	ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
+	// 		Message: "Invalid user ID",
+	// 	})
+	// 	return
+	// }
 
-	var req model.ChatImageRequest
-	if err := ctx.ShouldBind(&req); err != nil {
+	// var req model.ChatImageRequest
+	file, err := ctx.FormFile("image")
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid request body",
 			Error:   err.Error(),
@@ -47,10 +49,12 @@ func (c *ImageController) Upload(ctx *gin.Context) {
 		return
 	}
 
-	filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.Image.Filename)))
+	filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(file.Filename)))
 	imageUrl := fmt.Sprintf("http://%s/%s", ctx.Request.Host, filename)
 
-	if err := ctx.SaveUploadedFile(req.Image, filename); err != nil {
+	log.Printf("imageUrl: %v", gin.H{"imageUrl": imageUrl})
+
+	if err := ctx.SaveUploadedFile(file, filename); err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to save image",
 			Error:   err.Error(),

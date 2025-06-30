@@ -183,6 +183,12 @@ class AuthService implements IAuthService {
         )
       };
 
+      if (userReq.userImage != null) {
+        req["userProfilePicture"] = await MultipartFile.fromFile(
+            userReq.userImage!.path,
+            filename: userReq.userImage!.path.split('/').last);
+      }
+
       FormData formData = FormData.fromMap(req);
 
       final response = await dio.post(

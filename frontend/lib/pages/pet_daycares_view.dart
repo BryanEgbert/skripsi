@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -37,6 +38,9 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
 
   final _minPriceController = TextEditingController();
   final _maxPriceController = TextEditingController();
+
+  StreamSubscription<ServiceStatus>? _serviceStatusStreamSubscription;
+  // StreamSubscription<Position>? _posStreamSubscription;
 
   final rupiahFormat =
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
@@ -111,9 +115,33 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
   @override
   void initState() {
     super.initState();
-    _getLocation();
-    _scrollController.addListener(_onScroll);
-    _fetchMoreData();
+    _serviceStatusStreamSubscription ??= Geolocator.getServiceStatusStream()
+        .listen((ServiceStatus? serviceStatus) {
+      if (serviceStatus != null) {
+        log("serviceStatus: $serviceStatus");
+        setState(() {
+          _serviceEnabled =
+              serviceStatus == ServiceStatus.enabled ? true : false;
+        });
+      }
+    });
+
+    // _posStreamSubscription ??=
+    //     Geolocator.getPositionStream().listen((Position? position) {
+    //   if (position != null) {
+    //     log("position: ${position.latitude}, ${position.longitude}");
+    //     setState(() {
+    //       _latitude = position.latitude;
+    //       _longitude = position.longitude;
+    //     });
+    //   }
+    // });
+    _getLocation().whenComplete(
+      () {
+        _fetchMoreData();
+        _scrollController.addListener(_onScroll);
+      },
+    );
 
     _minDistanceController.text = _filters.minDistance.toInt().toString();
     _maxDistanceController.text = _filters.maxDistance.toInt().toString();
@@ -124,6 +152,12 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
 
   @override
   void dispose() {
+    _serviceStatusStreamSubscription?.cancel();
+    _serviceStatusStreamSubscription = null;
+
+    // _posStreamSubscription?.cancel();
+    // _posStreamSubscription = null;
+
     _scrollController.dispose();
     super.dispose();
   }
@@ -159,6 +193,8 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
     final petCategory = ref.watch(petCategoryProvider);
     final pricingType = ref.watch(pricingTypeProvider);
     final locale = Localizations.localeOf(context).toLanguageTag();
+
+    // _getLocation();
 
     if (_error != null) {
       handleError(AsyncError(_error!, StackTrace.current), context);
@@ -218,16 +254,19 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                                 },
                                 icon: Icon(
                                   Icons.navigate_before,
-                                  color: Constants.primaryTextColor,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Constants.primaryTextColor
+                                      : Colors.orange,
                                 ),
                               ),
                               Text(
-                                AppLocalizations.of(context)!.back,
+                                AppLocalizations.of(context)!.petDaycareFilter,
                                 style: TextStyle(
                                   color: Theme.of(context).brightness ==
                                           Brightness.light
-                                      ? Constants.secondaryBackgroundColor
-                                      : Constants.darkBackgroundColor,
+                                      ? Constants.primaryTextColor
+                                      : Colors.orange,
                                 ),
                               )
                             ],
@@ -358,13 +397,6 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                                     },
                                   );
                                 }).toList(),
-                              ),
-                              Text(
-                                AppLocalizations.of(context)!.pricingModel,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Constants.primaryTextColor,
-                                ),
                               ),
                               const SizedBox(height: 16),
                               Text(
@@ -1071,6 +1103,8 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
   }
 
   Widget _buildCard(BuildContext context, PetDaycare item) {
+    final kmFormatted = (item.distance / 1000).toStringAsFixed(1);
+
     return Card(
       // elevation: 0,
       // color: Colors.transparent,
@@ -1110,7 +1144,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                     ),
                     if (_latitude != null && _longitude != null)
                       Text(
-                        "${item.locality} (${AppLocalizations.of(context)!.kmAway(item.distance)})",
+                        "${item.locality} (${AppLocalizations.of(context)!.kmAway(item.distance / 1000)})",
                         style: TextStyle(
                           fontSize: 10,
                           color:

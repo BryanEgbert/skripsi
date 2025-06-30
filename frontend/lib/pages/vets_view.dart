@@ -32,26 +32,6 @@ class _VetsViewState extends ConsumerState<VetsView> {
 
   Object? _error;
 
-  // final List<Map<String, dynamic>> vetSpecialties = [
-  //   {'id': 1, 'name': 'General Practice'},
-  //   {'id': 2, 'name': 'Preventive Medicine'},
-  //   {'id': 3, 'name': 'Emergency & Critical Care'},
-  //   {'id': 4, 'name': 'Internal Medicine'},
-  //   {'id': 5, 'name': 'Cardiology'},
-  //   {'id': 6, 'name': 'Neurology'},
-  //   {'id': 7, 'name': 'Oncology'},
-  //   {'id': 8, 'name': 'Gastroenterology'},
-  //   {'id': 9, 'name': 'Dermatology & Allergy Care'},
-  //   {'id': 10, 'name': 'Dentistry & Oral Surgery'},
-  //   {'id': 11, 'name': 'Behavioral Medicine'},
-  //   {'id': 12, 'name': 'Surgery & Orthopedics'},
-  //   {'id': 13, 'name': 'Soft Tissue Surgery'},
-  //   {'id': 14, 'name': 'Orthopedic Surgery'},
-  //   {'id': 15, 'name': 'Ophthalmology'},
-  //   {'id': 16, 'name': 'Rehabilitation & Physical Therapy'},
-  //   {'id': 17, 'name': 'Exotic & Small Animal Care'},
-  // ];
-
   int _vetSpecialtyId = 0;
 
   void _onScroll() {
@@ -167,7 +147,8 @@ class _VetsViewState extends ConsumerState<VetsView> {
                                 ),
                               ),
                               Text(
-                                AppLocalizations.of(context)!.back,
+                                AppLocalizations.of(context)!
+                                    .vetSpecialtyFilter,
                                 style: TextStyle(
                                   color: Constants.primaryTextColor,
                                 ),

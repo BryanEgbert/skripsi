@@ -5,14 +5,12 @@ class PetRequest {
   final bool neutered;
   final File? petImage;
   final int petCategoryId;
-  final String? status;
 
   PetRequest({
     required this.name,
     this.petImage,
     required this.petCategoryId,
     required this.neutered,
-    this.status,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,10 +19,6 @@ class PetRequest {
       "neutered": neutered,
       "petCategoryId": petCategoryId.toString(),
     };
-
-    if (status != null) {
-      map["status"] = status;
-    }
 
     return map;
   }

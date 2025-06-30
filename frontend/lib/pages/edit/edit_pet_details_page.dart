@@ -180,9 +180,11 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
                             ),
                             Checkbox(
                               value: _isNeutered,
-                              onChanged: (value) {
+                              onChanged: (checked) {
                                 setState(() {
-                                  _isNeutered = value!;
+                                  if (checked != null) {
+                                    _isNeutered = checked;
+                                  }
                                 });
                               },
                             ),
@@ -220,7 +222,9 @@ class _EditPetDetailsPage extends ConsumerState<EditPetDetailsPage> {
           }),
         _ => Center(
             child: CircularProgressIndicator(
-              color: Colors.orange,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Constants.primaryTextColor
+                  : Colors.orange,
             ),
           ),
       },

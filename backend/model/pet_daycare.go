@@ -3,7 +3,6 @@ package model
 import (
 	"database/sql/driver"
 	"fmt"
-	"mime/multipart"
 	"time"
 
 	"gorm.io/gorm"
@@ -103,28 +102,28 @@ type PetDaycareDTO struct {
 
 // CreatePetDaycareRequest represents the request payload
 type CreatePetDaycareRequest struct {
-	PetDaycareName    string                  `form:"petDaycareName" binding:"required"`
-	Address           string                  `form:"address" binding:"required"`
-	Locality          string                  `form:"locality" binding:"required"`
-	Location          string                  `form:"location" binding:"required"`
-	Latitude          float64                 `form:"latitude" binding:"required"`
-	Longitude         float64                 `form:"longitude" binding:"required"`
-	Description       string                  `form:"description"`
-	OpeningHour       string                  `form:"openingHour"`
-	ClosingHour       string                  `form:"closingHour"`
-	Price             []float64               `form:"price[]"`
-	PricingType       uint                    `form:"pricingType"`
-	HasPickupService  bool                    `form:"hasPickupService"`
-	MustBeVaccinated  bool                    `form:"mustBeVaccinated"`
-	GroomingAvailable bool                    `form:"groomingAvailable"`
-	FoodProvided      bool                    `form:"foodProvided"`
-	FoodBrand         string                  `form:"foodBrand"`
-	DailyWalksID      uint                    `form:"dailyWalksId" binding:"required"`
-	DailyPlaytimeID   uint                    `form:"dailyPlaytimeId" binding:"required"`
-	Thumbnails        []*multipart.FileHeader `form:"thumbnails[]" binding:"required"`
-	PetCategoryID     []uint                  `form:"petCategoryId[]" binding:"required"`
-	MaxNumber         []int                   `form:"maxNumber[]" binding:"required"`
-	ThumbnailURLs     []string
+	PetDaycareName    string    `form:"petDaycareName" binding:"required"`
+	Address           string    `form:"address" binding:"required"`
+	Locality          string    `form:"locality" binding:"required"`
+	Location          string    `form:"location" binding:"required"`
+	Latitude          float64   `form:"latitude" binding:"required"`
+	Longitude         float64   `form:"longitude" binding:"required"`
+	Description       string    `form:"description"`
+	OpeningHour       string    `form:"openingHour"`
+	ClosingHour       string    `form:"closingHour"`
+	Price             []float64 `form:"price[]"`
+	PricingType       uint      `form:"pricingType"`
+	HasPickupService  bool      `form:"hasPickupService"`
+	MustBeVaccinated  bool      `form:"mustBeVaccinated"`
+	GroomingAvailable bool      `form:"groomingAvailable"`
+	FoodProvided      bool      `form:"foodProvided"`
+	FoodBrand         string    `form:"foodBrand"`
+	DailyWalksID      uint      `form:"dailyWalksId" binding:"required"`
+	DailyPlaytimeID   uint      `form:"dailyPlaytimeId" binding:"required"`
+	// Thumbnails        []*multipart.FileHeader `form:"thumbnails[]" binding:"required"`
+	PetCategoryID []uint `form:"petCategoryId[]" binding:"required"`
+	MaxNumber     []int  `form:"maxNumber[]" binding:"required"`
+	ThumbnailURLs []string
 }
 
 type UpdatePetDaycareRequest struct {

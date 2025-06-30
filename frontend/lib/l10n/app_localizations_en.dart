@@ -251,7 +251,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String kmAway(double range) {
-    final intl.NumberFormat rangeNumberFormat = intl.NumberFormat.decimalPattern(localeName);
+    final intl.NumberFormat rangeNumberFormat = intl.NumberFormat.decimalPatternDigits(
+      locale: localeName,
+      decimalDigits: 1
+    );
     final String rangeString = rangeNumberFormat.format(range);
 
     return '${rangeString}km away';
@@ -474,7 +477,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rolePetOwnerDesc => 'Discover trusted pet daycares & chat with vets.';
 
   @override
-  String get roleProvider => 'Pet Daycare Provider';
+  String get roleProvider => 'Pet Daycare/Hotel Provider';
 
   @override
   String get roleProviderDesc => 'Connect with pet owners & grow your business.';
@@ -762,4 +765,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get petAlreadyBooked => 'Pet already booked';
+
+  @override
+  String get petDaycareFilter => 'Pet Daycare/Hotel Filter';
+
+  @override
+  String get vetSpecialtyFilter => 'Veterinary Specialty Filter';
 }

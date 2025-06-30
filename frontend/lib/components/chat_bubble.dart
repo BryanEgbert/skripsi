@@ -58,6 +58,18 @@ class ChatBubble extends StatelessWidget {
                               child: InteractiveViewer(
                                 child: Image.network(
                                   msg.imageUrl!,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Container(
+                                      color: Colors.grey[200],
+                                      child: Center(
+                                        child: CircularProgressIndicator
+                                            .adaptive(),
+                                      ),
+                                    );
+                                  },
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
                                       color: Colors.grey.withAlpha(125),
@@ -98,6 +110,19 @@ class ChatBubble extends StatelessWidget {
                       msg.imageUrl!,
                       // width: 200,
                       fit: BoxFit.contain,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        }
+                        return Container(
+                          color: Colors.grey[200],
+                          height: 150,
+                          child: Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          ),
+                        );
+                      },
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           color: Colors.grey.withAlpha(125),

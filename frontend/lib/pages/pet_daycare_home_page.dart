@@ -32,6 +32,7 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage>
   StreamSubscription? _webSocketSubscription;
   Object? _error;
   bool _hasInitialized = false;
+  bool _isPaused = true;
 
   List<ChatMessage> messages = [];
 
@@ -45,12 +46,14 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage>
   }
 
   void _setupWebSocket() {
+    if (!_isPaused) return;
     try {
       ChatWebsocketChannel().instance.then(
         (value) {
           // _channel = value;
           // _websocketStream = value.stream.asBroadcastStream();
-          _webSocketSubscription = ChatWebsocketChannel().stream.listen(
+          _isPaused = false;
+          _webSocketSubscription ??= ChatWebsocketChannel().stream.listen(
             (message) {
               _fetchMessages();
 
@@ -121,6 +124,7 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage>
       _webSocketSubscription?.cancel();
       ChatWebsocketChannel().close();
       _webSocketSubscription = null;
+      _isPaused = true;
     }
   }
 

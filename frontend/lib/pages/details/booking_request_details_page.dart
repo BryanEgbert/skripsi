@@ -106,43 +106,45 @@ class _BookingRequestDetailsPageState
                       )
                   ],
                 ),
-                if (widget.bookingReq.pickupRequired) const SizedBox(height: 4),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Color.fromARGB(255, 255, 227, 193)
-                        : Colors.black87,
-                  ),
-                  padding: EdgeInsets.all(8.0),
-                  child: Column(
-                    spacing: 4,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.bookingReq.addressInfo!.name,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
+                if (widget.bookingReq.pickupRequired) ...[
+                  const SizedBox(height: 4),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Color.fromARGB(255, 255, 227, 193)
+                          : Colors.black87,
+                    ),
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(
+                      spacing: 4,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.bookingReq.addressInfo!.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.black
+                                    : Colors.white70,
+                          ),
                         ),
-                      ),
-                      Text(
-                        widget.bookingReq.addressInfo!.address,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
+                        Text(
+                          widget.bookingReq.addressInfo!.address,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.black
+                                    : Colors.white70,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),

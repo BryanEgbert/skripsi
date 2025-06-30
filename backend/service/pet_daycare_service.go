@@ -115,7 +115,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycare(id uint, lat *float64, long *float
 			Preload("Slots.PricingType").
 			Preload("Slots.PetCategory").
 			Preload("Slots.PetCategory.SizeCategory").
-			Select("*, ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(longitude, latitude)) AS Distance", long, lat).
+			Select("*, ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(pet_daycares.longitude, pet_daycares.latitude)) AS Distance", *long, *lat).
 			First(&daycare, id).Error; err != nil {
 			return nil, err
 		}
@@ -292,9 +292,10 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		longitude = *req.Longitude
 	}
 
-	query := s.db.Table("pet_daycares").
-		Select("pet_daycares.id", "pet_daycares.name", "pet_daycares.locality", fmt.Sprintf("ST_DistanceSphere(ST_MakePoint(%f, %f), ST_MakePoint(longitude, latitude))", longitude, latitude), "pet_daycares.booked_num").
-		Joins("JOIN daily_playtimes ON daily_playtimes.id = pet_daycares.daily_playtime_id").
+	query := s.db.Debug().Table("pet_daycares").
+		Select("pet_daycares.id, pet_daycares.name, pet_daycares.locality, ST_DistanceSphere(ST_MakePoint(?, ?), ST_MakePoint(pet_daycares.longitude, pet_daycares.latitude)) as distance, pet_daycares.booked_num", longitude, latitude)
+
+	query = query.Joins("JOIN daily_playtimes ON daily_playtimes.id = pet_daycares.daily_playtime_id").
 		Joins("JOIN daily_walks ON daily_walks.id = pet_daycares.daily_walks_id")
 
 	if req.MaxDistance > 0 && isCoordinateNotNil {

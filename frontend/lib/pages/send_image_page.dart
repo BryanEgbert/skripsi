@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/constants.dart';
 import 'package:frontend/model/send_message.dart';
 import 'package:frontend/pages/welcome.dart';
 import 'package:frontend/provider/image_provider.dart';
@@ -112,8 +113,14 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.arrow_back_ios)),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Constants.primaryTextColor
+                : Colors.orange,
+          ),
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -159,10 +166,16 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
                     icon: (!imageState.isLoading)
                         ? Icon(
                             Icons.send_rounded,
-                            color: Colors.orange[700],
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                           )
                         : CircularProgressIndicator(
-                            color: Colors.orange,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                           ),
                   ),
                 ],

@@ -489,7 +489,7 @@ func (s *SlotServiceImpl) validateSlots(req model.BookSlotRequest) ([]model.Slot
 	if err := s.db.
 		Model(&model.BookedSlot{}).
 		Joins("JOIN pet_booked_slots pbs ON pbs.booked_slot_id = booked_slots.id").
-		Where("pbs.pet_id IN ? AND booked_slots.status_id IN ?", req.PetID, []uint{1, 2, 4}).
+		Where("pbs.pet_id IN ? AND booked_slots.status_id IN ?", req.PetID, []uint{1, 2}).
 		Count(&count).
 		Error; err != nil {
 		return nil, true, err

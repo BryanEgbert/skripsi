@@ -41,7 +41,7 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, startID uint, pageSize int) 
 		Joins("JOIN pet_daycares ON pet_daycares.id = booked_slots.daycare_id").
 		Joins("JOIN users ON users.id = pets.owner_id").
 		Joins("JOIN roles ON roles.id = users.role_id").
-		Where("pets.id > ? AND pet_daycares.owner_id = ? AND booked_slots.status_id = 2", startID, userId).
+		Where("pets.id > ? AND pet_daycares.owner_id = ? AND booked_slots.status_id = ?", startID, userId, 2).
 		Limit(pageSize).Rows()
 	if err != nil {
 		return nil, err

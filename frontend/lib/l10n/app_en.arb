@@ -336,7 +336,7 @@
         "placeholders": {
             "range": {
                 "type": "double",
-                "format": "decimalPattern",
+                "format": "decimalPatternDigits",
                 "optionalParameters": {
                     "decimalDigits": 1
                 },
@@ -641,7 +641,7 @@
     "@rolePetOwnerDesc": {
         "description": "Description under the Pet Owner button"
     },
-    "roleProvider": "Pet Daycare Provider",
+    "roleProvider": "Pet Daycare/Hotel Provider",
     "@roleProvider": {
         "description": "Button title for user who wants to join as a daycare provider"
     },
@@ -1032,5 +1032,13 @@
     "petAlreadyBooked": "Pet already booked",
     "@petAlreadyBooked": {
         "description": "Error message shown when a pet is already booked"
+    },
+    "petDaycareFilter": "Pet Daycare/Hotel Filter",
+    "@petDaycareFilter": {
+        "description": "Label for pet daycare filter title"
+    },
+    "vetSpecialtyFilter": "Veterinary Specialty Filter",
+    "@vetSpecialtyFilter": {
+        "description": "Label for veterinary specialty filter title"
     }
 }   

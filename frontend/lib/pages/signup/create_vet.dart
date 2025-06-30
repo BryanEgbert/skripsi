@@ -63,35 +63,42 @@ class _CreateVetPageState extends ConsumerState<CreateVetPage> {
           ),
           centerTitle: false,
           actions: [
-            IconButton(
-              onPressed: () async {
-                if (widget.reqBody.vetSpecialtyId.isEmpty) {
-                  var snackbar = SnackBar(
-                    key: Key("error-message"),
-                    content: Text(
-                      AppLocalizations.of(context)!.mustChooseOneVetSpecialty,
-                      style: TextStyle(color: Colors.white),
+            (!auth.isLoading)
+                ? IconButton(
+                    onPressed: () async {
+                      if (widget.reqBody.vetSpecialtyId.isEmpty) {
+                        var snackbar = SnackBar(
+                          key: Key("error-message"),
+                          content: Text(
+                            AppLocalizations.of(context)!
+                                .mustChooseOneVetSpecialty,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          backgroundColor: Colors.red[800],
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                        return;
+                      }
+
+                      if (!auth.isLoading) {
+                        await ref
+                            .read(authProvider.notifier)
+                            .register(widget.reqBody);
+                      }
+                    },
+                    icon: Icon(
+                      Icons.check_rounded,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Constants.primaryTextColor
+                          : Colors.orange,
                     ),
-                    backgroundColor: Colors.red[800],
-                  );
-
-                  ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                  return;
-                }
-
-                if (!auth.isLoading) {
-                  await ref
-                      .read(authProvider.notifier)
-                      .register(widget.reqBody);
-                }
-              },
-              icon: Icon(
-                Icons.check_rounded,
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Constants.primaryTextColor
-                    : Colors.orange,
-              ),
-            )
+                  )
+                : CircularProgressIndicator(
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Constants.primaryTextColor
+                        : Colors.orange,
+                  ),
           ],
         ),
         // backgroundColor: Color(0xFFFFF8F0),

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -529,6 +530,11 @@ func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 		return
 	}
 
+	var thumbnailURLs []string
+	form, _ := c.MultipartForm()
+
+	thumbnails := form.File["thumbnails[]"]
+
 	var request model.CreatePetDaycareRequest
 	if err := c.ShouldBind(&request); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
@@ -545,9 +551,16 @@ func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 		return
 	}
 
-	var thumbnailURLs []string
-	for _, thumbnail := range request.Thumbnails {
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(thumbnail.Filename)))
+	// if err := c.ShouldBind(&request); err != nil {
+	// 	c.JSON(http.StatusBadRequest, model.ErrorResponse{
+	// 		Message: "Invalid request data",
+	// 		Error:   err.Error(),
+	// 	})
+	// 	return
+	// }
+
+	for _, thumbnail := range thumbnails {
+		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(thumbnail.Filename)))
 		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("http://%s/%s", c.Request.Host, filename))
 
 		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {

@@ -232,7 +232,7 @@ func TestCreatePet(t *testing.T) {
 			writer := multipart.NewWriter(body)
 
 			_ = writer.WriteField("name", test.In.Name)
-			_ = writer.WriteField("status", test.In.Status)
+			// _ = writer.WriteField("status", test.In.Status)
 			_ = writer.WriteField("petCategoryId", strconv.Itoa(int(test.In.PetCategoryID)))
 
 			formFile, err := writer.CreateFormFile("image", "image/test.jpeg")
@@ -275,8 +275,8 @@ func TestUpdatePet(t *testing.T) {
 			Name: "On update pet, should return 204 if pet update successfully",
 			ID:   1,
 			In: model.PetRequest{
-				Name:          "update_name",
-				Status:        "sleeping",
+				Name: "update_name",
+				// Status:        "sleeping",
 				PetCategoryID: 2,
 			},
 			Token:          token1,
@@ -287,8 +287,8 @@ func TestUpdatePet(t *testing.T) {
 			Token: token1,
 			ID:    10000,
 			In: model.PetRequest{
-				Name:          "update_name",
-				Status:        "sleeping",
+				Name: "update_name",
+				// Status:        "sleeping",
 				PetCategoryID: 2,
 			},
 			ExpectedStatus: 404,
@@ -305,7 +305,7 @@ func TestUpdatePet(t *testing.T) {
 			writer := multipart.NewWriter(body)
 
 			_ = writer.WriteField("name", test.In.Name)
-			_ = writer.WriteField("status", test.In.Status)
+			// _ = writer.WriteField("status", test.In.Status)
 			_ = writer.WriteField("petCategoryId", strconv.Itoa(int(test.In.PetCategoryID)))
 
 			formFile, err := writer.CreateFormFile("image", "image/test.jpeg")

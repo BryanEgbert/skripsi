@@ -1,8 +1,6 @@
 package model
 
 import (
-	"mime/multipart"
-
 	"gorm.io/gorm"
 )
 
@@ -37,12 +35,12 @@ type GetBookedPetsResponse struct {
 }
 
 type PetRequest struct {
-	Name          string                `form:"petName" binding:"required"`
-	PetImage      *multipart.FileHeader `form:"petProfilePicture"`
-	Status        string                `form:"status"`
-	Neutered      bool                  `form:"neutered"`
-	PetCategoryID uint                  `form:"petCategoryId" binding:"required"`
+	Name string `form:"petName" binding:"required"`
+	// PetImage      *multipart.FileHeader `form:"petProfilePicture"`
+	Neutered      bool `form:"neutered"`
+	PetCategoryID uint `form:"petCategoryId" binding:"required"`
 	PetImageUrl   *string
+	// Status        string                `form:"status"`
 }
 
 type PetAndVaccinationRecordRequest struct {

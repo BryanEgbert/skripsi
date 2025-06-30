@@ -755,5 +755,11 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get petAlreadyBooked => 'Satu atau lebih hewan peliharaan sudah memiliki pemesanan aktif';
+  String get petAlreadyBooked => 'Hewan peliharaan sedang dititipkan di tempat peliharaan';
+
+  @override
+  String get petDaycareFilter => 'Filter Tempat Penitipan Hewan';
+
+  @override
+  String get vetSpecialtyFilter => 'Filter Spesialisasi Dokter Hewan';
 }

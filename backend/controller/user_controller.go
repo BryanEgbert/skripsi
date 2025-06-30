@@ -71,6 +71,21 @@ func (uc *UserController) UpdateDeviceToken(c *gin.Context) {
 func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 	var req model.CreatePetDaycareProviderRequest
 
+	profilePicture, err := c.FormFile("userProfilePicture")
+	if err != nil {
+		if !errors.Is(err, http.ErrMissingFile) {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "something's wrong",
+				Error:   err.Error(),
+			})
+			log.Printf("Form file err: %v", err)
+			return
+		}
+	}
+
+	form, _ := c.MultipartForm()
+	thumbnails := form.File["thumbnails[]"]
+
 	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid request body",
@@ -84,12 +99,12 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 
 	req.RoleID = 2
 
-	if req.UserImage != nil {
+	if profilePicture != nil {
 		rand.New(rand.NewSource(time.Now().UnixNano())) // Seed to get different results each run
 		randomNum := rand.Uint64()
-		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(req.UserImage.Filename)))
+		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(profilePicture.Filename)))
 
-		if err := c.SaveUploadedFile(req.UserImage, imagePath); err != nil {
+		if err := c.SaveUploadedFile(profilePicture, imagePath); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save user image",
 				Error:   err.Error(),
@@ -112,6 +127,7 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 	}
 
 	if len(req.PetCategoryID) != len(req.MaxNumber) {
+		log.Printf("Error: petCategoryId and maxNumber must be the same length")
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "petCategoryId and maxNumber must be the same length",
 		})
@@ -119,9 +135,10 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 	}
 
 	var thumbnailURLs []string
-	for _, thumbnail := range req.Thumbnails {
+
+	for _, thumbnail := range thumbnails {
 		log.Printf("filename: %s", thumbnail.Filename)
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(createdUser.UserID, filepath.Ext(thumbnail.Filename)))
+		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(thumbnail.Filename)))
 		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("http://%s/%s", c.Request.Host, filename))
 
 		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
@@ -156,6 +173,44 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 func (uc *UserController) CreatePetOwner(c *gin.Context) {
 	var req model.CreatePetOwnerRequest
 
+	profilePicture, err := c.FormFile("userProfilePicture")
+	if err != nil {
+		if !errors.Is(err, http.ErrMissingFile) {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "something's wrong",
+				Error:   err.Error(),
+			})
+			log.Printf("Form file err: %v", err)
+			return
+		}
+
+	}
+
+	petProfilePicture, err := c.FormFile("petProfilePicture")
+	if err != nil {
+		if !errors.Is(err, http.ErrMissingFile) {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "something's wrong",
+				Error:   err.Error(),
+			})
+			log.Printf("Form file err: %v", err)
+			return
+		}
+
+	}
+
+	vaccineRecordImage, err := c.FormFile("vaccineRecordImage")
+	if err != nil {
+		if !errors.Is(err, http.ErrMissingFile) {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "something's wrong",
+				Error:   err.Error(),
+			})
+			log.Printf("Form file err: %v", err)
+			return
+		}
+	}
+
 	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid request body",
@@ -167,12 +222,12 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 
 	req.RoleID = 1
 
-	if req.UserImage != nil {
+	if profilePicture != nil {
 		rand.New(rand.NewSource(time.Now().UnixNano())) // Seed to get different results each run
 		randomNum := rand.Uint64()
-		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(req.UserImage.Filename)))
+		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(profilePicture.Filename)))
 
-		if err := c.SaveUploadedFile(req.UserImage, imagePath); err != nil {
+		if err := c.SaveUploadedFile(profilePicture, imagePath); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save image",
 				Error:   err.Error(),
@@ -194,12 +249,12 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 		return
 	}
 
-	if req.PetImage != nil {
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(createdUser.UserID, filepath.Ext(req.PetImage.Filename)))
+	if petProfilePicture != nil {
+		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(petProfilePicture.Filename)))
 		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
 		req.PetImageUrl = &imageUrl
 
-		if err := c.SaveUploadedFile(req.PetImage, filename); err != nil {
+		if err := c.SaveUploadedFile(petProfilePicture, filename); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save pet image",
 				Error:   err.Error(),
@@ -218,11 +273,11 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 		return
 	}
 
-	if req.VaccineRecordImage != nil {
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(createdUser.UserID, filepath.Ext(req.VaccineRecordImage.Filename)))
+	if vaccineRecordImage != nil {
+		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(vaccineRecordImage.Filename)))
 		req.VaccineRecordImageUrl = fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
 
-		if err := c.SaveUploadedFile(req.VaccineRecordImage, filename); err != nil {
+		if err := c.SaveUploadedFile(vaccineRecordImage, filename); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save vaccine record image",
 				Error:   err.Error(),
@@ -231,7 +286,7 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 		}
 	}
 
-	if req.DateAdministered != "" && req.NextDueDate != "" && req.VaccineRecordImage != nil {
+	if req.DateAdministered != "" && req.NextDueDate != "" && vaccineRecordImage != nil {
 		_, err = uc.vaccineRecordService.CreateVaccineRecords(petID, req.VaccineRecordRequest)
 		if err != nil {
 			c.JSON(http.StatusConflict, model.ErrorResponse{
@@ -331,6 +386,19 @@ func (uc *UserController) GetUser(c *gin.Context) {
 func (uc *UserController) CreateUser(c *gin.Context) {
 	var req model.CreateUserRequest
 
+	profilePicture, err := c.FormFile("userProfilePicture")
+	if err != nil {
+		if !errors.Is(err, http.ErrMissingFile) {
+			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
+				Message: "something's wrong",
+				Error:   err.Error(),
+			})
+			log.Printf("Form file err: %v", err)
+			return
+		}
+
+	}
+
 	// Bind form-data
 	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
@@ -351,12 +419,12 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 	}
 
 	// Handle image upload
-	if req.UserImage != nil {
+	if profilePicture != nil {
 		rand.New(rand.NewSource(time.Now().UnixNano())) // Seed to get different results each run
 		randomNum := rand.Uint64()
-		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(req.UserImage.Filename)))
+		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(profilePicture.Filename)))
 
-		if err := c.SaveUploadedFile(req.UserImage, imagePath); err != nil {
+		if err := c.SaveUploadedFile(profilePicture, imagePath); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save image",
 				Error:   err.Error(),
@@ -423,6 +491,15 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 		return
 	}
 
+	profilePicture, err := c.FormFile("userProfilePicture")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{
+			Message: "Invalid request body",
+			Error:   err.Error(),
+		})
+		return
+	}
+
 	var req model.UpdateUserRequest
 	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
@@ -435,10 +512,10 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 	req.ID = userID
 
 	// Handle image upload
-	if req.Image != nil {
-		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(req.Image.Filename)))
+	if profilePicture != nil {
+		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(profilePicture.Filename)))
 
-		if err := c.SaveUploadedFile(req.Image, imagePath); err != nil {
+		if err := c.SaveUploadedFile(profilePicture, imagePath); err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save image",
 				Error:   err.Error(),

@@ -1,8 +1,6 @@
 package model
 
 import (
-	"mime/multipart"
-
 	"gorm.io/gorm"
 )
 
@@ -43,14 +41,14 @@ type UpdateUserDTO struct {
 }
 
 type CreateUserRequest struct {
-	Name           string                `form:"displayName" binding:"required"`
-	Email          string                `form:"email" binding:"required,email"`
-	Password       string                `form:"password" binding:"required"`
-	RoleID         uint                  `form:"roleId" binding:"required"`
-	VetSpecialtyID *[]uint               `form:"vetSpecialtyId[]"`
-	UserImage      *multipart.FileHeader `form:"userProfilePicture"`
-	DeviceToken    *string               `form:"deviceToken"`
-	UserImageUrl   string
+	Name           string  `form:"displayName" binding:"required"`
+	Email          string  `form:"email" binding:"required,email"`
+	Password       string  `form:"password" binding:"required"`
+	RoleID         uint    `form:"roleId" binding:"required"`
+	VetSpecialtyID *[]uint `form:"vetSpecialtyId[]"`
+	// UserImage      *multipart.FileHeader `form:"userProfilePicture"`
+	DeviceToken  *string `form:"deviceToken"`
+	UserImageUrl string
 }
 
 type CreatePetOwnerRequest struct {
@@ -66,12 +64,12 @@ type CreatePetDaycareProviderRequest struct {
 
 type UpdateUserRequest struct {
 	ID             uint
-	Name           string                `form:"name"`
-	Email          string                `form:"email" binding:"email"`
-	RoleID         uint                  `form:"roleId"`
-	VetSpecialtyID *[]uint               `form:"vetSpecialtyId[]"`
-	Image          *multipart.FileHeader `form:"userProfilePicture"`
-	ImageUrl       string
+	Name           string  `form:"name"`
+	Email          string  `form:"email" binding:"email"`
+	RoleID         uint    `form:"roleId"`
+	VetSpecialtyID *[]uint `form:"vetSpecialtyId[]"`
+	// Image          *multipart.FileHeader `form:"userProfilePicture"`
+	ImageUrl string
 }
 
 type UpdatePasswordRequest struct {
