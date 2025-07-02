@@ -238,6 +238,21 @@ class _PaginatedListViewState
                               child: InteractiveViewer(
                                 child: Image.network(
                                   vaccineRecord.imageUrl,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    }
+                                    return Container(
+                                      color: Colors.grey[200],
+                                      height: 150,
+                                      child: Center(
+                                        child: CircularProgressIndicator
+                                            .adaptive(),
+                                      ),
+                                    );
+                                  },
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
                                       color: Colors.grey.withAlpha(125),

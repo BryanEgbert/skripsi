@@ -31,8 +31,18 @@ class _ImageSliderState extends State<ImageSlider> {
                   child: Image.network(
                     widget.images[_currentIndex],
                     fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      return Center(child: child);
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child;
+                      }
+                      return Container(
+                        color: Colors.grey[200],
+                        height: 150,
+                        child: Center(
+                          child: CircularProgressIndicator.adaptive(),
+                        ),
+                      );
                     },
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
@@ -83,8 +93,18 @@ class _ImageSliderState extends State<ImageSlider> {
                 widget.images[index],
                 fit: BoxFit.cover,
                 width: double.infinity,
-                loadingBuilder: (context, child, loadingProgress) {
-                  return Center(child: child);
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+                  return Container(
+                    color: Colors.grey[200],
+                    height: 150,
+                    child: Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    ),
+                  );
                 },
                 errorBuilder: (context, error, stackTrace) {
                   return Container(

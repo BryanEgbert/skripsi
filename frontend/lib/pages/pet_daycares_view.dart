@@ -126,16 +126,6 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
       }
     });
 
-    // _posStreamSubscription ??=
-    //     Geolocator.getPositionStream().listen((Position? position) {
-    //   if (position != null) {
-    //     log("position: ${position.latitude}, ${position.longitude}");
-    //     setState(() {
-    //       _latitude = position.latitude;
-    //       _longitude = position.longitude;
-    //     });
-    //   }
-    // });
     _getLocation().whenComplete(
       () {
         _fetchMoreData();
