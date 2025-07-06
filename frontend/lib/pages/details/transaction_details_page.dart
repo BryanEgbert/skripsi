@@ -7,6 +7,7 @@ import 'package:frontend/components/modals/add_review_modal.dart';
 import 'package:frontend/constants.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/model/transaction.dart';
+import 'package:frontend/pages/details/pet_daycare_details_page.dart';
 import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
@@ -139,7 +140,7 @@ class _TransactionDetailsPageState
                                 style: TextStyle(color: Colors.red),
                               ),
                             )
-                          else if (value.status.id == 4 && !value.isReviewed)
+                          else if (value.status.id == 4)
                             TextButton(
                               onPressed: () async {
                                 await showModalBottomSheet(
@@ -154,7 +155,9 @@ class _TransactionDetailsPageState
                                 });
                               },
                               child: Text(
-                                AppLocalizations.of(context)!.giveReview,
+                                value.isReviewed
+                                    ? AppLocalizations.of(context)!.editReview
+                                    : AppLocalizations.of(context)!.giveReview,
                                 style: TextStyle(
                                   color: Theme.of(context).brightness ==
                                           Brightness.light
@@ -166,132 +169,143 @@ class _TransactionDetailsPageState
                         ],
                       ),
                     ),
-                    Container(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Constants.secondaryBackgroundColor
-                          : null,
-                      padding: EdgeInsets.all(12),
-                      child: Column(
-                        spacing: 4,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            value.petDaycare.name,
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Constants.primaryTextColor
-                                  : Colors.orange,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (ctx) =>
+                                PetDaycareDetailsPage(value.petDaycare.id),
                           ),
-                          Text(
-                            value.petDaycare.address,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            AppLocalizations.of(context)!.reservationDates,
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Constants.primaryTextColor
-                                  : Colors.orange,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          Text(
-                            "${formatDateStr(value.startDate, context)} - ${formatDateStr(value.endDate, context)}",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Row(
-                            spacing: 4,
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!.usePickupService,
-                                style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.light
-                                      ? Constants.primaryTextColor
-                                      : Colors.orange,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              if (value.bookedSlot.pickupRequired)
-                                Icon(
-                                  Icons.check,
-                                  color: Colors.green,
-                                )
-                              else
-                                Icon(
-                                  Icons.clear,
-                                  color: Colors.red,
-                                )
-                            ],
-                          ),
-                          if (value.bookedSlot.pickupRequired)
-                            Container(
-                              padding: EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
+                        );
+                      },
+                      child: Container(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Constants.secondaryBackgroundColor
+                            : null,
+                        padding: EdgeInsets.all(12),
+                        child: Column(
+                          spacing: 4,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              value.petDaycare.name,
+                              style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.light
-                                    ? const Color.fromARGB(255, 255, 226, 193)
-                                    : Colors.black87,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    value.addressInfo!.name,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  Text(
-                                    value.addressInfo!.address,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.light
-                                          ? Colors.black
-                                          : Colors.white70,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    AppLocalizations.of(context)!.notes,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  Text(
-                                    value.addressInfo!.notes ?? "-",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
-                        ],
+                            Text(
+                              value.petDaycare.address,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Colors.black
+                                    : Colors.white70,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              AppLocalizations.of(context)!.reservationDates,
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              "${formatDateStr(value.startDate, context)} - ${formatDateStr(value.endDate, context)}",
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Colors.black
+                                    : Colors.white70,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Row(
+                              spacing: 4,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(context)!
+                                      .usePickupService,
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Constants.primaryTextColor
+                                        : Colors.orange,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                if (value.bookedSlot.pickupRequired)
+                                  Icon(
+                                    Icons.check,
+                                    color: Colors.green,
+                                  )
+                                else
+                                  Icon(
+                                    Icons.clear,
+                                    color: Colors.red,
+                                  )
+                              ],
+                            ),
+                            if (value.bookedSlot.pickupRequired)
+                              Container(
+                                padding: EdgeInsets.all(8.0),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? const Color.fromARGB(255, 255, 226, 193)
+                                      : Colors.black87,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      value.addressInfo!.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    Text(
+                                      value.addressInfo!.address,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.light
+                                            ? Colors.black
+                                            : Colors.white70,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      AppLocalizations.of(context)!.notes,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    Text(
+                                      value.addressInfo!.notes ?? "-",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                     Container(

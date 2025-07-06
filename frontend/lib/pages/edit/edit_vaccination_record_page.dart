@@ -297,7 +297,7 @@ class _EditVaccinationRecordPageState
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.image_not_supported,
+                                  Icons.broken_image,
                                   size: 32,
                                   semanticLabel: AppLocalizations.of(context)!
                                       .failToLoadImage,

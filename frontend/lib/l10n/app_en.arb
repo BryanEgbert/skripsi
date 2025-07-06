@@ -228,6 +228,11 @@
     "@giveReview": {
         "description": "Button text to give a review"
     },
+    
+    "editReview": "Edit Review",
+    "@editReview": {
+        "description": "Button text to edit a review"
+    },
     "tapCardsToViewDetails": "Tap the cards to view details",
     "@tapCardsToViewDetails": {
         "description": "Instruction to user to tap the card elements to see more information"

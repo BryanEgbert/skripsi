@@ -41,7 +41,6 @@ func TestGetPet(t *testing.T) {
 				ID:       1,
 				Name:     "Buddy",
 				ImageUrl: "test.com/image/dog.jpeg",
-				Status:   "idle",
 				PetCategory: model.PetCategoryDTO{
 					ID:   1,
 					Name: "small dogs",
@@ -121,7 +120,6 @@ func TestGetPets(t *testing.T) {
 					ID:       1,
 					Name:     "Buddy",
 					ImageUrl: "test.com/image/dog.jpeg",
-					Status:   "idle",
 					PetCategory: model.PetCategoryDTO{
 						ID:   1,
 						Name: "small dogs",
@@ -147,7 +145,6 @@ func TestGetPets(t *testing.T) {
 					ID:       2,
 					Name:     "Buddy2",
 					ImageUrl: "test.com/image/dog.jpeg",
-					Status:   "idle",
 					PetCategory: model.PetCategoryDTO{
 						ID:   1,
 						Name: "dogs",

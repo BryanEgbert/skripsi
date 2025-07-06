@@ -150,7 +150,6 @@ func ConvertPetsToDto(pets []model.Pet) []model.PetDTO {
 		pet := model.PetDTO{
 			ID:          val.ID,
 			Name:        val.Name,
-			Status:      val.Status,
 			Neutered:    val.Neutered,
 			Owner:       ConvertUserToDTO(val.Owner),
 			PetCategory: ConvertPetCategoryToDTO(val.PetCategory),

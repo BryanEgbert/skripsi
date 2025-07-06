@@ -11,8 +11,10 @@ void handleError(AsyncValue providerValue, BuildContext context,
   if (providerValue.hasError &&
       (providerValue.valueOrNull == null || providerValue.valueOrNull == 0) &&
       !providerValue.isLoading) {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      scaffoldMessenger.hideCurrentSnackBar();
       var snackbar = SnackBar(
         key: Key("error-message"),
         content: Text(
@@ -22,7 +24,7 @@ void handleError(AsyncValue providerValue, BuildContext context,
         backgroundColor: Colors.red[800],
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      scaffoldMessenger.showSnackBar(snackbar);
 
       if (providerValue.error.toString() == LocalizationService().jwtExpired ||
           providerValue.error.toString() == LocalizationService().userDeleted) {
@@ -41,50 +43,18 @@ void handleError(AsyncValue providerValue, BuildContext context,
 
 void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
   var context = state.context;
+  final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-  if (providerValue.hasError &&
-      (providerValue.valueOrNull == null || providerValue.valueOrNull == 0) &&
-      !providerValue.isLoading) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (!state.mounted) return;
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      var snackbar = SnackBar(
-        key: Key("error-message"),
-        content: Text(
-          providerValue.error.toString(),
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.red[800],
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
-
-      if (providerValue.error.toString() == LocalizationService().jwtExpired ||
-          providerValue.error.toString() == LocalizationService().userDeleted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => WelcomeWidget(),
-          ),
-          (route) => false,
-        );
-      }
-
-      if (reset != null) {
-        log("running reset");
-        reset();
-      }
-    });
-
-    return;
-  }
+  handleError(providerValue, context, reset);
 
   if (providerValue.hasValue && !providerValue.isLoading) {
     if (providerValue.value == null) return;
+
     if (providerValue.value is int) {
       if (providerValue.value >= 200 && providerValue.value <= 400) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           if (!state.mounted) return;
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          scaffoldMessenger.hideCurrentSnackBar();
 
           var snackbar = SnackBar(
             key: Key("success-message"),
@@ -97,7 +67,7 @@ void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
             backgroundColor: Colors.green[800],
           );
 
-          ScaffoldMessenger.of(context).showSnackBar(snackbar);
+          scaffoldMessenger.showSnackBar(snackbar);
 
           if (Navigator.of(context).canPop()) {
             Navigator.of(context).pop();
@@ -108,9 +78,9 @@ void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
             reset();
           }
         });
-      } else {
-        return;
       }
+
+      return;
     }
   }
 }

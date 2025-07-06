@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 class DefaultCircleAvatar extends StatelessWidget {
@@ -20,10 +22,12 @@ class DefaultCircleAvatar extends StatelessWidget {
             RegExp(r'localhost:8080'), "http://10.0.2.2:8080"),
       ),
       backgroundColor: Colors.grey[300],
-      onBackgroundImageError: (exception, stackTrace) {},
+      onBackgroundImageError: (exception, stackTrace) {
+        log("Failed to load pet profile picture: $exception");
+      },
       child: imageUrl.isEmpty
           ? Icon(
-              Icons.person,
+              Icons.image_not_supported_outlined,
               size: iconSize,
             )
           : null,

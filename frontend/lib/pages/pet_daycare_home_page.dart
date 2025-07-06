@@ -109,6 +109,7 @@ class _PetDaycareHomePageState extends ConsumerState<PetDaycareHomePage>
   @override
   void dispose() {
     _webSocketSubscription?.cancel();
+    _webSocketSubscription = null;
     ChatWebsocketChannel().close();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();

@@ -43,4 +43,27 @@ class ReviewState extends _$ReviewState {
         state = AsyncError(res.error, StackTrace.current);
     }
   }
+
+  Future<void> deleteReview(int petDaycareId) async {
+    state = AsyncLoading();
+    TokenResponse? token;
+    try {
+      token = await refreshAccessToken();
+    } catch (e) {
+      state = AsyncError(LocalizationService().jwtExpired, StackTrace.current);
+      return;
+    }
+
+    final service = ReviewService();
+    final res = await service.deleteReview(token.accessToken, petDaycareId);
+
+    switch (res) {
+      case Ok():
+        state = AsyncData(204);
+        ref.invalidate(getReviewsProvider(petDaycareId));
+
+      case Error():
+        state = AsyncError(res.error, StackTrace.current);
+    }
+  }
 }

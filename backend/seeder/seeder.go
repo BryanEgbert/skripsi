@@ -213,10 +213,10 @@ func SeedTable(db *gorm.DB) error {
 	petImg := "https://picsum.photos/id/237/200/300"
 	pet := []model.Pet{
 		{
-			Name: "Buddy", ImageUrl: &petImg, Status: "idle", OwnerID: users[0].ID, PetCategoryID: 1,
+			Name: "Buddy", ImageUrl: &petImg, OwnerID: users[0].ID, PetCategoryID: 1,
 		},
 		{
-			Name: "Buddy2", ImageUrl: &petImg, Status: "idle", OwnerID: users[0].ID, PetCategoryID: 1,
+			Name: "Buddy2", ImageUrl: &petImg, OwnerID: users[0].ID, PetCategoryID: 1,
 		},
 	}
 

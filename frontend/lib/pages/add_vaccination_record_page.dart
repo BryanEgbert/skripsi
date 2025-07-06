@@ -69,20 +69,22 @@ class _AddVaccinationRecordPageState
   Widget build(BuildContext context) {
     final vaccinationRecordState = ref.watch(vaccinationRecordStateProvider);
 
-    handleValue(vaccinationRecordState, this);
+    handleValue(vaccinationRecordState, this,
+        ref.read(vaccinationRecordStateProvider.notifier).reset);
 
-    if (vaccinationRecordState.hasValue &&
-        !vaccinationRecordState.hasError &&
-        !vaccinationRecordState.isLoading) {
-      if (vaccinationRecordState.value == 201) {
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          Navigator.of(context).pop();
-        });
-      }
-    }
+    // if (vaccinationRecordState.hasValue &&
+    //     !vaccinationRecordState.hasError &&
+    //     !vaccinationRecordState.isLoading) {
+    //   if (vaccinationRecordState.value == 201) {
+    //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //       Navigator.of(context).pop();
+    //     });
+    //   }
+    // }
 
     if (_imageError != null) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         var snackbar = SnackBar(
           key: Key("error-message"),
           content: Text(_imageError!),

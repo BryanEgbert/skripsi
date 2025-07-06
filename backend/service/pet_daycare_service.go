@@ -368,6 +368,10 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 			slotQuery = slotQuery.Where("slots.pet_category_id IN ?", req.PetCategoryIds)
 		}
 
+		if req.MaxPrice > 0 {
+			slotQuery = slotQuery.Where("slots.price >= ? AND slots.price <= ?", req.MinPrice, req.MaxPrice)
+		}
+
 		rows, err := slotQuery.
 			Where("slots.daycare_id = ? AND slots.deleted_at IS NULL", result.ID).
 			Rows()
@@ -379,11 +383,11 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 		for rows.Next() {
 			var price model.PriceDetails
 			rows.Scan(&price.PetCategory.ID, &price.PetCategory.Name, &price.PetCategory.SizeCategory.ID, &price.PetCategory.SizeCategory.Name, &price.PetCategory.SizeCategory.MinWeight, &price.PetCategory.SizeCategory.MaxWeight, &price.Price, &price.PricingType.ID, &price.PricingType.Name)
-			if req.MaxPrice > 0 {
-				if price.Price < req.MinPrice || price.Price > req.MaxPrice {
-					continue
-				}
-			}
+			// if req.MaxPrice > 0 {
+			// 	if price.Price < req.MinPrice || price.Price > req.MaxPrice {
+			// 		continue
+			// 	}
+			// }
 
 			results[i].Prices = append(results[i].Prices, price)
 		}
@@ -405,7 +409,7 @@ func (s *PetDaycareServiceImpl) GetPetDaycares(req model.GetPetDaycaresRequest, 
 	filteredResults := []model.GetPetDaycaresResponse{}
 
 	for _, daycare := range results {
-		if len(daycare.Prices) > 0 && (daycare.AverageRating >= float64(req.MinRating)) {
+		if len(daycare.Prices) > 0 && daycare.AverageRating >= float64(req.MinRating) {
 			filteredResults = append(filteredResults, daycare)
 		}
 	}

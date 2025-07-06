@@ -17,7 +17,31 @@ class _ImageSliderState extends State<ImageSlider> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (widget.images.isEmpty) return;
+        if (widget.images.isEmpty) {
+          Container(
+            color: Colors.transparent,
+            height: 20,
+            width: 20,
+            child: Column(
+              spacing: 8,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.image_not_supported,
+                  size: 32,
+                  semanticLabel: AppLocalizations.of(context)!.failToLoadImage,
+                ),
+                Text(
+                  AppLocalizations.of(context)!.failToLoadImage,
+                  style: TextStyle(
+                    fontSize: 16,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
         showGeneralDialog(
           context: context,
           barrierColor: Colors.black.withValues(alpha: 0.5),

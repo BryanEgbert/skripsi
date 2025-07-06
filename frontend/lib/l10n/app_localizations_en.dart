@@ -176,6 +176,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get giveReview => 'Give Review';
 
   @override
+  String get editReview => 'Edit Review';
+
+  @override
   String get tapCardsToViewDetails => 'Tap the cards to view details';
 
   @override

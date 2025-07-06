@@ -49,7 +49,7 @@ func (r *ReviewServiceImpl) CreateReview(petDaycareId uint, userId uint, req mod
 		Description: req.Description,
 	}
 
-	if err := r.db.Create(&review).Error; err != nil {
+	if err := r.db.FirstOrCreate(&review, model.Reviews{DaycareID: petDaycareId, UserID: userId}).Error; err != nil {
 		return err
 	}
 	return nil

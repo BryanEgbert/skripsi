@@ -96,7 +96,7 @@ Future<Result<T>> makeRequest<T>(
           if (res.data != null) {
             ErrorResponse errorRes = ErrorResponse.fromJson(res.data);
 
-            return Result.forbiddenErr(errorRes.error);
+            return Result.forbiddenErr(errorRes.message);
           }
           return Result.forbiddenErr(LocalizationService().jwtExpired);
         case 404:

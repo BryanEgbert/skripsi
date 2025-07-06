@@ -37,7 +37,6 @@ func TestGetBookedPet(t *testing.T) {
 			ID:       1,
 			Name:     "Buddy",
 			ImageUrl: "test.com/image/dog.jpeg",
-			Status:   "idle",
 			PetCategory: model.PetCategoryDTO{
 				ID:   1,
 				Name: "small dogs",

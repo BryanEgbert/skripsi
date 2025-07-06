@@ -95,7 +95,7 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
         if (newData.data.isNotEmpty) {
           setState(() {
             _bookedPetRecords.addAll(newData.data);
-            _lastId = newData.data.last.id;
+            _page += 1;
           });
         } else {
           setState(() {
@@ -243,22 +243,20 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                                   ? Constants.primaryTextColor
                                   : Colors.orange,
                             ),
+                            onTap: () async {
+                              await _navigateToChatPage(
+                                _bookedPetRecords[index].id,
+                              );
+                            },
                             trailing: Badge.count(
                               count: unreadMessages.length,
                               isLabelVisible: unreadMessages.isNotEmpty,
-                              child: IconButton(
-                                onPressed: () async {
-                                  await _navigateToChatPage(
-                                    _bookedPetRecords[index].id,
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.chat_rounded,
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.light
-                                      ? Constants.primaryTextColor
-                                      : Colors.orange,
-                                ),
+                              child: Icon(
+                                Icons.chat_rounded,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
                               ),
                             ),
                           );
@@ -422,22 +420,22 @@ class _ViewBookedPetsPageState extends ConsumerState<ViewBookedPetsPage> {
                 onTap: () async {
                   await _navigateToChatPage(item.owner.id);
                 },
-                child: Badge(
-                  label: Text("!"),
-                  isLabelVisible: messages.isNotEmpty,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: 8,
-                    children: [
-                      Icon(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
+                  children: [
+                    Badge(
+                      label: Text("!"),
+                      isLabelVisible: messages.isNotEmpty,
+                      child: Icon(
                         Icons.chat_rounded,
                         color: Theme.of(context).brightness == Brightness.light
                             ? Constants.primaryTextColor
                             : Colors.orange,
                       ),
-                      Text(AppLocalizations.of(context)!.chatPetOwner),
-                    ],
-                  ),
+                    ),
+                    Text(AppLocalizations.of(context)!.chatPetOwner),
+                  ],
                 ),
               ),
             ];

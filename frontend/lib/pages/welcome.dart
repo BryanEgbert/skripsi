@@ -72,8 +72,27 @@ class WelcomeWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           LoginForm(),
-                          _separator(),
-                          _createAccountButton(context),
+                          Row(
+                            children: <Widget>[
+                              Expanded(child: Divider()),
+                              Container(
+                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                child: Text(AppLocalizations.of(context)!.or),
+                              ),
+                              Expanded(child: Divider()),
+                            ],
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) => const PickRolePage()),
+                              );
+                            },
+                            child: Text(
+                              AppLocalizations.of(context)!.createAnAccountBtn,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -85,33 +104,5 @@ class WelcomeWidget extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _createAccountButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const PickRolePage()),
-        );
-      },
-      child: Text(
-        AppLocalizations.of(context)!.createAnAccountBtn,
-      ),
-    );
-  }
-
-  Widget _separator() {
-    return Builder(builder: (context) {
-      return Row(
-        children: <Widget>[
-          Expanded(child: Divider()),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 10),
-            child: Text(AppLocalizations.of(context)!.or),
-          ),
-          Expanded(child: Divider()),
-        ],
-      );
-    });
   }
 }

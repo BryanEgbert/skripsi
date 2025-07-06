@@ -153,11 +153,6 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
   }
 
   Future<void> _getLocation() async {
-    _serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!_serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
     _permission = await Geolocator.checkPermission();
 
     if (_permission == LocationPermission.denied) {
@@ -170,6 +165,11 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
     if (_permission == LocationPermission.deniedForever) {
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    _serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!_serviceEnabled) {
+      return Future.error('Location services are disabled.');
     }
 
     Position currentPos = await Geolocator.getCurrentPosition();
@@ -1093,8 +1093,6 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
   }
 
   Widget _buildCard(BuildContext context, PetDaycare item) {
-    final kmFormatted = (item.distance / 1000).toStringAsFixed(1);
-
     return Card(
       // elevation: 0,
       // color: Colors.transparent,

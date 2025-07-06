@@ -6,9 +6,9 @@ import (
 
 type Pet struct {
 	gorm.Model
-	Name           string `gorm:"not null"`
-	ImageUrl       *string
-	Status         string          `gorm:"default:'idle'"`
+	Name     string `gorm:"not null"`
+	ImageUrl *string
+	// Status         string          `gorm:"default:'idle'"`
 	Neutered       bool            `gorm:"not null"`
 	OwnerID        uint            `gorm:"not null"`
 	Owner          User            `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
@@ -22,7 +22,6 @@ type PetDTO struct {
 	ID           uint           `json:"id"`
 	Name         string         `json:"name"`
 	ImageUrl     string         `json:"imageUrl"`
-	Status       string         `json:"status"`
 	Neutered     bool           `json:"neutered"`
 	Owner        UserDTO        `json:"owner"`
 	PetCategory  PetCategoryDTO `json:"petCategory"`
@@ -40,7 +39,6 @@ type PetRequest struct {
 	Neutered      bool `form:"neutered"`
 	PetCategoryID uint `form:"petCategoryId" binding:"required"`
 	PetImageUrl   *string
-	// Status        string                `form:"status"`
 }
 
 type PetAndVaccinationRecordRequest struct {

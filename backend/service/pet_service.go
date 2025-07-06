@@ -28,20 +28,24 @@ func NewPetService(db *gorm.DB) *PetServiceImpl {
 }
 
 func (s *PetServiceImpl) GetBookedPets(userId uint, startID uint, pageSize int) (*[]model.PetDTO, error) {
+	var daycare model.PetDaycare
+
+	if err := s.db.Debug().First(&daycare, "owner_id = ?", userId).Error; err != nil {
+		return nil, err
+	}
+
 	petDtos := []model.PetDTO{}
 
 	// TODO: add condition when status is confirmed
-	rows, err := s.db.
-		Table("pets").
-		Select("pets.id, pets.name, pets.image_url, pets.status,pet_categories.id, pet_categories.name, size_categories.*, users.id, users.name, users.email, users.image_url, roles.id, roles.name, users.created_at").
+	rows, err := s.db.Debug().Model(&model.Pet{}).
+		Select("pets.id, pets.name, pets.image_url, pet_categories.id, pet_categories.name, size_categories.*, users.id, users.name, users.email, users.image_url, roles.id, roles.name, users.created_at").
 		Joins("JOIN pet_booked_slots on pet_booked_slots.pet_id = pets.id").
 		Joins("JOIN booked_slots on pet_booked_slots.booked_slot_id = booked_slots.id").
 		Joins("JOIN pet_categories ON pet_categories.id = pets.pet_category_id").
 		Joins("JOIN size_categories ON size_categories.id = pet_categories.size_category_id").
-		Joins("JOIN pet_daycares ON pet_daycares.id = booked_slots.daycare_id").
 		Joins("JOIN users ON users.id = pets.owner_id").
 		Joins("JOIN roles ON roles.id = users.role_id").
-		Where("pets.id > ? AND pet_daycares.owner_id = ? AND booked_slots.status_id = ?", startID, userId, 2).
+		Where("pets.id > ? AND booked_slots.status_id = ?", startID, 2).
 		Limit(pageSize).Rows()
 	if err != nil {
 		return nil, err
@@ -55,7 +59,6 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, startID uint, pageSize int) 
 			&petDto.ID,
 			&petDto.Name,
 			&imageUrl,
-			&petDto.Status,
 			&petDto.PetCategory.ID,
 			&petDto.PetCategory.Name,
 			&petDto.PetCategory.ID,
@@ -80,48 +83,6 @@ func (s *PetServiceImpl) GetBookedPets(userId uint, startID uint, pageSize int) 
 		petDtos = append(petDtos, petDto)
 	}
 
-	// var pets []model.Pet
-
-	// if err := s.db.Model(&model.Pet{}).
-	// 	Joins("PetCategory").
-	// 	Joins("Owner").
-	// 	Joins("Owner.Role").
-	// 	Joins("PetCategory.SizeCategory").
-	// 	Preload("BookedSlots").
-	// 	Preload("BookedSlots.Daycare").
-	// 	Where("pets.id > ?", startID).
-	// 	Limit(pageSize).
-	// 	Find(&pets).Error; err != nil {
-	// 	return nil, err
-	// }
-
-	// out := []model.PetDTO{}
-	// for _, val := range pets {
-	// 	for _, bookedSlot := range val.BookedSlots {
-	// 		log.Printf("daycareID: %d, statusID: %d", bookedSlot.DaycareID, *bookedSlot.StatusID)
-	// 		if bookedSlot.StatusID == nil || bookedSlot.Daycare.OwnerID != userId {
-	// 			continue
-	// 		}
-	// 		if *bookedSlot.StatusID == 2 {
-	// 			pet := model.PetDTO{
-	// 				ID:          val.ID,
-	// 				Name:        val.Name,
-	// 				Status:      val.Status,
-	// 				Neutered:    val.Neutered,
-	// 				Owner:       helper.ConvertUserToDTO(val.Owner),
-	// 				PetCategory: helper.ConvertPetCategoryToDTO(val.PetCategory),
-	// 			}
-
-	// 			if val.ImageUrl != nil {
-	// 				pet.ImageUrl = *val.ImageUrl
-	// 			}
-
-	// 			out = append(out, pet)
-	// 		}
-	// 	}
-
-	// }
-
 	return &petDtos, nil
 }
 
@@ -141,7 +102,6 @@ func (s *PetServiceImpl) GetPet(id uint) (*model.PetDTO, error) {
 	petDTO := model.PetDTO{
 		ID:          pet.ID,
 		Name:        pet.Name,
-		Status:      pet.Status,
 		Neutered:    pet.Neutered,
 		PetCategory: helper.ConvertPetCategoryToDTO(pet.PetCategory),
 		Owner:       helper.ConvertUserToDTO(pet.Owner),
@@ -190,7 +150,6 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 		dto := model.PetDTO{
 			ID:           pet.ID,
 			Name:         pet.Name,
-			Status:       pet.Status,
 			Neutered:     pet.Neutered,
 			PetCategory:  helper.ConvertPetCategoryToDTO(pet.PetCategory),
 			Owner:        helper.ConvertUserToDTO(pet.Owner),
@@ -226,7 +185,6 @@ func (s *PetServiceImpl) UpdatePet(id uint, petDTO model.PetDTO) error {
 	}
 
 	pet.Name = petDTO.Name
-	pet.Status = petDTO.Status
 	pet.PetCategoryID = petDTO.PetCategory.ID
 	pet.Neutered = petDTO.Neutered
 	if petDTO.ImageUrl != "" {
@@ -270,6 +228,18 @@ func (s *PetServiceImpl) DeletePet(id uint, userId uint) error {
 
 	if petCount <= 1 {
 		return apputils.ErrOnlyOnePet
+	}
+
+	var bookedCount int64
+	if err := s.db.Model(&model.BookedSlot{}).
+		Joins("JOIN pet_booked_slots ON pet_booked_slots.booked_slot_id = booked_slots.id").
+		Where("pet_booked_slots.pet_id = ? AND booked_slots.status_id IN ?", id, []uint{1, 2}).
+		Count(&bookedCount).Error; err != nil {
+		return err
+	}
+
+	if bookedCount > 0 {
+		return apputils.ErrPetIsBooked
 	}
 
 	var pet model.Pet

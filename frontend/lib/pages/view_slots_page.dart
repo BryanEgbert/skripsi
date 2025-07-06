@@ -114,87 +114,88 @@ class _ViewSlotsPageState extends ConsumerState<ViewSlotsPage> {
                       errorText: "The list is empty",
                       onRefresh: () => _refresh(),
                     )
-                  : _buildListView()
+                  : RefreshIndicator.adaptive(
+                      onRefresh: () async => _refresh(),
+                      child: ListView.builder(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        controller: _scrollController,
+                        itemCount: _records.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            // color: Constants.secondaryBackgroundColor,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        formatDateStr(
+                                            _records[index].targetDate,
+                                            context),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Constants.primaryTextColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Reduced Slots: ${_records[index].reducedCount}",
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      // TODO: edit reduced count
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          Icons.edit,
+                                          color: Colors.orange,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          showDeleteConfirmationDialog(context,
+                                              "Are you sure? this action cannot be undone.",
+                                              () {
+                                            ref
+                                                .read(petDaycareStateProvider
+                                                    .notifier)
+                                                .deleteReduceSlot(
+                                                    _records[index].id);
+
+                                            setState(() {
+                                              ref.invalidate(
+                                                  petDaycareStateProvider);
+                                              _refresh();
+                                            });
+                                          });
+                                        },
+                                        icon: Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    )
               : ErrorText(
                   errorText: _error.toString(),
                   onRefresh: () => _refresh(),
                 ),
-    );
-  }
-
-  Widget _buildListView() {
-    return RefreshIndicator.adaptive(
-      onRefresh: () async {
-        _refresh();
-      },
-      child: ListView.builder(
-        physics: AlwaysScrollableScrollPhysics(),
-        controller: _scrollController,
-        itemCount: _records.length,
-        itemBuilder: (context, index) {
-          return Card(
-            // color: Constants.secondaryBackgroundColor,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        formatDateStr(_records[index].targetDate, context),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Constants.primaryTextColor,
-                        ),
-                      ),
-                      Text(
-                        "Reduced Slots: ${_records[index].reducedCount}",
-                        style: TextStyle(fontSize: 14),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // TODO: edit reduced count
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.edit,
-                          color: Colors.orange,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          showDeleteConfirmationDialog(context,
-                              "Are you sure? this action cannot be undone.",
-                              () {
-                            ref
-                                .read(petDaycareStateProvider.notifier)
-                                .deleteReduceSlot(_records[index].id);
-
-                            setState(() {
-                              ref.invalidate(petDaycareStateProvider);
-                              _refresh();
-                            });
-                          });
-                        },
-                        icon: Icon(
-                          Icons.delete,
-                          color: Colors.red,
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 }

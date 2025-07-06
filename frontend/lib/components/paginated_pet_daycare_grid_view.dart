@@ -176,7 +176,7 @@ class _PaginatedPetDaycareGridViewState
               color: Colors.grey[400],
               height: 100,
               child: Center(
-                child: Icon(Icons.hide_image),
+                child: Icon(Icons.image_not_supported),
               ),
             ),
           );

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
@@ -132,14 +130,11 @@ class _ViewBookingRequestsPageState
 
   Widget _buildBookingRequestListView() {
     final slotState = ref.watch(slotStateProvider);
-    log("slotState: $slotState");
 
     handleValue(slotState, this, ref.read(slotStateProvider.notifier).reset);
 
     return RefreshIndicator.adaptive(
-      onRefresh: () async {
-        _refresh();
-      },
+      onRefresh: () async => _refresh(),
       child: ListView.builder(
         physics: AlwaysScrollableScrollPhysics(),
         controller: _scrollController,

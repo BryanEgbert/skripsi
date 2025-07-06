@@ -425,6 +425,12 @@ abstract class AppLocalizations {
   /// **'Give Review'**
   String get giveReview;
 
+  /// Button text to edit a review
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Review'**
+  String get editReview;
+
   /// Instruction to user to tap the card elements to see more information
   ///
   /// In en, this message translates to:

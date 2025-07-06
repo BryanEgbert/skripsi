@@ -493,11 +493,13 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 
 	profilePicture, err := c.FormFile("userProfilePicture")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Message: "Invalid request body",
-			Error:   err.Error(),
-		})
-		return
+		if !errors.Is(err, http.ErrMissingFile) {
+			c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Message: "Cannot get user profile picture",
+				Error:   err.Error(),
+			})
+			return
+		}
 	}
 
 	var req model.UpdateUserRequest

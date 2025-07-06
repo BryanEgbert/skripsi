@@ -176,6 +176,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get giveReview => 'Beri Ulasan';
 
   @override
+  String get editReview => 'Ganti Ulasan';
+
+  @override
   String get tapCardsToViewDetails => 'Ketuk kartu untuk melihat detail';
 
   @override

@@ -13,7 +13,7 @@ abstract interface class IReviewService {
       String token, int petDaycareId, OffsetPaginationQueryParams pagination);
   Future<Result<void>> createReview(
       String token, int petDaycareId, CreateReviewRequest reqBody);
-  Future<void> deleteReview(String token, int petDaycareId);
+  Future<Result<void>> deleteReview(String token, int petDaycareId);
 }
 
 class ReviewService implements IReviewService {
@@ -46,7 +46,7 @@ class ReviewService implements IReviewService {
   }
 
   @override
-  Future<void> deleteReview(String token, int petDaycareId) {
+  Future<Result<void>> deleteReview(String token, int petDaycareId) {
     return makeRequest(204, () async {
       final String host =
           FirebaseRemoteConfig.instance.getString("backend_host");
@@ -83,6 +83,7 @@ class ReviewService implements IReviewService {
 
       final res = await dio.get(
         "http://$host/daycare/$petDaycareId/review",
+        queryParameters: pagination.toMap(),
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: "Bearer $token",

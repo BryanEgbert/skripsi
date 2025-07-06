@@ -253,5 +253,6 @@
   "minStar": "{count} bintang",
   "petAlreadyBooked": "Hewan peliharaan sedang dititipkan di tempat peliharaan",
   "petDaycareFilter": "Filter Tempat Penitipan Hewan",
-  "vetSpecialtyFilter": "Filter Spesialisasi Dokter Hewan"
+  "vetSpecialtyFilter": "Filter Spesialisasi Dokter Hewan",
+  "editReview": "Ganti Ulasan"
 }

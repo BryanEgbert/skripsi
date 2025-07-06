@@ -318,8 +318,7 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                       style: TextStyle(fontSize: 12),
                                     ),
                                   )
-                                else if (_records[index].status.id == 4 &&
-                                    !_records[index].isReviewed)
+                                else if (_records[index].status.id == 4)
                                   FilledButton(
                                     onPressed: () async {
                                       await showModalBottomSheet(
@@ -337,7 +336,11 @@ class _BookingHistoryViewState extends ConsumerState<BookingHistoryView> {
                                       minimumSize: Size(0, 0),
                                     ),
                                     child: Text(
-                                      AppLocalizations.of(context)!.giveReview,
+                                      _records[index].isReviewed
+                                          ? AppLocalizations.of(context)!
+                                              .editReview
+                                          : AppLocalizations.of(context)!
+                                              .giveReview,
                                       style: TextStyle(fontSize: 12),
                                     ),
                                   )
