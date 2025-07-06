@@ -115,7 +115,7 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                 spacing: 8,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  GestureDetector(
+                  InkWell(
                     onTap: () async {
                       _permission = await Geolocator.checkPermission();
 
