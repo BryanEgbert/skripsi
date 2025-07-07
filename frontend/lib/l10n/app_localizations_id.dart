@@ -254,7 +254,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String kmAway(double range) {
-    final intl.NumberFormat rangeNumberFormat = intl.NumberFormat.decimalPattern(localeName);
+    final intl.NumberFormat rangeNumberFormat = intl.NumberFormat.decimalPatternDigits(
+      locale: localeName,
+      decimalDigits: 1
+    );
     final String rangeString = rangeNumberFormat.format(range);
 
     return '${rangeString}km away';

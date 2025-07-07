@@ -64,8 +64,8 @@ class _HomeWidgetState extends ConsumerState<HomeWidget>
 
     try {
       ChatWebsocketChannel().instance.then((value) {
-        _channel = value;
-        _websocketStream = value.stream.asBroadcastStream();
+        _channel ??= value;
+        _websocketStream ??= value.stream.asBroadcastStream();
         setState(() {
           _isSocketReady = true;
           _isPaused = false;
@@ -96,11 +96,12 @@ class _HomeWidgetState extends ConsumerState<HomeWidget>
   @override
   void initState() {
     super.initState();
-    log("[HOME] init");
     if (_hasInitialized) return;
+    log("[HOME] init");
     _hasInitialized = true;
     _setupWebSocket();
     _fetchData();
+
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(userStateProvider.notifier).updateDeviceToken();

@@ -41,106 +41,137 @@ class _ImageSliderState extends State<ImageSlider> {
               ],
             ),
           );
-        }
-        showGeneralDialog(
-          context: context,
-          barrierColor: Colors.black.withValues(alpha: 0.5),
-          pageBuilder: (context, animation, secondaryAnimation) {
-            return SizedBox.expand(
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: InteractiveViewer(
-                  child: Image.network(
-                    widget.images[_currentIndex],
-                    fit: BoxFit.cover,
-                    loadingBuilder: (BuildContext context, Widget child,
-                        ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      }
-                      return Container(
-                        color: Colors.grey[200],
-                        height: 150,
-                        child: Center(
-                          child: CircularProgressIndicator.adaptive(),
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.transparent,
-                        height: 20,
-                        width: 20,
-                        child: Column(
-                          spacing: 8,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.image_not_supported,
-                              size: 32,
-                              semanticLabel:
-                                  AppLocalizations.of(context)!.failToLoadImage,
-                            ),
-                            Text(
-                              AppLocalizations.of(context)!.failToLoadImage,
-                              style: TextStyle(
-                                fontSize: 16,
-                                decoration: TextDecoration.none,
+        } else {
+          showGeneralDialog(
+            context: context,
+            barrierColor: Colors.black.withValues(alpha: 0.5),
+            pageBuilder: (context, animation, secondaryAnimation) {
+              return SizedBox.expand(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: InteractiveViewer(
+                    child: Image.network(
+                      widget.images[_currentIndex],
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        }
+                        return Container(
+                          color: Colors.grey[200],
+                          height: 150,
+                          child: Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.transparent,
+                          height: 20,
+                          width: 20,
+                          child: Column(
+                            spacing: 8,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.image_not_supported,
+                                size: 32,
+                                semanticLabel: AppLocalizations.of(context)!
+                                    .failToLoadImage,
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                              Text(
+                                AppLocalizations.of(context)!.failToLoadImage,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  decoration: TextDecoration.none,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
-        );
+              );
+            },
+          );
+        }
       },
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          SizedBox(
-            height: 200,
-            width: double.infinity,
-            child: PageView.builder(
-              controller: _controller,
-              itemCount: widget.images.length,
-              onPageChanged: (index) {
-                setState(() => _currentIndex = index);
-              },
-              itemBuilder: (context, index) => Image.network(
-                widget.images[index],
-                fit: BoxFit.cover,
-                width: double.infinity,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) {
-                    return child;
-                  }
-                  return Container(
-                    color: Colors.grey[200],
-                    height: 150,
-                    child: Center(
-                      child: CircularProgressIndicator.adaptive(),
-                    ),
-                  );
+          if (widget.images.isNotEmpty)
+            SizedBox(
+              height: 200,
+              width: double.infinity,
+              child: PageView.builder(
+                controller: _controller,
+                itemCount: widget.images.length,
+                onPageChanged: (index) {
+                  setState(() => _currentIndex = index);
                 },
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey,
-                    child: Center(
-                      child: Icon(Icons.image_not_supported),
+                itemBuilder: (context, index) => Image.network(
+                  widget.images[index],
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    }
+                    return Container(
+                      color: Colors.grey[200],
+                      height: 150,
+                      child: Center(
+                        child: CircularProgressIndicator.adaptive(),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey,
+                      child: Center(
+                        child: Icon(Icons.image_not_supported),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            )
+          else
+            SizedBox(
+              height: 200,
+              width: double.infinity,
+              child: Container(
+                color: Colors.grey,
+                height: 20,
+                width: 20,
+                child: Column(
+                  spacing: 8,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.image_not_supported,
+                      size: 32,
+                      semanticLabel:
+                          AppLocalizations.of(context)!.failToLoadImage,
                     ),
-                  );
-                },
+                    Text(
+                      AppLocalizations.of(context)!.failToLoadImage,
+                      style: TextStyle(
+                        fontSize: 16,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
           Positioned(
             bottom: 8,
             child: Row(

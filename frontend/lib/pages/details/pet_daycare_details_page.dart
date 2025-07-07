@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
@@ -36,6 +34,18 @@ class PetDaycareDetailsPage extends ConsumerStatefulWidget {
 class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
   final rupiahFormat =
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
+
+  void _navigateToRatingsPage(PetDaycareDetails value) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => RatingsPage(
+          value.id,
+          ratingsAvg: value.averageRating,
+          ratingsCount: value.ratingCount,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +169,6 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
     Locale locale = Localizations.localeOf(context);
     NumberFormat numberFormatter =
         NumberFormat.compact(locale: locale.toLanguageTag());
-    log("pricings: ${value.pricings.length}");
 
     return SingleChildScrollView(
       child: SafeArea(
@@ -187,53 +196,54 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
                           : Colors.orange,
                     ),
                   ),
-                  const SizedBox(height: 8),
                   if (widget.latitude != null &&
                       widget.longitude != null &&
                       widget.petDaycareId != 0) ...[
                     Text(
-                      AppLocalizations.of(context)!
-                          .kmAway(value.distance / 1000),
+                      AppLocalizations.of(context)!.kmAway(value.distance),
                       style: TextStyle(fontSize: 12),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 12),
                   ],
                   Text(
                     value.address,
                     style: TextStyle(fontSize: 12),
                     maxLines: 2,
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.star, color: Colors.orange, size: 16),
-                      SizedBox(width: 4),
-                      Text(
-                        "${numberFormatter.format(value.averageRating)}/5 (${formatNumber(value.ratingCount, locale.toLanguageTag())})",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        "|",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        "${formatNumber(value.bookedNum, locale.toLanguageTag())} ",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 12),
-                      ),
-                      Text(
-                        AppLocalizations.of(context)!.slotsBooked,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white70,
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () => _navigateToRatingsPage(value),
+                    child: Row(
+                      children: [
+                        Icon(Icons.star, color: Colors.orange, size: 16),
+                        SizedBox(width: 4),
+                        Text(
+                          "${numberFormatter.format(value.averageRating)}/5 (${formatNumber(value.ratingCount, locale.toLanguageTag())})",
+                          style: TextStyle(fontSize: 12),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 4),
+                        Text(
+                          "|",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          "${formatNumber(value.bookedNum, locale.toLanguageTag())} ",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 12),
+                        ),
+                        Text(
+                          AppLocalizations.of(context)!.slotsBooked,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.black
+                                    : Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   if (widget.petDaycareId != 0)
                     ListTile(
@@ -494,14 +504,7 @@ class _PetDaycareDetailsPageState extends ConsumerState<PetDaycareDetailsPage> {
             ),
             const SizedBox(height: 8),
             InkWell(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => RatingsPage(
-                          value.id,
-                          ratingsAvg: value.averageRating,
-                          ratingsCount: value.ratingCount,
-                        )));
-              },
+              onTap: () => _navigateToRatingsPage(value),
               child: Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(12),

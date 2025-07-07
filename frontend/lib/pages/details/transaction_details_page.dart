@@ -84,7 +84,9 @@ class _TransactionDetailsPageState
               } else if (value.status.id == 2 || value.status.id == 4) {
                 statusColor = Colors.green[900]!;
                 chipColor = Color(0xFFCAFFC7);
-              } else if (value.status.id == 3 || value.status.id == 5) {
+              } else if (value.status.id == 3 ||
+                  value.status.id == 5 ||
+                  value.status.id == 6) {
                 statusColor = Colors.red[900]!;
                 chipColor = Color(0XFFFFD7D7);
               }

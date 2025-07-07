@@ -156,7 +156,9 @@ class _SavedAddressPageState extends ConsumerState<SavedAddressPage> {
         // ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.orange,
+        backgroundColor: Theme.of(context).brightness == Brightness.light
+            ? Constants.primaryTextColor
+            : Colors.orange,
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => AddSavedAddress(),

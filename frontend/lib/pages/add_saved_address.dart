@@ -43,6 +43,8 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
   double _latitude = 0.0;
   double _longitude = 0.0;
 
+  bool _fetchReverseLookup = false;
+
   bool _serviceEnabled = false;
   LocationPermission _permission = LocationPermission.denied;
 
@@ -68,6 +70,98 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
     }
   }
 
+  Future<void> _getCurrentLocation() async {
+    _permission = await Geolocator.checkPermission();
+
+    if (_permission == LocationPermission.denied) {
+      _permission = await Geolocator.requestPermission();
+      if (_permission == LocationPermission.denied ||
+          _permission == LocationPermission.deniedForever) {
+        var snackbar = SnackBar(
+          key: Key("error-message"),
+          content: Text(
+            AppLocalizations.of(context)!.locationRequestDenied,
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red[800],
+        );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(snackbar);
+        }
+      }
+    } else if (_permission == LocationPermission.deniedForever) {
+      if (!await Geolocator.openAppSettings()) return;
+      if (_permission == LocationPermission.denied) {
+        _permission = await Geolocator.requestPermission();
+        if (_permission == LocationPermission.denied ||
+            _permission == LocationPermission.deniedForever) {
+          var snackbar = SnackBar(
+            key: Key("error-message"),
+            content: Text(
+              AppLocalizations.of(context)!.locationRequestDenied,
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red[800],
+          );
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(snackbar);
+          }
+        }
+      }
+    }
+
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    if (!serviceEnabled) {
+      await Geolocator.openLocationSettings();
+    }
+
+    setState(() {
+      _fetchReverseLookup = true;
+    });
+
+    final position = await Geolocator.getCurrentPosition();
+
+    _latitude = position.latitude;
+    _longitude = position.longitude;
+
+    log("latitude: $_latitude, longitude: $_longitude");
+
+    _locationService.reverseLookup(_latitude, _longitude).then(
+      (res) {
+        switch (res) {
+          case Ok():
+            final prop = res.value!.features[0].properties;
+            setState(() {
+              _searchController.text = prop.name;
+              _addressController.text = prop.fullAddress ?? prop.address ?? "";
+            });
+
+            break;
+          case Error():
+            var snackbar = SnackBar(
+              key: Key("error-message"),
+              content: Text(
+                res.error,
+                style: TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Colors.red[800],
+            );
+
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(snackbar);
+            }
+        }
+
+        setState(() {
+          _fetchReverseLookup = false;
+        });
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -78,9 +172,11 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
   @override
   Widget build(BuildContext context) {
     // final lastSelected = ref.watch(lastSelectedProvider);
-    final savedAddressState = ref.watch(savedAddressStateProvider);
-    log("[SAVED ADDRESS PAGE] build");
+    final locationEnabled = _serviceEnabled &&
+        (_permission == LocationPermission.always ||
+            _permission == LocationPermission.whileInUse);
 
+    final savedAddressState = ref.watch(savedAddressStateProvider);
     handleValue(savedAddressState, this,
         ref.read(savedAddressStateProvider.notifier).reset);
 
@@ -116,103 +212,21 @@ class _AddSavedAddressState extends ConsumerState<AddSavedAddress> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   InkWell(
-                    onTap: () async {
-                      _permission = await Geolocator.checkPermission();
-
-                      if (_permission == LocationPermission.denied) {
-                        _permission = await Geolocator.requestPermission();
-                        if (_permission == LocationPermission.denied ||
-                            _permission == LocationPermission.deniedForever) {
-                          var snackbar = SnackBar(
-                            key: Key("error-message"),
-                            content: Text(
-                              AppLocalizations.of(context)!
-                                  .locationRequestDenied,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: Colors.red[800],
-                          );
-
-                          if (mounted) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackbar);
-                          }
-                        }
-                      } else if (_permission ==
-                          LocationPermission.deniedForever) {
-                        if (!await Geolocator.openAppSettings()) return;
-                        if (_permission == LocationPermission.denied) {
-                          _permission = await Geolocator.requestPermission();
-                          if (_permission == LocationPermission.denied ||
-                              _permission == LocationPermission.deniedForever) {
-                            var snackbar = SnackBar(
-                              key: Key("error-message"),
-                              content: Text(
-                                AppLocalizations.of(context)!
-                                    .locationRequestDenied,
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              backgroundColor: Colors.red[800],
-                            );
-
-                            if (mounted) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackbar);
-                            }
-                          }
-                        }
-                      }
-
-                      final serviceEnabled =
-                          await Geolocator.isLocationServiceEnabled();
-
-                      if (!serviceEnabled) {
-                        await Geolocator.openLocationSettings();
-                      }
-
-                      final position = await Geolocator.getCurrentPosition();
-
-                      _latitude = position.latitude;
-                      _longitude = position.longitude;
-
-                      final res = await _locationService.reverseLookup(
-                          _latitude, _longitude);
-                      switch (res) {
-                        case Ok():
-                          final prop = res.value!.features[0].properties;
-                          setState(() {
-                            _searchController.text = prop.name;
-                            _addressController.text =
-                                prop.fullAddress ?? prop.address ?? "";
-                          });
-
-                          break;
-                        case Error():
-                          var snackbar = SnackBar(
-                            key: Key("error-message"),
-                            content: Text(
-                              res.error,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: Colors.red[800],
-                          );
-
-                          if (mounted) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackbar);
-                          }
-                      }
-                    },
+                    onTap: () async => _getCurrentLocation(),
                     child: Row(
                       spacing: 8,
                       children: [
-                        (_serviceEnabled &&
-                                (_permission == LocationPermission.always ||
-                                    _permission ==
-                                        LocationPermission.whileInUse))
+                        (locationEnabled)
                             ? Icon(Icons.gps_fixed_rounded)
                             : Icon(Icons.gps_not_fixed_rounded),
                         Text(AppLocalizations.of(context)!.useCurrentLocation),
+                        if (_fetchReverseLookup)
+                          SizedBox(
+                            width: 24,
+                            height: 24,
+                            child:
+                                CircularProgressIndicator(color: Colors.grey),
+                          )
                       ],
                     ),
                   ),

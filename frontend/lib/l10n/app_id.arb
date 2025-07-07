@@ -81,19 +81,6 @@
   "turnOn": "Aktifkan",
   "petDaycareBoarding": "Penitipan Hewan",
   "kmAway": "{range}km away",
-  "@kmAway": {
-    "description": "Jarak dari pengguna ke lokasi",
-    "placeholders": {
-      "range": {
-        "type": "double",
-        "format": "decimalPattern",
-        "optionalParameters": {
-          "decimalDigits": 1
-        },
-        "example": "1.2"
-      }
-    }
-  },
   "operationalHour": "Jam Operasional",
   "requirements": "Persyaratan",
   "petVaccinationRequired": "Wajib Vaksinasi Hewan",

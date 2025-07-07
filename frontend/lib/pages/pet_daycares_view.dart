@@ -190,6 +190,8 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
       handleError(AsyncError(_error!, StackTrace.current), context);
     }
 
+    log("latitude: $_latitude, longitude: $_longitude");
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -1132,7 +1134,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                     ),
                     if (_latitude != null && _longitude != null)
                       Text(
-                        "${item.locality} (${AppLocalizations.of(context)!.kmAway(item.distance / 1000)})",
+                        "${item.locality} (${AppLocalizations.of(context)!.kmAway(item.distance)})",
                         style: TextStyle(
                           fontSize: 10,
                           color:

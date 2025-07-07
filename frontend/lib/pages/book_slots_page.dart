@@ -142,7 +142,7 @@ class _BookSlotsPageState extends ConsumerState<BookSlotsPage> {
                                       builder: (context) => SavedAddressPage(
                                         selectedIndex: lastSelected.value!,
                                       ),
-                                    )) as int;
+                                    ));
                                   } else {
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(
