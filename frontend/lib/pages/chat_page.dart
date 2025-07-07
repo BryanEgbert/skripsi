@@ -118,7 +118,7 @@ class _ChatPageState extends ConsumerState<ChatPage>
     if (state == AppLifecycleState.resumed) {
       _setupWebSocket();
     } else if (state == AppLifecycleState.paused) {
-      channel?.sink.close();
+      // channel?.sink.close();
       channel = null;
     }
   }
@@ -151,7 +151,8 @@ class _ChatPageState extends ConsumerState<ChatPage>
       });
     }
 
-    if (chatMessages is AsyncData && _listScrollController.hasClients) {
+    if (chatMessages is AsyncData ||
+        receiverUser is AsyncData && _listScrollController.hasClients) {
       SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
         _listScrollController
             .jumpTo(_listScrollController.position.maxScrollExtent);
@@ -236,15 +237,55 @@ class _ChatPageState extends ConsumerState<ChatPage>
                         icon: Icon(Icons.add),
                         itemBuilder: (context) => [
                           PopupMenuItem(
-                            child:
-                                Text(AppLocalizations.of(context)!.takePhoto),
+                            child: Row(
+                              spacing: 8,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.add_a_photo_rounded,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Constants.primaryTextColor
+                                      : Colors.orange,
+                                ),
+                                Text(
+                                  AppLocalizations.of(context)!.takePhoto,
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Constants.primaryTextColor
+                                        : Colors.orange,
+                                  ),
+                                ),
+                              ],
+                            ),
                             onTap: () {
                               _pickImage(ImageSource.camera);
                             },
                           ),
                           PopupMenuItem(
-                            child:
-                                Text(AppLocalizations.of(context)!.sendImage),
+                            child: Row(
+                              spacing: 8,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.image_rounded,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Constants.primaryTextColor
+                                      : Colors.orange,
+                                ),
+                                Text(
+                                  AppLocalizations.of(context)!.sendImage,
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Constants.primaryTextColor
+                                        : Colors.orange,
+                                  ),
+                                ),
+                              ],
+                            ),
                             onTap: () {
                               _pickImage(ImageSource.gallery);
                             },

@@ -34,6 +34,7 @@ class VetMainPageState extends ConsumerState<VetMainPage>
   StreamSubscription? _webSocketSubscription;
 
   bool _hasInitialized = false;
+  bool _isPaused = true;
 
   Object? _error;
 
@@ -41,10 +42,12 @@ class VetMainPageState extends ConsumerState<VetMainPage>
   List<ChatMessage> _messages = [];
 
   void _setupWebSocket() {
+    if (!_isPaused) return;
     try {
       ChatWebsocketChannel().instance.then(
         (value) {
-          _channel = value;
+          _isPaused = false;
+          _channel ??= value;
           _websocketStream = value.stream.asBroadcastStream();
           _webSocketSubscription = _websocketStream.listen(
             (message) {
@@ -77,15 +80,6 @@ class VetMainPageState extends ConsumerState<VetMainPage>
   }
 
   void _fetchData() {
-    // ref.invalidate(getUserChatListProvider);
-    // ref.read(getUserChatListProvider.future).then((newData) {
-    //   users = newData.data.toSet();
-    // }).catchError((e) {
-    //   setState(() {
-    //     _error = e;
-    //   });
-    // });
-
     ref.read(getUnreadChatMessagesProvider.future).then((newData) {
       setState(() {
         _messages = newData.data;
@@ -130,6 +124,7 @@ class VetMainPageState extends ConsumerState<VetMainPage>
 
       _webSocketSubscription = null;
       _channel = null;
+      _isPaused = true;
     }
   }
 

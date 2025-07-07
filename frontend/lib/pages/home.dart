@@ -20,7 +20,6 @@ import 'package:frontend/provider/user_provider.dart';
 import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/utils/chat_websocket_channel.dart';
 import 'package:frontend/utils/handle_error.dart';
-import 'package:web_socket_channel/io.dart';
 
 class HomeWidget extends ConsumerStatefulWidget {
   const HomeWidget({super.key});
@@ -34,7 +33,7 @@ class _HomeWidgetState extends ConsumerState<HomeWidget>
   // final _streamController = StreamController.broadcast();
 
   int _selectedIndex = 0;
-  IOWebSocketChannel? _channel;
+  // IOWebSocketChannel? _channel;
   Stream? _websocketStream;
   // StreamSubscription? _webSocketSubscription;
   int _messageCount = 0;
@@ -64,7 +63,7 @@ class _HomeWidgetState extends ConsumerState<HomeWidget>
 
     try {
       ChatWebsocketChannel().instance.then((value) {
-        _channel ??= value;
+        // _channel ??= value;
         _websocketStream ??= value.stream.asBroadcastStream();
         setState(() {
           _isSocketReady = true;
@@ -110,9 +109,14 @@ class _HomeWidgetState extends ConsumerState<HomeWidget>
 
   @override
   void dispose() {
-    _channel?.sink.close();
+    // _channel?.sink.close();
+
     ChatWebsocketChannel().close();
     WidgetsBinding.instance.removeObserver(this);
+
+    // _channel = null;
+    _websocketStream = null;
+
     super.dispose();
   }
 
@@ -122,9 +126,9 @@ class _HomeWidgetState extends ConsumerState<HomeWidget>
     if (state == AppLifecycleState.resumed) {
       _setupWebSocket();
     } else if (state == AppLifecycleState.paused) {
-      _channel?.sink.close();
+      // _channel?.sink.close();
       ChatWebsocketChannel().close();
-      _channel = null;
+      // _channel = null;
       _websocketStream = null;
       _isPaused = true;
     }

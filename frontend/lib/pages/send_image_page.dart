@@ -149,16 +149,6 @@ class _SendImagePageState extends ConsumerState<SendImagePage> {
                   IconButton(
                     onPressed: () async {
                       if (imageState.isLoading) return;
-
-                      // String fileName =
-                      //     DateTime.now().millisecondsSinceEpoch.toString();
-                      // Reference storageReference = FirebaseStorage.instance
-                      //     .ref()
-                      //     .child('images/$fileName');
-                      // UploadTask uploadTask =
-                      //     storageReference.putFile(File(widget.image.path));
-                      // String imageUrl =
-                      //     await (await uploadTask).ref.getDownloadURL();
                       ref
                           .read(imageStateProvider.notifier)
                           .upload(widget.image);
