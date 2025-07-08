@@ -4,13 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
-	"path/filepath"
 	"strconv"
 
 	apputils "github.com/BryanEgbert/skripsi/app_utils"
-	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"github.com/BryanEgbert/skripsi/service"
 	"github.com/gin-gonic/gin"
@@ -26,7 +23,6 @@ func NewPetController(petService service.PetService, vaccineRecordService servic
 	return &PetController{petService, vaccineRecordService}
 }
 
-// GetPet retrieves a single pet by ID
 func (pc *PetController) GetPet(c *gin.Context) {
 	petID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -158,33 +154,33 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 	if petProfilePicture != nil {
 		log.Print("Saving pet image")
 
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(petProfilePicture.Filename)))
-		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
-		req.PetImageUrl = &imageUrl
-
-		if err := c.SaveUploadedFile(petProfilePicture, filename); err != nil {
+		filePath, err := apputils.CompressImage(petProfilePicture)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-				Message: "Failed to save pet image",
+				Message: "Failed to save image",
 				Error:   err.Error(),
 			})
 			return
 		}
+
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filePath)
+		req.PetImageUrl = &imageUrl
 	}
 
 	if vaccineRecordImage != nil {
 		log.Print("Saving vaccination record image")
 
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(vaccineRecordImage.Filename)))
-		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
-		req.VaccineRecordImageUrl = imageUrl
-
-		if err := c.SaveUploadedFile(vaccineRecordImage, filename); err != nil {
+		filePath, err := apputils.CompressImage(vaccineRecordImage)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-				Message: "Failed to save vaccination record image",
+				Message: "Failed to save image",
 				Error:   err.Error(),
 			})
 			return
 		}
+
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filePath)
+		req.VaccineRecordImageUrl = imageUrl
 	}
 
 	petID, err := pc.petService.CreatePet(userID, req.PetRequest)
@@ -214,21 +210,6 @@ func (pc *PetController) CreatePet(c *gin.Context) {
 }
 
 func (pc *PetController) UpdatePet(c *gin.Context) {
-	// userIDRaw, exists := c.Get("userID")
-	// if !exists {
-	// 	c.JSON(http.StatusUnauthorized, model.ErrorResponse{
-	// 		Message: "Unauthorized",
-	// 	})
-	// 	return
-	// }
-
-	// userID, ok := userIDRaw.(uint)
-	// if !ok {
-	// 	c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-	// 		Message: "Invalid user ID",
-	// 	})
-	// 	return
-	// }
 
 	petID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -262,18 +243,18 @@ func (pc *PetController) UpdatePet(c *gin.Context) {
 	}
 
 	if petProfilePicture != nil {
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(petProfilePicture.Filename)))
-		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
-		req.PetImageUrl = &imageUrl
 
-		log.Printf("pet image: %s", *req.PetImageUrl)
-		if err := c.SaveUploadedFile(petProfilePicture, filename); err != nil {
+		filePath, err := apputils.CompressImage(petProfilePicture)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-				Message: "Upload image error",
+				Message: "Failed to save image",
 				Error:   err.Error(),
 			})
 			return
 		}
+
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filePath)
+		req.PetImageUrl = &imageUrl
 	}
 
 	dto := model.PetDTO{
@@ -297,7 +278,6 @@ func (pc *PetController) UpdatePet(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
-// DeletePet deletes a pet
 func (pc *PetController) DeletePet(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
@@ -322,7 +302,6 @@ func (pc *PetController) DeletePet(c *gin.Context) {
 		return
 	}
 
-	// Delete pet only if it belongs to the authenticated user
 	if err := pc.petService.DeletePet(uint(petID), userID); err != nil {
 		if errors.Is(err, apputils.ErrOnlyOnePet) {
 			c.JSON(http.StatusForbidden, model.ErrorResponse{

@@ -4,20 +4,16 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
-	"path/filepath"
 	"strconv"
-	"time"
 
-	"github.com/BryanEgbert/skripsi/helper"
+	apputils "github.com/BryanEgbert/skripsi/app_utils"
 	"github.com/BryanEgbert/skripsi/model"
 	"github.com/BryanEgbert/skripsi/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-// UserController struct
 type UserController struct {
 	userService          service.UserService
 	petService           service.PetService
@@ -25,7 +21,6 @@ type UserController struct {
 	petDaycareService    service.PetDaycareService
 }
 
-// NewUserController initializes a new controller
 func NewUserController(userService service.UserService, petService service.PetService, vaccineRecordService service.VaccineService, petDaycareService service.PetDaycareService) *UserController {
 	return &UserController{userService: userService, petService: petService, vaccineRecordService: vaccineRecordService, petDaycareService: petDaycareService}
 }
@@ -100,20 +95,18 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 	req.RoleID = 2
 
 	if profilePicture != nil {
-		rand.New(rand.NewSource(time.Now().UnixNano())) // Seed to get different results each run
-		randomNum := rand.Uint64()
-		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(profilePicture.Filename)))
-
-		if err := c.SaveUploadedFile(profilePicture, imagePath); err != nil {
+		filePath, err := apputils.CompressImage(profilePicture)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-				Message: "Failed to save user image",
+				Message: "Failed to save image",
 				Error:   err.Error(),
 			})
-			log.Printf("Failed to save user image: %v", err)
 			return
 		}
 
-		req.UserImageUrl = fmt.Sprintf("http://%s/%s", c.Request.Host, imagePath)
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filePath)
+
+		req.UserImageUrl = imageUrl
 	}
 
 	createdUser, err := uc.userService.CreateUser(req.CreateUserRequest)
@@ -137,18 +130,15 @@ func (uc *UserController) CreatePetDaycareProvider(c *gin.Context) {
 	var thumbnailURLs []string
 
 	for _, thumbnail := range thumbnails {
-		log.Printf("filename: %s", thumbnail.Filename)
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(thumbnail.Filename)))
-		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("http://%s/%s", c.Request.Host, filename))
-
-		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
-			log.Printf("Failed to save pet daycare image: %v", err)
+		filename, err := apputils.CompressImage(thumbnail)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-				Message: "Failed to save pet daycare images",
+				Message: "Failed to save image",
 				Error:   err.Error(),
 			})
 			return
 		}
+		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("http://%s/%s", c.Request.Host, filename))
 	}
 	req.ThumbnailURLs = thumbnailURLs
 
@@ -223,20 +213,19 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 	req.RoleID = 1
 
 	if profilePicture != nil {
-		rand.New(rand.NewSource(time.Now().UnixNano())) // Seed to get different results each run
-		randomNum := rand.Uint64()
-		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(profilePicture.Filename)))
 
-		if err := c.SaveUploadedFile(profilePicture, imagePath); err != nil {
+		filePath, err := apputils.CompressImage(profilePicture)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save image",
 				Error:   err.Error(),
 			})
-			log.Printf("Failed to save user image: %v", err)
 			return
 		}
 
-		req.UserImageUrl = fmt.Sprintf("http://%s/%s", c.Request.Host, imagePath)
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filePath)
+
+		req.UserImageUrl = imageUrl
 	}
 
 	createdUser, err := uc.userService.CreateUser(req.CreateUserRequest)
@@ -250,17 +239,17 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 	}
 
 	if petProfilePicture != nil {
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(petProfilePicture.Filename)))
-		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
-		req.PetImageUrl = &imageUrl
-
-		if err := c.SaveUploadedFile(petProfilePicture, filename); err != nil {
+		filePath, err := apputils.CompressImage(profilePicture)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-				Message: "Failed to save pet image",
+				Message: "Failed to save image",
 				Error:   err.Error(),
 			})
 			return
 		}
+
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filePath)
+		req.PetImageUrl = &imageUrl
 	}
 
 	petID, err := uc.petService.CreatePet(createdUser.UserID, req.PetRequest)
@@ -274,16 +263,18 @@ func (uc *UserController) CreatePetOwner(c *gin.Context) {
 	}
 
 	if vaccineRecordImage != nil {
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(vaccineRecordImage.Filename)))
-		req.VaccineRecordImageUrl = fmt.Sprintf("http://%s/%s", c.Request.Host, filename)
-
-		if err := c.SaveUploadedFile(vaccineRecordImage, filename); err != nil {
+		filePath, err := apputils.CompressImage(profilePicture)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-				Message: "Failed to save vaccine record image",
+				Message: "Failed to save image",
 				Error:   err.Error(),
 			})
 			return
 		}
+
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filePath)
+		req.VaccineRecordImageUrl = imageUrl
+
 	}
 
 	if req.DateAdministered != "" && req.NextDueDate != "" && vaccineRecordImage != nil {
@@ -351,7 +342,6 @@ func (uc *UserController) GetVets(c *gin.Context) {
 	c.JSON(http.StatusOK, model.ListData[model.UserDTO]{Data: vets})
 }
 
-// GetUser fetches a user by ID (keeps ID in URL param for admin access)
 func (uc *UserController) GetUser(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -382,7 +372,6 @@ func (uc *UserController) GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-// CreateUser creates a user using ID from JWT
 func (uc *UserController) CreateUser(c *gin.Context) {
 	var req model.CreateUserRequest
 
@@ -399,7 +388,6 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 
 	}
 
-	// Bind form-data
 	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{
 			Message: "Invalid request body",
@@ -418,22 +406,20 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 		}
 	}
 
-	// Handle image upload
 	if profilePicture != nil {
-		rand.New(rand.NewSource(time.Now().UnixNano())) // Seed to get different results each run
-		randomNum := rand.Uint64()
-		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(randomNum), filepath.Ext(profilePicture.Filename)))
 
-		if err := c.SaveUploadedFile(profilePicture, imagePath); err != nil {
+		filePath, err := apputils.CompressImage(profilePicture)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save image",
 				Error:   err.Error(),
 			})
-			log.Printf("Failed to save image: %v", err)
 			return
 		}
 
-		req.UserImageUrl = fmt.Sprintf("http://%s/%s", c.Request.Host, imagePath)
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filePath)
+
+		req.UserImageUrl = imageUrl
 	}
 
 	createdUser, err := uc.userService.CreateUser(req)
@@ -449,9 +435,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, createdUser)
 }
 
-// DeleteUser removes the logged-in user (ID from JWT)
 func (uc *UserController) DeleteUser(c *gin.Context) {
-	// Get user ID from JWT middleware
 	userID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
@@ -472,9 +456,7 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
-// UpdateUserProfile updates the logged-in user's profile
 func (uc *UserController) UpdateUserProfile(c *gin.Context) {
-	// Get user ID from JWT
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, model.ErrorResponse{
@@ -513,11 +495,10 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 
 	req.ID = userID
 
-	// Handle image upload
 	if profilePicture != nil {
-		imagePath := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(profilePicture.Filename)))
 
-		if err := c.SaveUploadedFile(profilePicture, imagePath); err != nil {
+		filePath, err := apputils.CompressImage(profilePicture)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save image",
 				Error:   err.Error(),
@@ -525,8 +506,9 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 			return
 		}
 
-		// req.ImageUrl = fmt.Sprintf("http://%simagePath
-		req.ImageUrl = fmt.Sprintf("http://%s/%s", c.Request.Host, imagePath)
+		imageUrl := fmt.Sprintf("http://%s/%s", c.Request.Host, filePath)
+
+		req.ImageUrl = imageUrl
 	}
 
 	if err := uc.userService.UpdateUserProfile(&req); err != nil {
@@ -540,9 +522,7 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
-// UpdateUserPassword updates the logged-in user's password
 func (uc *UserController) UpdateUserPassword(c *gin.Context) {
-	// Get user ID from JWT middleware
 	userID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, model.ErrorResponse{

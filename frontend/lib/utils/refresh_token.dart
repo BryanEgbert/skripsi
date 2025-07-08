@@ -11,17 +11,17 @@ Future<TokenResponse> refreshAccessToken() async {
 
   TokenResponse token = await dbService.getToken();
 
-  final refreshRes = await authService.refreshToken(token.refreshToken);
-  switch (refreshRes) {
-    case Ok<TokenResponse>():
-      await dbService.insert(token);
-      token = refreshRes.value!;
-      return token;
-    case Error<TokenResponse>():
-      return Future.error(LocalizationService().jwtExpired);
+  if (token.expiryDate <= DateTime.now().millisecondsSinceEpoch / 1000) {
+    final refreshRes = await authService.refreshToken(token.refreshToken);
+    switch (refreshRes) {
+      case Ok<TokenResponse>():
+        await dbService.insert(token);
+        token = refreshRes.value!;
+        return token;
+      case Error<TokenResponse>():
+        return Future.error(LocalizationService().jwtExpired);
+    }
   }
-  // if (token.expiryDate <= DateTime.now().millisecondsSinceEpoch / 1000) {
-  // }
   // } else {
   //   var user = await userService.getUser(token.accessToken, token.userId);
   //   switch (user) {

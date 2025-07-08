@@ -250,12 +250,6 @@ class _ChatPageState extends ConsumerState<ChatPage>
                                 ),
                                 Text(
                                   AppLocalizations.of(context)!.takePhoto,
-                                  style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.light
-                                        ? Constants.primaryTextColor
-                                        : Colors.orange,
-                                  ),
                                 ),
                               ],
                             ),
@@ -277,12 +271,6 @@ class _ChatPageState extends ConsumerState<ChatPage>
                                 ),
                                 Text(
                                   AppLocalizations.of(context)!.sendImage,
-                                  style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.light
-                                        ? Constants.primaryTextColor
-                                        : Colors.orange,
-                                  ),
                                 ),
                               ],
                             ),

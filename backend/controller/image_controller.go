@@ -3,11 +3,9 @@ package controller
 import (
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
-	"path/filepath"
 
-	"github.com/BryanEgbert/skripsi/helper"
+	apputils "github.com/BryanEgbert/skripsi/app_utils"
 	"github.com/BryanEgbert/skripsi/model"
 	"github.com/BryanEgbert/skripsi/service"
 	"github.com/gin-gonic/gin"
@@ -22,23 +20,6 @@ func NewImageController(imageService service.ImageService) *ImageController {
 }
 
 func (c *ImageController) Upload(ctx *gin.Context) {
-	// userIDRaw, exists := ctx.Get("userID")
-	// if !exists {
-	// 	ctx.JSON(http.StatusUnauthorized, model.ErrorResponse{
-	// 		Message: "Unauthorized",
-	// 	})
-	// 	return
-	// }
-
-	// userID, ok := userIDRaw.(uint)
-	// if !ok {
-	// 	ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
-	// 		Message: "Invalid user ID",
-	// 	})
-	// 	return
-	// }
-
-	// var req model.ChatImageRequest
 	file, err := ctx.FormFile("image")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, model.ErrorResponse{
@@ -49,12 +30,8 @@ func (c *ImageController) Upload(ctx *gin.Context) {
 		return
 	}
 
-	filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(file.Filename)))
-	imageUrl := fmt.Sprintf("http://%s/%s", ctx.Request.Host, filename)
-
-	log.Printf("imageUrl: %v", gin.H{"imageUrl": imageUrl})
-
-	if err := ctx.SaveUploadedFile(file, filename); err != nil {
+	filePath, err := apputils.CompressImage(file)
+	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
 			Message: "Failed to save image",
 			Error:   err.Error(),
@@ -62,14 +39,7 @@ func (c *ImageController) Upload(ctx *gin.Context) {
 		return
 	}
 
-	// url, err := c.imageService.Upload(imageUrl)
-	// if err != nil {
-	// 	ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{
-	// 		Message: "Failed to upload image",
-	// 		Error:   err.Error(),
-	// 	})
-	// 	return
-	// }
+	imageUrl := fmt.Sprintf("http://%s/%s", ctx.Request.Host, filePath)
 
 	ctx.JSON(http.StatusCreated, gin.H{"imageUrl": imageUrl})
 }

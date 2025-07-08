@@ -11,7 +11,6 @@ import 'package:frontend/provider/list_data_provider.dart';
 import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
-import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class ViewBookingRequestsPage extends ConsumerStatefulWidget {
   final List<ChatMessage> messages;
@@ -231,14 +230,56 @@ class _ViewBookingRequestsPageState
                             // TODO: add confirmation dialog
                             FilledButton(
                               onPressed: () {
-                                showConfirmationDialog(
-                                    context,
-                                    AppLocalizations.of(context)!.acceptBooking,
-                                    AppLocalizations.of(context)!
-                                        .acceptBookingConfirmation,
-                                    () => ref
-                                        .read(slotStateProvider.notifier)
-                                        .acceptSlot(_records[index].id));
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text(
+                                        AppLocalizations.of(context)!
+                                            .acceptBooking,
+                                        style: TextStyle(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.light
+                                              ? Constants.primaryTextColor
+                                              : Colors.orange,
+                                        ),
+                                      ),
+                                      content: Text(
+                                        AppLocalizations.of(context)!
+                                            .acceptBookingConfirmation,
+                                        style: TextStyle(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.light
+                                              ? Colors.black
+                                              : Colors.white70,
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .cancel),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            ref
+                                                .read(
+                                                    slotStateProvider.notifier)
+                                                .rejectSlot(_records[index].id);
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(
+                                            AppLocalizations.of(context)!.yes,
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               },
                               style: FilledButton.styleFrom(
                                 backgroundColor: Colors.green,
@@ -254,14 +295,55 @@ class _ViewBookingRequestsPageState
                             // TODO: add confirmation dialog
                             FilledButton(
                               onPressed: () {
-                                showConfirmationDialog(
-                                  context,
-                                  AppLocalizations.of(context)!.rejectRequest,
-                                  AppLocalizations.of(context)!
-                                      .rejectRequestConfirmation,
-                                  () => ref
-                                      .read(slotStateProvider.notifier)
-                                      .rejectSlot(_records[index].id),
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text(
+                                        AppLocalizations.of(context)!
+                                            .rejectBooking,
+                                        style: TextStyle(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.light
+                                              ? Constants.primaryTextColor
+                                              : Colors.orange,
+                                        ),
+                                      ),
+                                      content: Text(
+                                        AppLocalizations.of(context)!
+                                            .rejectBookingConfirmation,
+                                        style: TextStyle(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.light
+                                              ? Colors.black
+                                              : Colors.white70,
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .cancel),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            ref
+                                                .read(
+                                                    slotStateProvider.notifier)
+                                                .rejectSlot(_records[index].id);
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(
+                                            AppLocalizations.of(context)!.yes,
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 );
                               },
                               style: FilledButton.styleFrom(

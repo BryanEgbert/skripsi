@@ -9,7 +9,6 @@ import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
-import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class BookingRequestDetailsPage extends ConsumerStatefulWidget {
   final BookingRequest bookingReq;
@@ -202,13 +201,52 @@ class _BookingRequestDetailsPageState
               // TODO: add confirmation dialog
               ElevatedButton(
                 onPressed: () {
-                  showConfirmationDialog(
-                      context,
-                      AppLocalizations.of(context)!.acceptBooking,
-                      AppLocalizations.of(context)!.acceptBookingConfirmation,
-                      () => ref
-                          .read(slotStateProvider.notifier)
-                          .acceptSlot(widget.bookingReq.id));
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(
+                          AppLocalizations.of(context)!.acceptBooking,
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Constants.primaryTextColor
+                                    : Colors.orange,
+                          ),
+                        ),
+                        content: Text(
+                          AppLocalizations.of(context)!
+                              .acceptBookingConfirmation,
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.black
+                                    : Colors.white70,
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(AppLocalizations.of(context)!.cancel),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              ref
+                                  .read(slotStateProvider.notifier)
+                                  .rejectSlot(widget.bookingReq.id);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              AppLocalizations.of(context)!.yes,
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[800],
@@ -223,13 +261,52 @@ class _BookingRequestDetailsPageState
                 // TODO: add confirmation dialog
                 child: ElevatedButton(
                   onPressed: () {
-                    showConfirmationDialog(
-                        context,
-                        AppLocalizations.of(context)!.rejectRequest,
-                        AppLocalizations.of(context)!.rejectRequestConfirmation,
-                        () => ref
-                            .read(slotStateProvider.notifier)
-                            .rejectSlot(widget.bookingReq.id));
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(
+                            AppLocalizations.of(context)!.rejectBooking,
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Constants.primaryTextColor
+                                  : Colors.orange,
+                            ),
+                          ),
+                          content: Text(
+                            AppLocalizations.of(context)!
+                                .rejectBookingConfirmation,
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.black
+                                  : Colors.white70,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(AppLocalizations.of(context)!.cancel),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                ref
+                                    .read(slotStateProvider.notifier)
+                                    .rejectSlot(widget.bookingReq.id);
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                AppLocalizations.of(context)!.yes,
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red[800],

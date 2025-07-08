@@ -4,14 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
-	"path/filepath"
 	"strconv"
 	"strings"
 
 	apputils "github.com/BryanEgbert/skripsi/app_utils"
-	"github.com/BryanEgbert/skripsi/helper"
 	"github.com/BryanEgbert/skripsi/model"
 	"github.com/BryanEgbert/skripsi/service"
 	"github.com/gin-gonic/gin"
@@ -103,7 +100,6 @@ func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
 		return
 	}
 
-	// Get optional pagination parameters
 	rawPage := c.Query("page")
 	var page uint64 = 0
 	if rawPage != "" {
@@ -131,7 +127,6 @@ func (pdc *PetDaycareController) GetReviews(c *gin.Context) {
 		}
 	}
 
-	// Fetch reviews using the service
 	reviews, err := pdc.reviewService.GetReviews(userID, uint(petDaycareID), int(page), pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{
@@ -482,23 +477,6 @@ func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 		return
 	}
 
-	// var thumbnailURLs []string
-	// for _, thumbnail := range request.Thumbnails {
-	// 	if thumbnail != nil {
-	// 		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(userID, filepath.Ext(thumbnail.Filename)))
-	// 		// TODO: change url scheme?
-	// 		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("http://%s/%s", c.Request.Host, filename))
-
-	// 		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
-	// 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
-	// 				Message: "Failed to save image",
-	// 				Error:   err.Error(),
-	// 			})
-	// 			return
-	// 		}
-	// 	}
-	// }
-	// request.ThumbnailURLs = thumbnailURLs
 	log.Printf("thumbnail: %d", len(request.ThumbnailURLs))
 	_, err = pdc.petDaycareService.UpdatePetDaycare(uint(petDaycareID), userID, request)
 	if err != nil {
@@ -512,7 +490,6 @@ func (pdc *PetDaycareController) UpdatePetDaycare(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
-// CreatePetDaycare handles the creation of a new pet daycare
 func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
@@ -551,25 +528,17 @@ func (pdc *PetDaycareController) CreatePetDaycare(c *gin.Context) {
 		return
 	}
 
-	// if err := c.ShouldBind(&request); err != nil {
-	// 	c.JSON(http.StatusBadRequest, model.ErrorResponse{
-	// 		Message: "Invalid request data",
-	// 		Error:   err.Error(),
-	// 	})
-	// 	return
-	// }
-
 	for _, thumbnail := range thumbnails {
-		filename := fmt.Sprintf("image/%s", helper.GenerateFileName(uint(rand.Uint64()), filepath.Ext(thumbnail.Filename)))
-		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("http://%s/%s", c.Request.Host, filename))
-
-		if err := c.SaveUploadedFile(thumbnail, filename); err != nil {
+		filename, err := apputils.CompressImage(thumbnail)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "Failed to save image",
 				Error:   err.Error(),
 			})
 			return
 		}
+		thumbnailURLs = append(thumbnailURLs, fmt.Sprintf("http://%s/%s", c.Request.Host, filename))
+
 	}
 	request.ThumbnailURLs = thumbnailURLs
 
@@ -615,7 +584,6 @@ func (pdc *PetDaycareController) GetMyPetdaycare(c *gin.Context) {
 }
 
 func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
-	// Parse user GPS location
 	var filters model.GetPetDaycaresRequest
 
 	if userLat := c.Query("lat"); userLat != "" {
@@ -732,7 +700,6 @@ func (pdc *PetDaycareController) GetPetDaycares(c *gin.Context) {
 		filters.MustBeVaccinated = &value
 	}
 
-	// Call service
 	daycares, err := pdc.petDaycareService.GetPetDaycares(filters, int(page), pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{

@@ -1,6 +1,8 @@
 package seeder
 
 import (
+	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/BryanEgbert/skripsi/helper"
@@ -9,6 +11,12 @@ import (
 )
 
 func SeedTable(db *gorm.DB) error {
+	five := float32(5.0)
+	ten := float32(10)
+	// twelve := float32(12)
+	twentyFive := float32(25)
+	fortyFive := float32(45)
+
 	roles := []model.Role{
 		{ID: 1, Name: "pet owner"},
 		{ID: 2, Name: "pet daycare provider"},
@@ -84,12 +92,6 @@ func SeedTable(db *gorm.DB) error {
 		return err
 	}
 
-	five := float32(5.0)
-	ten := float32(10)
-	// twelve := float32(12)
-	twentyFive := float32(25)
-	fortyFive := float32(45)
-
 	// Insert SizeCategory records
 	sizeCategories := []model.SizeCategory{
 		{Name: "miniature", MinWeight: 1, MaxWeight: &five},
@@ -137,90 +139,121 @@ func SeedTable(db *gorm.DB) error {
 		{Name: "Jane Smith Daycare3", Email: "daycare3@example.com", Password: password1, RoleID: 2, ImageUrl: &dummyImgUrl},
 	}
 
+	for i := 7; i <= 50; i++ {
+		roleID := (i % 3) + 1 // Cycle through roles 1, 2, 3
+		email := fmt.Sprintf("user%d@example.com", i)
+		name := fmt.Sprintf("User %d", i)
+
+		user := model.User{
+			Name:     name,
+			Email:    email,
+			Password: password1,
+			RoleID:   uint(roleID),
+		}
+
+		// Optional fields based on role
+		if roleID == 3 {
+			user.VetSpecialty = &vetSpecialty
+		}
+
+		user.ImageUrl = &dummyImgUrl
+		users = append(users, user)
+	}
+
 	if err := db.Create(&users).Error; err != nil {
 		return err
 	}
 
-	daycare := []model.PetDaycare{
-		{
-			Name:             "Happy Paws",
-			Address:          "123 Bark St",
-			Latitude:         -6.17722188,
-			Longitude:        106.7909223,
-			Locality:         "Grogol Petamburan",
-			Location:         "Happy Paws",
-			OpeningHour:      model.CustomTime{Time: time.Now()},
-			ClosingHour:      model.CustomTime{Time: time.Now().Add(1 * time.Hour)},
-			HasPickupService: true,
-			// Price:         100000.0,
-			OwnerID:       users[1].ID,
-			DailyWalks:    dailyWalks[1],
-			DailyPlaytime: dailyPlaytimes[1],
-		},
-		{
-			Name:        "DOG Daycare Jakarta",
-			Address:     "Jl. Abdul Majid Raya No.31, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410",
-			Location:    "DOG daycare jakarta",
-			Description: "DOG daycare jakarta desc",
-			Latitude:    -6.266167,
-			Longitude:   106.808214,
-			Locality:    "Grogol Petamburan",
-			OpeningHour: model.CustomTime{Time: time.Now()},
-			ClosingHour: model.CustomTime{Time: time.Now().Add(1 * time.Hour)},
-			// Price:             150000.0,
-			OwnerID:           users[2].ID,
-			DailyWalks:        dailyWalks[1],
-			BookedNum:         1,
-			DailyPlaytime:     dailyPlaytimes[3],
-			GroomingAvailable: true,
-			FoodProvided:      true,
-			FoodBrand:         "Pedigree",
-		},
-		{
-			Name:        "Happy Paws 2",
-			Address:     "123 Bark St",
-			Location:    "Central Park Mall",
-			Latitude:    -6.22400791,
-			Longitude:   106.5889773,
-			Locality:    "Grogol Petamburan",
-			OpeningHour: model.CustomTime{Time: time.Now()},
-			ClosingHour: model.CustomTime{Time: time.Now().Add(1 * time.Hour)},
-			// Price:         100000.0,
-			OwnerID:          users[5].ID,
-			DailyWalks:       dailyWalks[1],
-			DailyPlaytime:    dailyPlaytimes[1],
-			MustBeVaccinated: true,
-			BookedNum:        2,
-		},
-	}
+	// daycare := []model.PetDaycare{
+	// 	{
+	// 		Name:             "Happy Paws",
+	// 		Address:          "123 Bark St",
+	// 		Latitude:         -6.17722188,
+	// 		Longitude:        106.7909223,
+	// 		Locality:         "Grogol Petamburan",
+	// 		Location:         "Happy Paws",
+	// 		OpeningHour:      model.CustomTime{Time: time.Now()},
+	// 		ClosingHour:      model.CustomTime{Time: time.Now().Add(1 * time.Hour)},
+	// 		HasPickupService: true,
+	// 		OwnerID:          users[1].ID,
+	// 		DailyWalks:       dailyWalks[1],
+	// 		DailyPlaytime:    dailyPlaytimes[1],
+	// 	},
+	// 	{
+	// 		Name:              "DOG Daycare Jakarta",
+	// 		Address:           "Jl. Abdul Majid Raya No.31, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410",
+	// 		Location:          "DOG daycare jakarta",
+	// 		Description:       "DOG daycare jakarta desc",
+	// 		Latitude:          -6.266167,
+	// 		Longitude:         106.808214,
+	// 		Locality:          "Grogol Petamburan",
+	// 		OpeningHour:       model.CustomTime{Time: time.Now()},
+	// 		ClosingHour:       model.CustomTime{Time: time.Now().Add(1 * time.Hour)},
+	// 		OwnerID:           users[2].ID,
+	// 		DailyWalks:        dailyWalks[1],
+	// 		BookedNum:         1,
+	// 		DailyPlaytime:     dailyPlaytimes[3],
+	// 		GroomingAvailable: true,
+	// 		FoodProvided:      true,
+	// 		FoodBrand:         "Pedigree",
+	// 	},
+	// 	{
+	// 		Name:             "Happy Paws 2",
+	// 		Address:          "123 Bark St",
+	// 		Location:         "Central Park Mall",
+	// 		Latitude:         -6.22400791,
+	// 		Longitude:        106.5889773,
+	// 		Locality:         "Grogol Petamburan",
+	// 		OpeningHour:      model.CustomTime{Time: time.Now()},
+	// 		ClosingHour:      model.CustomTime{Time: time.Now().Add(1 * time.Hour)},
+	// 		OwnerID:          users[5].ID,
+	// 		DailyWalks:       dailyWalks[1],
+	// 		DailyPlaytime:    dailyPlaytimes[1],
+	// 		MustBeVaccinated: true,
+	// 		BookedNum:        2,
+	// 	},
+	// }
 
-	if err := db.Create(&daycare).Error; err != nil {
+	// if err := db.Create(&daycare).Error; err != nil {
+	// 	return err
+	// }
+	daycare, err := seedPetDaycares(db, users, dailyWalks, dailyPlaytimes)
+	if err != nil {
 		return err
 	}
 
-	slots := []model.Slots{
-		{DaycareID: daycare[0].ID, PricingTypeID: 1, PetCategoryID: 1, MaxNumber: 5, Price: 100000.0},
-		{DaycareID: daycare[0].ID, PricingTypeID: 1, PetCategoryID: 2, MaxNumber: 8, Price: 100000.0},
-		{DaycareID: daycare[0].ID, PricingTypeID: 1, PetCategoryID: petCategory[5].ID, MaxNumber: 8, Price: 100000.0},
-		{DaycareID: daycare[1].ID, PricingTypeID: 1, PetCategoryID: 1, MaxNumber: 20, Price: 100000.0},
-		{DaycareID: daycare[2].ID, PricingTypeID: 2, PetCategoryID: 1, MaxNumber: 2, Price: 100000.0},
-	}
+	// slots := []model.Slots{
+	// 	{DaycareID: daycare[0].ID, PricingTypeID: 1, PetCategoryID: 1, MaxNumber: 5, Price: 100000.0},
+	// 	{DaycareID: daycare[0].ID, PricingTypeID: 1, PetCategoryID: 2, MaxNumber: 8, Price: 100000.0},
+	// 	{DaycareID: daycare[0].ID, PricingTypeID: 1, PetCategoryID: petCategory[5].ID, MaxNumber: 8, Price: 100000.0},
+	// 	{DaycareID: daycare[1].ID, PricingTypeID: 1, PetCategoryID: 1, MaxNumber: 20, Price: 100000.0},
+	// 	{DaycareID: daycare[2].ID, PricingTypeID: 2, PetCategoryID: 1, MaxNumber: 2, Price: 100000.0},
+	// }
 
-	if err := db.Create(&slots).Error; err != nil {
+	// if err := db.Create(&slots).Error; err != nil {
+	// 	return err
+	// }
+	slots, err := seedSlots(db, daycare, petCategory)
+	if err != nil {
 		return err
 	}
 
-	petImg := "https://picsum.photos/id/237/200/300"
-	pet := []model.Pet{
-		{
-			Name: "Buddy", ImageUrl: &petImg, OwnerID: users[0].ID, PetCategoryID: 1,
-		},
-		{
-			Name: "Buddy2", ImageUrl: &petImg, OwnerID: users[0].ID, PetCategoryID: 1,
-		},
-	}
+	// petImg := "https://picsum.photos/id/237/200/300"
+	// pet := []model.Pet{
+	// 	{
+	// 		Name: "Buddy", ImageUrl: &petImg, OwnerID: users[0].ID, PetCategoryID: 1,
+	// 	},
+	// 	{
+	// 		Name: "Buddy2", ImageUrl: &petImg, OwnerID: users[0].ID, PetCategoryID: 1,
+	// 	},
+	// }
 
-	if err := db.Create(&pet).Error; err != nil {
+	// if err := db.Create(&pet).Error; err != nil {
+	// 	return err
+	// }
+
+	pet, err := seedPets(db, users, petCategory)
+	if err != nil {
 		return err
 	}
 
@@ -439,73 +472,61 @@ func SeedTable(db *gorm.DB) error {
 
 	bookedSlotDaily := []model.BookedSlotsDaily{
 		{
-			// DaycareID: daycare[0].ID,
 			SlotID:    slots[0].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
 		},
 		{
-			// DaycareID: daycare[0].ID,
 			SlotID:    slots[0].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.February, 14, 0, 0, 0, 0, time.Local),
 		},
 		{
-			// DaycareID: daycare[0].ID,
 			SlotID:    slots[0].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.February, 15, 0, 0, 0, 0, time.Local),
 		},
 		{
-			// DaycareID: daycare[0].ID,
 			SlotID:    slots[3].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.May, 26, 0, 0, 0, 0, time.Local),
 		},
 		{
-			// DaycareID: daycare[0].ID,
 			SlotID:    slots[3].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.May, 27, 0, 0, 0, 0, time.Local),
 		},
 		{
-			// DaycareID: daycare[0].ID,
 			SlotID:    slots[3].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.May, 30, 0, 0, 0, 0, time.Local),
 		},
 		{
-			// DaycareID: daycare[0].ID,
 			SlotID:    slots[3].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.May, 31, 0, 0, 0, 0, time.Local),
 		},
 		{
-			// DaycareID: daycare[0].ID,
 			SlotID:    slots[3].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.May, 31, 0, 0, 0, 0, time.Local),
 		},
 		{
-			// DaycareID: daycare[0].ID,
 			SlotID:    slots[3].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.Local),
 		},
 		{
-			// DaycareID: daycare[0].ID,
 			SlotID:    slots[3].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.Local),
 		},
 		{
-			// DaycareID: daycare[0].ID,
 			SlotID:    slots[3].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.Local),
 		},
 		{
-			// DaycareID: daycare[0].ID,
 			SlotID:    slots[3].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.Local),
@@ -514,6 +535,21 @@ func SeedTable(db *gorm.DB) error {
 
 	if err := db.Create(&bookedSlotDaily).Error; err != nil {
 		return err
+	}
+
+	for _, dc := range daycare {
+		var count int64
+		if err := db.Model(&model.BookedSlot{}).
+			Where("daycare_id = ?", dc.ID).
+			Count(&count).Error; err != nil {
+			return err
+		}
+
+		if err := db.Model(&model.PetDaycare{}).
+			Where("id = ?", dc.ID).
+			Update("booked_num", count).Error; err != nil {
+			return err
+		}
 	}
 
 	review := []model.Reviews{
@@ -573,14 +609,151 @@ func SeedTable(db *gorm.DB) error {
 	// 	return err
 	// }
 
-	thumbnails := []model.Thumbnail{
-		{DaycareID: daycare[0].ID, ImageUrl: dummyImgUrl},
-		{DaycareID: daycare[1].ID, ImageUrl: dummyImgUrl},
+	// thumbnails := []model.Thumbnail{
+	// 	{DaycareID: daycare[0].ID, ImageUrl: dummyImgUrl},
+	// 	{DaycareID: daycare[1].ID, ImageUrl: dummyImgUrl},
+	// }
+
+	// if err := db.Create(&thumbnails).Error; err != nil {
+	// 	return err
+	// }
+
+	return nil
+}
+
+func seedPetDaycares(db *gorm.DB, users []model.User, dailyWalks []model.DailyWalks, dailyPlaytimes []model.DailyPlaytime) ([]model.PetDaycare, error) {
+	dummyImgUrl := "https://picsum.photos/id/1/200/300"
+	dummyLocations := []string{
+		"Grogol Petamburan", "Kebayoran Baru", "Cilandak", "Menteng", "Tebet", "Kuningan",
+	}
+
+	var daycares []model.PetDaycare
+	var thumbnails []model.Thumbnail
+
+	dummyTime := time.Now()
+	vaccinated := true
+	hasPickup := true
+
+	dcCount := 0
+
+	for _, user := range users {
+		if user.RoleID != 2 {
+			continue
+		}
+
+		locationIndex := dcCount % len(dummyLocations)
+		location := dummyLocations[locationIndex]
+
+		dc := model.PetDaycare{
+			Name:             fmt.Sprintf("Daycare %s", user.Name),
+			Address:          fmt.Sprintf("%d Pet Street, %s", 100+dcCount, location),
+			Location:         location,
+			Latitude:         -6.2 + float64(dcCount)*0.001,
+			Longitude:        106.8 + float64(dcCount)*0.001,
+			Locality:         location,
+			OpeningHour:      model.CustomTime{Time: dummyTime},
+			ClosingHour:      model.CustomTime{Time: dummyTime.Add(8 * time.Hour)},
+			HasPickupService: hasPickup,
+			MustBeVaccinated: vaccinated,
+			FoodProvided:     true,
+			OwnerID:          user.ID,
+			DailyWalks:       dailyWalks[dcCount%len(dailyWalks)],
+			DailyPlaytime:    dailyPlaytimes[dcCount%len(dailyPlaytimes)],
+			BookedNum:        0,
+		}
+
+		daycares = append(daycares, dc)
+		dcCount++
+	}
+
+	if len(daycares) == 0 {
+		return []model.PetDaycare{}, fmt.Errorf("no users with RoleID == 2 found")
+	}
+
+	if err := db.Create(&daycares).Error; err != nil {
+		return []model.PetDaycare{}, err
+	}
+
+	for _, dc := range daycares {
+		numThumbs := rand.Intn(9) + 1 // between 1 and 9
+		for i := 0; i < numThumbs; i++ {
+			thumbnails = append(thumbnails, model.Thumbnail{
+				DaycareID: dc.ID,
+				ImageUrl:  dummyImgUrl,
+			})
+		}
 	}
 
 	if err := db.Create(&thumbnails).Error; err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return daycares, nil
+}
+
+func seedPets(db *gorm.DB, users []model.User, petCategories []model.PetCategory) ([]model.Pet, error) {
+	petImg := "https://picsum.photos/id/237/200/300"
+	var pets []model.Pet
+
+	if len(petCategories) == 0 {
+		return []model.Pet{}, fmt.Errorf("no pet categories provided")
+	}
+
+	for i, user := range users {
+		if user.RoleID != 1 {
+			continue
+		}
+
+		pet := model.Pet{
+			Name:          fmt.Sprintf("Pet %d of %s", i+1, user.Name),
+			ImageUrl:      &petImg,
+			OwnerID:       user.ID,
+			PetCategoryID: petCategories[i%len(petCategories)].ID, // cycle categories
+		}
+		pets = append(pets, pet)
+	}
+
+	if len(pets) == 0 {
+		return []model.Pet{}, fmt.Errorf("no users with RoleID == 1 found")
+	}
+
+	if err := db.Create(&pets).Error; err != nil {
+		return []model.Pet{}, err
+	}
+
+	return pets, nil
+}
+
+func seedSlots(db *gorm.DB, daycares []model.PetDaycare, petCategories []model.PetCategory) ([]model.Slots, error) {
+	if len(petCategories) == 0 {
+		return []model.Slots{}, fmt.Errorf("no pet categories provided")
+	}
+
+	var slots []model.Slots
+
+	for _, dc := range daycares {
+		// Decide how many categories this daycare supports (between 2 and all)
+		numSupportedCategories := rand.Intn(len(petCategories)-1) + 2 // min 2 categories
+		shuffledIndexes := rand.Perm(len(petCategories))              // Random category order
+
+		for i := 0; i < numSupportedCategories; i++ {
+			category := petCategories[shuffledIndexes[i]]
+
+			slot := model.Slots{
+				DaycareID:     dc.ID,
+				PricingTypeID: uint(rand.Intn(2) + 1), // 1 or 2
+				PetCategoryID: category.ID,
+				MaxNumber:     rand.Intn(49) + 2,                       // between 2–11
+				Price:         80000.0 + float64(rand.Intn(5))*10000.0, // e.g., 80k – 120k
+			}
+
+			slots = append(slots, slot)
+		}
+	}
+
+	if err := db.Create(&slots).Error; err != nil {
+		return []model.Slots{}, err
+	}
+
+	return slots, nil
 }
