@@ -235,7 +235,7 @@ class _BookingRequestDetailsPageState
                             onPressed: () {
                               ref
                                   .read(slotStateProvider.notifier)
-                                  .rejectSlot(widget.bookingReq.id);
+                                  .acceptSlot(widget.bookingReq.id);
                               Navigator.of(context).pop();
                             },
                             child: Text(

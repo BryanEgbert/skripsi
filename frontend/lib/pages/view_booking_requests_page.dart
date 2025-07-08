@@ -268,7 +268,7 @@ class _ViewBookingRequestsPageState
                                             ref
                                                 .read(
                                                     slotStateProvider.notifier)
-                                                .rejectSlot(_records[index].id);
+                                                .acceptSlot(_records[index].id);
                                             Navigator.of(context).pop();
                                           },
                                           child: Text(
