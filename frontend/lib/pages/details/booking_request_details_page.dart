@@ -9,6 +9,7 @@ import 'package:frontend/pages/details/pet_details_page.dart';
 import 'package:frontend/provider/slot_provider.dart';
 import 'package:frontend/utils/formatter.dart';
 import 'package:frontend/utils/handle_error.dart';
+import 'package:frontend/utils/show_confirmation_dialog.dart';
 
 class BookingRequestDetailsPage extends ConsumerStatefulWidget {
   final BookingRequest bookingReq;
@@ -198,11 +199,16 @@ class _BookingRequestDetailsPageState
             spacing: 8,
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              // TODO: add confirmation dialog
               ElevatedButton(
                 onPressed: () {
-                  ref
-                      .read(slotStateProvider.notifier)
-                      .acceptSlot(widget.bookingReq.id);
+                  showConfirmationDialog(
+                      context,
+                      AppLocalizations.of(context)!.acceptBooking,
+                      AppLocalizations.of(context)!.acceptBookingConfirmation,
+                      () => ref
+                          .read(slotStateProvider.notifier)
+                          .acceptSlot(widget.bookingReq.id));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[800],
@@ -214,11 +220,16 @@ class _BookingRequestDetailsPageState
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 16),
+                // TODO: add confirmation dialog
                 child: ElevatedButton(
                   onPressed: () {
-                    ref
-                        .read(slotStateProvider.notifier)
-                        .cancelSlot(widget.bookingReq.id);
+                    showConfirmationDialog(
+                        context,
+                        AppLocalizations.of(context)!.rejectRequest,
+                        AppLocalizations.of(context)!.rejectRequestConfirmation,
+                        () => ref
+                            .read(slotStateProvider.notifier)
+                            .rejectSlot(widget.bookingReq.id));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red[800],

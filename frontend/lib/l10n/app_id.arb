@@ -242,5 +242,9 @@
   "petDaycareFilter": "Filter Tempat Penitipan Hewan",
   "vetSpecialtyFilter": "Filter Spesialisasi Dokter Hewan",
   "editReview": "Ganti Ulasan",
-  "failedToConnect": "Gagal terhubung ke server"
+  "failedToConnect": "Gagal terhubung ke server",
+  "acceptBooking": "Terima Pemesanan",
+  "rejectBooking": "Tolak Pemesanan",
+  "acceptBookingConfirmation": "Apakah Anda yakin ingin menerima permintaan pemesanan ini? Pastikan pemilik hewan telah mengantar hewan peliharaan mereka. Tindakan ini tidak dapat dibatalkan.",
+  "rejectBookingConfirmation": "Apakah Anda yakin ingin menolak permintaan pemesanan ini? Tindakan ini tidak dapat dibatalkan."
 }

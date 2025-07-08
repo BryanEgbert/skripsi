@@ -777,4 +777,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failedToConnect => 'Failed to connect to server';
+
+  @override
+  String get acceptBooking => 'Accept Booking';
+
+  @override
+  String get acceptBookingConfirmation => 'Are you sure you want to accept this booking request? Make sure pet owner have drop-off their pet. This action cannot be undone.';
+
+  @override
+  String get rejectBooking => 'Reject Booking';
+
+  @override
+  String get rejectBookingConfirmation => 'Are you sure you want to reject this booking request? This action cannot be undone.';
 }

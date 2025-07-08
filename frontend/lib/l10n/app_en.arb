@@ -1046,5 +1046,23 @@
     "@vetSpecialtyFilter": {
         "description": "Label for veterinary specialty filter title"
     },
-    "failedToConnect": "Failed to connect to server"
+    "failedToConnect": "Failed to connect to server",
+    "acceptBooking": "Accept Booking",
+    "@acceptBooking": {
+        "description": "Button label to accept a booking request"
+    },
+    "acceptBookingConfirmation": "Are you sure you want to accept this booking request? Make sure pet owner have drop-off their pet. This action cannot be undone.",
+    "@acceptBookingConfirmation": {
+        "description": "Confirmation message shown when accepting a booking request"
+    },
+    "rejectBooking": "Reject Booking",
+    "@rejectBooking": {
+        "description": "Button label to reject a booking request"
+    },
+    "rejectBookingConfirmation": "Are you sure you want to reject this booking request? This action cannot be undone.",
+    "@rejectBookingConfirmation": {
+        "description": "Confirmation message shown when rejecting a booking request"
+    }
+    
+    
 }   

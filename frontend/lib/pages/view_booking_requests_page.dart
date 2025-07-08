@@ -231,9 +231,14 @@ class _ViewBookingRequestsPageState
                             // TODO: add confirmation dialog
                             FilledButton(
                               onPressed: () {
-                                ref
-                                    .read(slotStateProvider.notifier)
-                                    .acceptSlot(_records[index].id);
+                                showConfirmationDialog(
+                                    context,
+                                    AppLocalizations.of(context)!.acceptBooking,
+                                    AppLocalizations.of(context)!
+                                        .acceptBookingConfirmation,
+                                    () => ref
+                                        .read(slotStateProvider.notifier)
+                                        .acceptSlot(_records[index].id));
                               },
                               style: FilledButton.styleFrom(
                                 backgroundColor: Colors.green,

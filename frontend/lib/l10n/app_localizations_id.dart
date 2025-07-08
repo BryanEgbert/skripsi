@@ -771,4 +771,16 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get failedToConnect => 'Gagal terhubung ke server';
+
+  @override
+  String get acceptBooking => 'Terima Pemesanan';
+
+  @override
+  String get acceptBookingConfirmation => 'Apakah Anda yakin ingin menerima permintaan pemesanan ini? Pastikan pemilik hewan telah mengantar hewan peliharaan mereka. Tindakan ini tidak dapat dibatalkan.';
+
+  @override
+  String get rejectBooking => 'Tolak Pemesanan';
+
+  @override
+  String get rejectBookingConfirmation => 'Apakah Anda yakin ingin menolak permintaan pemesanan ini? Tindakan ini tidak dapat dibatalkan.';
 }

@@ -1546,6 +1546,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to connect to server'**
   String get failedToConnect;
+
+  /// Button label to accept a booking request
+  ///
+  /// In en, this message translates to:
+  /// **'Accept Booking'**
+  String get acceptBooking;
+
+  /// Confirmation message shown when accepting a booking request
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to accept this booking request? Make sure pet owner have drop-off their pet. This action cannot be undone.'**
+  String get acceptBookingConfirmation;
+
+  /// Button label to reject a booking request
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Booking'**
+  String get rejectBooking;
+
+  /// Confirmation message shown when rejecting a booking request
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to reject this booking request? This action cannot be undone.'**
+  String get rejectBookingConfirmation;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
