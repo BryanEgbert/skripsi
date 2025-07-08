@@ -105,10 +105,10 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
               color: Colors.orange,
             ))
           : (_error == null)
-              ? Column(
-                  children: [
-                    SafeArea(
-                      child: Container(
+              ? SafeArea(
+                  child: Column(
+                    children: [
+                      Container(
                         padding: EdgeInsets.all(16),
                         color: Theme.of(context).brightness == Brightness.light
                             ? Constants.secondaryBackgroundColor
@@ -153,26 +153,37 @@ class _RatingsPageState extends ConsumerState<RatingsPage> {
                           ],
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: RefreshIndicator.adaptive(
-                        onRefresh: () async {
-                          _records = [];
-                          _hasMoreData = true;
-                          _page = 1;
-                          _fetchMoreData();
-                        },
-                        child: ListView.builder(
-                          physics: AlwaysScrollableScrollPhysics(),
-                          controller: _scrollController,
-                          padding: EdgeInsets.only(top: 8),
-                          itemCount: _records.length,
-                          itemBuilder: (context, index) =>
-                              _buildReviewCard(_records[index]),
+                      Expanded(
+                        child: RefreshIndicator.adaptive(
+                          onRefresh: () async {
+                            _records = [];
+                            _hasMoreData = true;
+                            _page = 1;
+                            _fetchMoreData();
+                          },
+                          child: ListView.builder(
+                            physics: AlwaysScrollableScrollPhysics(),
+                            controller: _scrollController,
+                            padding: EdgeInsets.only(top: 8),
+                            itemCount: _records.length + 1,
+                            itemBuilder: (context, index) {
+                              if (index < _records.length) {
+                                return _buildReviewCard(_records[index]);
+                              } else {
+                                if (_isFetching) {
+                                  return Center(
+                                      child:
+                                          CircularProgressIndicator.adaptive());
+                                }
+
+                                return SizedBox();
+                              }
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 )
               : ErrorText(
                   errorText: _error!.toString(),

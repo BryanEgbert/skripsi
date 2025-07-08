@@ -521,43 +521,43 @@ func SeedTable(db *gorm.DB) error {
 			DaycareID: daycare[0].ID, UserID: users[0].ID, Rate: 5, Description: "Great daycare!",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[0].ID, Rate: 2, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[0].ID, Rate: 2, Description: "Great daycare!1",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!2",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!3",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!4",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!5",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!6",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!7",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!8",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!9",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!10",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!11",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!12",
 		},
 		{
-			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!13",
 		},
 	}
 
