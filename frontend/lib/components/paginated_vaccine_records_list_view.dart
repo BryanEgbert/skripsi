@@ -149,9 +149,7 @@ class _PaginatedListViewState
                     } else {
                       if (_isFetching) {
                         return Center(
-                            child: CircularProgressIndicator(
-                          color: Colors.orange,
-                        ));
+                            child: CircularProgressIndicator.adaptive());
                       }
 
                       return SizedBox();

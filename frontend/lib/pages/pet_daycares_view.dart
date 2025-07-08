@@ -1009,9 +1009,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
                         } else {
                           if (_isFetching) {
                             return Center(
-                                child: CircularProgressIndicator(
-                              color: Colors.orange,
-                            ));
+                                child: CircularProgressIndicator().adaptive());
                           }
 
                           return SizedBox();
