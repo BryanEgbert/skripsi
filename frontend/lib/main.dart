@@ -17,25 +17,8 @@ import 'package:frontend/services/firebase_service.dart';
 import 'package:frontend/services/localization_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// Future<void> _getDeviceInfo() async {
-//   final deviceInfoPlugin = DeviceInfoPlugin();
-//   AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
-//   log('Model: ${androidInfo.model}');
-//   log('Android Version: ${androidInfo.version.release}');
-//   log('Manufacturer: ${androidInfo.manufacturer}');
-//   log('RAM: ${androidInfo.systemFeatures}');
-//   log('Is Low RAM: ${androidInfo.isLowRamDevice}');
-// }
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // if (kDebugMode) {
-  //   debugProfileBuildsEnabled = true;
-  //   debugPaintSizeEnabled = true;
-  //   debugRepaintRainbowEnabled = true;
-  //   _getDeviceInfo();
-  // }
-
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

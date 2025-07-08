@@ -51,7 +51,7 @@ void handleValue(AsyncValue providerValue, State state, [Function()? reset]) {
     if (providerValue.value == null) return;
 
     if (providerValue.value is int) {
-      if (providerValue.value >= 200 && providerValue.value <= 400) {
+      if (providerValue.value >= 200 && providerValue.value < 400) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           if (!state.mounted) return;
           scaffoldMessenger.hideCurrentSnackBar();

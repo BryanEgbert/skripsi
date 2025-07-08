@@ -120,8 +120,8 @@ Future<Result<T>> makeRequest<T>(
       DioExceptionType.sendTimeout => Result.timeoutErr(),
       DioExceptionType.receiveTimeout => Result.timeoutErr(),
       DioExceptionType.connectionError =>
-        Result.networkErr("Failed to connect to server"),
-      _ => Result.err(e.message ?? "Unknown error: ${e.error.toString()}")
+        Result.networkErr(LocalizationService().failedToConnect),
+      _ => Result.err(e.message ?? LocalizationService().somethingWrong)
     };
   }
 }

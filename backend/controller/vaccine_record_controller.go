@@ -72,18 +72,13 @@ func (vc *VaccineRecordController) UpdateVaccineRecords(c *gin.Context) {
 
 	vaccineRecordImage, err := c.FormFile("vaccineRecordImage")
 	if err != nil {
-		if errors.Is(err, http.ErrMissingFile) {
-			c.JSON(http.StatusBadRequest, model.ErrorResponse{
-				Message: "Invalid request body",
-				Error:   err.Error(),
-			})
-		} else {
+		if !errors.Is(err, http.ErrMissingFile) {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "something's wrong",
 				Error:   err.Error(),
 			})
+			return
 		}
-		return
 	}
 
 	var req model.VaccineRecordRequest
@@ -174,13 +169,14 @@ func (vc *VaccineRecordController) CreateVaccineRecords(c *gin.Context) {
 				Message: "Invalid request body",
 				Error:   err.Error(),
 			})
+			return
 		} else {
 			c.JSON(http.StatusInternalServerError, model.ErrorResponse{
 				Message: "something's wrong",
 				Error:   err.Error(),
 			})
+			return
 		}
-		return
 	}
 
 	var req model.VaccineRecordRequest

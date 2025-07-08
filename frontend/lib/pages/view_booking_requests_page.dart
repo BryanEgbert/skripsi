@@ -228,6 +228,7 @@ class _ViewBookingRequestsPageState
                         Row(
                           spacing: 8.0,
                           children: [
+                            // TODO: add confirmation dialog
                             FilledButton(
                               onPressed: () {
                                 ref
@@ -245,6 +246,7 @@ class _ViewBookingRequestsPageState
                                 style: TextStyle(fontSize: 12),
                               ),
                             ),
+                            // TODO: add confirmation dialog
                             FilledButton(
                               onPressed: () {
                                 showConfirmationDialog(

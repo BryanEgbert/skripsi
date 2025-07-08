@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/update_user_request.dart';
@@ -29,6 +31,7 @@ class UserState extends _$UserState {
       token = await refreshAccessToken();
       ref.invalidate(getMyUserProvider);
     } catch (e) {
+      log("[ERROR] editUser: $e");
       state = AsyncError(LocalizationService().jwtExpired, StackTrace.current);
       return;
     }
@@ -53,6 +56,7 @@ class UserState extends _$UserState {
     try {
       token = await refreshAccessToken();
     } catch (e) {
+      log("[ERROR] updateDeviceToken: $e");
       state = AsyncError(LocalizationService().jwtExpired, StackTrace.current);
       return;
     }

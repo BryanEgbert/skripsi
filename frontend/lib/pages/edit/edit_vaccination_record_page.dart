@@ -127,12 +127,13 @@ class _EditVaccinationRecordPageState
         () => ref.refresh(
             getVaccinationRecordByIdProvider(widget.vaccinationRecordId)
                 .future),
-        (value) => _buildBody(context, value),
+        (value) => _buildBody(context, value, recordState),
       ),
     );
   }
 
-  Widget _buildBody(BuildContext context, VaccineRecord value) {
+  Widget _buildBody(
+      BuildContext context, VaccineRecord value, AsyncValue<int> recordState) {
     Locale locale = Localizations.localeOf(context);
     DateTime parsedDateAdministered =
         DateTime.parse(value.dateAdministered).toLocal();
@@ -235,7 +236,11 @@ class _EditVaccinationRecordPageState
               ),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: Text(AppLocalizations.of(context)!.saveBtn),
+                child: recordState.isLoading
+                    ? CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                    : Text(AppLocalizations.of(context)!.saveBtn),
               ),
             ],
           ),

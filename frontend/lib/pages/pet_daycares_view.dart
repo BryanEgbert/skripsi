@@ -1090,7 +1090,7 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
       _records = [];
       _page = 1;
       _hasMoreData = true;
-      _fetchMoreData();
+      _getLocation().whenComplete(() => _fetchMoreData());
     });
   }
 

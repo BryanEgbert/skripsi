@@ -2,6 +2,7 @@ import 'package:frontend/model/error_handler/error_handler.dart';
 import 'package:frontend/model/request/vaccination_record_request.dart';
 import 'package:frontend/model/response/token_response.dart';
 import 'package:frontend/provider/list_data_provider.dart';
+import 'package:frontend/services/localization_service.dart';
 import 'package:frontend/services/vaccination_record_service.dart';
 import 'package:frontend/utils/refresh_token.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -20,7 +21,15 @@ class VaccinationRecordState extends _$VaccinationRecordState {
   }
 
   Future<void> create(int petId, VaccinationRecordRequest req) async {
-    TokenResponse token = await refreshAccessToken();
+    state = AsyncLoading();
+
+    TokenResponse? token;
+    try {
+      token = await refreshAccessToken();
+    } catch (e) {
+      state = AsyncError(LocalizationService().jwtExpired, StackTrace.current);
+      return;
+    }
 
     final service = VaccinationRecordService();
     final res = await service.create(token.accessToken, petId, req);
@@ -35,7 +44,15 @@ class VaccinationRecordState extends _$VaccinationRecordState {
 
   Future<void> updateRecord(
       int petId, int vaccinationRecordId, VaccinationRecordRequest req) async {
-    TokenResponse token = await refreshAccessToken();
+    state = AsyncLoading();
+
+    TokenResponse? token;
+    try {
+      token = await refreshAccessToken();
+    } catch (e) {
+      state = AsyncError(LocalizationService().jwtExpired, StackTrace.current);
+      return;
+    }
 
     final service = VaccinationRecordService();
     final res =
@@ -52,7 +69,15 @@ class VaccinationRecordState extends _$VaccinationRecordState {
   }
 
   Future<void> delete(int vaccinationRecordId, int petId, int pageSize) async {
-    TokenResponse token = await refreshAccessToken();
+    state = AsyncLoading();
+
+    TokenResponse? token;
+    try {
+      token = await refreshAccessToken();
+    } catch (e) {
+      state = AsyncError(LocalizationService().jwtExpired, StackTrace.current);
+      return;
+    }
 
     final service = VaccinationRecordService();
     final res = await service.delete(token.accessToken, vaccinationRecordId);

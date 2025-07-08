@@ -1540,6 +1540,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Veterinary Specialty Filter'**
   String get vetSpecialtyFilter;
+
+  /// No description provided for @failedToConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to connect to server'**
+  String get failedToConnect;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

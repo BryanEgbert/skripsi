@@ -25,4 +25,22 @@ func UpdateBookSlotStatus(db *gorm.DB) {
 		log.Printf("[ERROR] updateBookSlotStatus err: %v", err)
 		return
 	}
+
+	var bookedSlots []model.BookedSlot
+	var bookedSlotIds []uint
+
+	if err := db.Debug().Where("status_id IN ?", []uint{doneStatus, ignoredStatus}).Find(&bookedSlots).Error; err != nil {
+		log.Printf("[ERROR] updateBookSlotStatus err: %v", err)
+		return
+	}
+
+	for _, val := range bookedSlots {
+		bookedSlotIds = append(bookedSlotIds, val.ID)
+	}
+
+	if err := db.Debug().Unscoped().Where("slot_id IN ?", bookedSlotIds).Delete(&model.BookedSlotsDaily{}).Error; err != nil {
+		log.Printf("Delete BookedSlotsDaily: %v", err)
+		db.Rollback()
+		return
+	}
 }

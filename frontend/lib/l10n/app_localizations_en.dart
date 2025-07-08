@@ -774,4 +774,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vetSpecialtyFilter => 'Veterinary Specialty Filter';
+
+  @override
+  String get failedToConnect => 'Failed to connect to server';
 }

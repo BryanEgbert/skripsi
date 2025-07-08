@@ -1045,5 +1045,6 @@
     "vetSpecialtyFilter": "Veterinary Specialty Filter",
     "@vetSpecialtyFilter": {
         "description": "Label for veterinary specialty filter title"
-    }
+    },
+    "failedToConnect": "Failed to connect to server"
 }   

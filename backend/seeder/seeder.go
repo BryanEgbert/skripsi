@@ -29,8 +29,8 @@ func SeedTable(db *gorm.DB) error {
 	}
 
 	bookedSlotStatus := []model.BookedSlotStatus{
-		{ID: 1, Name: "Waiting for confirmation"},
-		{ID: 2, Name: "Confirmed"},
+		{ID: 1, Name: "Awaiting Drop-off"},
+		{ID: 2, Name: "Accepted"},
 		{ID: 3, Name: "Rejected"},
 		{ID: 4, Name: "Done"},
 		{ID: 5, Name: "Cancelled"},
@@ -522,6 +522,39 @@ func SeedTable(db *gorm.DB) error {
 		},
 		{
 			DaycareID: daycare[1].ID, UserID: users[0].ID, Rate: 2, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
+		},
+		{
+			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",
 		},
 		{
 			DaycareID: daycare[1].ID, UserID: users[1].ID, Rate: 3, Description: "Great daycare!",

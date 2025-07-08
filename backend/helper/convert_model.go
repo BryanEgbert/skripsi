@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"log"
 	"time"
 
 	"github.com/BryanEgbert/skripsi/model"
@@ -175,6 +176,11 @@ func ConvertReviewsToDto(reviews []model.Reviews) []model.ReviewsDTO {
 			User:        ConvertUserToDTO(val.User),
 			Description: val.Description,
 			CreatedAt:   val.CreatedAt.Format(time.RFC3339),
+		}
+
+		if !val.UpdatedAt.IsZero() {
+			log.Printf("update createdAt to updatedAt")
+			review.CreatedAt = val.UpdatedAt.Format(time.RFC3339)
 		}
 
 		out = append(out, review)

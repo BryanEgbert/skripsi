@@ -768,4 +768,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get vetSpecialtyFilter => 'Filter Spesialisasi Dokter Hewan';
+
+  @override
+  String get failedToConnect => 'Gagal terhubung ke server';
 }

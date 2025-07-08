@@ -42,14 +42,21 @@ func (r *ReviewServiceImpl) GetReviews(userId uint, petDaycareId uint, page int,
 }
 
 func (r *ReviewServiceImpl) CreateReview(petDaycareId uint, userId uint, req model.CreateReviewRequest) error {
+	// review := model.Reviews{
+	// 	DaycareID:   petDaycareId,
+	// 	UserID:      userId,
+	// 	Rate:        req.Rating,
+	// 	Description: req.Description,
+	// }
+
 	review := model.Reviews{
-		DaycareID:   petDaycareId,
-		UserID:      userId,
-		Rate:        req.Rating,
-		Description: req.Description,
+		DaycareID: petDaycareId,
+		UserID:    userId,
 	}
 
-	if err := r.db.FirstOrCreate(&review, model.Reviews{DaycareID: petDaycareId, UserID: userId}).Error; err != nil {
+	if err := r.db.Where(&review).
+		Assign(model.Reviews{Rate: req.Rating, Description: req.Description}).
+		FirstOrCreate(&review).Error; err != nil {
 		return err
 	}
 	return nil

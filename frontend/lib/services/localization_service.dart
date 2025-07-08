@@ -23,4 +23,5 @@ class LocalizationService {
   String get somethingWrong => _localizations.somethingIsWrongTryAgain;
   String get dataDoesNotExist => _localizations.dataDoesNotExist;
   String get invalidEmailOrPassword => _localizations.invalidEmailOrPassword;
+  String get failedToConnect => _localizations.failedToConnect;
 }

@@ -101,6 +101,7 @@ class _PaginatedListViewState
         if (vaccinationRecord.value! >= 200 &&
             vaccinationRecord.value! <= 400) {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             var snackbar = SnackBar(
               key: Key("success-message"),
               content: Text(
@@ -119,6 +120,7 @@ class _PaginatedListViewState
                 _deleteIndex = -1;
               });
             }
+
             ref.read(vaccinationRecordStateProvider.notifier).reset();
             _records = [];
             _page = 1;
