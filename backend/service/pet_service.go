@@ -132,7 +132,7 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 		Limit(pageSize)
 
 	if startID > 0 {
-		query = query.Where("id > ?", startID)
+		query = query.Where("pets.id > ?", startID)
 	}
 
 	err := query.Find(&pets).Error
@@ -140,7 +140,7 @@ func (s *PetServiceImpl) GetPets(ownerID uint, startID uint, pageSize int) (*[]m
 		return nil, err
 	}
 
-	var petDTOs []model.PetDTO
+	petDTOs := []model.PetDTO{}
 	for _, pet := range pets {
 		isVaccinated, err := helper.PetIsVaccinated(pet)
 		if err != nil {

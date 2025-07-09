@@ -71,8 +71,8 @@ type PetDaycare struct {
 	DailyPlaytime DailyPlaytime `gorm:"foreignKey:DailyPlaytimeID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"daily_playtime"`
 	Reviews       []Reviews     `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-Many
 	Slots         []Slots       `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-Many
-	BookedSlots   []BookedSlot  `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-Many
-	Thumbnails    []Thumbnail   `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-Many
+	// BookedSlots   []BookedSlot  `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-Many
+	Thumbnails []Thumbnail `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // One-to-Many
 }
 
 type PetDaycareDTO struct {

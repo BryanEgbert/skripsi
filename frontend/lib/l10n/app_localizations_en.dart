@@ -789,4 +789,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rejectBookingConfirmation => 'Are you sure you want to reject this booking request? This action cannot be undone.';
+
+  @override
+  String get noPetDaycare => 'There are no pet daycares/hotels available';
+
+  @override
+  String get noVet => 'There are no vets available';
 }

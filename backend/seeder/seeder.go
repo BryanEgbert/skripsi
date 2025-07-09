@@ -122,14 +122,9 @@ func SeedTable(db *gorm.DB) error {
 
 	password1, _ := helper.HashPassword("test")
 
-	vetSpecialty := []model.VetSpecialty{
-		vetSpecialties[0],
-		vetSpecialties[1],
-		vetSpecialties[2],
-	}
-
 	dummyImgUrl := "https://picsum.photos/id/1/200/300"
 
+	vetSpecialty := []model.VetSpecialty{}
 	users := []model.User{
 		{Name: "John Doe", Email: "john@example.com", Password: password1, RoleID: 1, ImageUrl: &dummyImgUrl},
 		{Name: "Jane Smith", Email: "jane@example.com", Password: password1, RoleID: 2, ImageUrl: &dummyImgUrl},
@@ -158,6 +153,19 @@ func SeedTable(db *gorm.DB) error {
 
 		user.ImageUrl = &dummyImgUrl
 		users = append(users, user)
+	}
+
+	for j := range users {
+		// Only assign specialties if the user's RoleID is 3 (vet)
+		if users[j].RoleID == 3 {
+			specialties := []model.VetSpecialty{}
+			// Generate a random number of specialties from 1 to 5
+			for i := 0; i < rand.Intn(5)+1; i++ {
+				// Append a random specialty from the predefined list
+				specialties = append(specialties, vetSpecialties[rand.Int()%len(vetSpecialties)])
+			}
+			users[j].VetSpecialty = &specialties
+		}
 	}
 
 	if err := db.Create(&users).Error; err != nil {
@@ -428,40 +436,22 @@ func SeedTable(db *gorm.DB) error {
 		},
 		{
 			UserID:    users[0].ID,
-			DaycareID: daycare[1].ID,
-			Pet:       []model.Pet{pet[1]},
+			SlotID:    slots[0].ID,
+			DaycareID: daycare[0].ID,
+			Pet:       []model.Pet{pet[0]},
+			StartDate: time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
+			EndDate:   time.Date(2025, time.February, 15, 0, 0, 0, 0, time.Local),
+			StatusID:  &confirmed,
+			AddressID: &savedAddress[0].ID,
+		},
+		{
+			UserID:    users[0].ID,
+			SlotID:    slots[0].ID,
+			DaycareID: daycare[0].ID,
+			Pet:       []model.Pet{pet[5]},
 			StartDate: time.Now(),
 			EndDate:   time.Now().AddDate(0, 0, 3),
 			StatusID:  &waitingConfirmation,
-		},
-		{
-			UserID:    users[0].ID,
-			SlotID:    slots[3].ID,
-			DaycareID: daycare[2].ID,
-			Pet:       []model.Pet{pet[0]},
-			StartDate: time.Date(2025, time.May, 26, 0, 0, 0, 0, time.Local),
-			EndDate:   time.Date(2025, time.May, 30, 0, 0, 0, 0, time.Local),
-			StatusID:  &confirmed,
-			AddressID: &savedAddress[0].ID,
-		},
-		{
-			UserID:    users[0].ID,
-			SlotID:    slots[3].ID,
-			DaycareID: daycare[2].ID,
-			Pet:       []model.Pet{pet[1]},
-			StartDate: time.Date(2025, time.May, 27, 0, 0, 0, 0, time.Local),
-			EndDate:   time.Date(2025, time.May, 30, 0, 0, 0, 0, time.Local),
-			StatusID:  &confirmed,
-			AddressID: &savedAddress[0].ID,
-		},
-		{
-			UserID:    users[0].ID,
-			SlotID:    slots[1].ID,
-			DaycareID: daycare[2].ID,
-			Pet:       []model.Pet{pet[1], pet[0]},
-			StartDate: time.Date(2025, time.April, 27, 0, 0, 0, 0, time.Local),
-			EndDate:   time.Date(2025, time.April, 30, 0, 0, 0, 0, time.Local),
-			StatusID:  &confirmed,
 			AddressID: &savedAddress[0].ID,
 		},
 	}
@@ -472,64 +462,54 @@ func SeedTable(db *gorm.DB) error {
 
 	bookedSlotDaily := []model.BookedSlotsDaily{
 		{
-			SlotID:    slots[0].ID,
+			SlotID:    bookedSlot[0].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
 		},
 		{
-			SlotID:    slots[0].ID,
+			SlotID:    bookedSlot[0].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.February, 14, 0, 0, 0, 0, time.Local),
 		},
 		{
-			SlotID:    slots[0].ID,
+			SlotID:    bookedSlot[0].ID,
 			SlotCount: 1,
 			Date:      time.Date(2025, time.February, 15, 0, 0, 0, 0, time.Local),
 		},
 		{
-			SlotID:    slots[3].ID,
+			SlotID:    bookedSlot[1].ID,
 			SlotCount: 1,
-			Date:      time.Date(2025, time.May, 26, 0, 0, 0, 0, time.Local),
+			Date:      time.Date(2025, time.February, 13, 0, 0, 0, 0, time.Local),
 		},
 		{
-			SlotID:    slots[3].ID,
+			SlotID:    bookedSlot[1].ID,
 			SlotCount: 1,
-			Date:      time.Date(2025, time.May, 27, 0, 0, 0, 0, time.Local),
+			Date:      time.Date(2025, time.February, 14, 0, 0, 0, 0, time.Local),
 		},
 		{
-			SlotID:    slots[3].ID,
+			SlotID:    bookedSlot[1].ID,
 			SlotCount: 1,
-			Date:      time.Date(2025, time.May, 30, 0, 0, 0, 0, time.Local),
+			Date:      time.Date(2025, time.February, 15, 0, 0, 0, 0, time.Local),
 		},
 		{
-			SlotID:    slots[3].ID,
-			SlotCount: 1,
-			Date:      time.Date(2025, time.May, 31, 0, 0, 0, 0, time.Local),
+			SlotID:    bookedSlot[2].ID,
+			SlotCount: 3,
+			Date:      time.Now(),
 		},
 		{
-			SlotID:    slots[3].ID,
-			SlotCount: 1,
-			Date:      time.Date(2025, time.May, 31, 0, 0, 0, 0, time.Local),
+			SlotID:    bookedSlot[2].ID,
+			SlotCount: 3,
+			Date:      time.Now().AddDate(0, 0, 1),
 		},
 		{
-			SlotID:    slots[3].ID,
-			SlotCount: 1,
-			Date:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.Local),
+			SlotID:    bookedSlot[2].ID,
+			SlotCount: 3,
+			Date:      time.Now().AddDate(0, 0, 2),
 		},
 		{
-			SlotID:    slots[3].ID,
-			SlotCount: 1,
-			Date:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.Local),
-		},
-		{
-			SlotID:    slots[3].ID,
-			SlotCount: 1,
-			Date:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.Local),
-		},
-		{
-			SlotID:    slots[3].ID,
-			SlotCount: 1,
-			Date:      time.Date(2025, time.June, 1, 0, 0, 0, 0, time.Local),
+			SlotID:    bookedSlot[2].ID,
+			SlotCount: 3,
+			Date:      time.Now().AddDate(0, 0, 3),
 		},
 	}
 
@@ -537,20 +517,20 @@ func SeedTable(db *gorm.DB) error {
 		return err
 	}
 
-	for _, dc := range daycare {
-		var count int64
-		if err := db.Model(&model.BookedSlot{}).
-			Where("daycare_id = ?", dc.ID).
-			Count(&count).Error; err != nil {
-			return err
-		}
+	// for _, dc := range daycare {
+	// 	var count int64
+	// 	if err := db.Model(&model.BookedSlot{}).
+	// 		Where("daycare_id = ?", dc.ID).
+	// 		Count(&count).Error; err != nil {
+	// 		return err
+	// 	}
 
-		if err := db.Model(&model.PetDaycare{}).
-			Where("id = ?", dc.ID).
-			Update("booked_num", count).Error; err != nil {
-			return err
-		}
-	}
+	// 	if err := db.Model(&model.PetDaycare{}).
+	// 		Where("id = ?", dc.ID).
+	// 		Update("booked_num", count).Error; err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	review := []model.Reviews{
 		{
@@ -631,8 +611,8 @@ func seedPetDaycares(db *gorm.DB, users []model.User, dailyWalks []model.DailyWa
 	var thumbnails []model.Thumbnail
 
 	dummyTime := time.Now()
-	vaccinated := true
-	hasPickup := true
+	// vaccinated := true
+	// hasPickup := true
 
 	dcCount := 0
 
@@ -645,21 +625,22 @@ func seedPetDaycares(db *gorm.DB, users []model.User, dailyWalks []model.DailyWa
 		location := dummyLocations[locationIndex]
 
 		dc := model.PetDaycare{
-			Name:             fmt.Sprintf("Daycare %s", user.Name),
-			Address:          fmt.Sprintf("%d Pet Street, %s", 100+dcCount, location),
-			Location:         location,
-			Latitude:         -6.2 + float64(dcCount)*0.001,
-			Longitude:        106.8 + float64(dcCount)*0.001,
-			Locality:         location,
-			OpeningHour:      model.CustomTime{Time: dummyTime},
-			ClosingHour:      model.CustomTime{Time: dummyTime.Add(8 * time.Hour)},
-			HasPickupService: hasPickup,
-			MustBeVaccinated: vaccinated,
-			FoodProvided:     true,
-			OwnerID:          user.ID,
-			DailyWalks:       dailyWalks[dcCount%len(dailyWalks)],
-			DailyPlaytime:    dailyPlaytimes[dcCount%len(dailyPlaytimes)],
-			BookedNum:        0,
+			Name:              fmt.Sprintf("Daycare %s", user.Name),
+			Address:           fmt.Sprintf("%d Pet Street, %s", 100+dcCount, location),
+			Location:          location,
+			Latitude:          -6.2 + float64(dcCount)*0.001,
+			Longitude:         106.8 + float64(dcCount)*0.001,
+			Locality:          location,
+			OpeningHour:       model.CustomTime{Time: dummyTime},
+			ClosingHour:       model.CustomTime{Time: dummyTime.Add(8 * time.Hour)},
+			HasPickupService:  rand.Int()%2 == 0,
+			GroomingAvailable: rand.Int()%2 == 0,
+			MustBeVaccinated:  rand.Int()%2 == 0,
+			FoodProvided:      rand.Int()%2 == 0,
+			OwnerID:           user.ID,
+			DailyWalks:        dailyWalks[rand.Int()%len(dailyWalks)],
+			DailyPlaytime:     dailyPlaytimes[rand.Int()%len(dailyPlaytimes)],
+			BookedNum:         0,
 		}
 
 		daycares = append(daycares, dc)
@@ -699,18 +680,20 @@ func seedPets(db *gorm.DB, users []model.User, petCategories []model.PetCategory
 		return []model.Pet{}, fmt.Errorf("no pet categories provided")
 	}
 
-	for i, user := range users {
+	for _, user := range users {
 		if user.RoleID != 1 {
 			continue
 		}
 
-		pet := model.Pet{
-			Name:          fmt.Sprintf("Pet %d of %s", i+1, user.Name),
-			ImageUrl:      &petImg,
-			OwnerID:       user.ID,
-			PetCategoryID: petCategories[i%len(petCategories)].ID, // cycle categories
+		for j := 0; j < len(petCategories); j++ {
+			pet := model.Pet{
+				Name:          fmt.Sprintf("Pet %d of %s", j+1, user.Name),
+				ImageUrl:      &petImg,
+				OwnerID:       user.ID,
+				PetCategoryID: petCategories[j].ID, // cycle categories
+			}
+			pets = append(pets, pet)
 		}
-		pets = append(pets, pet)
 	}
 
 	if len(pets) == 0 {
@@ -732,21 +715,37 @@ func seedSlots(db *gorm.DB, daycares []model.PetDaycare, petCategories []model.P
 	var slots []model.Slots
 
 	for _, dc := range daycares {
-		// Decide how many categories this daycare supports (between 2 and all)
-		numSupportedCategories := rand.Intn(len(petCategories)-1) + 2 // min 2 categories
-		shuffledIndexes := rand.Perm(len(petCategories))              // Random category order
+		// Start with the mandatory petCategory[0]
+		// mandatoryCategory := petCategories[0]
 
-		for i := 0; i < numSupportedCategories; i++ {
-			category := petCategories[shuffledIndexes[i]]
+		if dc.ID == 1 {
+			for i := 0; i < len(petCategories); i++ {
+				slot := model.Slots{
+					DaycareID:     dc.ID,
+					PricingTypeID: uint(rand.Intn(2) + 1),
+					PetCategoryID: petCategories[i].ID,
+					MaxNumber:     3,
+					Price:         80000.0 + float64(rand.Intn(5))*10000.0,
+				}
+				slots = append(slots, slot)
+			}
+		}
+
+		// Randomly choose additional categories excluding petCategory[0]
+		remainingCategories := petCategories[1:]                 // Exclude index 0
+		numAdditional := rand.Intn(len(remainingCategories)) + 1 // At least 1 more
+		shuffled := rand.Perm(len(remainingCategories))
+
+		for i := 0; i < numAdditional; i++ {
+			cat := remainingCategories[shuffled[i]]
 
 			slot := model.Slots{
 				DaycareID:     dc.ID,
-				PricingTypeID: uint(rand.Intn(2) + 1), // 1 or 2
-				PetCategoryID: category.ID,
-				MaxNumber:     rand.Intn(49) + 2,                       // between 2–11
-				Price:         80000.0 + float64(rand.Intn(5))*10000.0, // e.g., 80k – 120k
+				PricingTypeID: uint(rand.Intn(2) + 1),
+				PetCategoryID: cat.ID,
+				MaxNumber:     3,
+				Price:         80000.0 + float64(rand.Intn(5))*10000.0,
 			}
-
 			slots = append(slots, slot)
 		}
 	}

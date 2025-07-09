@@ -13,6 +13,7 @@ type Slots struct {
 	MaxNumber     int
 
 	PetCategory PetCategory `gorm:"foreignKey:PetCategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Daycare     PetDaycare  `gorm:"foreignKey:DaycareID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	PricingType PricingType `gorm:"foreignKey:PricingTypeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 

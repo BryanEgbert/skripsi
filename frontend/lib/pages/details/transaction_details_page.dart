@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/app_bar_actions.dart';
@@ -40,6 +42,7 @@ class _TransactionDetailsPageState
 
   @override
   Widget build(BuildContext context) {
+    log("bookedSlotId: ${widget.bookedSlotId}");
     final transaction = ref.watch(getBookedSlotProvider(widget.bookedSlotId));
     final slotState = ref.watch(slotStateProvider);
 
@@ -78,6 +81,7 @@ class _TransactionDetailsPageState
               onRefresh: () => ref
                   .refresh(getBookedSlotProvider(widget.bookedSlotId).future)),
           AsyncData(:final value) => Builder(builder: (context) {
+              log("value: $value");
               if (value.status.id == 1) {
                 statusColor = Colors.deepOrange;
                 chipColor = Color(0xFFFFF080);

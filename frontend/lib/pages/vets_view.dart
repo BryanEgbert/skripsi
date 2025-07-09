@@ -101,16 +101,19 @@ class _VetsViewState extends ConsumerState<VetsView> {
         ),
         actions: [
           Builder(builder: (context) {
-            return IconButton(
-              icon: Icon(
-                Icons.tune_rounded,
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Constants.primaryTextColor
-                    : Colors.orange,
+            return Badge(
+              isLabelVisible: _vetSpecialtyId != 0,
+              child: IconButton(
+                icon: Icon(
+                  Icons.tune_rounded,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Constants.primaryTextColor
+                      : Colors.orange,
+                ),
+                onPressed: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
               ),
-              onPressed: () {
-                Scaffold.of(context).openEndDrawer();
-              },
             );
           }),
           ...petOwnerAppBarActions(widget.messages.length),
@@ -213,9 +216,11 @@ class _VetsViewState extends ConsumerState<VetsView> {
           ? Center(
               child: CircularProgressIndicator.adaptive(),
             )
-          : (_error != null)
+          : (_error != null || _records.isEmpty)
               ? ErrorText(
-                  errorText: _error.toString(),
+                  errorText: (_error != null)
+                      ? _error.toString()
+                      : AppLocalizations.of(context)!.noVet,
                   onRefresh: () async {
                     _records = [];
                     _lastId = 0;

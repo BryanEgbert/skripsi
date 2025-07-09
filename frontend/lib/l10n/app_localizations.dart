@@ -1570,6 +1570,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to reject this booking request? This action cannot be undone.'**
   String get rejectBookingConfirmation;
+
+  /// Message shown when there are no pet daycares/hotels available
+  ///
+  /// In en, this message translates to:
+  /// **'There are no pet daycares/hotels available'**
+  String get noPetDaycare;
+
+  /// Message shown when there are no vets available
+  ///
+  /// In en, this message translates to:
+  /// **'There are no vets available'**
+  String get noVet;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

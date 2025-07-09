@@ -113,6 +113,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		&model.SavedAddress{},
 		&model.ChatMessage{},
 		&model.ChatImage{},
+		&model.PricingType{},
 	)
 
 	ctx := context.Background()

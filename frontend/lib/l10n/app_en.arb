@@ -1062,7 +1062,13 @@
     "rejectBookingConfirmation": "Are you sure you want to reject this booking request? This action cannot be undone.",
     "@rejectBookingConfirmation": {
         "description": "Confirmation message shown when rejecting a booking request"
-    }
-    
-    
+    },
+    "noPetDaycare": "There are no pet daycares/hotels available",
+    "@noPetDaycare": {
+        "description": "Message shown when there are no pet daycares/hotels available"
+    },
+    "noVet": "There are no vets available",
+    "@noVet": {
+        "description": "Message shown when there are no vets available"
+    } 
 }   

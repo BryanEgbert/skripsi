@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/BryanEgbert/skripsi/helper"
@@ -523,34 +522,34 @@ func (s *PetDaycareServiceImpl) CreatePetDaycare(userId uint, request model.Crea
 }
 
 func (s *PetDaycareServiceImpl) DeletePetDaycare(id uint, ownerId uint) error {
-	daycare := model.PetDaycare{
-		Model:   gorm.Model{ID: id},
-		OwnerID: ownerId,
-	}
-	if err := s.db.
-		Preload("Owner").
-		Preload("BookedSlots", "end_date > CURRENT_TIMESTAMP").
-		Preload("Thumbnails").
-		Find(&daycare).
-		Error; err != nil {
-		return err
-	}
+	// daycare := model.PetDaycare{
+	// 	Model:   gorm.Model{ID: id},
+	// 	OwnerID: ownerId,
+	// }
+	// if err := s.db.
+	// 	Preload("Owner").
+	// 	Preload("Slots").
+	// 	Preload("Thumbnails").
+	// 	Find(&daycare).
+	// 	Error; err != nil {
+	// 	return err
+	// }
 
-	if len(daycare.BookedSlots) != 0 {
-		return errors.New("there are pets booked in your pet daycare")
-	}
+	// // if len(daycare.BookedSlots) != 0 {
+	// // 	return errors.New("there are pets booked in your pet daycare")
+	// // }
 
-	if err := s.db.
-		Unscoped().
-		Delete(&model.PetDaycare{Model: gorm.Model{ID: id}, OwnerID: ownerId}).Error; err != nil {
-		return err
-	}
+	// if err := s.db.
+	// 	Unscoped().
+	// 	Delete(&model.PetDaycare{Model: gorm.Model{ID: id}, OwnerID: ownerId}).Error; err != nil {
+	// 	return err
+	// }
 
-	for _, thumbnail := range daycare.Thumbnails {
-		if err := os.Remove(helper.GetFilePath(thumbnail.ImageUrl)); err != nil {
-			return err
-		}
-	}
+	// for _, thumbnail := range daycare.Thumbnails {
+	// 	if err := os.Remove(helper.GetFilePath(thumbnail.ImageUrl)); err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	return nil
 }

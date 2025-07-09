@@ -240,8 +240,6 @@ class _$PetImpl implements _Pet {
   final String name;
   @override
   final String? imageUrl;
-// TODO: remove status
-// required String status,
   @override
   final bool isVaccinated;
   @override
@@ -317,8 +315,7 @@ abstract class _Pet implements Pet {
   @override
   String get name;
   @override
-  String? get imageUrl; // TODO: remove status
-// required String status,
+  String? get imageUrl;
   @override
   bool get isVaccinated;
   @override

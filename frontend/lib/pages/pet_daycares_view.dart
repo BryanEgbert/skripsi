@@ -183,6 +183,15 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
     final petCategory = ref.watch(petCategoryProvider);
     final pricingType = ref.watch(pricingTypeProvider);
     final locale = Localizations.localeOf(context).toLanguageTag();
+    final isFilterActive = _filters.dailyPlaytime > 0 ||
+        _filters.dailyWalks > 0 ||
+        _filters.mustBeVaccinated != null ||
+        _filters.minimumRating > 0 ||
+        _filterPetCategoryIds.isNotEmpty ||
+        _filters.maxDistance > 0 ||
+        _filters.maxPrice > 0 ||
+        _filters.pricingType != null ||
+        _serviceFeatures.isNotEmpty;
 
     // _getLocation();
 
@@ -204,16 +213,19 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
         ),
         actions: [
           Builder(builder: (context) {
-            return IconButton(
-              icon: Icon(
-                Icons.tune_rounded,
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Constants.primaryTextColor
-                    : Colors.orange,
+            return Badge(
+              isLabelVisible: isFilterActive,
+              child: IconButton(
+                icon: Icon(
+                  Icons.tune_rounded,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Constants.primaryTextColor
+                      : Colors.orange,
+                ),
+                onPressed: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
               ),
-              onPressed: () {
-                Scaffold.of(context).openEndDrawer();
-              },
             );
           }),
           ...petOwnerAppBarActions(widget.messages.length),
@@ -985,37 +997,40 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
       ),
       body: (_error != null)
           ? ErrorText(
-              errorText: _error.toString(),
-              onRefresh: () async {
-                _refresh();
-              })
+              errorText: _error.toString(), onRefresh: () async => _refresh())
           : RefreshIndicator.adaptive(
               onRefresh: () async {
                 _refresh();
               },
-              child: (_isFetching && _records.isEmpty)
+              child: (_isFetching)
                   ? Center(child: CircularProgressIndicator.adaptive())
-                  : GridView.builder(
-                      itemCount: _records.length + 1,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 0.0,
-                        crossAxisSpacing: 0.0,
-                        mainAxisExtent: 250,
-                      ),
-                      itemBuilder: (context, index) {
-                        if (index < _records.length) {
-                          return _buildCard(context, _records[index]);
-                        } else {
-                          if (_isFetching) {
-                            return Center(
-                                child: CircularProgressIndicator.adaptive());
-                          }
+                  : _records.isEmpty
+                      ? ErrorText(
+                          errorText: AppLocalizations.of(context)!.noPetDaycare,
+                          onRefresh: () async => _refresh())
+                      : GridView.builder(
+                          itemCount: _records.length + 1,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 0.0,
+                            crossAxisSpacing: 0.0,
+                            mainAxisExtent: 250,
+                          ),
+                          itemBuilder: (context, index) {
+                            if (index < _records.length) {
+                              return _buildCard(context, _records[index]);
+                            } else {
+                              if (_isFetching) {
+                                return Center(
+                                    child:
+                                        CircularProgressIndicator.adaptive());
+                              }
 
-                          return SizedBox();
-                        }
-                      },
-                    ),
+                              return SizedBox();
+                            }
+                          },
+                        ),
             ),
       bottomSheet: _serviceEnabled == false ||
               _permission == LocationPermission.denied

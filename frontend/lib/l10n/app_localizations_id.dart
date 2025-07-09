@@ -783,4 +783,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get rejectBookingConfirmation => 'Apakah Anda yakin ingin menolak permintaan pemesanan ini? Tindakan ini tidak dapat dibatalkan.';
+
+  @override
+  String get noPetDaycare => 'Tidak ada tempat penitipan hewan yang terdaftar';
+
+  @override
+  String get noVet => 'Tidak ada dokter hewan yang tersedia';
 }
