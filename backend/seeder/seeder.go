@@ -628,8 +628,8 @@ func seedPetDaycares(db *gorm.DB, users []model.User, dailyWalks []model.DailyWa
 			Name:              fmt.Sprintf("Daycare %s", user.Name),
 			Address:           fmt.Sprintf("%d Pet Street, %s", 100+dcCount, location),
 			Location:          location,
-			Latitude:          -6.2 + float64(dcCount)*0.001,
-			Longitude:         106.8 + float64(dcCount)*0.001,
+			Latitude:          -6.2 + float64(dcCount)*0.01,
+			Longitude:         106.8 + float64(dcCount)*0.01,
 			Locality:          location,
 			OpeningHour:       model.CustomTime{Time: dummyTime},
 			ClosingHour:       model.CustomTime{Time: dummyTime.Add(8 * time.Hour)},
@@ -641,6 +641,10 @@ func seedPetDaycares(db *gorm.DB, users []model.User, dailyWalks []model.DailyWa
 			DailyWalks:        dailyWalks[rand.Int()%len(dailyWalks)],
 			DailyPlaytime:     dailyPlaytimes[rand.Int()%len(dailyPlaytimes)],
 			BookedNum:         0,
+		}
+		if dcCount == 0 {
+			dc.MustBeVaccinated = false
+			dc.HasPickupService = true
 		}
 
 		daycares = append(daycares, dc)

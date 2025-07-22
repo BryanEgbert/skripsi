@@ -1582,6 +1582,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'There are no vets available'**
   String get noVet;
+
+  /// Button label to submit a form or changes
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

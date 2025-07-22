@@ -789,4 +789,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get noVet => 'Tidak ada dokter hewan yang tersedia';
+
+  @override
+  String get submit => 'Kirim';
 }

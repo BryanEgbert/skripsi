@@ -184,7 +184,7 @@ class _PaginatedListViewState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "${AppLocalizations.of(context)!.dateAdministered}:",
+                      AppLocalizations.of(context)!.dateAdministered,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -202,7 +202,7 @@ class _PaginatedListViewState
                       ),
                     ),
                     Text(
-                      "${AppLocalizations.of(context)!.nextDueDate}:",
+                      AppLocalizations.of(context)!.nextDueDate,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

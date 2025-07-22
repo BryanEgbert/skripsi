@@ -1070,5 +1070,9 @@
     "noVet": "There are no vets available",
     "@noVet": {
         "description": "Message shown when there are no vets available"
-    } 
+    },
+    "submit": "Submit",
+    "@submit": {
+        "description": "Button label to submit a form or changes"
+    }
 }   

@@ -175,7 +175,7 @@ class _AddReviewModalState extends ConsumerState<AddReviewModal> {
                 },
                 child: (!reviewState.isLoading)
                     ? Text(
-                        AppLocalizations.of(context)!.addReview,
+                        AppLocalizations.of(context)!.submit,
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       )

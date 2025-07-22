@@ -168,14 +168,12 @@ class _PetDaycaresViewState extends ConsumerState<PetDaycaresView> {
     }
 
     _serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!_serviceEnabled) {
-      return Future.error('Location services are disabled.');
+    if (_serviceEnabled) {
+      Position currentPos = await Geolocator.getCurrentPosition();
+
+      _latitude = currentPos.latitude;
+      _longitude = currentPos.longitude;
     }
-
-    Position currentPos = await Geolocator.getCurrentPosition();
-
-    _latitude = currentPos.latitude;
-    _longitude = currentPos.longitude;
   }
 
   @override

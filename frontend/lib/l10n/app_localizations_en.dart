@@ -795,4 +795,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noVet => 'There are no vets available';
+
+  @override
+  String get submit => 'Submit';
 }

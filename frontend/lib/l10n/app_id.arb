@@ -248,5 +248,6 @@
   "acceptBookingConfirmation": "Apakah Anda yakin ingin menerima permintaan pemesanan ini? Pastikan pemilik hewan telah mengantar hewan peliharaan mereka. Tindakan ini tidak dapat dibatalkan.",
   "rejectBookingConfirmation": "Apakah Anda yakin ingin menolak permintaan pemesanan ini? Tindakan ini tidak dapat dibatalkan.",
   "noPetDaycare": "Tidak ada tempat penitipan hewan yang terdaftar",
-  "noVet": "Tidak ada dokter hewan yang tersedia"
+  "noVet": "Tidak ada dokter hewan yang tersedia",
+  "submit": "Kirim"
 }
